@@ -1,5 +1,7 @@
 """A detailed, interactive home for Nico's active robot."""
 
+# ruff: noqa: I001
+
 from __future__ import annotations
 
 import streamlit as st
