@@ -15,8 +15,8 @@ or external generative-AI service.
   categories, with colors, patterns, finishes, personalities, voices, jobs, XP, and memories.
 - **Mecha Art V3:** layered inline-SVG robots with five body frames, mechanical joints, armor,
   reactors, wings, thrusters, materials, lighting, and animations.
-- **Animal Forest:** explore habitats, wildlife photographs, field guides, quizzes, expeditions,
-  discoveries, favorites, and kid-created animal entries.
+- **Animal Forest:** explore 64 built-in animals balanced across eight habitats, with wildlife
+  photographs, field guides, quizzes, expeditions, discoveries, favorites, and kid-created entries.
 - **Monster Lab:** build monsters from 120 physical choices across ten categories, plus eighteen
   colors, patterns, textures, powers, personalities, editing, animation, and safe old-save
   migration.
