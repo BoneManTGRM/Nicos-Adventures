@@ -36,6 +36,7 @@ select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
 "activities/animals.py" = ["F401"]
 "core/animal_world.py" = ["UP035"]
 "core/mecha_pack.py" = ["B010"]
+"core/monster_art.py" = ["F541"]
 
 [tool.setuptools.packages.find]
 include = ["activities*", "api*", "core*", "ui*"]
