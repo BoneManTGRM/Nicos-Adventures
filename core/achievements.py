@@ -20,6 +20,8 @@ BADGES: tuple[Badge, ...] = (
     Badge("first_friend", "First Robot Friend", "🤖", "Build your first robot.", "robot_builds", 1),
     Badge("robot_engineer", "Robot Engineer", "🛠️", "Build three robot friends.", "robot_builds", 3),
     Badge("robot_team", "Robot Team", "🤖", "Build five robot friends.", "robot_builds", 5),
+    Badge("style_starter", "Style Starter", "🎨", "Customize an existing robot.", "robot_customizations", 1),
+    Badge("master_customizer", "Master Customizer", "✨", "Customize robots ten times.", "robot_customizations", 10),
     Badge("move_master", "Move Master", "💃", "Make robots move five times.", "robot_moves", 5),
     Badge("dance_legend", "Motion Legend", "🚀", "Make robots move twenty times.", "robot_moves", 20),
     Badge("first_discovery", "First Discovery", "🔎", "Remember your first animal.", "animal_discoveries", 1),
@@ -41,6 +43,7 @@ BADGES: tuple[Badge, ...] = (
 
 EVENT_REWARDS: dict[str, int] = {
     "robot_builds": 3,
+    "robot_customizations": 1,
     "robot_moves": 1,
     "animal_discoveries": 1,
     "animal_favorites": 1,
