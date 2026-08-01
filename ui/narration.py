@@ -6,12 +6,13 @@ import html
 import json
 from typing import Any
 
-import streamlit as st
 import streamlit.components.v1 as components
 
 
 def narration_language(profile: dict[str, Any], override: str | None = None) -> str:
-    value = override or str(profile.get("preferences", {}).get("language", "English"))
+    value = override or str(
+        profile.get("preferences", {}).get("language", "English")
+    )
     return {
         "English": "en-US",
         "Spanish": "es-MX",
@@ -36,7 +37,10 @@ def narration_button(
         return
     state = profile.get("world4", {})
     rate = max(0.6, min(float(state.get("narration_rate", 1.0)), 1.5))
-    pitch = max(0.6, min(float(state.get("narration_pitch", 1.0)), 1.5))
+    pitch = max(
+        0.6,
+        min(float(state.get("narration_pitch", 1.0)), 1.5),
+    )
     lang = narration_language(profile, language)
     element_id = "speak-" + "".join(
         character for character in key if character.isalnum()
