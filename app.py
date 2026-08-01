@@ -72,6 +72,15 @@ profile = st.session_state.profile
 ensure_world2(profile)
 ensure_world4(profile)
 repair_profile(profile)
+counts = profile.setdefault("counts", {})
+counts["monster_plays"] = sum(
+    int(item.get("times_played", 0))
+    for item in profile.get("monsters", [])
+)
+counts["monster_friendship"] = sum(
+    int(item.get("friendship", 0))
+    for item in profile.get("world4", {}).get("monster_habitats", {}).values()
+)
 prepare_navigation(st.session_state, PAGES)
 
 
