@@ -31,6 +31,7 @@ select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
 [tool.ruff.lint.per-file-ignores]
 "activities/animals.py" = ["F401"]
 "core/animal_world.py" = ["UP035"]
+"core/mecha_pack.py" = ["B010"]
 
 [tool.setuptools.packages.find]
 include = ["activities*", "core*", "ui*"]
