@@ -31,14 +31,16 @@ def test_starter_mecha_preset_builds_a_valid_robot() -> None:
     assert robot["personality"] == "Mecha Ace"
 
 
-def test_mecha_renderer_adds_armor_shape_and_energy_effect() -> None:
+def test_mecha_renderer_uses_layered_svg_art() -> None:
     install_mecha_ui()
     customization = preset_customization("Skyframe Vanguard", 0)
     robot = build_robot(name="Hikari", stars=0, **customization)
     rendered = components.robot_html(robot)
-    assert "clip-path:polygon" in rendered
-    assert "rgba(34,211,238,.5)" in rendered
-    assert "⚔️" in rendered
+    assert 'data-robot-art="v3"' in rendered
+    assert 'data-part-head="mecha_angular"' in rendered
+    assert 'data-part-power="mecha_beam_blade"' in rendered
+    assert "mecha-art-card" in rendered
+    assert "energy-ring" in rendered
 
 
 def test_install_is_idempotent() -> None:
