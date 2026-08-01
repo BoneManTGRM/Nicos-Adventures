@@ -23,6 +23,7 @@ from core.navigation import NAV_KEY, NAV_WIDGET_KEY, prepare_navigation, sync_na
 from core.profile import default_profile
 from core.world2 import ensure_world2, repair_profile, snapshot
 from ui.components import render_sidekick
+from ui.mecha_art import apply_mecha_art
 from ui.theme import apply_theme
 
 install_mecha_pack()
@@ -36,6 +37,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 apply_theme()
+apply_mecha_art()
 
 PAGES = [
     "Home",
