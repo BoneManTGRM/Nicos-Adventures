@@ -21,6 +21,7 @@ from activities import (
     world_map,
 )
 from core.achievements import level_for_stars
+from core.animal_expansion import install_animal_expansion
 from core.job_ui import install_functional_job_ui
 from core.mecha_pack import install_mecha_pack, install_mecha_ui
 from core.navigation import (
@@ -34,8 +35,10 @@ from core.world2 import ensure_world2, repair_profile, snapshot
 from core.world4 import ensure_world4
 from ui.components import render_sidekick
 from ui.mecha_art import apply_mecha_art
+from ui.robot_motion import apply_robot_motion
 from ui.theme import apply_theme
 
+install_animal_expansion()
 install_mecha_pack()
 install_mecha_ui()
 install_functional_job_ui()
@@ -48,6 +51,7 @@ st.set_page_config(
 )
 apply_theme()
 apply_mecha_art()
+apply_robot_motion()
 
 PAGES = [
     "Home",
