@@ -8,11 +8,21 @@ import json
 from datetime import UTC, datetime
 from typing import Any
 
-from core.catalog import ROBOT_COLORS, ROBOT_PARTS
+from core.catalog import (
+    ROBOT_COLORS,
+    ROBOT_EYE_GLOWS,
+    ROBOT_FINISHES,
+    ROBOT_MOODS,
+    ROBOT_PARTS,
+    ROBOT_PATTERNS,
+    ROBOT_PERSONALITIES,
+    ROBOT_SIZES,
+    ROBOT_VOICES,
+)
 from core.memory import MAX_MEMORIES
-from core.robot import clean_robot_name
+from core.robot import ROBOT_PART_DEFAULTS, clean_catchphrase, clean_robot_name
 
-PROFILE_VERSION = 2
+PROFILE_VERSION = 3
 MAX_ROBOTS = 12
 MAX_MONSTERS = 24
 MAX_CUSTOM_ANIMALS = 40
@@ -61,22 +71,21 @@ def _normalize_robot(candidate: Any) -> dict[str, Any] | None:
     robot_id = _clean_text(candidate.get("id"), 50)
     if not robot_id:
         return None
-    defaults = {
-        "eyes": "round",
-        "head": "box",
-        "arms": "grabber",
-        "body": "classic_core",
-        "base": "bronze_wheels",
-        "backpack": "none",
-        "power": "bubble",
-        "hat": "none",
-    }
+
     robot: dict[str, Any] = {
         "id": robot_id,
         "name": clean_robot_name(str(candidate.get("name", "BuddyBot"))),
-        "color": candidate.get("color") if candidate.get("color") in ROBOT_COLORS else "Silver",
+        "color": candidate.get("color") if candidate.get("color") in ROBOT_COLORS else "Electric Blue",
+        "secondary_color": candidate.get("secondary_color") if candidate.get("secondary_color") in ROBOT_COLORS else "Sunny Yellow",
+        "finish": candidate.get("finish") if candidate.get("finish") in ROBOT_FINISHES else "Matte",
+        "pattern": candidate.get("pattern") if candidate.get("pattern") in ROBOT_PATTERNS else "Solid",
+        "eye_glow": candidate.get("eye_glow") if candidate.get("eye_glow") in ROBOT_EYE_GLOWS else "Aqua",
+        "size": candidate.get("size") if candidate.get("size") in ROBOT_SIZES else "Standard",
+        "voice": candidate.get("voice") if candidate.get("voice") in ROBOT_VOICES else "Classic Beep",
+        "personality": candidate.get("personality") if candidate.get("personality") in ROBOT_PERSONALITIES else "Curious Explorer",
+        "mood": candidate.get("mood") if candidate.get("mood") in ROBOT_MOODS else "Happy",
+        "catchphrase": clean_catchphrase(str(candidate.get("catchphrase", ""))),
         "energy": _safe_int(candidate.get("energy"), 3, 1, 5),
-        "mood": _clean_text(candidate.get("mood"), 24, "Happy"),
         "created_with_stars": _safe_int(candidate.get("created_with_stars"), 0, 0, 100_000),
         "xp": _safe_int(candidate.get("xp"), 0, 0, 1_000_000),
         "level": _safe_int(candidate.get("level"), 1, 1, 100),
@@ -85,10 +94,14 @@ def _normalize_robot(candidate: Any) -> dict[str, Any] | None:
         "favorite_job": _clean_text(candidate.get("favorite_job"), 60),
         "created_at": _clean_text(candidate.get("created_at"), 40),
         "last_played_at": _clean_text(candidate.get("last_played_at"), 40),
+        "customized_at": _clean_text(candidate.get("customized_at"), 40),
     }
+    if not robot["catchphrase"]:
+        robot["catchphrase"] = ROBOT_PERSONALITIES[robot["personality"]]
+
     calculated_level = min(100, robot["xp"] // 50 + 1)
     robot["level"] = max(robot["level"], calculated_level)
-    for category, default in defaults.items():
+    for category, default in ROBOT_PART_DEFAULTS.items():
         value = _clean_text(candidate.get(category), 40, default)
         robot[category] = value if value in valid_ids[category] else default
     return robot
@@ -107,7 +120,12 @@ def _normalize_animal(candidate: Any) -> dict[str, Any] | None:
         "name": name,
         "emoji": _clean_text(candidate.get("emoji"), 8, "🐾"),
         "habitat": habitat,
+        "region": _clean_text(candidate.get("region"), 60, "Nico's World"),
+        "group": _clean_text(candidate.get("group"), 30, "Animal"),
+        "diet": _clean_text(candidate.get("diet"), 30, "Unknown"),
         "fact": fact,
+        "adaptation": _clean_text(candidate.get("adaptation"), 180, "It has special traits that help it survive."),
+        "mission": _clean_text(candidate.get("mission"), 140, f"Learn more about {name}."),
         "created_at": _clean_text(candidate.get("created_at"), 40),
     }
 
@@ -147,47 +165,41 @@ def _normalize_memory(candidate: Any) -> dict[str, Any] | None:
     }
 
 
-def _backfill_v1_memories(profile: dict[str, Any]) -> list[dict[str, Any]]:
+def _backfill_memories(profile: dict[str, Any]) -> list[dict[str, Any]]:
     memories: list[dict[str, Any]] = []
     for robot in profile["robots"]:
-        memories.append(
-            {
-                "id": _stable_id("memory", f"robot:{robot['id']}"),
-                "kind": "robot",
-                "title": f"Built {robot['name']}",
-                "detail": "A robot friend carried forward from an earlier adventure save.",
-                "emoji": "🤖",
-                "entity_id": robot["id"],
-                "unique_key": f"robot:{robot['id']}",
-                "created_at": robot.get("created_at", ""),
-            }
-        )
+        memories.append({
+            "id": _stable_id("memory", f"robot:{robot['id']}"),
+            "kind": "robot",
+            "title": f"Built {robot['name']}",
+            "detail": "A robot friend carried forward from an earlier adventure save.",
+            "emoji": "🤖",
+            "entity_id": robot["id"],
+            "unique_key": f"robot:{robot['id']}",
+            "created_at": robot.get("created_at", ""),
+        })
     for animal in profile["custom_animals"]:
-        memories.append(
-            {
-                "id": _stable_id("memory", f"animal:{animal['id']}"),
-                "kind": "animal",
-                "title": f"Added {animal['name']}",
-                "detail": animal["fact"],
-                "emoji": animal["emoji"],
-                "entity_id": animal["id"],
-                "unique_key": f"animal:{animal['id']}",
-                "created_at": animal.get("created_at", ""),
-            }
-        )
+        memories.append({
+            "id": _stable_id("memory", f"animal:{animal['id']}"),
+            "kind": "animal",
+            "title": f"Added {animal['name']}",
+            "detail": animal["fact"],
+            "emoji": animal["emoji"],
+            "entity_id": animal["id"],
+            "unique_key": f"animal:{animal['id']}",
+            "created_at": animal.get("created_at", ""),
+        })
     for monster in profile["monsters"]:
-        memories.append(
-            {
-                "id": _stable_id("memory", f"monster:{monster['id']}"),
-                "kind": "monster",
-                "title": f"Created {monster['name']}",
-                "detail": f"{monster['personality']} with the power to {monster['power'].lower()}.",
-                "emoji": monster["face"],
-                "entity_id": monster["id"],
-                "unique_key": f"monster:{monster['id']}",
-                "created_at": monster.get("created_at", ""),
-            }
-        )
+        memories.append({
+            "id": _stable_id("memory", f"monster:{monster['id']}"),
+            "kind": "monster",
+            "title": f"Created {monster['name']}",
+            "detail": f"{monster['personality']} with the power to {monster['power'].lower()}.",
+            "emoji": monster["face"],
+            "entity_id": monster["id"],
+            "unique_key": f"monster:{monster['id']}",
+            "created_at": monster.get("created_at", ""),
+        })
     return memories[-MAX_MEMORIES:]
 
 
@@ -206,11 +218,7 @@ def default_profile() -> dict[str, Any]:
         "discovered_animals": [],
         "monsters": [],
         "memories": [],
-        "preferences": {
-            "language": "English",
-            "sound": True,
-            "reduced_motion": False,
-        },
+        "preferences": {"language": "English", "sound": True, "reduced_motion": False},
         "sidekick_message": "Let's build your first robot friend!",
         "last_animation": "idle",
         "last_activity_at": "",
@@ -256,18 +264,10 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
         normalized_animals = (_normalize_animal(item) for item in animals[:MAX_CUSTOM_ANIMALS])
         result["custom_animals"] = [item for item in normalized_animals if item is not None]
 
-    discoveries = _dedupe_strings(
-        candidate.get("discovered_animals"),
-        limit=MAX_DISCOVERED_ANIMALS,
-        item_limit=40,
-    )
+    discoveries = _dedupe_strings(candidate.get("discovered_animals"), limit=MAX_DISCOVERED_ANIMALS, item_limit=40)
     discoveries.extend(result["favorites"])
     discoveries.extend(animal["name"] for animal in result["custom_animals"])
-    result["discovered_animals"] = _dedupe_strings(
-        discoveries,
-        limit=MAX_DISCOVERED_ANIMALS,
-        item_limit=40,
-    )
+    result["discovered_animals"] = _dedupe_strings(discoveries, limit=MAX_DISCOVERED_ANIMALS, item_limit=40)
 
     monsters = candidate.get("monsters", [])
     if isinstance(monsters, list):
@@ -279,7 +279,7 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
         normalized_memories = (_normalize_memory(item) for item in memories[-MAX_MEMORIES:])
         result["memories"] = [item for item in normalized_memories if item is not None]
     if source_version < 2 and not result["memories"]:
-        result["memories"] = _backfill_v1_memories(result)
+        result["memories"] = _backfill_memories(result)
 
     preferences = candidate.get("preferences", {})
     if isinstance(preferences, dict):
@@ -290,11 +290,7 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
             "reduced_motion": bool(preferences.get("reduced_motion", False)),
         }
 
-    result["sidekick_message"] = _clean_text(
-        candidate.get("sidekick_message"),
-        180,
-        base["sidekick_message"],
-    )
+    result["sidekick_message"] = _clean_text(candidate.get("sidekick_message"), 180, base["sidekick_message"])
     result["last_animation"] = _clean_text(candidate.get("last_animation"), 20, "idle")
     result["last_activity_at"] = _clean_text(candidate.get("last_activity_at"), 40)
     result["last_saved_at"] = _clean_text(candidate.get("last_saved_at"), 40)
@@ -328,21 +324,13 @@ def remove_robot(profile: dict[str, Any], robot_id: str) -> None:
 
 
 def remove_custom_animal(profile: dict[str, Any], animal_id: str) -> None:
-    removed_names = {
-        animal.get("name")
-        for animal in profile.get("custom_animals", [])
-        if animal.get("id") == animal_id
-    }
-    profile["custom_animals"] = [
-        animal for animal in profile.get("custom_animals", []) if animal.get("id") != animal_id
-    ]
+    removed_names = {animal.get("name") for animal in profile.get("custom_animals", []) if animal.get("id") == animal_id}
+    profile["custom_animals"] = [animal for animal in profile.get("custom_animals", []) if animal.get("id") != animal_id]
     profile["favorites"] = [name for name in profile.get("favorites", []) if name not in removed_names]
 
 
 def remove_monster(profile: dict[str, Any], monster_id: str) -> None:
-    profile["monsters"] = [
-        monster for monster in profile.get("monsters", []) if monster.get("id") != monster_id
-    ]
+    profile["monsters"] = [monster for monster in profile.get("monsters", []) if monster.get("id") != monster_id]
 
 
 def export_profile(profile: dict[str, Any]) -> str:
