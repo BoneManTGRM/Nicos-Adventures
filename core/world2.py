@@ -68,9 +68,32 @@ DECORATIONS = (
     ("animal_wall", "🖼️ Animal Photo Wall", 3),
     ("monster_plush", "👾 Monster Plush", 5),
     ("trophy_shelf", "🏆 Trophy Shelf", 8),
+    ("story_library", "📚 Story Library", 10),
     ("star_window", "🌌 Star Window", 12),
+    ("robot_bed", "🛏️ Robot Recharge Bed", 14),
+    ("holo_aquarium", "🐠 Hologram Aquarium", 16),
     ("mecha_banner", "🤖 Mecha Banner", 18),
+    ("tool_wall", "🛠️ Master Tool Wall", 20),
+    ("galaxy_rug", "🌠 Galaxy Rug", 22),
+    ("robot_pet", "🐕 Robot Pet", 25),
+    ("plant_station", "🌿 Bio-Light Plants", 28),
+    ("arcade_console", "🕹️ Arcade Console", 32),
+    ("mission_table", "🗺️ Mission Hologram", 36),
+    ("ceiling_drone", "🛸 Helper Drone", 40),
+    ("crystal_lamp", "💎 Crystal Lamp", 45),
+    ("memory_terminal", "🧠 Memory Terminal", 50),
 )
+
+ROOM_THEMES = (
+    "Cozy Workshop",
+    "Neon Hangar",
+    "Forest Cabin",
+    "Moon Base",
+    "Ocean Station",
+    "Royal Mecha Suite",
+)
+ROOM_WEATHER = ("Sunny", "Sunset", "Starry Night", "Rain", "Snow", "Nebula")
+ROOM_LIGHTING = ("Bright", "Warm", "Night")
 
 
 def ensure_world2(profile: dict[str, Any]) -> dict[str, Any]:
@@ -82,6 +105,11 @@ def ensure_world2(profile: dict[str, Any]) -> dict[str, Any]:
     state.setdefault("completed_missions", [])
     state.setdefault("decorations", ["charging_dock"])
     state.setdefault("active_decorations", ["charging_dock"])
+    state.setdefault("home_theme", "Cozy Workshop")
+    state.setdefault("home_weather", "Sunny")
+    state.setdefault("home_lighting", "Warm")
+    state.setdefault("home_visits", 0)
+    state.setdefault("home_interactions", {})
     state.setdefault("stories", [])
     state.setdefault("arcade_best", {})
     state.setdefault("recovery_snapshot", {})
@@ -140,8 +168,39 @@ def decorate_home(profile: dict[str, Any], decoration_id: str) -> bool:
         state["decorations"].append(decoration_id)
     if decoration_id not in state["active_decorations"]:
         state["active_decorations"].append(decoration_id)
-        profile.setdefault("counts", {})["home_decorations"] = len(state["active_decorations"])
+    profile.setdefault("counts", {})["home_decorations"] = len(state["active_decorations"])
     return True
+
+
+def toggle_home_decoration(profile: dict[str, Any], decoration_id: str) -> bool:
+    """Place or store an owned decoration, returning whether it is now visible."""
+    state = ensure_world2(profile)
+    if decoration_id not in state["decorations"]:
+        if not decorate_home(profile, decoration_id):
+            return False
+        return True
+    if decoration_id in state["active_decorations"]:
+        state["active_decorations"].remove(decoration_id)
+        visible = False
+    else:
+        state["active_decorations"].append(decoration_id)
+        visible = True
+    profile.setdefault("counts", {})["home_decorations"] = len(state["active_decorations"])
+    return visible
+
+
+def set_home_environment(profile: dict[str, Any], theme: str, weather: str, lighting: str) -> None:
+    state = ensure_world2(profile)
+    state["home_theme"] = theme if theme in ROOM_THEMES else ROOM_THEMES[0]
+    state["home_weather"] = weather if weather in ROOM_WEATHER else ROOM_WEATHER[0]
+    state["home_lighting"] = lighting if lighting in ROOM_LIGHTING else ROOM_LIGHTING[0]
+
+
+def record_home_interaction(profile: dict[str, Any], action: str) -> int:
+    state = ensure_world2(profile)
+    interactions = state.setdefault("home_interactions", {})
+    interactions[action] = int(interactions.get(action, 0)) + 1
+    return interactions[action]
 
 
 def record_arcade_win(profile: dict[str, Any], game: str, score: int) -> None:
@@ -172,6 +231,13 @@ def repair_profile(profile: dict[str, Any]) -> bool:
         repaired = True
     if state.get("active_mission") not in MISSIONS:
         state["active_mission"] = "jungle_crystal"
+        repaired = True
+    valid_decorations = {item_id for item_id, _, _ in DECORATIONS}
+    owned = [item for item in state.get("decorations", []) if item in valid_decorations]
+    active = [item for item in state.get("active_decorations", []) if item in owned]
+    if owned != state.get("decorations") or active != state.get("active_decorations"):
+        state["decorations"] = owned or ["charging_dock"]
+        state["active_decorations"] = active or ["charging_dock"]
         repaired = True
     if repaired:
         state["repairs"].append(datetime.now(UTC).isoformat())
