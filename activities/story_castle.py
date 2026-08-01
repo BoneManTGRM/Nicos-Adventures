@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import random
-
 import streamlit as st
 
 from core.memory import remember
