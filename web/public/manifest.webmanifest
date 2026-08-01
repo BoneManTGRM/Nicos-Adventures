@@ -1,0 +1,10 @@
+{
+  "name": "Nico's World",
+  "short_name": "Nico's World",
+  "description": "A creative robot adventure world for Nico.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1026",
+  "theme_color": "#111936",
+  "icons": []
+}
