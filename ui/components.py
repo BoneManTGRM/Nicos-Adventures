@@ -8,12 +8,8 @@ from typing import Any
 import streamlit as st
 
 from core.profile import active_robot
-from core.robot_art import (
-    ROBOT_ART_CSS,
-    infer_frame,
-    robot_html as render_robot_html,
-    sidekick_html,
-)
+from core.robot_art import ROBOT_ART_CSS, infer_frame, sidekick_html
+from core.robot_art import robot_html as render_robot_html
 
 
 def hero(title: str, subtitle: str) -> None:
@@ -62,7 +58,7 @@ def robot_html(
     )
 
 
-setattr(robot_html, "_mecha_art_v3", True)
+robot_html._mecha_art_v3 = True
 
 
 def robot_stage(
