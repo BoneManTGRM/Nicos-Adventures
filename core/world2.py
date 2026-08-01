@@ -1,4 +1,4 @@
-"""Shared progression, mission, bilingual, and recovery helpers for Nico's World 2."""
+"""Shared legacy progression, room, story, arcade, and recovery helpers."""
 
 from __future__ import annotations
 
@@ -83,7 +83,6 @@ DECORATIONS = (
     ("crystal_lamp", "💎 Crystal Lamp", 45),
     ("memory_terminal", "🧠 Memory Terminal", 50),
 )
-
 ROOM_THEMES = (
     "Cozy Workshop",
     "Neon Hangar",
@@ -96,40 +95,44 @@ ROOM_WEATHER = ("Sunny", "Sunset", "Starry Night", "Rain", "Snow", "Nebula")
 ROOM_LIGHTING = ("Bright", "Warm", "Night")
 
 
-def _clean_text(value: Any, limit: int, fallback: str = "") -> str:
-    text = str(value if value is not None else "").replace("<", "").replace(">", "")
-    return text.strip()[:limit] or fallback
+def _text(value: Any, limit: int, fallback: str = "") -> str:
+    cleaned = str(value if value is not None else "")
+    cleaned = cleaned.replace("<", "").replace(">", "").strip()
+    return cleaned[:limit] or fallback
 
 
-def _safe_int(value: Any, default: int, minimum: int, maximum: int) -> int:
+def _number(value: Any, default: int = 0, maximum: int = 1_000_000) -> int:
     try:
-        number = int(value)
+        parsed = int(value)
     except (TypeError, ValueError, OverflowError):
-        number = default
-    return max(minimum, min(number, maximum))
+        parsed = default
+    return max(0, min(parsed, maximum))
 
 
 def normalize_world2_state(candidate: Any) -> dict[str, Any]:
-    """Return a portable, bounded state without recursive recovery snapshots."""
     source = candidate if isinstance(candidate, dict) else {}
-    valid_decorations = {item_id for item_id, _, _ in DECORATIONS}
+    valid_ids = {item_id for item_id, _, _ in DECORATIONS}
     owned = [
-        item
-        for item in source.get("decorations", [])
-        if item in valid_decorations
-    ][: len(DECORATIONS)]
+        item for item in source.get("decorations", []) if item in valid_ids
+    ]
     if "charging_dock" not in owned:
         owned.insert(0, "charging_dock")
+    owned = list(dict.fromkeys(owned))[: len(DECORATIONS)]
     active = [
         item
         for item in source.get("active_decorations", [])
         if item in owned
-    ][: len(DECORATIONS)]
+    ]
+    active = list(dict.fromkeys(active))[: len(DECORATIONS)]
     if not active:
         active = ["charging_dock"]
-    completed = [
-        item for item in source.get("completed_missions", []) if item in MISSIONS
-    ][: len(MISSIONS)]
+    completed = list(
+        dict.fromkeys(
+            item
+            for item in source.get("completed_missions", [])
+            if item in MISSIONS
+        )
+    )[: len(MISSIONS)]
     stories: list[dict[str, str]] = []
     raw_stories = source.get("stories", [])
     if isinstance(raw_stories, list):
@@ -138,41 +141,48 @@ def normalize_world2_state(candidate: Any) -> dict[str, Any]:
                 continue
             stories.append(
                 {
-                    "title": _clean_text(item.get("title"), 60, "Nico's Adventure"),
-                    "hero": _clean_text(item.get("hero"), 40, "Robo Guide"),
-                    "animal": _clean_text(item.get("animal"), 40, "Animal Friend"),
-                    "monster": _clean_text(item.get("monster"), 40, "Friendly Monster"),
-                    "setting": _clean_text(item.get("setting"), 50, "Nico's World"),
-                    "language": _clean_text(item.get("language"), 20, "English"),
-                    "text": _clean_text(item.get("text"), 2_000),
-                    "artwork_id": _clean_text(item.get("artwork_id"), 50),
-                    "created_at": _clean_text(item.get("created_at"), 40),
+                    "title": _text(item.get("title"), 60, "Nico's Adventure"),
+                    "hero": _text(item.get("hero"), 40, "Robo Guide"),
+                    "animal": _text(item.get("animal"), 40, "Animal Friend"),
+                    "monster": _text(item.get("monster"), 40, "Friendly Monster"),
+                    "pet": _text(item.get("pet"), 40),
+                    "setting": _text(item.get("setting"), 50, "Nico's World"),
+                    "language": _text(item.get("language"), 20, "English"),
+                    "text": _text(item.get("text"), 2_000),
+                    "artwork_id": _text(item.get("artwork_id"), 50),
+                    "created_at": _text(item.get("created_at"), 40),
                 }
             )
-    best: dict[str, int] = {}
-    if isinstance(source.get("arcade_best"), dict):
-        best = {
-            _clean_text(key, 40): _safe_int(value, 0, 0, 100_000)
-            for key, value in source["arcade_best"].items()
-            if _clean_text(key, 40)
+    arcade_best = source.get("arcade_best", {})
+    best = (
+        {
+            _text(key, 40): _number(value, maximum=100_000)
+            for key, value in arcade_best.items()
+            if _text(key, 40)
         }
-    interactions: dict[str, int] = {}
-    if isinstance(source.get("home_interactions"), dict):
-        interactions = {
-            _clean_text(key, 30): _safe_int(value, 0, 0, 100_000)
-            for key, value in source["home_interactions"].items()
-            if _clean_text(key, 30)
+        if isinstance(arcade_best, dict)
+        else {}
+    )
+    raw_interactions = source.get("home_interactions", {})
+    interactions = (
+        {
+            _text(key, 30): _number(value, maximum=100_000)
+            for key, value in raw_interactions.items()
+            if _text(key, 30)
         }
-    active_mission = _clean_text(
+        if isinstance(raw_interactions, dict)
+        else {}
+    )
+    active_mission = _text(
         source.get("active_mission"), 40, "jungle_crystal"
     )
     return {
         "active_mission": (
             active_mission if active_mission in MISSIONS else "jungle_crystal"
         ),
-        "completed_missions": list(dict.fromkeys(completed)),
-        "decorations": list(dict.fromkeys(owned)),
-        "active_decorations": list(dict.fromkeys(active)),
+        "completed_missions": completed,
+        "decorations": owned,
+        "active_decorations": active,
         "home_theme": (
             source.get("home_theme")
             if source.get("home_theme") in ROOM_THEMES
@@ -188,16 +198,18 @@ def normalize_world2_state(candidate: Any) -> dict[str, Any]:
             if source.get("home_lighting") in ROOM_LIGHTING
             else "Warm"
         ),
-        "home_visits": _safe_int(source.get("home_visits"), 0, 0, 1_000_000),
+        "home_visits": _number(source.get("home_visits")),
         "home_interactions": interactions,
         "stories": stories,
         "arcade_best": best,
         "recovery_snapshot": {},
-        "last_safe_page": _clean_text(source.get("last_safe_page"), 40, "Home"),
+        "last_safe_page": _text(
+            source.get("last_safe_page"), 40, "Home"
+        ),
         "repairs": [
-            _clean_text(item, 40)
+            _text(item, 40)
             for item in source.get("repairs", [])[-20:]
-            if _clean_text(item, 40)
+            if _text(item, 40)
         ],
     }
 
@@ -205,16 +217,18 @@ def normalize_world2_state(candidate: Any) -> dict[str, Any]:
 def ensure_world2(profile: dict[str, Any]) -> dict[str, Any]:
     counts = profile.setdefault("counts", {})
     counts.setdefault("world2_visits", 0)
-    old_state = profile.get("world2", {})
-    recovery = (
-        old_state.get("recovery_snapshot", {})
-        if isinstance(old_state, dict)
-        else {}
+    existing = profile.get("world2")
+    if not isinstance(existing, dict):
+        existing = {}
+        profile["world2"] = existing
+    recovery = existing.get("recovery_snapshot", {})
+    normalized = normalize_world2_state(existing)
+    normalized["recovery_snapshot"] = (
+        recovery if isinstance(recovery, dict) else {}
     )
-    state = normalize_world2_state(old_state)
-    state["recovery_snapshot"] = recovery if isinstance(recovery, dict) else {}
-    profile["world2"] = state
-    return state
+    existing.clear()
+    existing.update(normalized)
+    return existing
 
 
 def tr(profile: dict[str, Any], key: str) -> str:
@@ -226,14 +240,13 @@ def mission_progress(
     profile: dict[str, Any], mission_id: str
 ) -> tuple[int, int, list[tuple[str, bool]]]:
     mission = MISSIONS[mission_id]
-    counts = profile.get("counts", {})
     rows: list[tuple[str, bool]] = []
     complete = 0
     for key, target, label in mission["steps"]:
         value = (
             len(profile.get("monsters", []))
             if key == "monsters"
-            else int(counts.get(key, 0))
+            else int(profile.get("counts", {}).get(key, 0))
         )
         done = value >= target
         complete += int(done)
@@ -288,12 +301,9 @@ def decorate_home(profile: dict[str, Any], decoration_id: str) -> bool:
 
 
 def toggle_home_decoration(profile: dict[str, Any], decoration_id: str) -> bool:
-    """Place or store an owned decoration, returning whether it is now visible."""
     state = ensure_world2(profile)
     if decoration_id not in state["decorations"]:
-        if not decorate_home(profile, decoration_id):
-            return False
-        return True
+        return decorate_home(profile, decoration_id)
     if decoration_id in state["active_decorations"]:
         state["active_decorations"].remove(decoration_id)
         visible = False
@@ -321,15 +331,17 @@ def set_home_environment(
 
 def record_home_interaction(profile: dict[str, Any], action: str) -> int:
     state = ensure_world2(profile)
-    interactions = state.setdefault("home_interactions", {})
+    interactions = state["home_interactions"]
     interactions[action] = int(interactions.get(action, 0)) + 1
     return interactions[action]
 
 
 def record_arcade_win(profile: dict[str, Any], game: str, score: int) -> None:
     state = ensure_world2(profile)
-    best = int(state["arcade_best"].get(game, 0))
-    state["arcade_best"][game] = max(best, score)
+    state["arcade_best"][game] = max(
+        int(state["arcade_best"].get(game, 0)),
+        int(score),
+    )
     counts = profile.setdefault("counts", {})
     counts["arcade_wins"] = int(counts.get("arcade_wins", 0)) + 1
     profile["stars"] = int(profile.get("stars", 0)) + 1
@@ -352,9 +364,9 @@ def snapshot(profile: dict[str, Any], page: str) -> None:
 
 
 def repair_profile(profile: dict[str, Any]) -> bool:
-    before = copy.deepcopy(profile.get("world2"))
+    original = copy.deepcopy(profile.get("world2"))
     state = ensure_world2(profile)
-    repaired = before != state
+    repaired = original != state
     if not isinstance(profile.get("counts"), dict):
         profile["counts"] = {}
         repaired = True
