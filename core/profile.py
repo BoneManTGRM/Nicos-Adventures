@@ -21,9 +21,15 @@ from core.catalog import (
 )
 from core.memory import MAX_MEMORIES
 from core.monster import normalize_monster
-from core.robot import ROBOT_PART_DEFAULTS, clean_catchphrase, clean_robot_name
+from core.robot import (
+    ROBOT_PART_DEFAULTS,
+    clean_catchphrase,
+    clean_robot_name,
+)
+from core.world2 import normalize_world2_state
+from core.world4 import normalize_world4_state
 
-PROFILE_VERSION = 4
+PROFILE_VERSION = 5
 MAX_ROBOTS = 12
 MAX_MONSTERS = 24
 MAX_CUSTOM_ANIMALS = 40
@@ -32,7 +38,8 @@ MAX_DISCOVERED_ANIMALS = 120
 
 
 def _clean_text(value: Any, limit: int, fallback: str = "") -> str:
-    text = str(value if value is not None else "").replace("<", "").replace(">", "").strip()
+    text = str(value if value is not None else "")
+    text = text.replace("<", "").replace(">", "").strip()
     return text[:limit] or fallback
 
 
@@ -49,7 +56,12 @@ def _stable_id(prefix: str, value: str) -> str:
     return f"{prefix}_{digest}"
 
 
-def _dedupe_strings(values: Any, *, limit: int, item_limit: int = 60) -> list[str]:
+def _dedupe_strings(
+    values: Any,
+    *,
+    limit: int,
+    item_limit: int = 60,
+) -> list[str]:
     if not isinstance(values, list):
         return []
     result: list[str] = []
@@ -75,7 +87,6 @@ def _normalize_robot(candidate: Any) -> dict[str, Any] | None:
     robot_id = _clean_text(candidate.get("id"), 50)
     if not robot_id:
         return None
-
     robot: dict[str, Any] = {
         "id": robot_id,
         "name": clean_robot_name(str(candidate.get("name", "BuddyBot"))),
@@ -124,7 +135,9 @@ def _normalize_robot(candidate: Any) -> dict[str, Any] | None:
             if candidate.get("mood") in ROBOT_MOODS
             else "Happy"
         ),
-        "catchphrase": clean_catchphrase(str(candidate.get("catchphrase", ""))),
+        "catchphrase": clean_catchphrase(
+            str(candidate.get("catchphrase", ""))
+        ),
         "energy": _safe_int(candidate.get("energy"), 3, 1, 5),
         "created_with_stars": _safe_int(
             candidate.get("created_with_stars"), 0, 0, 100_000
@@ -144,7 +157,6 @@ def _normalize_robot(candidate: Any) -> dict[str, Any] | None:
     }
     if not robot["catchphrase"]:
         robot["catchphrase"] = ROBOT_PERSONALITIES[robot["personality"]]
-
     calculated_level = min(100, robot["xp"] // 50 + 1)
     robot["level"] = max(robot["level"], calculated_level)
     for category, default in ROBOT_PART_DEFAULTS.items():
@@ -180,7 +192,9 @@ def _normalize_animal(candidate: Any) -> dict[str, Any] | None:
             "It has special traits that help it survive.",
         ),
         "mission": _clean_text(
-            candidate.get("mission"), 140, f"Learn more about {name}."
+            candidate.get("mission"),
+            140,
+            f"Learn more about {name}.",
         ),
         "created_at": _clean_text(candidate.get("created_at"), 40),
     }
@@ -271,9 +285,12 @@ def default_profile() -> dict[str, Any]:
         "discovered_animals": [],
         "monsters": [],
         "memories": [],
+        "world2": normalize_world2_state({}),
+        "world4": normalize_world4_state({}),
         "preferences": {
             "language": "English",
             "sound": True,
+            "narration": True,
             "reduced_motion": False,
         },
         "sidekick_message": "Let's build your first robot friend!",
@@ -288,7 +305,6 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
     base = default_profile()
     if not isinstance(candidate, dict):
         return base
-
     source_version = _safe_int(
         candidate.get("version"), 1, 1, PROFILE_VERSION
     )
@@ -298,7 +314,6 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
     )
     result["stars"] = _safe_int(candidate.get("stars"), 0, 0, 100_000)
     result["xp"] = _safe_int(candidate.get("xp"), 0, 0, 1_000_000)
-
     counts = candidate.get("counts", {})
     if isinstance(counts, dict):
         result["counts"] = {
@@ -306,11 +321,9 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
             for key, value in counts.items()
             if _clean_text(key, 40)
         }
-
     result["badges"] = _dedupe_strings(
         candidate.get("badges"), limit=80, item_limit=40
     )
-
     robots = candidate.get("robots", [])
     if isinstance(robots, list):
         normalized = (
@@ -319,7 +332,6 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
         result["robots"] = [
             item for item in normalized if item is not None
         ]
-
     active = _clean_text(candidate.get("active_robot_id"), 50)
     robot_ids = {robot.get("id") for robot in result["robots"]}
     result["active_robot_id"] = (
@@ -327,11 +339,9 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
         if active in robot_ids
         else (result["robots"][0]["id"] if result["robots"] else None)
     )
-
     result["favorites"] = _dedupe_strings(
         candidate.get("favorites"), limit=MAX_FAVORITES, item_limit=40
     )
-
     animals = candidate.get("custom_animals", [])
     if isinstance(animals, list):
         normalized_animals = (
@@ -341,7 +351,6 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
         result["custom_animals"] = [
             item for item in normalized_animals if item is not None
         ]
-
     discoveries = _dedupe_strings(
         candidate.get("discovered_animals"),
         limit=MAX_DISCOVERED_ANIMALS,
@@ -356,7 +365,6 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
         limit=MAX_DISCOVERED_ANIMALS,
         item_limit=40,
     )
-
     monsters = candidate.get("monsters", [])
     if isinstance(monsters, list):
         normalized_monsters = (
@@ -365,7 +373,6 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
         result["monsters"] = [
             item for item in normalized_monsters if item is not None
         ]
-
     memories = candidate.get("memories", [])
     if isinstance(memories, list):
         normalized_memories = (
@@ -376,7 +383,6 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
         ]
     if source_version < 2 and not result["memories"]:
         result["memories"] = _backfill_memories(result)
-
     preferences = candidate.get("preferences", {})
     if isinstance(preferences, dict):
         language = _clean_text(
@@ -389,11 +395,13 @@ def normalize_profile(candidate: Any) -> dict[str, Any]:
                 else "English"
             ),
             "sound": bool(preferences.get("sound", True)),
+            "narration": bool(preferences.get("narration", True)),
             "reduced_motion": bool(
                 preferences.get("reduced_motion", False)
             ),
         }
-
+    result["world2"] = normalize_world2_state(candidate.get("world2"))
+    result["world4"] = normalize_world4_state(candidate.get("world4"))
     result["sidekick_message"] = _clean_text(
         candidate.get("sidekick_message"),
         180,
@@ -469,6 +477,10 @@ def remove_monster(profile: dict[str, Any], monster_id: str) -> None:
         for monster in profile.get("monsters", [])
         if monster.get("id") != monster_id
     ]
+    profile.get("world4", {}).get("monster_habitats", {}).pop(
+        monster_id,
+        None,
+    )
 
 
 def export_profile(profile: dict[str, Any]) -> str:
@@ -492,7 +504,7 @@ def import_profile(raw: str | bytes) -> dict[str, Any]:
             raise ValueError(
                 "That file is not a valid Nico's World save"
             ) from exc
-    if len(raw) > 500_000:
+    if len(raw) > 1_000_000:
         raise ValueError("Adventure save is too large")
     try:
         candidate = json.loads(raw)
