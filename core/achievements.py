@@ -19,16 +19,24 @@ class Badge:
 BADGES: tuple[Badge, ...] = (
     Badge("first_friend", "First Robot Friend", "🤖", "Build your first robot.", "robot_builds", 1),
     Badge("robot_engineer", "Robot Engineer", "🛠️", "Build three robot friends.", "robot_builds", 3),
+    Badge("robot_team", "Robot Team", "🤖", "Build five robot friends.", "robot_builds", 5),
     Badge("move_master", "Move Master", "💃", "Make robots move five times.", "robot_moves", 5),
+    Badge("dance_legend", "Motion Legend", "🚀", "Make robots move twenty times.", "robot_moves", 20),
+    Badge("first_discovery", "First Discovery", "🔎", "Remember your first animal.", "animal_discoveries", 1),
+    Badge("forest_explorer", "Forest Explorer", "🌳", "Discover five animals.", "animal_discoveries", 5),
     Badge("animal_pal", "Animal Pal", "🐾", "Favorite three animals.", "animal_favorites", 3),
     Badge("world_builder", "World Builder", "🌍", "Add an animal to Nico's World.", "custom_animals", 1),
+    Badge("forest_creator", "Forest Creator", "🌱", "Add five custom animals.", "custom_animals", 5),
     Badge("monster_maker", "Monster Maker", "👾", "Create three silly monsters.", "monsters_built", 3),
+    Badge("monster_collector", "Monster Collector", "🎭", "Create ten monsters.", "monsters_built", 10),
     Badge("helper_bot", "Helper Bot", "🔎", "Send a robot on three jobs.", "robot_jobs", 3),
+    Badge("super_helper", "Super Helper", "⚡", "Complete fifteen robot jobs.", "robot_jobs", 15),
 )
 
 EVENT_REWARDS: dict[str, int] = {
     "robot_builds": 3,
     "robot_moves": 1,
+    "animal_discoveries": 1,
     "animal_favorites": 1,
     "custom_animals": 2,
     "monsters_built": 2,

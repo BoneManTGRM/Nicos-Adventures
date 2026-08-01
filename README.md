@@ -3,14 +3,16 @@
 **Nico's World** is a modular, kid-friendly Streamlit playground built around a robot
 sidekick that Nico creates himself.
 
-## Version 1
+## Current experience
 
-- **Robo Lab:** choose parts, name robots, unlock upgrades, and animate seven actions.
-- **Robot Sidekick:** the active robot follows Nico throughout the app and reacts to play.
-- **Animal Forest:** explore animals, collect favorites, and add kid-created entries.
-- **Monster Lab:** make silly monsters and let the robot scan them.
-- **Badge Book:** earn stars and achievement badges as the world grows.
-- **Portable progress:** download and restore a small JSON adventure save file.
+- **Robo Lab:** build robots from 96 parts across eight categories and 16 colors.
+- **Robot Sidekick:** the active robot follows Nico throughout the app, levels up, completes jobs,
+  and remembers important milestones.
+- **Animal Forest:** discover animals, collect favorites, and add or remove kid-created entries.
+- **Monster Lab:** make silly monsters, scan them with a robot, and keep a personal collection.
+- **Memory Book:** see robots, animal discoveries, created animals, monsters, and timeline memories.
+- **Badge Book:** earn stars, levels, unlocks, and achievement badges as the world grows.
+- **Complete Memory Save:** download and restore one versioned JSON file containing all progress.
 - **Modular architecture:** each activity is isolated in its own Python module.
 
 No account, advertising service, analytics tracker, or external AI service is required.
@@ -32,6 +34,9 @@ pytest
 ruff check .
 ```
 
+The test suite includes pure state tests plus a Streamlit `AppTest` smoke test that renders every
+activity page.
+
 ## Deploy on Streamlit Community Cloud
 
 1. Push the repository to GitHub.
@@ -39,11 +44,14 @@ ruff check .
 3. Select `app.py` as the entrypoint.
 4. Deploy. No secrets are required.
 
-## How progress works
+## How memory works
 
-Progress is stored in Streamlit session state while the app is open. Nico can use
-**Robo Lab → Adventure Save** to download a save file and restore it later. This avoids
-requiring a child account or storing personal information on a server.
+Progress is updated automatically in Streamlit session state while the app is open. The complete
+Memory Save contains robots and their progress, created animals, discoveries, favorites, monsters,
+badges, stars, unlocks, settings, and the Memory Book timeline. Download the save from **Memory
+Book** or **Robo Lab** and upload it during a later visit to restore everything.
+
+The versioned save loader safely migrates older Version 1 files into the new memory format.
 
 ## Add another activity
 

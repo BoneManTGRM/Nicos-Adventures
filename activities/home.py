@@ -15,7 +15,10 @@ from ui.components import activity_card, hero
 
 def render(profile: dict[str, Any]) -> None:
     kid_name = profile.get("kid_name", "Nico")
-    hero(f"Welcome to {kid_name}'s World!", "Build, explore, create, and grow with your robot sidekick.")
+    hero(
+        f"Welcome to {kid_name}'s World!",
+        "Build, explore, create, and grow with a robot sidekick that remembers the adventure.",
+    )
 
     robot = active_robot(profile)
     if robot:
@@ -24,22 +27,23 @@ def render(profile: dict[str, Any]) -> None:
         st.warning("Your first mission is waiting: visit Robo Lab and build a robot sidekick.")
 
     stars = int(profile.get("stars", 0))
-    level = level_for_stars(stars)
-    a, b, c = st.columns(3)
-    a.metric("⭐ Adventure Stars", stars)
-    b.metric("🚀 Explorer Level", level)
-    c.metric("🏅 Badges", len(profile.get("badges", [])))
+    metrics = st.columns(4)
+    metrics[0].metric("⭐ Adventure Stars", stars)
+    metrics[1].metric("🚀 Explorer Level", level_for_stars(stars))
+    metrics[2].metric("🏅 Badges", len(profile.get("badges", [])))
+    metrics[3].metric("✨ Memories", len(profile.get("memories", [])))
 
     st.subheader("Choose an adventure")
-    cols = st.columns(4)
     cards = (
-        ("🤖", "Robo Lab", "Build, animate, upgrade, and befriend robots."),
-        ("🐾", "Animal Forest", "Discover animals and add your own fun facts."),
-        ("👾", "Monster Lab", "Invent a silly monster and scan it with your robot."),
-        ("⭐", "Badge Book", "See achievements and what to unlock next."),
+        ("🤖", "Robo Lab", "Build from dozens of parts, animate, upgrade, and befriend robots."),
+        ("🐾", "Animal Forest", "Discover animals, save favorites, and create new forest friends."),
+        ("👾", "Monster Lab", "Invent silly monsters and keep them in the collection."),
+        ("✨", "Memory Book", "See every robot, animal, monster, and special adventure memory."),
+        ("⭐", "Badge Book", "Track achievements, stars, and what to unlock next."),
     )
-    for col, card in zip(cols, cards, strict=True):
-        with col:
+    cols = st.columns(3)
+    for index, card in enumerate(cards):
+        with cols[index % 3]:
             activity_card(*card)
             st.button(
                 f"Open {card[1]}",
