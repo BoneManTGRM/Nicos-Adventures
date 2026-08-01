@@ -1,8 +1,5 @@
-from core.mecha_pack import MECHA_PARTS, install_mecha_pack, install_mecha_ui
-
-install_mecha_pack()
-
 from core.catalog import ROBOT_COLORS, ROBOT_PARTS, ROBOT_PRESETS
+from core.mecha_pack import MECHA_PARTS, install_mecha_pack, install_mecha_ui
 from core.robot import build_robot, preset_customization, unlocked_parts
 from ui import components
 
