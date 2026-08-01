@@ -324,7 +324,7 @@ def robot_svg(robot: dict[str, Any], animation: str = "idle") -> str:
     primary = ROBOT_COLORS[str(data["color"])]
     secondary = ROBOT_COLORS[str(data["secondary_color"])]
     glow = ROBOT_EYE_GLOWS[str(data["eye_glow"])]
-    suffix = hashlib.sha1(f"{data.get('id','')}:{data['name']}:{data['head']}:{data['body']}".encode("utf-8")).hexdigest()[:10]
+    suffix = hashlib.sha1(f"{data.get('id','')}:{data['name']}:{data['head']}:{data['body']}".encode()).hexdigest()[:10]
     pattern = _armor_pattern(str(data["pattern"]), suffix, primary, secondary)
     shine = _finish_filter(str(data["finish"]), suffix)
     armor = f"url(#armor-{suffix})"
@@ -417,4 +417,4 @@ def sidekick_html(robot: dict[str, Any]) -> str:
     return f'<div class="sidekick-mecha" style="--mecha-glow:{glow}">{robot_svg(data, "idle")}<strong>{_esc(data["name"])}</strong><small>Level {int(data.get("level", 1))} · {_esc(data["frame"])}</small></div>'
 
 
-setattr(robot_html, "_mecha_art_v3", True)
+robot_html._mecha_art_v3 = True
