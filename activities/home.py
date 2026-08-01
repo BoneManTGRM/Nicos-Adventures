@@ -7,6 +7,7 @@ from typing import Any
 import streamlit as st
 
 from core.achievements import level_for_stars
+from core.navigation import queue_navigation
 from core.profile import active_robot
 from core.robot import robot_phrase
 from ui.components import activity_card, hero
@@ -40,9 +41,13 @@ def render(profile: dict[str, Any]) -> None:
     for col, card in zip(cols, cards, strict=True):
         with col:
             activity_card(*card)
-            if st.button(f"Open {card[1]}", key=f"home_{card[1]}", use_container_width=True):
-                st.session_state.nav = card[1]
-                st.rerun()
+            st.button(
+                f"Open {card[1]}",
+                key=f"home_{card[1]}",
+                use_container_width=True,
+                on_click=queue_navigation,
+                args=(st.session_state, card[1]),
+            )
 
     st.subheader("Coming as Nico's World grows")
     st.caption("📖 Story Builder  •  🎨 Art Gallery  •  😂 Joke Machine  •  🧩 Mini Games")
