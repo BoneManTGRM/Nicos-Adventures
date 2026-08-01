@@ -6,6 +6,7 @@ import streamlit as st
 
 from activities import animals, badges, home, monsters, robo_lab
 from core.achievements import level_for_stars
+from core.navigation import NAV_KEY, NAV_WIDGET_KEY, prepare_navigation, sync_navigation_widget
 from core.profile import default_profile
 from ui.components import render_sidekick
 from ui.theme import apply_theme
@@ -18,24 +19,34 @@ st.set_page_config(
 )
 apply_theme()
 
+PAGES = ["Home", "Robo Lab", "Animal Forest", "Monster Lab", "Badge Book"]
+
 if "profile" not in st.session_state:
     st.session_state.profile = default_profile()
-if "nav" not in st.session_state:
-    st.session_state.nav = "Home"
+prepare_navigation(st.session_state, PAGES)
 
 profile = st.session_state.profile
-PAGES = ["Home", "Robo Lab", "Animal Forest", "Monster Lab", "Badge Book"]
+
+
+def _sync_sidebar_navigation() -> None:
+    sync_navigation_widget(st.session_state)
+
 
 with st.sidebar:
     st.markdown("# 🤖 Nico's World")
     render_sidekick(profile)
-    st.radio("Adventure map", PAGES, key="nav")
+    st.radio(
+        "Adventure map",
+        PAGES,
+        key=NAV_WIDGET_KEY,
+        on_change=_sync_sidebar_navigation,
+    )
     st.divider()
     st.markdown(f"**⭐ {profile.get('stars', 0)} stars**")
     st.caption(f"Explorer level {level_for_stars(int(profile.get('stars', 0)))}")
     st.caption("Progress stays in this session. Download a save from Robo Lab to keep it.")
 
-page = st.session_state.nav
+page = st.session_state[NAV_KEY]
 if page == "Home":
     home.render(profile)
 elif page == "Robo Lab":
