@@ -2,7 +2,6 @@
 
 import streamlit as st
 
-
 CSS = r"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap');
