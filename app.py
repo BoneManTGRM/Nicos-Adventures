@@ -6,6 +6,7 @@ import streamlit as st
 
 from activities import animals, badges, home, memory_book, monsters, robo_lab
 from core.achievements import level_for_stars
+from core.job_ui import install_functional_job_ui
 from core.mecha_pack import install_mecha_pack, install_mecha_ui
 from core.navigation import NAV_KEY, NAV_WIDGET_KEY, prepare_navigation, sync_navigation_widget
 from core.profile import default_profile
@@ -14,6 +15,7 @@ from ui.theme import apply_theme
 
 install_mecha_pack()
 install_mecha_ui()
+install_functional_job_ui()
 
 st.set_page_config(
     page_title="Nico's World",
