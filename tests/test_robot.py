@@ -19,7 +19,10 @@ from core.robot import (
 
 
 def test_locked_parts_are_hidden() -> None:
-    assert [part.id for part in unlocked_parts("eyes", 0)] == ["round"]
+    assert [part.id for part in unlocked_parts("eyes", 0)] == [
+        "round",
+        "mecha_visor",
+    ]
     assert "laser" in [part.id for part in unlocked_parts("eyes", 10)]
 
 
@@ -48,8 +51,8 @@ def test_robot_name_is_sanitized() -> None:
 
 def test_catalog_has_deep_customization_in_every_category() -> None:
     assert len(ROBOT_PARTS) == 14
-    assert all(len(parts) >= 12 for parts in ROBOT_PARTS.values())
-    assert sum(len(parts) for parts in ROBOT_PARTS.values()) >= 168
+    assert all(len(parts) >= 16 for parts in ROBOT_PARTS.values())
+    assert sum(len(parts) for parts in ROBOT_PARTS.values()) >= 224
 
 
 def test_random_robot_only_uses_unlocked_parts() -> None:
@@ -149,6 +152,7 @@ def test_customizing_robot_preserves_identity_and_progress() -> None:
 
 def test_presets_adapt_to_current_unlock_level() -> None:
     assert "Galaxy Wizard" in ROBOT_PRESETS
+    assert "Skyframe Vanguard" in ROBOT_PRESETS
     preset = preset_customization("Galaxy Wizard", stars=0)
     for category in ROBOT_PARTS:
         assert preset[category] in {
