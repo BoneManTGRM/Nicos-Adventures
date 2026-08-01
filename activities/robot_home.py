@@ -5,7 +5,11 @@ from __future__ import annotations
 import streamlit as st
 
 from core.profile import active_robot
-from core.robot_home_scene import DECORATION_META, ROBOT_HOME_CSS, room_scene_html
+from core.robot_home_scene import (
+    DECORATION_META,
+    ROBOT_HOME_CSS,
+    room_scene_html,
+)
 from core.world2 import (
     DECORATIONS,
     ROOM_LIGHTING,
@@ -30,7 +34,11 @@ INTERACTIONS = (
 
 
 def _environment_controls(profile: dict, state: dict) -> None:
-    st.markdown('<div class="home-control-panel"><b>🎛️ Room Control Deck</b><br><small>Change the entire atmosphere instantly.</small></div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="home-control-panel"><b>🎛️ Room Control Deck</b><br>'
+        '<small>Change the entire atmosphere instantly.</small></div>',
+        unsafe_allow_html=True,
+    )
     cols = st.columns(3)
     theme = cols[0].selectbox(
         "Room style",
@@ -89,7 +97,8 @@ def _interaction_controls(profile: dict, robot: dict) -> None:
 def _decoration_workshop(profile: dict, state: dict, robot: dict) -> None:
     st.markdown("## 🛠️ Decoration Workshop")
     st.caption(
-        "Every green item is physically visible in the room above. Store an item to remove it, then place it again whenever you want."
+        "Every green item is physically visible in the room above. Store an item to "
+        "remove it, then place it again whenever you want."
     )
     stars = int(profile.get("stars", 0))
     owned = set(state.get("decorations", []))
@@ -110,12 +119,16 @@ def _decoration_workshop(profile: dict, state: dict, robot: dict) -> None:
             if is_active:
                 if st.button("📦 Store Item", key=f"store_{item_id}", use_container_width=True):
                     toggle_home_decoration(profile, item_id)
-                    profile["sidekick_message"] = f"{robot['name']}: I stored {meta.get('label', label)} safely."
+                    profile["sidekick_message"] = (
+                        f"{robot['name']}: I stored {meta.get('label', label)} safely."
+                    )
                     st.rerun()
             elif is_owned or stars >= cost:
                 if st.button("✨ Place in Room", key=f"place_{item_id}", use_container_width=True):
                     toggle_home_decoration(profile, item_id)
-                    profile["sidekick_message"] = f"{robot['name']}: Now I can actually see {meta.get('label', label)}!"
+                    profile["sidekick_message"] = (
+                        f"{robot['name']}: Now I can actually see {meta.get('label', label)}!"
+                    )
                     st.rerun()
             else:
                 st.button(
@@ -132,7 +145,8 @@ def render(profile: dict) -> None:
     robot = active_robot(profile)
     hero(
         "Robot Home",
-        "A living headquarters where every decoration, discovery, trophy, and memory becomes part of the scene.",
+        "A living headquarters where every decoration, discovery, trophy, and memory "
+        "becomes part of the scene.",
     )
     if not robot:
         st.info("Build a robot in Robo Lab before opening Robot Home.")
