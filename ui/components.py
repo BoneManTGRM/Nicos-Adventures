@@ -66,9 +66,14 @@ def robot_stage(
     animation: str = "idle",
     scene: str | None = None,
 ) -> None:
+    """Render a stage without going through legacy monkey-patched wrappers."""
     st.markdown(ROBOT_ART_CSS, unsafe_allow_html=True)
     st.markdown(
-        robot_html(robot, animation=animation, scene=scene),
+        render_robot_html(
+            robot,
+            animation=animation,
+            scene=scene or _default_scene(robot),
+        ),
         unsafe_allow_html=True,
     )
 
