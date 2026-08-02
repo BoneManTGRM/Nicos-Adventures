@@ -33,7 +33,7 @@ export type SectionId =
   | "badge-book"
   | "parent-settings";
 
-export type NavigationView = SectionId;
+export type NavigationView = SectionId | "world" | "robots" | "missions" | "home" | "parent";
 export type LocalizedText = { en: string; "es-MX": string };
 
 export type WorldSection = {
