@@ -1,11 +1,41 @@
 # Nico's World 4
 
-**Nico's World** is a private, kid-friendly Streamlit adventure playground built around a
-custom robot sidekick and an expanding world of animals, monsters, art, stories, pets,
-dinosaurs, games, missions, and memories.
+**Nico's World** is a private, kid-friendly adventure playground built around a custom robot
+sidekick and an expanding world of animals, monsters, art, stories, pets, dinosaurs, games,
+missions, and memories.
 
 The project does not require a child account, advertising service, analytics tracker, open chat,
 or external generative-AI service.
+
+## Static bilingual website
+
+The React/Vite progressive web app under `web/` is now a fully static, local-first website:
+
+- no FastAPI, Render, server process, database, Cloudflare Function, or paid compute is required
+- all fourteen destinations have English and Mexican Spanish names, descriptions, activities, and
+  controls
+- each browser automatically stores independent player progress in local storage
+- multiple named player profiles can share one device
+- each friend who opens the same public URL receives a separate save in that friend's browser
+- stars, destination visits, mission completion, language, robot level, and profile settings save
+  after every change
+- player profiles support JSON download and import for manual backup or transfer
+- the service worker provides an installable, offline-ready PWA after the first successful load
+
+Local browser saves do not sync between devices and can be erased by private browsing, browser-data
+cleanup, or device reset. Important progress should be downloaded from the Parent screen.
+
+### Cloudflare Pages deployment
+
+Use a static Cloudflare Pages project, not Pages Functions:
+
+- root directory: `web`
+- build command: `npm run build`
+- output directory: `dist`
+- production branch: `main`
+
+The included `web/public/_redirects` file provides the SPA fallback. The included `_headers` file
+adds security and cache headers. Static deployment requires no runtime environment variables.
 
 ## Current Streamlit experience
 
@@ -76,8 +106,8 @@ paid content service.
 
 ## Memory and privacy
 
-Progress is maintained in Streamlit session state while the app is open. The **Version 5 Complete
-Memory Save** stores:
+Progress in the Streamlit version is maintained in session state while the app is open. The
+**Version 5 Complete Memory Save** stores:
 
 - robots, customization, XP, jobs, and memories
 - animals, discoveries, and favorites
@@ -92,15 +122,14 @@ The Parent page also provides three in-session recovery slots. These slots are u
 recovery during the current Streamlit session.
 
 **Streamlit session state is not cloud storage.** Reliable cross-session or cross-device use
-currently requires downloading the private JSON save and restoring it later. True automatic cloud
-saving would require a separately configured database or storage provider.
+currently requires downloading the private JSON save and restoring it later.
 
 ## Local read-aloud
 
 Story and educational narration uses the browser's local Speech Synthesis API. Text is not sent to
 an external narration provider by this project.
 
-## Run locally
+## Run Streamlit locally
 
 ```bash
 python -m venv .venv
@@ -109,32 +138,43 @@ pip install -e '.[dev]'
 streamlit run app.py
 ```
 
+## Run the static website locally
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
 ## Run validation
 
 ```bash
 ruff check .
 pytest
 python -m compileall app.py activities api core ui
+cd web
+npm install
+npm run build
 ```
 
 The test suite includes pure state and rendering tests, save migration and round-trip tests, API
 tests, artwork, creature-art, responsive-layout, and campaign tests, plus a Streamlit `AppTest`
-smoke test that renders every activity page.
+smoke test that renders every activity page. The web build performs TypeScript validation before
+creating the production Vite bundle.
 
-## Deploy on Streamlit Community Cloud
+## Deploy Streamlit Community Cloud
 
 1. Push the repository to GitHub.
 2. Create or open the Streamlit Community Cloud app.
 3. Select `app.py` as the entrypoint.
 4. Deploy or reboot the app after changes reach `main`.
 
-No secrets are required for the current account-free Streamlit experience.
+No secrets are required for the account-free Streamlit experience.
 
-## React and API foundation
+## API foundation
 
-The repository also contains a separate React/Vite progressive-web-app foundation under `web/`
-and a FastAPI foundation under `api/`. They are validated in CI but do not replace the deployed
-Streamlit application.
+The repository retains a FastAPI foundation under `api/` for possible future cloud-sync or shared
+online features. The static website does not call it and does not require it to run.
 
 ## Add another activity
 
