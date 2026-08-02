@@ -34,6 +34,7 @@ from core.profile import default_profile
 from core.world2 import ensure_world2, repair_profile, snapshot
 from core.world4 import ensure_world4
 from ui.components import render_sidekick
+from ui.creature_art import install_creature_art_v2
 from ui.layout_polish import apply_layout_polish
 from ui.mecha_art import apply_mecha_art
 from ui.robot_motion import apply_robot_motion
@@ -43,6 +44,7 @@ install_animal_expansion()
 install_mecha_pack()
 install_mecha_ui()
 install_functional_job_ui()
+install_creature_art_v2()
 
 st.set_page_config(
     page_title="Nico's World",
