@@ -34,6 +34,7 @@ from core.profile import default_profile
 from core.world2 import ensure_world2, repair_profile, snapshot
 from core.world4 import ensure_world4
 from ui.components import render_sidekick
+from ui.layout_polish import apply_layout_polish
 from ui.mecha_art import apply_mecha_art
 from ui.robot_motion import apply_robot_motion
 from ui.theme import apply_theme
@@ -50,6 +51,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 apply_theme()
+apply_layout_polish()
 apply_mecha_art()
 apply_robot_motion()
 
