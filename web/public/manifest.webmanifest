@@ -1,4 +1,5 @@
 {
+  "id": "https://nicos-world.com/",
   "name": "Nico's World / El Mundo de Nico",
   "short_name": "Nico's World",
   "description": "A bilingual, local-first robot adventure world for children.",
@@ -6,6 +7,7 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#050816",
   "theme_color": "#111936",
   "categories": ["education", "games", "kids"],
