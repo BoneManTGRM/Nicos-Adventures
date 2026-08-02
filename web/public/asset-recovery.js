@@ -5,28 +5,53 @@
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   };
 
+  const verifiedSources = {
+    "jaguar": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Standing_jaguar.jpg",
+    "red panda": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Red_Panda%2C_Gentle_Tree-Dweller_of_the_Himalayas.jpg/1280px-Red_Panda%2C_Gentle_Tree-Dweller_of_the_Himalayas.jpg",
+    "platypus": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Duck-billed_platypus_%28Ornithorhynchus_anatinus%29_Scottsdale.jpg/1280px-Duck-billed_platypus_%28Ornithorhynchus_anatinus%29_Scottsdale.jpg",
+    "yak": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Sarlyk_Yak2.jpg/1280px-Sarlyk_Yak2.jpg"
+  };
+
   const focalPoints = {
     camel: "50% 36%",
     "andean condor": "50% 28%",
     "mountain goat": "50% 32%",
     beaver: "50% 36%",
     "snow leopard": "50% 30%",
-    platypus: "50% 38%",
-    yak: "50% 35%",
-    "red panda": "50% 30%"
+    platypus: "50% 42%",
+    yak: "50% 42%",
+    "red panda": "50% 38%",
+    jaguar: "50% 36%"
   };
+
+  const animalName = (img) => (img.alt || img.closest("figure")?.querySelector("figcaption")?.textContent || "").toLowerCase().trim();
 
   const tune = (img) => {
     if (!(img instanceof HTMLImageElement)) return;
-    const alt = (img.alt || "").toLowerCase();
-    const match = Object.entries(focalPoints).find(([key]) => alt.includes(key));
-    if (match) img.style.objectPosition = match[1];
+    const alt = animalName(img);
+    const focal = Object.entries(focalPoints).find(([key]) => alt.includes(key));
+    if (focal) img.style.objectPosition = focal[1];
     img.decoding = "async";
+    img.referrerPolicy = "no-referrer";
+    const verified = Object.entries(verifiedSources).find(([key]) => alt.includes(key));
+    if (verified && img.dataset.verifiedSource !== verified[0]) {
+      img.dataset.verifiedSource = verified[0];
+      img.dataset.recovered = "false";
+      img.src = verified[1];
+    }
   };
 
   document.addEventListener("error", (event) => {
     const img = event.target;
     if (!(img instanceof HTMLImageElement)) return;
+    const alt = animalName(img);
+    const verified = Object.entries(verifiedSources).find(([key]) => alt.includes(key));
+    if (verified && img.dataset.verifiedRetry !== "true") {
+      img.dataset.verifiedRetry = "true";
+      img.removeAttribute("srcset");
+      img.src = verified[1];
+      return;
+    }
     if (img.dataset.recovered === "true") return;
     img.dataset.recovered = "true";
     img.removeAttribute("srcset");
