@@ -1,11 +1,12 @@
 {
   "name": "nicos-world-web",
   "private": true,
-  "version": "3.0.0",
+  "version": "3.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build"
+    "validate:release": "node scripts/validate-release.mjs",
+    "build": "npm run validate:release && tsc --noEmit && vite build"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
