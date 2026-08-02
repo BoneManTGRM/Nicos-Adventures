@@ -13,6 +13,9 @@ export type Robot = {
   backpack: string;
   power: string;
   personality: string;
+  job?: string;
+  mood?: string;
+  voice?: string;
   level: number;
   xp: number;
 };
@@ -36,23 +39,8 @@ export type SectionId =
 export type NavigationView = SectionId | "world" | "robots" | "missions" | "home" | "parent";
 export type LocalizedText = { en: string; "es-MX": string };
 
-export type WorldSection = {
-  id: SectionId;
-  emoji: string;
-  starsRequired: number;
-  name: LocalizedText;
-  description: LocalizedText;
-  activities: LocalizedText[];
-};
-
-export type LocalMission = {
-  id: string;
-  sectionId: SectionId;
-  rewardStars: number;
-  title: LocalizedText;
-  description: LocalizedText;
-  objectives: LocalizedText[];
-};
+export type WorldSection = { id: SectionId; emoji: string; starsRequired: number; name: LocalizedText; description: LocalizedText; activities: LocalizedText[]; };
+export type LocalMission = { id: string; sectionId: SectionId; rewardStars: number; title: LocalizedText; description: LocalizedText; objectives: LocalizedText[]; };
 
 export type AnimalRecord = {
   id: string;
@@ -62,6 +50,10 @@ export type AnimalRecord = {
   fact: string;
   discovered: boolean;
   favorite: boolean;
+  imageTitle?: string;
+  group?: string;
+  region?: string;
+  adaptation?: string;
 };
 
 export type MonsterRecord = {
@@ -77,45 +69,18 @@ export type MonsterRecord = {
   personality: string;
   friendship: number;
   habitat: string;
+  mouth?: string;
+  arms?: string;
+  legs?: string;
+  tail?: string;
+  texture?: string;
+  animation?: string;
 };
 
-export type PetRecord = {
-  id: string;
-  name: string;
-  species: string;
-  color: string;
-  accessory: string;
-  personality: string;
-  bond: number;
-  tricks: string[];
-};
-
-export type ArtworkRecord = {
-  id: string;
-  title: string;
-  background: string;
-  subject: string;
-  frame: string;
-  caption: string;
-};
-
-export type StoryRecord = {
-  id: string;
-  title: string;
-  hero: string;
-  place: string;
-  problem: string;
-  ending: string;
-  language: Language;
-};
-
-export type DinosaurRecord = {
-  id: string;
-  name: string;
-  emoji: string;
-  period: string;
-  discovered: boolean;
-};
+export type PetRecord = { id: string; name: string; species: string; color: string; accessory: string; personality: string; bond: number; tricks: string[]; };
+export type ArtworkRecord = { id: string; title: string; background: string; subject: string; frame: string; caption: string; };
+export type StoryRecord = { id: string; title: string; hero: string; place: string; problem: string; ending: string; language: Language; };
+export type DinosaurRecord = { id: string; name: string; emoji: string; period: string; discovered: boolean; };
 
 export type LocalProfile = {
   schemaVersion: 2;
@@ -143,8 +108,4 @@ export type LocalProfile = {
   updatedAt: string;
 };
 
-export type LocalSaveStore = {
-  schemaVersion: 2;
-  activeProfileId: string;
-  profiles: LocalProfile[];
-};
+export type LocalSaveStore = { schemaVersion: 2; activeProfileId: string; profiles: LocalProfile[]; };
