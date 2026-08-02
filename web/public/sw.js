@@ -1,5 +1,5 @@
-const CACHE = "nicos-world-static-v10";
-const SHELL = ["/", "/index.html", "/manifest.webmanifest", "/asset-recovery.js", "/dinosaur-art.js"];
+const CACHE = "nicos-world-static-v11";
+const SHELL = ["/", "/index.html", "/manifest.webmanifest", "/wildlife-director.js", "/asset-recovery.js", "/dinosaur-art.js"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
