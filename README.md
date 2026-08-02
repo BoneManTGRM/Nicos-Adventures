@@ -20,6 +20,9 @@ or external generative-AI service.
 - **Monster Lab:** build monsters from 120 physical choices across ten categories, plus eighteen
   colors, patterns, textures, powers, personalities, editing, animation, and safe old-save
   migration.
+- **Monster Art V2:** adds ten inferred creature families, stronger silhouettes, expression layers,
+  highlights, shadows, family ornaments, atmospheric particles, scene lighting, and polished
+  collection cards without changing saved monster parts.
 - **Monster Habitats:** create themed homes, choose food and toys, record visits, and grow a
   persistent friendship level with each monster.
 - **Art Studio:** make original illustrated posters from backgrounds, frames, subjects, captions,
@@ -32,14 +35,25 @@ or external generative-AI service.
   use team abilities, and play field-guide challenges.
 - **Robot Pet Workshop:** customize eight kinds of companions, choose colors and accessories,
   build bonds, train tricks, and select an active pet.
+- **Pet Art V2:** replaces emoji cards with eight distinct layered SVG species, mechanical anatomy,
+  expressive faces, accessories, energy cores, scene lighting, bond displays, and action-specific
+  animations.
 - **Robot Home:** a layered headquarters with eighteen visible decorations, six room themes,
-  weather and lighting controls, robot interactions, a featured-art gallery, and a companion
-  corner.
+  weather and lighting controls, robot interactions, a featured-art gallery, and an illustrated
+  companion corner.
 - **Memory Museum:** review the complete timeline and every major collection, including robots,
-  animals, monsters, habitats, artwork, stories, pets, dinosaurs, fossils, and campaign progress.
+  animals, monsters, habitats, artwork, stories, illustrated pets, dinosaurs, fossils, and campaign
+  progress.
 - **Badge Observatory:** track stars, explorer levels, badges, and milestones.
 - **Parent & Settings:** language, local browser read-aloud, reduced motion, diagnostics, bounded
   recovery snapshots, three in-session save slots, and private backups.
+
+## Shared responsive layout
+
+Every Streamlit destination uses one alignment system for page width, spacing, columns, cards,
+forms, metrics, buttons, tabs, preview stages, desktop layouts, tablet wrapping, and phone stacking.
+The monster, pet, robot, artwork, and room stages share consistent visual bounds so controls and
+previews align more predictably across the app.
 
 ## Connected progression
 
@@ -104,8 +118,8 @@ python -m compileall app.py activities api core ui
 ```
 
 The test suite includes pure state and rendering tests, save migration and round-trip tests, API
-tests, artwork and campaign tests, plus a Streamlit `AppTest` smoke test that renders every
-activity page.
+tests, artwork, creature-art, responsive-layout, and campaign tests, plus a Streamlit `AppTest`
+smoke test that renders every activity page.
 
 ## Deploy on Streamlit Community Cloud
 
