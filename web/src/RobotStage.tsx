@@ -1,14 +1,28 @@
 import type { Robot } from "./types";
 
-type Props = { robot: Robot; pose?: "idle" | "launch" | "celebrate" };
+type Pose = "idle" | "launch" | "celebrate" | "wave";
 
-export function RobotStage({ robot, pose = "idle" }: Props) {
+type Props = {
+  robot: Robot;
+  pose?: Pose;
+  statusLabel?: string;
+  levelLabel?: string;
+  ariaLabel?: string;
+};
+
+export function RobotStage({
+  robot,
+  pose = "idle",
+  statusLabel = "READY",
+  levelLabel = "LV",
+  ariaLabel,
+}: Props) {
   const primary = robot.color === "Electric Blue" ? "#38bdf8" : "#8b5cf6";
   const secondary = robot.secondary_color === "Sunny Yellow" ? "#facc15" : "#fb7185";
   const poseClass = `mecha mecha--${pose}`;
 
   return (
-    <section className="hangar" aria-label={`${robot.name} robot preview`}>
+    <section className="hangar" aria-label={ariaLabel ?? `${robot.name} robot preview`}>
       <div className="hangar__light" />
       <svg className={poseClass} viewBox="0 0 420 520" role="img">
         <defs>
@@ -47,12 +61,16 @@ export function RobotStage({ robot, pose = "idle" }: Props) {
         </g>
 
         <g className="arms">
-          <path d="M132 208 L69 235 L51 333 L88 344 L122 278 L151 255 Z" fill="url(#armor)" stroke="#0f172a" strokeWidth="10" />
-          <path d="M288 208 L351 235 L369 333 L332 344 L298 278 L269 255 Z" fill="url(#armor)" stroke="#0f172a" strokeWidth="10" />
-          <circle cx="77" cy="329" r="20" fill="#111827" stroke={secondary} strokeWidth="8" />
-          <circle cx="343" cy="329" r="20" fill="#111827" stroke={secondary} strokeWidth="8" />
-          <path d="M49 341 L30 395 L75 375 L91 342" fill="url(#accent)" stroke="#0f172a" strokeWidth="8" />
-          <path d="M371 341 L390 395 L345 375 L329 342" fill="url(#accent)" stroke="#0f172a" strokeWidth="8" />
+          <g className="arm-left">
+            <path d="M132 208 L69 235 L51 333 L88 344 L122 278 L151 255 Z" fill="url(#armor)" stroke="#0f172a" strokeWidth="10" />
+            <circle cx="77" cy="329" r="20" fill="#111827" stroke={secondary} strokeWidth="8" />
+            <path d="M49 341 L30 395 L75 375 L91 342" fill="url(#accent)" stroke="#0f172a" strokeWidth="8" />
+          </g>
+          <g className="arm-right">
+            <path d="M288 208 L351 235 L369 333 L332 344 L298 278 L269 255 Z" fill="url(#armor)" stroke="#0f172a" strokeWidth="10" />
+            <circle cx="343" cy="329" r="20" fill="#111827" stroke={secondary} strokeWidth="8" />
+            <path d="M371 341 L390 395 L345 375 L329 342" fill="url(#accent)" stroke="#0f172a" strokeWidth="8" />
+          </g>
         </g>
 
         <g className="torso">
@@ -73,9 +91,9 @@ export function RobotStage({ robot, pose = "idle" }: Props) {
         </g>
       </svg>
       <div className="robot-readout">
-        <span className="robot-readout__status">ONLINE</span>
+        <span className="robot-readout__status">{statusLabel}</span>
         <strong>{robot.name}</strong>
-        <small>{robot.personality} · LV {robot.level}</small>
+        <small>{robot.personality} · {levelLabel} {robot.level}</small>
       </div>
     </section>
   );
