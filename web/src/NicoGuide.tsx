@@ -11,10 +11,12 @@ type GuideCopy = {
   switchLanguage: string;
   openLabel: string;
   closeLabel: string;
+  artAlt: string;
 };
 
 const GUIDE_LANGUAGE_KEY = "nicos-world-guide-language";
 const SAVE_KEY = "nicos-world-local-save-v2";
+const NICO_ART = "/assets/nico/nico-guide-art.svg";
 
 const copy: Record<GuideLanguage, GuideCopy> = {
   en: {
@@ -25,6 +27,7 @@ const copy: Record<GuideLanguage, GuideCopy> = {
     switchLanguage: "Español",
     openLabel: "Meet Nico, your adventure guide",
     closeLabel: "Close Nico's guide",
+    artAlt: "Nico wearing red glasses and exploring with a magnifying glass",
   },
   "es-MX": {
     eyebrow: "Tu guía de aventuras",
@@ -34,6 +37,7 @@ const copy: Record<GuideLanguage, GuideCopy> = {
     switchLanguage: "English",
     openLabel: "Conoce a Nico, tu guía de aventuras",
     closeLabel: "Cerrar la guía de Nico",
+    artAlt: "Nico con lentes rojos explorando con una lupa",
   },
 };
 
@@ -77,8 +81,8 @@ export default function NicoGuide() {
           <button className="nico-guide__close" type="button" onClick={() => setIsOpen(false)} aria-label={text.closeLabel}>
             ×
           </button>
-          <div className="nico-guide__portrait" aria-hidden="true">
-            <img src="/assets/nico/nico-guide-full.webp" alt="" />
+          <div className="nico-guide__portrait">
+            <img src={NICO_ART} alt={text.artAlt} />
           </div>
           <div className="nico-guide__copy">
             <small>{text.eyebrow}</small>
@@ -104,7 +108,7 @@ export default function NicoGuide() {
         aria-controls="nico-guide-panel"
         aria-label={isOpen ? text.closeLabel : text.openLabel}
       >
-        <img src="/assets/nico/nico-guide-avatar.webp" alt="" />
+        <img src={NICO_ART} alt="" />
         <span>{language === "es-MX" ? "¡Hola!" : "Hi!"}</span>
       </button>
     </aside>
