@@ -1,4 +1,5 @@
-const CACHE = "nicos-world-static-v14";
+const CACHE = "nicos-world-static-v15";
+const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const SHELL = [
   "/",
   "/index.html",
@@ -6,7 +7,7 @@ const SHELL = [
   "/wildlife-director.js",
   "/asset-recovery.js",
   "/dinosaur-art.js",
-  "/assets/nico/nico-guide-art.b64",
+  NICO_ART,
 ];
 
 self.addEventListener("install", (event) => {
@@ -24,6 +25,21 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
+
+  if (url.origin === self.location.origin && url.pathname.endsWith("/assets/nico/nico-fullbody.b64")) {
+    event.respondWith(
+      fetch(NICO_ART, { cache: "no-store" })
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(NICO_ART, copy));
+          }
+          return response;
+        })
+        .catch(async () => (await caches.match(NICO_ART)) || Response.error())
+    );
+    return;
+  }
 
   if (event.request.mode === "navigate") {
     event.respondWith(
