@@ -24,10 +24,11 @@
     jaguar: "50% 36%"
   };
 
+  const ignoresRecovery = (img) => img.dataset.assetRecovery === "ignore";
   const animalName = (img) => (img.alt || img.closest("figure")?.querySelector("figcaption")?.textContent || "").toLowerCase().trim();
 
   const tune = (img) => {
-    if (!(img instanceof HTMLImageElement)) return;
+    if (!(img instanceof HTMLImageElement) || ignoresRecovery(img)) return;
     const alt = animalName(img);
     const focal = Object.entries(focalPoints).find(([key]) => alt.includes(key));
     if (focal) img.style.objectPosition = focal[1];
@@ -43,7 +44,7 @@
 
   document.addEventListener("error", (event) => {
     const img = event.target;
-    if (!(img instanceof HTMLImageElement)) return;
+    if (!(img instanceof HTMLImageElement) || ignoresRecovery(img)) return;
     const alt = animalName(img);
     const verified = Object.entries(verifiedSources).find(([key]) => alt.includes(key));
     if (verified && img.dataset.verifiedRetry !== "true") {
