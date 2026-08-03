@@ -2,23 +2,44 @@
 
 **Nico's World** is a private, kid-friendly adventure playground built around a custom robot
 sidekick and an expanding world of animals, monsters, art, stories, pets, dinosaurs, games,
-missions, and memories.
+missions, memories, and short local movies.
 
 The project does not require a child account, advertising service, analytics tracker, open chat,
 or external generative-AI service.
 
+## Nico's Clubhouse and Showtime Studio
+
+The web PWA includes a new Nico-centered experience reachable from the World Map, Robot Home,
+Memory Museum, and Nico's floating guide:
+
+- **Ask Nico:** a bounded bilingual local answer library for questions about the app, animals,
+  dinosaurs, robots, stars, privacy, backups, and simple arithmetic. Questions stay in browser
+  memory and are never sent to an AI service.
+- **Nico's Dress-Up Closet:** choose from twelve professions and adventure costumes, including
+  explorer, astronaut, doctor, scientist, engineer, veterinarian, dinosaur hero, young leader,
+  firefighter, chef, artist, and pilot.
+- **Showtime Studio:** select one to three owned characters, reuse familiar pose sequences, choose
+  a scene and caption, preview the animation, and record a four- to eight-second WebM video with
+  `canvas.captureStream()` and `MediaRecorder`.
+- **My Little Movies:** retain lightweight project instructions in the local profile and recreate a
+  video later. Full video blobs are never stored in localStorage or profile backups.
+
+A grown-up confirmation is required before recording and downloading. Unsupported browsers retain
+the editor and live preview while showing a clear capability message. See
+[`docs/SHOWTIME_STUDIO.md`](docs/SHOWTIME_STUDIO.md) and
+[`docs/PROFILE_SCHEMA_V3.md`](docs/PROFILE_SCHEMA_V3.md).
+
 ## Static bilingual website
 
-The React/Vite progressive web app under `web/` is now a fully static, local-first website:
+The React/Vite progressive web app under `web/` is a fully static, local-first website:
 
 - no FastAPI, Render, server process, database, Cloudflare Function, or paid compute is required
-- all fourteen destinations have English and Mexican Spanish names, descriptions, activities, and
-  controls
+- all fourteen core destinations plus Nico's Clubhouse have English and Mexican Spanish controls
 - each browser automatically stores independent player progress in local storage
 - multiple named player profiles can share one device
 - each friend who opens the same public URL receives a separate save in that friend's browser
-- stars, destination visits, mission completion, language, robot level, and profile settings save
-  after every change
+- stars, destination visits, mission completion, language, robot level, Nico preferences, and
+  lightweight movie projects save after changes
 - player profiles support JSON download and import for manual backup or transfer
 - the service worker provides an installable, offline-ready PWA after the first successful load
 
@@ -61,6 +82,8 @@ adds security and cache headers. Static deployment requires no runtime environme
   robots, animals, monsters, and robot pets.
 - **Game Arcade:** six replayable learning games covering animals, patterns, robot memory,
   dinosaurs, navigation, and arithmetic.
+- **Showtime Studio bridge:** explains the local video privacy contract and opens the full web PWA
+  studio without attaching Streamlit profile or child content to the link.
 - **Dinosaur Valley:** complete expeditions, discover twelve prehistoric animals, recover fossils,
   use team abilities, and play field-guide challenges.
 - **Robot Pet Workshop:** customize eight kinds of companions, choose colors and accessories,
@@ -82,8 +105,8 @@ adds security and cache headers. Static deployment requires no runtime environme
 
 Every Streamlit destination uses one alignment system for page width, spacing, columns, cards,
 forms, metrics, buttons, tabs, preview stages, desktop layouts, tablet wrapping, and phone stacking.
-The monster, pet, robot, artwork, and room stages share consistent visual bounds so controls and
-previews align more predictably across the app.
+The web Clubhouse and Showtime interfaces use large touch targets, keyboard focus indicators,
+responsive layouts, ARIA labels, and reduced-motion fallbacks.
 
 ## Connected progression
 
@@ -102,7 +125,8 @@ used to infer abilities such as:
 
 The twenty campaign missions use progress from across the entire app rather than operating as
 isolated checklists. A built-in seasonal event rotates by calendar season without requiring a
-paid content service.
+paid content service. The first successful Showtime project awards a Movie Director badge and
+stars in the web profile.
 
 ## Memory and privacy
 
@@ -118,6 +142,10 @@ Progress in the Streamlit version is maintained in session state while the app i
 - dinosaurs and fossils
 - campaign, living-world, seasonal, arcade, decoration, badge, and settings state
 
+The web PWA uses profile schema v3. It adds Nico preferences and bounded movie-project metadata.
+The Streamlit and web versions remain separate save formats; the version matrix and migration rules
+are documented in `docs/PROFILE_SCHEMA_V3.md`.
+
 The Parent page also provides three in-session recovery slots. These slots are useful for undo and
 recovery during the current Streamlit session.
 
@@ -126,8 +154,8 @@ currently requires downloading the private JSON save and restoring it later.
 
 ## Local read-aloud
 
-Story and educational narration uses the browser's local Speech Synthesis API. Text is not sent to
-an external narration provider by this project.
+Story, educational narration, Ask Nico answers, and optional Showtime captions use the browser's
+local Speech Synthesis API. Text is not sent to an external narration provider by this project.
 
 ## Run Streamlit locally
 
@@ -140,9 +168,11 @@ streamlit run app.py
 
 ## Run the static website locally
 
+The supported Node version is recorded in `web/.nvmrc`. Web dependencies are exact-pinned.
+
 ```bash
 cd web
-npm install
+npm ci
 npm run dev
 ```
 
@@ -153,14 +183,15 @@ ruff check .
 pytest
 python -m compileall app.py activities api core ui
 cd web
-npm install
+npm ci
+npm test
 npm run build
 ```
 
 The test suite includes pure state and rendering tests, save migration and round-trip tests, API
-tests, artwork, creature-art, responsive-layout, and campaign tests, plus a Streamlit `AppTest`
-smoke test that renders every activity page. The web build performs TypeScript validation before
-creating the production Vite bundle.
+tests, artwork, creature-art, responsive-layout, campaign tests, local Ask Nico matching, web
+profile-v3 migration, Showtime MIME/timeline helpers, and the Python movie-metadata contract. The
+web build performs release validation and TypeScript checking before creating the Vite bundle.
 
 ## Deploy Streamlit Community Cloud
 
@@ -174,7 +205,8 @@ No secrets are required for the account-free Streamlit experience.
 ## API foundation
 
 The repository retains a FastAPI foundation under `api/` for possible future cloud-sync or shared
-online features. The static website does not call it and does not require it to run.
+online features. The static website does not call it and does not require it to run. There is no
+Showtime video upload endpoint.
 
 ## Add another activity
 
