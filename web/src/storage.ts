@@ -1,3 +1,4 @@
+import professionData from "./catalogs/nico-professions.json";
 import type {
   AnimalRecord,
   DinosaurRecord,
@@ -19,20 +20,7 @@ const LEGACY_KEYS = ["nicos-world-local-save-v2", "nicos-world-local-save-v1"] a
 const now = (): string => new Date().toISOString();
 const id = (prefix: string): string => `${prefix}-${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}`;
 
-const professionIds: NicoProfessionId[] = [
-  "explorer",
-  "astronaut",
-  "doctor",
-  "scientist",
-  "engineer",
-  "veterinarian",
-  "dinosaur",
-  "suit",
-  "firefighter",
-  "chef",
-  "artist",
-  "pilot",
-];
+const professionIds = professionData.map((item) => item.id) as NicoProfessionId[];
 const characterKinds: MovieCharacterKind[] = ["nico", "robot", "monster", "pet"];
 const moviePoses: MoviePose[] = ["idle", "wave", "celebrate", "launch", "dance", "spin", "bounce", "roar", "sleep"];
 
@@ -249,11 +237,12 @@ export const loadLocalStore = (): LocalSaveStore => {
 
 export const saveLocalStore = (store: LocalSaveStore): boolean => {
   try {
-    const serialized = JSON.stringify(normalizeStore(store));
-    if (localStorage.getItem(STORAGE_KEY) === serialized) return true;
-    localStorage.setItem(STORAGE_KEY, serialized);
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent(PROFILE_EVENT, { detail: { source: "app" } }));
+    const normalized = normalizeStore(store);
+    const next = JSON.stringify(normalized);
+    const previous = localStorage.getItem(STORAGE_KEY);
+    localStorage.setItem(STORAGE_KEY, next);
+    if (previous !== next && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(PROFILE_EVENT, { detail: normalized }));
     }
     return true;
   } catch {
