@@ -1,0 +1,1705 @@
+{
+  "schemaVersion": 1,
+  "streamlit": {
+    "ANIMATIONS": {
+      "blink": [
+        "Blink",
+        "😊"
+      ],
+      "bounce": [
+        "Bounce",
+        "🏀"
+      ],
+      "celebrate": [
+        "Celebrate",
+        "🎉"
+      ],
+      "charge": [
+        "Power Charge",
+        "🔋"
+      ],
+      "dance": [
+        "Dance",
+        "💃"
+      ],
+      "flash": [
+        "Flash Lights",
+        "⚡"
+      ],
+      "fly": [
+        "Fly",
+        "🚀"
+      ],
+      "moonwalk": [
+        "Moonwalk",
+        "🌙"
+      ],
+      "spin": [
+        "Spin",
+        "🔄"
+      ],
+      "walk": [
+        "Walk",
+        "🛞"
+      ],
+      "wave": [
+        "Wave",
+        "👋"
+      ]
+    },
+    "DEFAULT_ANIMALS": [
+      {
+        "emoji": "🐾",
+        "fact": "Red pandas use their fluffy tails like warm blankets.",
+        "habitat": "Mountain forests",
+        "name": "Red Panda"
+      },
+      {
+        "emoji": "🦎",
+        "fact": "Axolotls can regrow parts of their limbs.",
+        "habitat": "Freshwater lakes",
+        "name": "Axolotl"
+      },
+      {
+        "emoji": "🐘",
+        "fact": "Elephants communicate with rumbles that travel through the ground.",
+        "habitat": "Grasslands and forests",
+        "name": "Elephant"
+      },
+      {
+        "emoji": "🐙",
+        "fact": "An octopus has three hearts.",
+        "habitat": "Oceans",
+        "name": "Octopus"
+      },
+      {
+        "emoji": "🐼",
+        "fact": "Giant pandas spend much of the day eating bamboo.",
+        "habitat": "Bamboo forests",
+        "name": "Panda"
+      },
+      {
+        "emoji": "🦁",
+        "fact": "A lion's roar can travel several miles.",
+        "habitat": "Savannas",
+        "name": "Lion"
+      },
+      {
+        "emoji": "🐬",
+        "fact": "Dolphins use unique whistles a little like names.",
+        "habitat": "Oceans and rivers",
+        "name": "Dolphin"
+      },
+      {
+        "emoji": "🦉",
+        "fact": "Snowy owls have feathers covering their feet.",
+        "habitat": "Arctic tundra",
+        "name": "Snowy Owl"
+      },
+      {
+        "emoji": "🦫",
+        "fact": "Capybaras are excellent swimmers and can rest in water.",
+        "habitat": "Wetlands and riverbanks",
+        "name": "Capybara"
+      },
+      {
+        "emoji": "🦊",
+        "fact": "Its huge ears help release heat and hear tiny animals underground.",
+        "habitat": "Sahara Desert",
+        "name": "Fennec Fox"
+      },
+      {
+        "emoji": "🦐",
+        "fact": "Mantis shrimp can see kinds of light that people cannot.",
+        "habitat": "Tropical seas",
+        "name": "Mantis Shrimp"
+      },
+      {
+        "emoji": "🐿️",
+        "fact": "Flying squirrels glide using a flap of skin between their legs.",
+        "habitat": "Forests",
+        "name": "Flying Squirrel"
+      }
+    ],
+    "ROBOT_COLORS": {
+      "Aqua Glow": "#06B6D4",
+      "Bubblegum Pink": "#EC4899",
+      "Chocolate Brown": "#92400E",
+      "Cloud White": "#E2E8F0",
+      "Copper": "#B45309",
+      "Coral Blast": "#FB7185",
+      "Cosmic Black": "#334155",
+      "Deep Teal": "#0F766E",
+      "Electric Blue": "#3B82F6",
+      "Emerald": "#059669",
+      "Galaxy Purple": "#8B5CF6",
+      "Hot Magenta": "#D946EF",
+      "Ice Blue": "#93C5FD",
+      "Jungle Green": "#22C55E",
+      "Lava Orange": "#F97316",
+      "Midnight Navy": "#1E3A8A",
+      "Mint Green": "#34D399",
+      "Neon Lime": "#84CC16",
+      "Rocket Red": "#EF4444",
+      "Royal Gold": "#EAB308",
+      "Silver": "#94A3B8",
+      "Sunny Yellow": "#FBBF24",
+      "Sunset Peach": "#FB923C",
+      "Violet Glow": "#7C3AED"
+    },
+    "ROBOT_EYE_GLOWS": {
+      "Aqua": "#BFFBFF",
+      "Blue": "#93C5FD",
+      "Gold": "#FDE047",
+      "Green": "#86EFAC",
+      "Lime": "#BEF264",
+      "Night": "#67E8F9",
+      "Orange": "#FDBA74",
+      "Pink": "#F9A8D4",
+      "Purple": "#D8B4FE",
+      "Rainbow": "#F0ABFC",
+      "Red": "#FCA5A5",
+      "White": "#FFFFFF"
+    },
+    "ROBOT_FINISHES": {
+      "Brushed Metal": "Workshop texture",
+      "Candy": "Sweet translucent shine",
+      "Chrome": "Mirror-like metal",
+      "Glossy": "Bright showroom shine",
+      "Holographic": "Color-shifting light",
+      "Ice": "Frozen crystal look",
+      "Lava": "Hot glowing seams",
+      "Matte": "Soft and smooth",
+      "Neon Glow": "Glowing edges",
+      "Rainbow": "Full-spectrum shine",
+      "Stealth": "Dark low-reflection armor",
+      "Woodland": "Warm natural panels"
+    },
+    "ROBOT_MOODS": [
+      "Happy",
+      "Excited",
+      "Curious",
+      "Brave",
+      "Silly",
+      "Calm",
+      "Proud",
+      "Sleepy"
+    ],
+    "ROBOT_PARTS": {
+      "antenna": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Antenna",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "📡",
+          "id": "single",
+          "label": "Single Signal Antenna",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "〽️",
+          "id": "double",
+          "label": "Double Antenna",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "💡",
+          "id": "lightbulb",
+          "label": "Idea Bulb Antenna",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🛰️",
+          "id": "satellite",
+          "label": "Satellite Dish",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "🌼",
+          "id": "flower",
+          "label": "Flower Antenna",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🚁",
+          "id": "propeller",
+          "label": "Tiny Propeller",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "⚡",
+          "id": "lightning",
+          "label": "Lightning Rod",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "🌈",
+          "id": "rainbow",
+          "label": "Rainbow Signal",
+          "unlock_stars": 23
+        },
+        {
+          "emoji": "🔷",
+          "id": "crystal",
+          "label": "Crystal Antenna",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🌙",
+          "id": "moon",
+          "label": "Moon Antenna",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Beacon",
+          "unlock_stars": 42
+        }
+      ],
+      "arms": [
+        {
+          "emoji": "C C",
+          "id": "grabber",
+          "label": "Grabber Arms",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "≋ ≋",
+          "id": "spring",
+          "label": "Spring Arms",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🧲 🧲",
+          "id": "magnet",
+          "label": "Magnet Hands",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🔧 🔨",
+          "id": "builder",
+          "label": "Builder Tools",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "✊ ✊",
+          "id": "giant",
+          "label": "Giant Hands",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "〰 〰",
+          "id": "stretchy",
+          "label": "Stretchy Arms",
+          "unlock_stars": 17
+        },
+        {
+          "emoji": "◁ ▷",
+          "id": "wings",
+          "label": "Wing Arms",
+          "unlock_stars": 21
+        },
+        {
+          "emoji": "🛡️ 🛡️",
+          "id": "shield",
+          "label": "Shield Arms",
+          "unlock_stars": 25
+        },
+        {
+          "emoji": "🥁 🥁",
+          "id": "drum",
+          "label": "Drum Arms",
+          "unlock_stars": 29
+        },
+        {
+          "emoji": "🐙 🐙",
+          "id": "tentacle",
+          "label": "Tentacle Arms",
+          "unlock_stars": 33
+        },
+        {
+          "emoji": "🚀 🚀",
+          "id": "rocket",
+          "label": "Rocket Arms",
+          "unlock_stars": 39
+        },
+        {
+          "emoji": "✨ ✨",
+          "id": "hologram",
+          "label": "Hologram Hands",
+          "unlock_stars": 46
+        }
+      ],
+      "backpack": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Backpack",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🧰",
+          "id": "toolbox",
+          "label": "Tool Backpack",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "🔋",
+          "id": "battery",
+          "label": "Mega Battery",
+          "unlock_stars": 7
+        },
+        {
+          "emoji": "🛸",
+          "id": "pet_drone",
+          "label": "Pet Drone",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "🫧",
+          "id": "bubble_tank",
+          "label": "Bubble Tank",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "🚀",
+          "id": "jetpack",
+          "label": "Jetpack",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🪂",
+          "id": "parachute",
+          "label": "Parachute Pack",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "🌱",
+          "id": "garden",
+          "label": "Tiny Garden",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "🍪",
+          "id": "snack",
+          "label": "Snack Pack",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🎶",
+          "id": "music",
+          "label": "Music Pack",
+          "unlock_stars": 32
+        },
+        {
+          "emoji": "🌀",
+          "id": "portal",
+          "label": "Pocket Portal",
+          "unlock_stars": 38
+        },
+        {
+          "emoji": "🌙",
+          "id": "moon",
+          "label": "Moon Base Pack",
+          "unlock_stars": 44
+        }
+      ],
+      "base": [
+        {
+          "emoji": "◉ ◉",
+          "id": "bronze_wheels",
+          "label": "Bronze Wheels",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "╱ ╲",
+          "id": "bouncy_legs",
+          "label": "Bouncy Legs",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🔵",
+          "id": "hover_ball",
+          "label": "Hover Ball",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "╱╲╱╲",
+          "id": "spider_legs",
+          "label": "Spider Legs",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "▰▰",
+          "id": "tank_tracks",
+          "label": "Tank Tracks",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🛼 🛼",
+          "id": "skates",
+          "label": "Speed Skates",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "🚀 🚀",
+          "id": "rocket_boots",
+          "label": "Rocket Boots",
+          "unlock_stars": 18
+        },
+        {
+          "emoji": "☁️",
+          "id": "cloud",
+          "label": "Cloud Floater",
+          "unlock_stars": 22
+        },
+        {
+          "emoji": "🌊",
+          "id": "submarine",
+          "label": "Submarine Base",
+          "unlock_stars": 26
+        },
+        {
+          "emoji": "🦿 🦿",
+          "id": "pogo",
+          "label": "Super Pogo Legs",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "🐾 🐾",
+          "id": "dragon_feet",
+          "label": "Dragon Feet",
+          "unlock_stars": 36
+        },
+        {
+          "emoji": "🛸",
+          "id": "teleport",
+          "label": "Teleport Pad",
+          "unlock_stars": 44
+        }
+      ],
+      "body": [
+        {
+          "emoji": "⚙️",
+          "id": "classic_core",
+          "label": "Classic Gear Core",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🔘",
+          "id": "round_core",
+          "label": "Round Power Core",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🧰",
+          "id": "toolbox",
+          "label": "Toolbox Body",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🐠",
+          "id": "aquarium",
+          "label": "Aquarium Body",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "🎵",
+          "id": "speaker",
+          "label": "Music Speaker Body",
+          "unlock_stars": 14
+        },
+        {
+          "emoji": "💠",
+          "id": "crystal",
+          "label": "Crystal Body",
+          "unlock_stars": 18
+        },
+        {
+          "emoji": "🦖",
+          "id": "dinosaur",
+          "label": "Dinosaur Body",
+          "unlock_stars": 22
+        },
+        {
+          "emoji": "🪐",
+          "id": "space_suit",
+          "label": "Space-Suit Body",
+          "unlock_stars": 26
+        },
+        {
+          "emoji": "🍬",
+          "id": "candy",
+          "label": "Candy Machine Body",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "🥷",
+          "id": "stealth",
+          "label": "Stealth Body",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🏰",
+          "id": "castle",
+          "label": "Castle Body",
+          "unlock_stars": 40
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Core",
+          "unlock_stars": 48
+        }
+      ],
+      "chest": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "Blank Chest Plate",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "⭐",
+          "id": "star",
+          "label": "Explorer Star",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "⚡",
+          "id": "bolt",
+          "label": "Power Bolt",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "💛",
+          "id": "heart",
+          "label": "Friendship Heart",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🐾",
+          "id": "paw",
+          "label": "Animal Scout Paw",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "👾",
+          "id": "monster",
+          "label": "Monster Lab Badge",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🪐",
+          "id": "planet",
+          "label": "Space Planet Badge",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "🛡️",
+          "id": "shield",
+          "label": "Hero Shield",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "👑",
+          "id": "crown",
+          "label": "Royal Crest",
+          "unlock_stars": 23
+        },
+        {
+          "emoji": "🐲",
+          "id": "dragon",
+          "label": "Dragon Crest",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🌀",
+          "id": "portal",
+          "label": "Portal Crest",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Medal",
+          "unlock_stars": 42
+        }
+      ],
+      "companion": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Mini Companion",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🔵",
+          "id": "orb",
+          "label": "Floating Helper Orb",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🐝",
+          "id": "bee",
+          "label": "Robo Bee",
+          "unlock_stars": 5
+        },
+        {
+          "emoji": "🦋",
+          "id": "butterfly",
+          "label": "Pixel Butterfly",
+          "unlock_stars": 7
+        },
+        {
+          "emoji": "🐱",
+          "id": "cat",
+          "label": "Mini Robo Cat",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "🐶",
+          "id": "dog",
+          "label": "Mini Robo Dog",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "🦉",
+          "id": "owl",
+          "label": "Scout Owl Drone",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🐉",
+          "id": "dragon",
+          "label": "Pocket Dragon",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "👽",
+          "id": "alien",
+          "label": "Tiny Alien Friend",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "👻",
+          "id": "ghost",
+          "label": "Friendly Holo Ghost",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🌙",
+          "id": "moon",
+          "label": "Moon Sprite",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Pet",
+          "unlock_stars": 42
+        }
+      ],
+      "ears": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Ears",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "◉ ◉",
+          "id": "round",
+          "label": "Round Audio Dishes",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "🔊 🔊",
+          "id": "speaker",
+          "label": "Speaker Ears",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "▲ ▲",
+          "id": "cat",
+          "label": "Robot Cat Ears",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🐰",
+          "id": "bunny",
+          "label": "Bunny Receiver Ears",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "◁ ▷",
+          "id": "elf",
+          "label": "Pointed Sensor Ears",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🎧",
+          "id": "headphones",
+          "label": "Music Headphones",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "🪽 🪽",
+          "id": "wing",
+          "label": "Wing Ears",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "📡 📡",
+          "id": "radar",
+          "label": "Radar Ears",
+          "unlock_stars": 23
+        },
+        {
+          "emoji": "🐲",
+          "id": "dragon",
+          "label": "Dragon Ears",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "💎 💎",
+          "id": "crystal",
+          "label": "Crystal Ears",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌀 🌀",
+          "id": "portal",
+          "label": "Portal Receivers",
+          "unlock_stars": 42
+        }
+      ],
+      "eyes": [
+        {
+          "emoji": "● ●",
+          "id": "round",
+          "label": "Friendly Round Eyes",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "■ ■",
+          "id": "square",
+          "label": "Square Scout Eyes",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "★ ★",
+          "id": "star",
+          "label": "Star Eyes",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "— —",
+          "id": "sleepy",
+          "label": "Sleepy Eyes",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "◉ ◎",
+          "id": "googly",
+          "label": "Googly Eyes",
+          "unlock_stars": 8
+        },
+        {
+          "emoji": "◉ ◉",
+          "id": "laser",
+          "label": "Laser Eyes",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "▦ ▦",
+          "id": "pixel",
+          "label": "Pixel Eyes",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "♥ ♥",
+          "id": "heart",
+          "label": "Heart Eyes",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "☾ ☾",
+          "id": "night",
+          "label": "Night-Vision Eyes",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "🌈 🌈",
+          "id": "rainbow",
+          "label": "Rainbow Eyes",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "✥ ✥",
+          "id": "compass",
+          "label": "Compass Eyes",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "✦ ✦",
+          "id": "galaxy",
+          "label": "Galaxy Eyes",
+          "unlock_stars": 38
+        }
+      ],
+      "hat": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Hat",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🧢",
+          "id": "cap",
+          "label": "Adventure Cap",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🎿",
+          "id": "beanie",
+          "label": "Cozy Beanie",
+          "unlock_stars": 5
+        },
+        {
+          "emoji": "🤠",
+          "id": "cowboy",
+          "label": "Cowboy Hat",
+          "unlock_stars": 8
+        },
+        {
+          "emoji": "🏴‍☠️",
+          "id": "pirate",
+          "label": "Pirate Hat",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "👑",
+          "id": "crown",
+          "label": "Robot Crown",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "🚁",
+          "id": "propeller",
+          "label": "Propeller Hat",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🧙",
+          "id": "wizard",
+          "label": "Wizard Hat",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "🪐",
+          "id": "astronaut",
+          "label": "Space Helmet",
+          "unlock_stars": 22
+        },
+        {
+          "emoji": "👨‍🍳",
+          "id": "chef",
+          "label": "Chef Hat",
+          "unlock_stars": 26
+        },
+        {
+          "emoji": "🕵️",
+          "id": "detective",
+          "label": "Detective Hat",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Crown",
+          "unlock_stars": 38
+        }
+      ],
+      "head": [
+        {
+          "emoji": "▣",
+          "id": "box",
+          "label": "Classic Box Head",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "◠",
+          "id": "dome",
+          "label": "Space Dome",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "▤",
+          "id": "screen",
+          "label": "Screen Head",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "⌁",
+          "id": "antenna",
+          "label": "Rainbow Antenna Head",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "💎",
+          "id": "crystal",
+          "label": "Crystal Head",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🐱",
+          "id": "cat",
+          "label": "Cat-Ear Head",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🪖",
+          "id": "knight",
+          "label": "Knight Helmet",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "🧑‍🚀",
+          "id": "astronaut",
+          "label": "Astronaut Helmet",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "⚓",
+          "id": "submarine",
+          "label": "Submarine Dome",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🐲",
+          "id": "dragon",
+          "label": "Dragon Head",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "♛",
+          "id": "royal",
+          "label": "Royal Robot Head",
+          "unlock_stars": 40
+        },
+        {
+          "emoji": "🌀",
+          "id": "portal",
+          "label": "Portal Head",
+          "unlock_stars": 48
+        }
+      ],
+      "mouth": [
+        {
+          "emoji": "◡",
+          "id": "smile",
+          "label": "Friendly Smile",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "•",
+          "id": "tiny",
+          "label": "Tiny Beep Mouth",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "〰",
+          "id": "zigzag",
+          "label": "Zigzag Mouth",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "▿",
+          "id": "grin",
+          "label": "Big Robot Grin",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "▥",
+          "id": "speaker",
+          "label": "Speaker Mouth",
+          "unlock_stars": 8
+        },
+        {
+          "emoji": "▽▽",
+          "id": "fangs",
+          "label": "Silly Fangs",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "〰〰",
+          "id": "mustache",
+          "label": "Metal Mustache",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "▦",
+          "id": "pixel",
+          "label": "Pixel Mouth",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🌈",
+          "id": "rainbow",
+          "label": "Rainbow Smile",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "○",
+          "id": "whistle",
+          "label": "Whistle Port",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "🐲",
+          "id": "dragon",
+          "label": "Dragon Grin",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "🌀",
+          "id": "portal",
+          "label": "Portal Mouth",
+          "unlock_stars": 38
+        }
+      ],
+      "power": [
+        {
+          "emoji": "🫧",
+          "id": "bubble",
+          "label": "Bubble Blaster",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🔎",
+          "id": "scanner",
+          "label": "Super Scanner",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "🧲",
+          "id": "magnet",
+          "label": "Magnet Beam",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "😂",
+          "id": "joke",
+          "label": "Joke Beam",
+          "unlock_stars": 8
+        },
+        {
+          "emoji": "❄️",
+          "id": "freeze",
+          "label": "Freeze Ray",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "🎵",
+          "id": "music",
+          "label": "Music Pulse",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🌈",
+          "id": "rainbow",
+          "label": "Rainbow Shield",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "👻",
+          "id": "invisible",
+          "label": "Invisible Cloak",
+          "unlock_stars": 18
+        },
+        {
+          "emoji": "📖",
+          "id": "story",
+          "label": "Story Spark",
+          "unlock_stars": 21
+        },
+        {
+          "emoji": "⛅",
+          "id": "weather",
+          "label": "Weather Maker",
+          "unlock_stars": 25
+        },
+        {
+          "emoji": "⏳",
+          "id": "time",
+          "label": "Time Twister",
+          "unlock_stars": 31
+        },
+        {
+          "emoji": "💛",
+          "id": "friendship",
+          "label": "Friendship Force",
+          "unlock_stars": 38
+        }
+      ],
+      "shoulders": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "Plain Shoulders",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "● ●",
+          "id": "caps",
+          "label": "Round Shoulder Caps",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "🔩 🔩",
+          "id": "bolts",
+          "label": "Giant Shoulder Bolts",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "▰ ▰",
+          "id": "pads",
+          "label": "Adventure Pads",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "💡 💡",
+          "id": "lights",
+          "label": "Shoulder Lights",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "🪽 🪽",
+          "id": "wings",
+          "label": "Mini Shoulder Wings",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🚀 🚀",
+          "id": "rockets",
+          "label": "Shoulder Rockets",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "🛡️ 🛡️",
+          "id": "shield",
+          "label": "Shield Shoulders",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "💎 💎",
+          "id": "crystal",
+          "label": "Crystal Shoulders",
+          "unlock_stars": 23
+        },
+        {
+          "emoji": "🐲 🐲",
+          "id": "dragon",
+          "label": "Dragon Spikes",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "☁️ ☁️",
+          "id": "cloud",
+          "label": "Cloud Shoulders",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌌 🌌",
+          "id": "galaxy",
+          "label": "Galaxy Shoulders",
+          "unlock_stars": 42
+        }
+      ]
+    },
+    "ROBOT_PATTERNS": {
+      "Camouflage": "Adventure camouflage",
+      "Checkerboard": "Fast racing squares",
+      "Circuit Lines": "Electronic pathways",
+      "Flames": "Speed flames",
+      "Galaxy": "Deep-space pattern",
+      "Hearts": "Friendship hearts",
+      "Lightning": "Electric bolts",
+      "Polka Dots": "Playful dots",
+      "Racing Stripe": "A bold center stripe",
+      "Solid": "One clean color",
+      "Stars": "A field of stars",
+      "Two-Tone": "Split primary and secondary colors"
+    },
+    "ROBOT_PERSONALITIES": {
+      "Animal Guardian": "Every creature deserves a friend.",
+      "Brave Hero": "Adventure systems ready!",
+      "Creative Artist": "Let us make the world colorful.",
+      "Curious Explorer": "What can we discover next?",
+      "Gentle Helper": "I am here to help.",
+      "Music Star": "Turn up the robot rhythm!",
+      "Mystery Detective": "Clue scanner activated.",
+      "Royal Protector": "Nico's World is under friendly protection.",
+      "Silly Comedian": "My joke circuits are fully charged!",
+      "Sleepy Dreamer": "I dreamed of a moon made of cookies.",
+      "Space Captain": "Prepare for launch!",
+      "Wild Inventor": "Let us build something impossible!"
+    },
+    "ROBOT_PRESETS": {
+      "Classic Buddy": {
+        "antenna": "single",
+        "arms": "grabber",
+        "backpack": "none",
+        "base": "bronze_wheels",
+        "body": "classic_core",
+        "chest": "star",
+        "color": "Electric Blue",
+        "companion": "orb",
+        "ears": "round",
+        "eye_glow": "Aqua",
+        "eyes": "round",
+        "finish": "Glossy",
+        "hat": "none",
+        "head": "box",
+        "mouth": "smile",
+        "pattern": "Two-Tone",
+        "personality": "Curious Explorer",
+        "power": "bubble",
+        "secondary_color": "Sunny Yellow",
+        "shoulders": "caps",
+        "size": "Standard",
+        "unlock_stars": 0,
+        "voice": "Classic Beep"
+      },
+      "Dragon Guardian": {
+        "antenna": "lightning",
+        "arms": "shield",
+        "backpack": "portal",
+        "base": "dragon_feet",
+        "body": "dinosaur",
+        "chest": "dragon",
+        "color": "Lava Orange",
+        "companion": "dragon",
+        "ears": "dragon",
+        "eye_glow": "Red",
+        "eyes": "galaxy",
+        "finish": "Lava",
+        "hat": "crown",
+        "head": "dragon",
+        "mouth": "dragon",
+        "pattern": "Flames",
+        "personality": "Brave Hero",
+        "power": "friendship",
+        "secondary_color": "Cosmic Black",
+        "shoulders": "dragon",
+        "size": "Mega",
+        "unlock_stars": 38,
+        "voice": "Deep Hero"
+      },
+      "Forest Ranger": {
+        "antenna": "flower",
+        "arms": "builder",
+        "backpack": "garden",
+        "base": "bouncy_legs",
+        "body": "toolbox",
+        "chest": "paw",
+        "color": "Jungle Green",
+        "companion": "owl",
+        "ears": "cat",
+        "eye_glow": "Green",
+        "eyes": "night",
+        "finish": "Woodland",
+        "hat": "cap",
+        "head": "cat",
+        "mouth": "smile",
+        "pattern": "Camouflage",
+        "personality": "Animal Guardian",
+        "power": "scanner",
+        "secondary_color": "Chocolate Brown",
+        "shoulders": "pads",
+        "size": "Standard",
+        "unlock_stars": 12,
+        "voice": "Animal Friend"
+      },
+      "Galaxy Wizard": {
+        "antenna": "galaxy",
+        "arms": "hologram",
+        "backpack": "moon",
+        "base": "teleport",
+        "body": "galaxy",
+        "chest": "galaxy",
+        "color": "Galaxy Purple",
+        "companion": "galaxy",
+        "ears": "portal",
+        "eye_glow": "Rainbow",
+        "eyes": "galaxy",
+        "finish": "Holographic",
+        "hat": "galaxy",
+        "head": "portal",
+        "mouth": "portal",
+        "pattern": "Galaxy",
+        "personality": "Sleepy Dreamer",
+        "power": "time",
+        "secondary_color": "Aqua Glow",
+        "shoulders": "galaxy",
+        "size": "Standard",
+        "unlock_stars": 48,
+        "voice": "Wizard Bot"
+      },
+      "Joke Machine": {
+        "antenna": "propeller",
+        "arms": "spring",
+        "backpack": "snack",
+        "base": "skates",
+        "body": "candy",
+        "chest": "heart",
+        "color": "Bubblegum Pink",
+        "companion": "bee",
+        "ears": "headphones",
+        "eye_glow": "Gold",
+        "eyes": "googly",
+        "finish": "Candy",
+        "hat": "propeller",
+        "head": "screen",
+        "mouth": "grin",
+        "pattern": "Polka Dots",
+        "personality": "Silly Comedian",
+        "power": "joke",
+        "secondary_color": "Sunny Yellow",
+        "shoulders": "lights",
+        "size": "Mini",
+        "unlock_stars": 10,
+        "voice": "Comedian"
+      },
+      "Rocket Captain": {
+        "antenna": "satellite",
+        "arms": "rocket",
+        "backpack": "jetpack",
+        "base": "rocket_boots",
+        "body": "space_suit",
+        "chest": "planet",
+        "color": "Cloud White",
+        "companion": "alien",
+        "ears": "radar",
+        "eye_glow": "Blue",
+        "eyes": "star",
+        "finish": "Chrome",
+        "hat": "astronaut",
+        "head": "astronaut",
+        "mouth": "speaker",
+        "pattern": "Racing Stripe",
+        "personality": "Space Captain",
+        "power": "weather",
+        "secondary_color": "Rocket Red",
+        "shoulders": "rockets",
+        "size": "Mega",
+        "unlock_stars": 20,
+        "voice": "Space Radio"
+      }
+    },
+    "ROBOT_SIZES": {
+      "Mega": 1.16,
+      "Mini": 0.82,
+      "Standard": 1.0
+    },
+    "ROBOT_VOICES": {
+      "Animal Friend": "Gentle forest guide",
+      "Classic Beep": "Beep-boop explorer",
+      "Comedian": "Always ready with a joke",
+      "Deep Hero": "Bold and brave",
+      "Musical": "Sings little notes",
+      "Pirate Bot": "Arrr-tificial intelligence",
+      "Royal Announcer": "Grand and dramatic",
+      "Sleepy": "Calm and cozy",
+      "Space Radio": "Mission-control sound",
+      "Speedy": "Fast-talking adventurer",
+      "Tiny Squeak": "Small and cheerful",
+      "Wizard Bot": "Magical and mysterious"
+    }
+  },
+  "web": {
+    "actions": [
+      {
+        "en": "Wave",
+        "es": "Saludar",
+        "icon": "👋",
+        "pose": "wave"
+      },
+      {
+        "en": "Fly",
+        "es": "Volar",
+        "icon": "🚀",
+        "pose": "launch"
+      },
+      {
+        "en": "Dance",
+        "es": "Bailar",
+        "icon": "💃",
+        "pose": "dance"
+      },
+      {
+        "en": "Spin",
+        "es": "Girar",
+        "icon": "🔄",
+        "pose": "spin"
+      },
+      {
+        "en": "Blink",
+        "es": "Parpadear",
+        "icon": "😊",
+        "pose": "blink"
+      },
+      {
+        "en": "Scan",
+        "es": "Escanear",
+        "icon": "📡",
+        "pose": "scan"
+      },
+      {
+        "en": "Charge",
+        "es": "Cargar",
+        "icon": "🔋",
+        "pose": "charge"
+      },
+      {
+        "en": "Hover",
+        "es": "Flotar",
+        "icon": "🛸",
+        "pose": "hover"
+      },
+      {
+        "en": "Power Stomp",
+        "es": "Pisotón",
+        "icon": "🦾",
+        "pose": "stomp"
+      },
+      {
+        "en": "Salute",
+        "es": "Saludar firme",
+        "icon": "🫡",
+        "pose": "salute"
+      },
+      {
+        "en": "Repair",
+        "es": "Reparar",
+        "icon": "🔧",
+        "pose": "repair"
+      },
+      {
+        "en": "Shield",
+        "es": "Escudo",
+        "icon": "🛡️",
+        "pose": "shield"
+      },
+      {
+        "en": "Flash Lights",
+        "es": "Luces",
+        "icon": "⚡",
+        "pose": "lights"
+      },
+      {
+        "en": "Celebrate",
+        "es": "Celebrar",
+        "icon": "🎉",
+        "pose": "celebrate"
+      }
+    ],
+    "jobs": [
+      "Scout Animal Forest",
+      "Wildlife Photographer",
+      "Animal Translator",
+      "Scan Monster Lab",
+      "Monster Habitat Keeper",
+      "Organize Memory Museum",
+      "Charge the Workshop",
+      "Recommend a Story",
+      "Find a Hidden Part",
+      "Dinosaur Fossil Hunter",
+      "Pet Trainer",
+      "Arcade Coach",
+      "Art Gallery Curator",
+      "Robot Home Decorator",
+      "Rescue Pilot",
+      "Weather Watcher",
+      "Joke Broadcaster",
+      "Night Guard",
+      "Map Navigator",
+      "Friendship Helper",
+      "Science Assistant",
+      "Repair Engineer",
+      "Space Explorer",
+      "Treasure Finder"
+    ],
+    "options": {
+      "arms": [
+        "Guardian Arms",
+        "Photon Blades",
+        "Giant Hands",
+        "Tool Arms",
+        "Shield Arms",
+        "Rocket Fists",
+        "Drill Arms",
+        "Claw Hands",
+        "Magnet Hands",
+        "Rescue Grippers",
+        "Energy Cannons",
+        "Painter Arms"
+      ],
+      "backpack": [
+        "Wing Binders",
+        "Jetpack",
+        "Pet Drone",
+        "Rocket Rack",
+        "Solar Wings",
+        "Bubble Pack",
+        "Samurai Flags",
+        "Rescue Crane",
+        "Satellite Dish",
+        "Dino Tail Pack",
+        "Tool Workshop",
+        "Parachute"
+      ],
+      "base": [
+        "Vernier Legs",
+        "Tank Treads",
+        "Hover Ring",
+        "Rocket Boots",
+        "Spider Legs",
+        "Speed Wheels",
+        "Dino Legs",
+        "Moon Boots",
+        "Skates",
+        "Aqua Fins",
+        "Spring Legs",
+        "Four-Wheel Drive"
+      ],
+      "body": [
+        "Star Reactor",
+        "Guardian Core",
+        "Dragon Chest",
+        "Stealth Frame",
+        "Rescue Armor",
+        "Crystal Reactor",
+        "Mecha Samurai",
+        "Heavy Titan",
+        "Speed Frame",
+        "Aqua Armor",
+        "Space Knight",
+        "Dinosaur Core",
+        "Solar Guardian",
+        "Construction Frame"
+      ],
+      "color": [
+        "Electric Blue",
+        "Crimson Red",
+        "Emerald Green",
+        "Royal Purple",
+        "Solar Orange",
+        "Pearl White",
+        "Midnight Black",
+        "Rose Gold",
+        "Arctic Cyan",
+        "Volcanic Red",
+        "Galaxy Violet",
+        "Jungle Green"
+      ],
+      "eyes": [
+        "Photon Visor",
+        "Twin Emerald Eyes",
+        "Cyclops Lens",
+        "Star Eyes",
+        "Scanner Array",
+        "Friendly Pixels",
+        "Anime Eyes",
+        "Laser Eyes",
+        "Night Vision",
+        "Rainbow Optics",
+        "Hologram Face",
+        "Six Sensor Array"
+      ],
+      "head": [
+        "Vanguard Crown",
+        "Samurai Helm",
+        "Dragon Helm",
+        "Explorer Dome",
+        "Knight Visor",
+        "Cat Ear Helm",
+        "Gundam Crest",
+        "Shogun Kabuto",
+        "Falcon Helm",
+        "Astronaut Bubble",
+        "Dino Helm",
+        "Lion Mane Helm",
+        "Ninja Hood",
+        "Crystal Crown",
+        "Rescue Helmet"
+      ],
+      "mood": [
+        "Happy",
+        "Excited",
+        "Curious",
+        "Brave",
+        "Silly",
+        "Calm",
+        "Sleepy",
+        "Focused"
+      ],
+      "personality": [
+        "Brave Guardian",
+        "Curious Explorer",
+        "Silly Inventor",
+        "Gentle Helper",
+        "Fast Adventurer",
+        "Wise Captain",
+        "Loyal Sidekick",
+        "Joke Master",
+        "Quiet Scientist",
+        "Bold Rescue Hero",
+        "Creative Artist",
+        "Animal Friend"
+      ],
+      "power": [
+        "Star Reactor",
+        "Bubble Blaster",
+        "Animal Translator",
+        "Rescue Beam",
+        "Rainbow Shield",
+        "Dinosaur Scanner",
+        "Time Slow Field",
+        "Plant Grower",
+        "Weather Maker",
+        "Super Magnet",
+        "Healing Light",
+        "Portal Generator"
+      ],
+      "secondary_color": [
+        "Sunny Yellow",
+        "Neon Cyan",
+        "Hot Pink",
+        "Silver",
+        "Lime",
+        "Copper",
+        "Pearl White",
+        "Orange",
+        "Electric Purple",
+        "Ice Blue"
+      ],
+      "voice": [
+        "Classic Beep",
+        "Hero Voice",
+        "Tiny Chirp",
+        "Deep Captain",
+        "Silly Squeak",
+        "Robot Whisper",
+        "Musical Chime",
+        "Space Radio"
+      ]
+    }
+  }
+}

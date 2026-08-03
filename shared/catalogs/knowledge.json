@@ -1,0 +1,476 @@
+{
+  "entries": [
+    {
+      "answer": {
+        "en": "Nico’s World keeps profiles and creations on this device. It does not need a child account, advertising tracker, or cloud upload.",
+        "es-MX": "El Mundo de Nico guarda los perfiles y las creaciones en este dispositivo. No necesita una cuenta infantil, rastreadores publicitarios ni subir contenido a la nube."
+      },
+      "id": "privacy",
+      "keywords": {
+        "en": [
+          "private",
+          "privacy",
+          "internet",
+          "online",
+          "cloud",
+          "account",
+          "tracking"
+        ],
+        "es-MX": [
+          "privado",
+          "privacidad",
+          "internet",
+          "línea",
+          "nube",
+          "cuenta",
+          "rastreo"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Open Robo Lab to choose robot parts, colors, powers, personalities, voices, and jobs. Saving a robot earns stars.",
+        "es-MX": "Abre el Laboratorio Robot para elegir piezas, colores, poderes, personalidades, voces y trabajos. Guardar un robot gana estrellas."
+      },
+      "id": "robots",
+      "keywords": {
+        "en": [
+          "robot",
+          "robo lab",
+          "build robot",
+          "boltbot",
+          "parts"
+        ],
+        "es-MX": [
+          "robot",
+          "laboratorio robot",
+          "construir robot",
+          "boltbot",
+          "piezas"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Animal Forest has wildlife facts, habitats, discoveries, favorites, and field-guide missions. Try searching for the axolotl or jaguar.",
+        "es-MX": "El Bosque Animal tiene datos de fauna, hábitats, descubrimientos, favoritos y misiones de guía de campo. Busca el ajolote o el jaguar."
+      },
+      "id": "animals",
+      "keywords": {
+        "en": [
+          "animal",
+          "forest",
+          "wildlife",
+          "jaguar",
+          "axolotl"
+        ],
+        "es-MX": [
+          "animal",
+          "bosque",
+          "fauna",
+          "jaguar",
+          "ajolote"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Dinosaur Valley lets you start expeditions, discover dinosaurs, and collect fossils for the Memory Museum.",
+        "es-MX": "El Valle de Dinosaurios te permite iniciar expediciones, descubrir dinosaurios y coleccionar fósiles para el Museo de Recuerdos."
+      },
+      "id": "dinosaurs",
+      "keywords": {
+        "en": [
+          "dinosaur",
+          "fossil",
+          "t rex",
+          "triceratops",
+          "jurassic"
+        ],
+        "es-MX": [
+          "dinosaurio",
+          "fósil",
+          "t rex",
+          "triceratops",
+          "jurásico"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Monster Lab makes friendly creatures from bodies, eyes, horns, wings, colors, powers, and personalities. Visit their habitats to grow friendship.",
+        "es-MX": "El Laboratorio de Monstruos crea criaturas amistosas con cuerpos, ojos, cuernos, alas, colores, poderes y personalidades. Visita sus hábitats para aumentar la amistad."
+      },
+      "id": "monsters",
+      "keywords": {
+        "en": [
+          "monster",
+          "monster lab",
+          "habitat",
+          "friendship"
+        ],
+        "es-MX": [
+          "monstruo",
+          "laboratorio de monstruos",
+          "hábitat",
+          "amistad"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Robot Pet Workshop lets you build a companion, choose accessories and personality, train tricks, and grow its bond.",
+        "es-MX": "El Taller de Mascotas Robot te permite crear un compañero, elegir accesorios y personalidad, entrenar trucos y fortalecer su vínculo."
+      },
+      "id": "pets",
+      "keywords": {
+        "en": [
+          "pet",
+          "robot pet",
+          "dog",
+          "cat",
+          "train trick"
+        ],
+        "es-MX": [
+          "mascota",
+          "mascota robot",
+          "perro",
+          "gato",
+          "entrenar truco"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Story Castle builds English, Spanish, or bilingual adventures with your saved friends. The browser can read the story aloud locally.",
+        "es-MX": "El Castillo de Cuentos crea aventuras en inglés, español o bilingües con tus amigos guardados. El navegador puede leer el cuento en voz alta localmente."
+      },
+      "id": "stories",
+      "keywords": {
+        "en": [
+          "story",
+          "book",
+          "read",
+          "castle",
+          "speech"
+        ],
+        "es-MX": [
+          "cuento",
+          "libro",
+          "leer",
+          "castillo",
+          "voz"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Art Studio lets you combine a background, frame, subject, caption, and stickers, then display the result in Robot Home.",
+        "es-MX": "El Estudio de Arte te permite combinar fondo, marco, personaje, texto y calcomanías, y luego mostrar el resultado en la Casa Robot."
+      },
+      "id": "art",
+      "keywords": {
+        "en": [
+          "art",
+          "draw",
+          "poster",
+          "picture",
+          "studio"
+        ],
+        "es-MX": [
+          "arte",
+          "dibujar",
+          "póster",
+          "imagen",
+          "estudio"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Game Arcade has quick learning games for animals, patterns, robot memory, dinosaurs, navigation, and arithmetic.",
+        "es-MX": "La Sala de Juegos tiene juegos rápidos de animales, patrones, memoria robot, dinosaurios, navegación y aritmética."
+      },
+      "id": "games",
+      "keywords": {
+        "en": [
+          "game",
+          "arcade",
+          "score",
+          "play"
+        ],
+        "es-MX": [
+          "juego",
+          "sala de juegos",
+          "puntuación",
+          "jugar"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "You earn stars by creating, discovering, completing jobs, playing games, and finishing missions. Badges mark important milestones.",
+        "es-MX": "Ganas estrellas al crear, descubrir, completar trabajos, jugar y terminar misiones. Las insignias marcan logros importantes."
+      },
+      "id": "stars",
+      "keywords": {
+        "en": [
+          "star",
+          "stars",
+          "earn",
+          "badge",
+          "level"
+        ],
+        "es-MX": [
+          "estrella",
+          "estrellas",
+          "ganar",
+          "insignia",
+          "nivel"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Showtime Studio makes a short video entirely on this device. Pick up to three characters and a pose sequence, then ask a grown-up before recording and downloading.",
+        "es-MX": "Showtime Studio crea un video corto completamente en este dispositivo. Elige hasta tres personajes y una secuencia de poses, y pide permiso a un adulto antes de grabar y descargar."
+      },
+      "id": "movies",
+      "keywords": {
+        "en": [
+          "movie",
+          "video",
+          "showtime",
+          "record",
+          "download"
+        ],
+        "es-MX": [
+          "película",
+          "video",
+          "showtime",
+          "grabar",
+          "descargar"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Nico’s Phase 2 closet has 26 local outfits, including science, health, community, nature, creative, sports, adventure, and leadership jobs. Use the search box to find one quickly.",
+        "es-MX": "El armario Fase 2 de Nico tiene 26 trajes locales, con trabajos de ciencia, salud, comunidad, naturaleza, creatividad, deportes, aventura y liderazgo. Usa el buscador para encontrar uno rápido."
+      },
+      "id": "nico-clothes",
+      "keywords": {
+        "en": [
+          "nico",
+          "outfit",
+          "costume",
+          "dress",
+          "job",
+          "profession",
+          "how many outfits"
+        ],
+        "es-MX": [
+          "nico",
+          "ropa",
+          "disfraz",
+          "vestir",
+          "trabajo",
+          "profesión",
+          "cuántos trajes"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Scientists test ideas, engineers design and repair, and astronauts study space. Nico can try each role in the Dress Up tab and use the outfit in Showtime.",
+        "es-MX": "Los científicos prueban ideas, los ingenieros diseñan y reparan, y los astronautas estudian el espacio. Nico puede probar cada papel en Disfraces y usar el traje en Showtime."
+      },
+      "id": "science-jobs",
+      "keywords": {
+        "en": [
+          "scientist",
+          "engineer",
+          "astronaut",
+          "science job",
+          "inventor",
+          "experiment"
+        ],
+        "es-MX": [
+          "científico",
+          "ingeniero",
+          "astronauta",
+          "trabajo de ciencia",
+          "inventor",
+          "experimento"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Doctors help people, dentists care for teeth, and veterinarians care for animals. These Clubhouse roles are pretend-play learning tools, not medical advice.",
+        "es-MX": "Los doctores ayudan a las personas, los dentistas cuidan los dientes y los veterinarios cuidan animales. Estos papeles son juegos educativos, no consejos médicos."
+      },
+      "id": "health-helper-jobs",
+      "keywords": {
+        "en": [
+          "doctor",
+          "dentist",
+          "veterinarian",
+          "health job",
+          "help people",
+          "help animals"
+        ],
+        "es-MX": [
+          "doctor",
+          "dentista",
+          "veterinario",
+          "trabajo de salud",
+          "ayudar personas",
+          "ayudar animales"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Teachers, firefighters, police officers, and librarians help communities in different ways. Nico’s outfits focus on learning, safety, teamwork, and kindness.",
+        "es-MX": "Los maestros, bomberos, policías y bibliotecarios ayudan a la comunidad de distintas maneras. Los trajes de Nico se enfocan en aprendizaje, seguridad, trabajo en equipo y amabilidad."
+      },
+      "id": "community-jobs",
+      "keywords": {
+        "en": [
+          "teacher",
+          "police officer",
+          "firefighter",
+          "librarian",
+          "community helper"
+        ],
+        "es-MX": [
+          "maestro",
+          "policía",
+          "bombero",
+          "bibliotecario",
+          "ayudante de la comunidad"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Gardeners and farmers grow things, zookeepers care for habitats, and artists, chefs, and musicians create experiences for others. Try one and make a themed Showtime movie.",
+        "es-MX": "Los jardineros y granjeros cultivan, los cuidadores protegen hábitats, y los artistas, chefs y músicos crean experiencias. Prueba uno y crea una película temática en Showtime."
+      },
+      "id": "nature-creative-jobs",
+      "keywords": {
+        "en": [
+          "gardener",
+          "farmer",
+          "zookeeper",
+          "artist",
+          "chef",
+          "musician",
+          "nature job",
+          "creative job"
+        ],
+        "es-MX": [
+          "jardinero",
+          "granjero",
+          "cuidador del zoológico",
+          "artista",
+          "chef",
+          "músico",
+          "trabajo de naturaleza",
+          "trabajo creativo"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Soccer and tennis build practice, focus, movement, and fair play. Lifeguards learn water safety and rescue skills. Nico can wear each sports outfit for pretend play.",
+        "es-MX": "El fútbol y el tenis desarrollan práctica, concentración, movimiento y juego limpio. Los salvavidas aprenden seguridad acuática y rescate. Nico puede usar cada traje deportivo para jugar."
+      },
+      "id": "sports-jobs",
+      "keywords": {
+        "en": [
+          "soccer",
+          "tennis",
+          "athlete",
+          "sports",
+          "lifeguard"
+        ],
+        "es-MX": [
+          "fútbol",
+          "tenis",
+          "atleta",
+          "deportes",
+          "salvavidas"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Open Parent & Settings to download a private JSON backup. Keep important backups somewhere safe because browser data can be erased.",
+        "es-MX": "Abre Adultos y Ajustes para descargar un respaldo JSON privado. Guarda los respaldos importantes en un lugar seguro porque los datos del navegador pueden borrarse."
+      },
+      "id": "backup",
+      "keywords": {
+        "en": [
+          "backup",
+          "save",
+          "restore",
+          "export",
+          "import",
+          "lost progress"
+        ],
+        "es-MX": [
+          "respaldo",
+          "guardar",
+          "restaurar",
+          "exportar",
+          "importar",
+          "perder progreso"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "After the first successful visit, the PWA can keep its main activities available offline. Wildlife photos may need the internet the first time.",
+        "es-MX": "Después de la primera visita exitosa, la PWA puede mantener disponibles sus actividades principales sin conexión. Las fotos de fauna pueden necesitar internet la primera vez."
+      },
+      "id": "offline",
+      "keywords": {
+        "en": [
+          "offline",
+          "no internet",
+          "without internet",
+          "install"
+        ],
+        "es-MX": [
+          "sin conexión",
+          "sin internet",
+          "instalar"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "I am a safe local helper, not an online generative AI. I match your question to a bilingual answer library stored inside Nico’s World, so your question stays on this device.",
+        "es-MX": "Soy un ayudante local seguro, no una IA generativa en línea. Comparo tu pregunta con una biblioteca bilingüe guardada dentro del Mundo de Nico, así que tu pregunta permanece en este dispositivo."
+      },
+      "id": "safe-question",
+      "keywords": {
+        "en": [
+          "are you ai",
+          "artificial intelligence",
+          "how do you answer",
+          "real ai"
+        ],
+        "es-MX": [
+          "eres ia",
+          "inteligencia artificial",
+          "cómo respondes",
+          "ia real"
+        ]
+      }
+    }
+  ],
+  "schemaVersion": 1
+}
