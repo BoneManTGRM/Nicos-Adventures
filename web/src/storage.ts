@@ -4,14 +4,36 @@ import type {
   Language,
   LocalProfile,
   LocalSaveStore,
+  MovieCharacterKind,
+  MoviePose,
+  MovieProject,
+  NicoPreferences,
+  NicoProfessionId,
   Robot,
   SectionId,
 } from "./types";
 
-export const STORAGE_KEY = "nicos-world-local-save-v2";
-const LEGACY_KEY = "nicos-world-local-save-v1";
+export const STORAGE_KEY = "nicos-world-local-save-v3";
+const LEGACY_KEYS = ["nicos-world-local-save-v2", "nicos-world-local-save-v1"] as const;
 const now = (): string => new Date().toISOString();
 const id = (prefix: string): string => `${prefix}-${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}`;
+
+const professionIds: NicoProfessionId[] = [
+  "explorer",
+  "astronaut",
+  "doctor",
+  "scientist",
+  "engineer",
+  "veterinarian",
+  "dinosaur",
+  "suit",
+  "firefighter",
+  "chef",
+  "artist",
+  "pilot",
+];
+const characterKinds: MovieCharacterKind[] = ["nico", "robot", "monster", "pet"];
+const moviePoses: MoviePose[] = ["idle", "wave", "celebrate", "launch", "dance", "spin", "bounce", "roar", "sleep"];
 
 export const starterRobot = (playerName = "Explorer"): Robot => ({
   id: "starter-boltbot",
@@ -54,12 +76,18 @@ const starterDinosaurs = (): DinosaurRecord[] => [
   ["velociraptor", "Velociraptor", "🦖", "Cretaceous"],
 ].map(([dinoId, name, emoji, period]) => ({ id: dinoId, name, emoji, period, discovered: false }));
 
+const defaultNicoPreferences = (): NicoPreferences => ({
+  profession: "explorer",
+  accentColor: "#22c55e",
+  speechEnabled: true,
+});
+
 export const createProfile = (playerName: string, language: Language = "en"): LocalProfile => {
   const timestamp = now();
   const cleanName = playerName.trim().slice(0, 24) || "Explorer";
   const robot = starterRobot(cleanName);
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     id: id("player"),
     playerName: cleanName,
     language,
@@ -80,12 +108,74 @@ export const createProfile = (playerName: string, language: Language = "en"): Lo
     arcadeScores: {},
     decorations: ["Charging Dock"],
     badges: [],
+    movieProjects: [],
+    nico: defaultNicoPreferences(),
     createdAt: timestamp,
     updatedAt: timestamp,
   };
 };
 
 const normalizeLanguage = (value: unknown): Language => value === "es-MX" ? "es-MX" : "en";
+const clampText = (value: unknown, max: number, fallback = ""): string => String(value ?? fallback).trim().slice(0, max);
+const clampNumber = (value: unknown, min: number, max: number, fallback: number): number => {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? Math.max(min, Math.min(max, numeric)) : fallback;
+};
+
+const normalizeNico = (candidate: unknown): NicoPreferences => {
+  if (!candidate || typeof candidate !== "object") return defaultNicoPreferences();
+  const value = candidate as Partial<NicoPreferences>;
+  const profession = professionIds.includes(value.profession as NicoProfessionId)
+    ? value.profession as NicoProfessionId
+    : "explorer";
+  const accentColor = /^#[0-9a-f]{6}$/i.test(String(value.accentColor ?? ""))
+    ? String(value.accentColor)
+    : "#22c55e";
+  return { profession, accentColor, speechEnabled: value.speechEnabled !== false };
+};
+
+const normalizeMovieProject = (candidate: unknown): MovieProject | null => {
+  if (!candidate || typeof candidate !== "object") return null;
+  const value = candidate as Partial<MovieProject>;
+  const characters = Array.isArray(value.characters)
+    ? value.characters.flatMap((item) => {
+        if (!item || typeof item !== "object") return [];
+        const character = item as { kind?: unknown; id?: unknown; name?: unknown };
+        const kind = characterKinds.includes(character.kind as MovieCharacterKind)
+          ? character.kind as MovieCharacterKind
+          : null;
+        if (!kind) return [];
+        return [{ kind, id: clampText(character.id, 80, kind), name: clampText(character.name, 48, kind) }];
+      }).slice(0, 3)
+    : [];
+  if (!characters.length) return null;
+
+  const poseSequence = Array.isArray(value.poseSequence)
+    ? value.poseSequence.flatMap((item) => {
+        if (!item || typeof item !== "object") return [];
+        const step = item as { pose?: unknown; durationMs?: unknown };
+        const pose = moviePoses.includes(step.pose as MoviePose) ? step.pose as MoviePose : null;
+        if (!pose) return [];
+        return [{ pose, durationMs: Math.round(clampNumber(step.durationMs, 400, 3000, 1200)) }];
+      }).slice(0, 8)
+    : [];
+  if (!poseSequence.length) return null;
+
+  const calculatedDuration = poseSequence.reduce((total, step) => total + step.durationMs, 0);
+  return {
+    id: clampText(value.id, 80, id("movie")),
+    title: clampText(value.title, 48, "My Little Movie"),
+    characters,
+    poseSequence,
+    background: clampText(value.background, 40, "Star Stage"),
+    caption: clampText(value.caption, 140),
+    language: normalizeLanguage(value.language),
+    durationMs: Math.round(clampNumber(value.durationMs, 4000, 8000, Math.max(4000, Math.min(8000, calculatedDuration)))),
+    createdAt: String(value.createdAt ?? now()),
+    lastDownloadedAt: value.lastDownloadedAt ? String(value.lastDownloadedAt) : undefined,
+    lastMimeType: value.lastMimeType ? clampText(value.lastMimeType, 80) : undefined,
+  };
+};
 
 const normalizeProfile = (candidate: unknown): LocalProfile | null => {
   if (!candidate || typeof candidate !== "object") return null;
@@ -95,10 +185,13 @@ const normalizeProfile = (candidate: unknown): LocalProfile | null => {
   const robot = value.robot && typeof value.robot === "object"
     ? { ...fresh.robot, ...value.robot, id: String(value.robot.id ?? fresh.robot.id) }
     : fresh.robot;
+  const movieProjects = Array.isArray(value.movieProjects)
+    ? value.movieProjects.map(normalizeMovieProject).filter((item): item is MovieProject => item !== null).slice(-40)
+    : [];
   return {
     ...fresh,
     ...value,
-    schemaVersion: 2,
+    schemaVersion: 3,
     id: String(value.id ?? fresh.id).slice(0, 80),
     playerName,
     language: normalizeLanguage(value.language),
@@ -118,7 +211,9 @@ const normalizeProfile = (candidate: unknown): LocalProfile | null => {
     fossils: Array.isArray(value.fossils) ? value.fossils.map(String) : [],
     arcadeScores: value.arcadeScores && typeof value.arcadeScores === "object" ? value.arcadeScores : {},
     decorations: Array.isArray(value.decorations) ? value.decorations.map(String) : fresh.decorations,
-    badges: Array.isArray(value.badges) ? value.badges.map(String) : [],
+    badges: Array.isArray(value.badges) ? [...new Set(value.badges.map(String))].slice(0, 100) : [],
+    movieProjects,
+    nico: normalizeNico(value.nico),
     createdAt: String(value.createdAt ?? fresh.createdAt),
     updatedAt: String(value.updatedAt ?? now()),
   };
@@ -126,7 +221,7 @@ const normalizeProfile = (candidate: unknown): LocalProfile | null => {
 
 export const createDefaultStore = (): LocalSaveStore => {
   const profile = createProfile("Nico", "en");
-  return { schemaVersion: 2, activeProfileId: profile.id, profiles: [profile] };
+  return { schemaVersion: 3, activeProfileId: profile.id, profiles: [profile] };
 };
 
 export const normalizeStore = (candidate: unknown): LocalSaveStore => {
@@ -137,12 +232,14 @@ export const normalizeStore = (candidate: unknown): LocalSaveStore => {
     : [];
   if (!profiles.length) return createDefaultStore();
   const activeProfileId = profiles.some((profile) => profile.id === value.activeProfileId) ? String(value.activeProfileId) : profiles[0].id;
-  return { schemaVersion: 2, activeProfileId, profiles };
+  return { schemaVersion: 3, activeProfileId, profiles };
 };
 
 export const loadLocalStore = (): LocalSaveStore => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_KEY);
+    const saved = localStorage.getItem(STORAGE_KEY)
+      ?? LEGACY_KEYS.map((key) => localStorage.getItem(key)).find((value) => value !== null)
+      ?? null;
     return saved ? normalizeStore(JSON.parse(saved)) : createDefaultStore();
   } catch {
     return createDefaultStore();
@@ -158,8 +255,16 @@ export const saveLocalStore = (store: LocalSaveStore): boolean => {
   }
 };
 
+export const updateActiveProfile = (mutate: (profile: LocalProfile) => LocalProfile): LocalSaveStore => {
+  const store = loadLocalStore();
+  const profiles = store.profiles.map((profile) => profile.id === store.activeProfileId ? touchProfile(mutate(profile)) : profile);
+  const next = normalizeStore({ ...store, profiles });
+  saveLocalStore(next);
+  return next;
+};
+
 export const exportProfile = (profile: LocalProfile): string => JSON.stringify({
-  format: "nicos-world-local-profile-v2",
+  format: "nicos-world-local-profile-v3",
   exportedAt: now(),
   profile: { ...profile, updatedAt: now() },
 }, null, 2);
