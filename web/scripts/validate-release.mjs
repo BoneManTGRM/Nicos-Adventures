@@ -5,6 +5,7 @@ const root = path.resolve(import.meta.dirname, "..");
 const requiredFiles = [
   "index.html",
   "package.json",
+  "package-lock.json",
   "public/wildlife-director.js",
   "public/asset-recovery.js",
   "public/dinosaur-art.js",
@@ -80,12 +81,16 @@ if (showtime.includes("localStorage") || recorder.includes("localStorage")) thro
 if (!showtime.includes("parentConfirmed")) throw new Error("Showtime parental confirmation is missing");
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const packageLock = JSON.parse(fs.readFileSync(path.join(root, "package-lock.json"), "utf8"));
 const allVersions = { ...(packageJson.dependencies ?? {}), ...(packageJson.devDependencies ?? {}) };
 for (const [name, version] of Object.entries(allVersions)) {
   if (version === "latest" || String(version).startsWith("^") || String(version).startsWith("~")) {
     throw new Error(`Dependency is not exactly pinned: ${name}@${version}`);
   }
+  const locked = packageLock.packages?.[""]?.dependencies?.[name] ?? packageLock.packages?.[""]?.devDependencies?.[name];
+  if (locked !== version) throw new Error(`Lockfile version mismatch: ${name}@${locked} !== ${version}`);
 }
+if (packageLock.lockfileVersion !== 3) throw new Error("Web package lock must use lockfileVersion 3");
 if (!packageJson.scripts?.test?.includes("vitest")) throw new Error("Vitest test script is missing");
 
 const sw = fs.readFileSync(path.join(root, "public/sw.js"), "utf8");
