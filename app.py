@@ -17,6 +17,7 @@ from activities import (
     pet_workshop,
     robo_lab,
     robot_home,
+    showtime_studio,
     story_castle,
     world_map,
 )
@@ -66,6 +67,7 @@ PAGES = [
     "Art Studio",
     "Story Castle",
     "Game Arcade",
+    "Showtime Studio",
     "Dinosaur Valley",
     "Pet Workshop",
     "Robot Home",
@@ -150,6 +152,8 @@ elif page == "Story Castle":
     story_castle.render(profile)
 elif page == "Game Arcade":
     game_arcade.render(profile)
+elif page == "Showtime Studio":
+    showtime_studio.render(profile)
 elif page == "Dinosaur Valley":
     dinosaur_valley.render(profile)
 elif page == "Pet Workshop":
