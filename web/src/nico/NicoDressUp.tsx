@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import professionData from "../catalogs/nico-professions.json";
 import type { Language, LocalizedText, NicoPreferences, NicoProfessionId } from "../types";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
@@ -45,10 +45,11 @@ const copy = {
 } as const;
 
 export function filterNicoProfessions(query: string, language: Language): ProfessionOption[] {
-  const normalized = query.trim().toLocaleLowerCase(language === "es-MX" ? "es-MX" : "en-US");
+  const locale = language === "es-MX" ? "es-MX" : "en-US";
+  const normalized = query.trim().toLocaleLowerCase(locale);
   if (!normalized) return NICO_PROFESSIONS;
   return NICO_PROFESSIONS.filter((profession) =>
-    `${profession.name[language]} ${profession.tagline[language]}`.toLocaleLowerCase(language === "es-MX" ? "es-MX" : "en-US").includes(normalized),
+    `${profession.name[language]} ${profession.tagline[language]}`.toLocaleLowerCase(locale).includes(normalized),
   );
 }
 
@@ -121,7 +122,7 @@ export function NicoDressUp({ language, artSource, preferences, onSave }: Props)
                     role="listitem"
                     aria-pressed={active}
                     className={active ? "selected" : ""}
-                    style={{ "--nico-costume-accent": profession.accent } as React.CSSProperties}
+                    style={{ "--nico-costume-accent": profession.accent } as CSSProperties}
                     key={profession.id}
                     onClick={() => choose(profession)}
                   >
