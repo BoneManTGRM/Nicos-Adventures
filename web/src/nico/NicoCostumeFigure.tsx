@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import type { NicoProfessionId } from "../types";
 
 type Props = {
@@ -15,7 +15,7 @@ type CostumeDecoration = {
   badge?: string;
 };
 
-const decorations: Record<NicoProfessionId, CostumeDecoration> = {
+export const NICO_COSTUME_DECORATIONS: Record<NicoProfessionId, CostumeDecoration> = {
   explorer: { head: "🧢", prop: "🧭", badge: "🌿" },
   astronaut: { head: "🪐", prop: "🚀", badge: "⭐" },
   doctor: { head: "🩺", prop: "🧰", badge: "➕" },
@@ -28,6 +28,19 @@ const decorations: Record<NicoProfessionId, CostumeDecoration> = {
   chef: { head: "👨‍🍳", prop: "🥄", badge: "🍳" },
   artist: { head: "🎨", prop: "🖌️", badge: "🌈" },
   pilot: { head: "🧢", prop: "✈️", badge: "🧭" },
+  gardener: { head: "👒", prop: "🪴", badge: "🌱" },
+  teacher: { head: "🎓", prop: "📚", badge: "✏️" },
+  dentist: { head: "🥼", prop: "🦷", badge: "✨" },
+  "police-officer": { head: "👮", prop: "📻", badge: "⭐" },
+  zookeeper: { head: "🧢", prop: "🦒", badge: "🐾" },
+  musician: { head: "🎧", prop: "🎸", badge: "🎵" },
+  farmer: { head: "🤠", prop: "🚜", badge: "🌾" },
+  lifeguard: { head: "🧢", prop: "🛟", badge: "🌊" },
+  magician: { head: "🎩", prop: "🪄", badge: "✨" },
+  "soccer-player": { head: "🏅", prop: "⚽", badge: "🥅" },
+  "tennis-player": { head: "🧢", prop: "🎾", badge: "🏆" },
+  detective: { head: "🕵️", prop: "🔎", badge: "🧩" },
+  librarian: { head: "👓", prop: "📚", badge: "🔖" },
 };
 
 export function NicoCostumeFigure({
@@ -37,20 +50,37 @@ export function NicoCostumeFigure({
   compact = false,
   alt = "Nico",
 }: Props) {
-  const decoration = decorations[profession];
+  const decoration = NICO_COSTUME_DECORATIONS[profession];
   const style = { "--nico-costume-accent": accentColor } as CSSProperties;
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => setImageFailed(false), [artSource]);
+  const showImage = Boolean(artSource) && !imageFailed;
 
   return (
     <figure
       className={`nico-costume nico-costume--${profession} ${compact ? "nico-costume--compact" : ""}`.trim()}
       style={style}
       data-profession={profession}
+      data-art-state={showImage ? "loaded" : "fallback"}
     >
       <div className="nico-costume__frame">
-        {artSource ? (
-          <img src={artSource} alt={alt} data-asset-recovery="ignore" decoding="async" />
+        {showImage ? (
+          <img
+            src={artSource}
+            alt={alt}
+            data-asset-recovery="ignore"
+            decoding="async"
+            onError={() => setImageFailed(true)}
+          />
         ) : (
-          <div className="nico-costume__fallback" role="img" aria-label={alt}>N</div>
+          <div className="nico-costume__fallback" role="img" aria-label={alt}>
+            <span className="nico-costume__fallback-hair" aria-hidden="true" />
+            <span className="nico-costume__fallback-face" aria-hidden="true">
+              <i /><i />
+            </span>
+            <span className="nico-costume__fallback-shirt" aria-hidden="true" />
+          </div>
         )}
         <span className="nico-costume__uniform" aria-hidden="true" />
         {decoration.head && <span className="nico-costume__head" aria-hidden="true">{decoration.head}</span>}
