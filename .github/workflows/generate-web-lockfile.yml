@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   lockfile:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feature/nico-clubhouse-showtime-mvp' && !contains(github.event.pull_request.title, '[lockfile generated]') }}
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feature/nico-clubhouse-showtime-mvp' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Commit lockfile
         run: |
-          if git diff --quiet -- web/package-lock.json; then
+          if [ -z "$(git status --porcelain -- web/package-lock.json)" ]; then
             echo "Lockfile is already current."
             exit 0
           fi
