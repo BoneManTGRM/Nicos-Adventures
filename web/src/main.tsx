@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import FullApp from "./FullApp";
+import NicoEnhancedApp from "./NicoEnhancedApp";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <FullApp />
+    <NicoEnhancedApp />
   </StrictMode>
 );
