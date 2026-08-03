@@ -21,6 +21,7 @@ export const NICO_COSTUME_DECORATIONS: Record<NicoProfessionId, CostumeDecoratio
   doctor: { head: "🩺", prop: "🧰", badge: "➕" },
   scientist: { head: "🥽", prop: "🔬", badge: "⚗️" },
   engineer: { head: "⛑️", prop: "🔧", badge: "⚙️" },
+  builder: { head: "⛑️", prop: "🛠️", badge: "📐" },
   veterinarian: { head: "🩺", prop: "🐾", badge: "💚" },
   dinosaur: { head: "🦖", prop: "🦴", badge: "🌋" },
   suit: { head: "🎓", prop: "📋", badge: "👔" },
