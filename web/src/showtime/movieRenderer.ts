@@ -1,3 +1,4 @@
+import professionData from "../catalogs/nico-professions.json";
 import type {
   MovieCharacterKind,
   MoviePose,
@@ -60,20 +61,9 @@ const monsterColors: Record<string, string> = {
   Crimson: "#be123c",
 };
 
-const professionIcons: Record<NicoProfessionId, string> = {
-  explorer: "🧭",
-  astronaut: "🚀",
-  doctor: "🩺",
-  scientist: "🔬",
-  engineer: "⚙️",
-  veterinarian: "🐾",
-  dinosaur: "🦖",
-  suit: "👔",
-  firefighter: "🚒",
-  chef: "👨‍🍳",
-  artist: "🎨",
-  pilot: "✈️",
-};
+const professionIcons = Object.fromEntries(
+  professionData.map((profession) => [profession.id, profession.emoji]),
+) as Record<NicoProfessionId, string>;
 
 const petIcons: Record<string, string> = {
   "Robot Dog": "🐕",
@@ -330,7 +320,7 @@ function drawNico(
   ctx.font = `${Math.round(size * 0.18)}px Apple Color Emoji, Segoe UI Emoji, sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(professionIcons[profession], x + size * 0.3, y - size * 0.38);
+  ctx.fillText(professionIcons[profession] ?? "✨", x + size * 0.3, y - size * 0.38);
   ctx.restore();
 }
 
