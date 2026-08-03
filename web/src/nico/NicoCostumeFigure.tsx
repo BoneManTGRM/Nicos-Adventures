@@ -70,7 +70,7 @@ export function NicoCostumeFigure({
         {outfitStyle ? (
           <span className="nico-costume__approved" style={outfitStyle} role="img" aria-label={alt} data-approved-nico-outfit="true" />
         ) : artSource ? (
-          <span className="nico-costume__approved" style={approvedCharacterStyle(artSource, "full")} role="img" aria-label={alt} data-approved-nico-art="true" />
+          <span className="nico-costume__approved" style={approvedCharacterStyle(artSource, compact ? "guide" : "full")} role="img" aria-label={alt} data-approved-nico-art="true" />
         ) : (
           <div className="nico-costume__fallback" role="img" aria-label={alt}>
             <span className="nico-costume__fallback-hair" aria-hidden="true" />
