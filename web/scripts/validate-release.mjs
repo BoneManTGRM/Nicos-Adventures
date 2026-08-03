@@ -8,8 +8,12 @@ const requiredFiles = [
   "public/asset-recovery.js",
   "public/dinosaur-art.js",
   "public/sw.js",
+  "public/characters/nico/nico-approved-character-sheet.webp",
   "src/FullApp.tsx",
-  "src/FeatureArt.tsx"
+  "src/FeatureArt.tsx",
+  "src/NicoCharacter.tsx",
+  "src/NicoEnhancedApp.tsx",
+  "src/nico-character.css"
 ];
 for (const relative of requiredFiles) {
   const file = path.join(root, relative);
@@ -35,7 +39,11 @@ const appPos = index.indexOf('/src/main.tsx');
 if (directorPos < 0 || appPos < 0 || directorPos > appPos) throw new Error("Wildlife director must load before React");
 
 const sw = fs.readFileSync(path.join(root, "public/sw.js"), "utf8");
-if (!sw.includes("nicos-world-static-v11")) throw new Error("Release cache version is not v11");
+if (!sw.includes("nicos-world-static-v12")) throw new Error("Release cache version is not v12");
 if (!sw.includes('/wildlife-director.js')) throw new Error("Wildlife director is not in the offline shell");
+if (!sw.includes('/characters/nico/nico-approved-character-sheet.webp')) throw new Error("Approved Nico artwork is not in the offline shell");
 
-console.log(`Release validation passed for ${labels.length} wildlife species.`);
+const character = fs.readFileSync(path.join(root, "src/NicoCharacter.tsx"), "utf8");
+if (!character.includes("nico-approved-character-sheet.webp")) throw new Error("Approved Nico artwork is not wired into the character component");
+
+console.log(`Release validation passed for ${labels.length} wildlife species and approved Nico artwork.`);
