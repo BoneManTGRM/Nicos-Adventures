@@ -1,0 +1,52 @@
+{
+  "clients": {
+    "api": {
+      "apiVersion": "3.0.0",
+      "profileSchemaVersion": 4,
+      "repairEndpoint": "/api/v1/profile/repair",
+      "versionField": "schema_version"
+    },
+    "streamlit": {
+      "exportFormat": "complete-profile-json",
+      "profileSchemaVersion": 5,
+      "versionField": "version"
+    },
+    "web": {
+      "exportFormat": "nicos-world-local-profile-v3",
+      "legacyStorageKeys": [
+        "nicos-world-local-save-v2",
+        "nicos-world-local-save-v1"
+      ],
+      "profileSchemaVersion": 3,
+      "storageKey": "nicos-world-local-save-v3",
+      "versionField": "schemaVersion"
+    }
+  },
+  "compatibility": [
+    {
+      "consumer": "web-v3",
+      "notes": "Local storage normalization preserves bounded profile data.",
+      "producer": "web-v1/v2",
+      "status": "automatic"
+    },
+    {
+      "consumer": "streamlit-v5",
+      "notes": "Separate save shapes; shared catalogs and movie metadata contract only.",
+      "producer": "web-v3",
+      "status": "not-interchangeable"
+    },
+    {
+      "consumer": "streamlit-v5",
+      "notes": "normalize_profile migrates older saves.",
+      "producer": "streamlit-v1-v5",
+      "status": "automatic"
+    },
+    {
+      "consumer": "api-v4",
+      "notes": "Pydantic repair upgrades schema_version to 4.",
+      "producer": "api-v1-v3",
+      "status": "repair-endpoint"
+    }
+  ],
+  "registryVersion": 1
+}

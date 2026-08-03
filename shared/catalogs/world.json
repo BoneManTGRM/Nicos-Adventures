@@ -1,0 +1,593 @@
+{
+  "art": {
+    "backgrounds": {
+      "Crystal Castle": [
+        "#C4B5FD",
+        "#FDE68A"
+      ],
+      "Dinosaur Valley": [
+        "#FDBA74",
+        "#4ADE80"
+      ],
+      "Moon Base": [
+        "#111827",
+        "#475569"
+      ],
+      "Ocean Station": [
+        "#0EA5E9",
+        "#164E63"
+      ],
+      "Rainbow Sky": [
+        "#F9A8D4",
+        "#67E8F9"
+      ],
+      "Sunrise Meadow": [
+        "#7DD3FC",
+        "#86EFAC"
+      ]
+    },
+    "frames": [
+      "Golden Stars",
+      "Robot Bolts",
+      "Jungle Vines",
+      "Monster Spots",
+      "Crystal Glow",
+      "Space Window"
+    ],
+    "stickers": [
+      "⭐",
+      "🤖",
+      "🐾",
+      "👾",
+      "🦖",
+      "🚀",
+      "🌈",
+      "💎",
+      "🌙",
+      "🏆",
+      "🐉",
+      "🎨"
+    ]
+  },
+  "campaignMissions": {
+    "crystal_01": {
+      "ability": "repair",
+      "chapter": 6,
+      "description": "Combine repair skill and monster magic to open the castle safely.",
+      "emoji": "💎",
+      "objectives": [
+        [
+          "ability_repair",
+          1,
+          "Prepare a repair teammate"
+        ],
+        [
+          "monster_friendship",
+          35,
+          "Reach 35 total monster friendship"
+        ]
+      ],
+      "reward": 11,
+      "title": "The Crystal Castle Door"
+    },
+    "crystal_02": {
+      "ability": "creative",
+      "chapter": 6,
+      "description": "Show the world what Nico's creative team can build together.",
+      "emoji": "🛠️",
+      "objectives": [
+        [
+          "robot_customizations",
+          2,
+          "Customize robots twice"
+        ],
+        [
+          "artworks",
+          5,
+          "Create five artworks"
+        ],
+        [
+          "pet_tricks",
+          2,
+          "Teach robot pets two tricks"
+        ]
+      ],
+      "reward": 12,
+      "title": "Festival of Inventors"
+    },
+    "dino_01": {
+      "ability": "scanner",
+      "chapter": 3,
+      "description": "Open Dinosaur Valley and identify its first ancient resident.",
+      "emoji": "🦕",
+      "objectives": [
+        [
+          "dinosaurs_discovered",
+          1,
+          "Discover one dinosaur"
+        ],
+        [
+          "fossils",
+          1,
+          "Recover one fossil"
+        ]
+      ],
+      "reward": 6,
+      "title": "Footprints from the Past"
+    },
+    "dino_02": {
+      "ability": "strength",
+      "chapter": 3,
+      "description": "Use strength and careful observation to repair a fossil bridge.",
+      "emoji": "🦴",
+      "objectives": [
+        [
+          "dinosaurs_discovered",
+          3,
+          "Discover three dinosaurs"
+        ],
+        [
+          "ability_strength",
+          1,
+          "Prepare a strong teammate"
+        ]
+      ],
+      "reward": 7,
+      "title": "The Fossil Bridge"
+    },
+    "dino_03": {
+      "ability": "flight",
+      "chapter": 3,
+      "description": "Reach the high nesting grounds without disturbing the eggs.",
+      "emoji": "🪽",
+      "objectives": [
+        [
+          "dinosaurs_discovered",
+          5,
+          "Discover five dinosaurs"
+        ],
+        [
+          "ability_flight",
+          1,
+          "Prepare a flying teammate"
+        ]
+      ],
+      "reward": 8,
+      "title": "Sky Nest Mystery"
+    },
+    "dino_04": {
+      "ability": "repair",
+      "chapter": 3,
+      "description": "Complete the valley expedition and preserve its discoveries.",
+      "emoji": "🌋",
+      "objectives": [
+        [
+          "dinosaurs_discovered",
+          7,
+          "Discover seven dinosaurs"
+        ],
+        [
+          "fossils",
+          4,
+          "Recover four fossils"
+        ],
+        [
+          "arcade_wins",
+          3,
+          "Win three Arcade rounds"
+        ]
+      ],
+      "reward": 10,
+      "title": "Valley of Gentle Giants"
+    },
+    "finale_01": {
+      "ability": "teamwork",
+      "chapter": 7,
+      "description": "Restore the machine that connects every part of Nico's World.",
+      "emoji": "🌠",
+      "objectives": [
+        [
+          "campaign_completed",
+          16,
+          "Complete sixteen earlier missions"
+        ],
+        [
+          "world_growth",
+          5,
+          "Grow the living world to stage five"
+        ]
+      ],
+      "reward": 15,
+      "title": "Return of the Star Machine"
+    },
+    "finale_02": {
+      "ability": "teamwork",
+      "chapter": 7,
+      "description": "Finish the campaign with a complete creative adventure team.",
+      "emoji": "👑",
+      "objectives": [
+        [
+          "campaign_completed",
+          19,
+          "Complete nineteen earlier missions"
+        ],
+        [
+          "robot_pets",
+          2,
+          "Create two robot pets"
+        ],
+        [
+          "monster_habitats",
+          2,
+          "Build two monster habitats"
+        ],
+        [
+          "dinosaurs_discovered",
+          8,
+          "Discover eight dinosaurs"
+        ]
+      ],
+      "reward": 20,
+      "title": "Guardian of Nico's World"
+    },
+    "forest_01": {
+      "ability": "scanner",
+      "chapter": 2,
+      "description": "Restore the forest sensors without frightening its animals.",
+      "emoji": "🌳",
+      "objectives": [
+        [
+          "animal_discoveries",
+          4,
+          "Discover four animals"
+        ],
+        [
+          "robot_jobs",
+          2,
+          "Complete two robot jobs"
+        ]
+      ],
+      "reward": 5,
+      "title": "The Whispering Canopy"
+    },
+    "forest_02": {
+      "ability": "aquatic",
+      "chapter": 2,
+      "description": "Use aquatic equipment to reach a stranded forest friend.",
+      "emoji": "🌊",
+      "objectives": [
+        [
+          "animal_expeditions",
+          1,
+          "Complete an animal expedition"
+        ],
+        [
+          "ability_aquatic",
+          1,
+          "Prepare an aquatic-capable teammate"
+        ]
+      ],
+      "reward": 6,
+      "title": "River Rescue Route"
+    },
+    "forest_03": {
+      "ability": "creative",
+      "chapter": 2,
+      "description": "Create a field poster that helps explorers follow the safe trail.",
+      "emoji": "🎨",
+      "objectives": [
+        [
+          "artworks",
+          1,
+          "Create an artwork"
+        ],
+        [
+          "stories_created",
+          1,
+          "Create a story"
+        ]
+      ],
+      "reward": 6,
+      "title": "The Painted Trail"
+    },
+    "forest_04": {
+      "ability": "translator",
+      "chapter": 2,
+      "description": "Complete the forest chapter with a robot, monster, and animal team.",
+      "emoji": "🦉",
+      "objectives": [
+        [
+          "animal_discoveries",
+          6,
+          "Discover six animals"
+        ],
+        [
+          "monster_friendship",
+          15,
+          "Build monster friendship"
+        ],
+        [
+          "robot_jobs",
+          4,
+          "Complete four robot jobs"
+        ]
+      ],
+      "reward": 8,
+      "title": "Guardian of the Great Tree"
+    },
+    "moon_01": {
+      "ability": "flight",
+      "chapter": 5,
+      "description": "Train a pet and prepare a flight-capable exploration team.",
+      "emoji": "🚀",
+      "objectives": [
+        [
+          "robot_pets",
+          1,
+          "Create a robot pet"
+        ],
+        [
+          "ability_flight",
+          1,
+          "Prepare a flying teammate"
+        ]
+      ],
+      "reward": 9,
+      "title": "Launch to the Moon"
+    },
+    "moon_02": {
+      "ability": "creative",
+      "chapter": 5,
+      "description": "Recover a forgotten story and illustrate its final page.",
+      "emoji": "🌙",
+      "objectives": [
+        [
+          "stories_created",
+          3,
+          "Create three stories"
+        ],
+        [
+          "artworks",
+          3,
+          "Create three artworks"
+        ]
+      ],
+      "reward": 10,
+      "title": "The Silent Moon Library"
+    },
+    "ocean_01": {
+      "ability": "aquatic",
+      "chapter": 4,
+      "description": "Dive below the waves and restart the station beacons.",
+      "emoji": "🐋",
+      "objectives": [
+        [
+          "ability_aquatic",
+          1,
+          "Prepare an aquatic teammate"
+        ],
+        [
+          "animal_discoveries",
+          8,
+          "Discover eight animals"
+        ]
+      ],
+      "reward": 8,
+      "title": "Ocean Station Emergency"
+    },
+    "ocean_02": {
+      "ability": "translator",
+      "chapter": 4,
+      "description": "Translate the reef's music and solve its color pattern.",
+      "emoji": "🐠",
+      "objectives": [
+        [
+          "ability_translator",
+          1,
+          "Prepare a translator teammate"
+        ],
+        [
+          "arcade_wins",
+          5,
+          "Win five Arcade rounds"
+        ]
+      ],
+      "reward": 9,
+      "title": "The Singing Reef"
+    },
+    "spark_01": {
+      "ability": "scanner",
+      "chapter": 1,
+      "description": "Build a sidekick and restore the first light in Robo City.",
+      "emoji": "⭐",
+      "objectives": [
+        [
+          "robot_builds",
+          1,
+          "Build a robot sidekick"
+        ],
+        [
+          "robot_moves",
+          1,
+          "Try one robot animation"
+        ]
+      ],
+      "reward": 3,
+      "title": "The First Lost Energy Star"
+    },
+    "spark_02": {
+      "ability": "translator",
+      "chapter": 1,
+      "description": "Follow an animal clue through the old power station.",
+      "emoji": "🐾",
+      "objectives": [
+        [
+          "animal_discoveries",
+          2,
+          "Discover two animals"
+        ],
+        [
+          "animal_quiz_correct",
+          1,
+          "Solve an animal challenge"
+        ]
+      ],
+      "reward": 4,
+      "title": "Pawprints in the Power Station"
+    },
+    "spark_03": {
+      "ability": "monster_magic",
+      "chapter": 1,
+      "description": "Create a monster guardian and learn its unusual power.",
+      "emoji": "👾",
+      "objectives": [
+        [
+          "monsters",
+          1,
+          "Create a monster"
+        ],
+        [
+          "monster_plays",
+          1,
+          "Play with a monster"
+        ]
+      ],
+      "reward": 4,
+      "title": "The Friendly Monster Signal"
+    },
+    "spark_04": {
+      "ability": "repair",
+      "chapter": 1,
+      "description": "Make headquarters feel like a real home.",
+      "emoji": "🏠",
+      "objectives": [
+        [
+          "home_decorations",
+          2,
+          "Place two room decorations"
+        ],
+        [
+          "home_moments",
+          2,
+          "Use two Robot Home activities"
+        ]
+      ],
+      "reward": 5,
+      "title": "A Home for the Team"
+    }
+  },
+  "monsterHabitats": {
+    "foods": [
+      "Moon Berries",
+      "Crunchy Star Chips",
+      "Rainbow Noodles",
+      "Bubble Soup",
+      "Dinosaur Leaf Wraps",
+      "Marshmallow Clouds"
+    ],
+    "themes": [
+      "Crystal Cave",
+      "Cloud Nest",
+      "Jungle Hideaway",
+      "Ocean Bubble",
+      "Moon Pod",
+      "Candy Garden",
+      "Volcano Workshop",
+      "Royal Tower"
+    ],
+    "toys": [
+      "Bouncy Meteor",
+      "Puzzle Cube",
+      "Squeaky Rocket",
+      "Mini Castle",
+      "Dancing Banana",
+      "Hologram Fish"
+    ]
+  },
+  "robotPets": {
+    "accessories": [
+      "None",
+      "Explorer Bandana",
+      "Tiny Jetpack",
+      "Crystal Collar",
+      "Tool Harness",
+      "Royal Cape",
+      "Star Antenna"
+    ],
+    "colors": {
+      "Armor Black": "#334155",
+      "Bubblegum Pink": "#EC4899",
+      "Cloud White": "#E2E8F0",
+      "Galaxy Purple": "#8B5CF6",
+      "Jungle Green": "#22C55E",
+      "Photon Blue": "#38BDF8",
+      "Rocket Red": "#EF4444",
+      "Sunny Gold": "#FACC15"
+    },
+    "personalities": [
+      "Brave Scout",
+      "Cuddly Helper",
+      "Silly Acrobat",
+      "Calm Guardian",
+      "Curious Explorer",
+      "Musical Friend"
+    ],
+    "species": {
+      "cat": "🐈",
+      "dinosaur": "🦖",
+      "dog": "🐕",
+      "dragon": "🐉",
+      "fox": "🦊",
+      "owl": "🦉",
+      "penguin": "🐧",
+      "space_orb": "🛸"
+    }
+  },
+  "schemaVersion": 1,
+  "seasonalEvents": [
+    {
+      "challenge": "Complete three activities and decorate a cozy headquarters.",
+      "emoji": "❄️",
+      "idPrefix": "winter",
+      "months": [
+        12,
+        1,
+        2
+      ],
+      "title": "Winter Star Festival"
+    },
+    {
+      "challenge": "Discover an animal and create a colorful artwork.",
+      "emoji": "🌼",
+      "idPrefix": "spring",
+      "months": [
+        3,
+        4,
+        5
+      ],
+      "title": "Spring Animal Celebration"
+    },
+    {
+      "challenge": "Prepare an aquatic teammate and win an Arcade round.",
+      "emoji": "🌊",
+      "idPrefix": "summer",
+      "months": [
+        6,
+        7,
+        8
+      ],
+      "title": "Summer Ocean Expedition"
+    },
+    {
+      "challenge": "Visit a monster habitat and create a new story.",
+      "emoji": "🎃",
+      "idPrefix": "autumn",
+      "months": [
+        9,
+        10,
+        11
+      ],
+      "title": "Autumn Monster Masquerade"
+    }
+  ]
+}

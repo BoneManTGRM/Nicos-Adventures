@@ -1,0 +1,626 @@
+{
+  "schemaVersion": 1,
+  "streamlit": {
+    "MONSTER_ANIMATIONS": {
+      "blink": "Blink",
+      "bounce": "Bounce",
+      "celebrate": "Celebrate",
+      "dance": "Dance",
+      "fly": "Fly",
+      "idle": "Breathe",
+      "roar": "Silly Roar",
+      "sleep": "Sleep",
+      "wiggle": "Wiggle"
+    },
+    "MONSTER_COLORS": {
+      "aqua": [
+        "Aqua Glow",
+        "#22D3EE"
+      ],
+      "black": [
+        "Cosmic Black",
+        "#1E293B"
+      ],
+      "brown": [
+        "Chocolate Brown",
+        "#92400E"
+      ],
+      "gold": [
+        "Golden",
+        "#FACC15"
+      ],
+      "lime": [
+        "Lime Green",
+        "#84CC16"
+      ],
+      "midnight": [
+        "Midnight Blue",
+        "#312E81"
+      ],
+      "mint": [
+        "Mint",
+        "#6EE7B7"
+      ],
+      "orange": [
+        "Orange",
+        "#FB923C"
+      ],
+      "peach": [
+        "Peach",
+        "#FDBA74"
+      ],
+      "pink": [
+        "Bubblegum Pink",
+        "#F472B6"
+      ],
+      "purple": [
+        "Purple",
+        "#8B5CF6"
+      ],
+      "rainbow": [
+        "Rainbow",
+        "#EC4899"
+      ],
+      "red": [
+        "Cherry Red",
+        "#EF4444"
+      ],
+      "silver": [
+        "Glowing Silver",
+        "#CBD5E1"
+      ],
+      "sky": [
+        "Sky Blue",
+        "#38BDF8"
+      ],
+      "teal": [
+        "Ocean Teal",
+        "#14B8A6"
+      ],
+      "violet": [
+        "Electric Violet",
+        "#C084FC"
+      ],
+      "white": [
+        "Moon White",
+        "#F8FAFC"
+      ]
+    },
+    "MONSTER_DEFAULTS": {
+      "accessory": "none",
+      "arms": "tiny",
+      "body": "fluffy",
+      "color": "purple",
+      "ears": "round",
+      "eyes": "two_round",
+      "face": "👾",
+      "horns": "none",
+      "legs": "bouncy",
+      "mood": "Happy",
+      "mouth": "smile",
+      "pattern": "spots",
+      "personality": "Curious and polite",
+      "power": "Sneeze confetti",
+      "secondary_color": "lime",
+      "size": "standard",
+      "tail": "curly",
+      "texture": "fluffy",
+      "wings": "none"
+    },
+    "MONSTER_MOODS": [
+      "Happy",
+      "Excited",
+      "Curious",
+      "Sleepy",
+      "Silly",
+      "Proud",
+      "Surprised",
+      "Calm"
+    ],
+    "MONSTER_PARTS": {
+      "accessory": {
+        "backpack": "Tiny Backpack",
+        "bow": "Big Bow",
+        "cape": "Hero Cape",
+        "crown": "Monster Crown",
+        "flower": "Flower Clip",
+        "glasses": "Smart Glasses",
+        "hat": "Adventure Hat",
+        "headphones": "Music Headphones",
+        "medal": "Friendship Medal",
+        "none": "No Accessory",
+        "scarf": "Cozy Scarf",
+        "space": "Space Helmet"
+      },
+      "arms": {
+        "branch": "Branch Arms",
+        "claws": "Friendly Claws",
+        "flippers": "Flipper Arms",
+        "four": "Four Arms",
+        "long": "Long Wobbly Arms",
+        "none": "No Arms",
+        "robot": "Robot Arms",
+        "spring": "Spring Arms",
+        "strong": "Strong Arms",
+        "tentacle": "Tentacle Arms",
+        "tiny": "Tiny Arms",
+        "wings": "Wing Arms"
+      },
+      "body": {
+        "cloud": "Cloud Creature",
+        "crystal": "Crystal Beast",
+        "dragon": "Dragon Body",
+        "fluffy": "Fluffy Puff",
+        "ghost": "Friendly Ghost",
+        "jelly": "Jelly Drop",
+        "octopus": "Octopus Body",
+        "plant": "Plant Sprout",
+        "robot": "Clockwork Monster",
+        "rock": "Rock Golem",
+        "round": "Round Blob",
+        "star": "Star Creature"
+      },
+      "ears": {
+        "bat": "Bat Ears",
+        "bunny": "Bunny Ears",
+        "cat": "Cat Ears",
+        "cloud": "Cloud Ears",
+        "dragon": "Dragon Ears",
+        "elf": "Elf Ears",
+        "fin": "Ocean Fins",
+        "leaf": "Leaf Ears",
+        "none": "No Ears",
+        "robot": "Robot Receivers",
+        "round": "Round Ears",
+        "star": "Star Ears"
+      },
+      "eyes": {
+        "cat": "Cat Eyes",
+        "heart": "Heart Eyes",
+        "invisible": "Invisible Eyes",
+        "one_giant": "One Giant Eye",
+        "rainbow": "Rainbow Eyes",
+        "robot": "Robot Scanner Eyes",
+        "six": "Six Blinking Eyes",
+        "sleepy": "Sleepy Eyes",
+        "spiral": "Spiral Eyes",
+        "star": "Star Eyes",
+        "three": "Three Tiny Eyes",
+        "two_round": "Two Round Eyes"
+      },
+      "horns": {
+        "antenna": "Antenna Horns",
+        "antlers": "Forest Antlers",
+        "crown": "Crown Horns",
+        "crystal": "Crystal Horns",
+        "curly": "Curly Ram Horns",
+        "dragon": "Dragon Horns",
+        "flame": "Flame Horns",
+        "moon": "Moon Horns",
+        "none": "No Horns",
+        "star": "Star Horns",
+        "tiny": "Tiny Horns",
+        "unicorn": "Unicorn Horn"
+      },
+      "legs": {
+        "bouncy": "Bouncy Legs",
+        "claws": "Clawed Feet",
+        "cloud": "Cloud Floater",
+        "four": "Four Legs",
+        "hooves": "Little Hooves",
+        "long": "Long Legs",
+        "none": "Floating",
+        "robot": "Robot Legs",
+        "roots": "Plant Roots",
+        "tentacles": "Tentacle Base",
+        "tiny": "Tiny Feet",
+        "wheels": "Monster Wheels"
+      },
+      "mouth": {
+        "beak": "Bird Beak",
+        "bubble": "Bubble Mouth",
+        "fangs": "Silly Fangs",
+        "grin": "Giant Grin",
+        "mustache": "Mustache Mouth",
+        "none": "No Mouth",
+        "robot": "Robot Vent",
+        "smile": "Friendly Smile",
+        "speaker": "Speaker Mouth",
+        "tiny": "Tiny Mouth",
+        "tongue": "Wiggly Tongue",
+        "zipper": "Zipper Mouth"
+      },
+      "tail": {
+        "cloud": "Cloud Trail",
+        "crystal": "Crystal Tail",
+        "curly": "Curly Tail",
+        "dragon": "Dragon Tail",
+        "fish": "Fish Tail",
+        "flame": "Flame Tail",
+        "leaf": "Leaf Tail",
+        "none": "No Tail",
+        "rainbow": "Rainbow Tail",
+        "robot": "Cable Tail",
+        "star": "Star Tail",
+        "tiny": "Tiny Tail"
+      },
+      "wings": {
+        "bat": "Bat Wings",
+        "bird": "Feather Wings",
+        "butterfly": "Butterfly Wings",
+        "cloud": "Cloud Wings",
+        "crystal": "Crystal Wings",
+        "dragon": "Dragon Wings",
+        "flame": "Flame Wings",
+        "leaf": "Leaf Wings",
+        "none": "No Wings",
+        "robot": "Mechanical Wings",
+        "star": "Star Wings",
+        "tiny": "Tiny Wings"
+      }
+    },
+    "MONSTER_PATTERNS": {
+      "checker": "Checkerboard",
+      "galaxy": "Galaxy",
+      "lightning": "Lightning",
+      "patches": "Patchwork",
+      "scales": "Dragon Scales",
+      "solid": "Solid",
+      "spots": "Polka Dots",
+      "stars": "Stars",
+      "stripes": "Stripes",
+      "swirls": "Magic Swirls"
+    },
+    "MONSTER_PERSONALITIES": [
+      "Brave but ticklish",
+      "Shy and musical",
+      "Curious and polite",
+      "Wildly dramatic",
+      "Sleepy and clever",
+      "Helpful and bouncy",
+      "Serious about snacks",
+      "Friendly but forgetful",
+      "Excited by everything",
+      "Quietly hilarious",
+      "Protective and gentle",
+      "Inventive and messy",
+      "Royal and kind",
+      "Mysterious but friendly"
+    ],
+    "MONSTER_POWERS": [
+      "Sneeze confetti",
+      "Turn hiccups into bubbles",
+      "Talk to socks",
+      "Grow pizza flowers",
+      "Make tiny thunder",
+      "Freeze puddles into slides",
+      "Summon dancing bananas",
+      "Turn shadows into puppets",
+      "Make books giggle",
+      "Create marshmallow clouds",
+      "Paint rainbows in the air",
+      "Find lost toys",
+      "Make plants sing",
+      "Open friendly portals",
+      "Build pillow forts instantly",
+      "Translate animal sounds"
+    ],
+    "MONSTER_PRESETS": {
+      "Cloud Dreamer": {
+        "accessory": "scarf",
+        "arms": "none",
+        "body": "cloud",
+        "color": "white",
+        "ears": "cloud",
+        "eyes": "sleepy",
+        "face": "👻",
+        "horns": "moon",
+        "legs": "cloud",
+        "mood": "Sleepy",
+        "mouth": "tiny",
+        "pattern": "stars",
+        "personality": "Sleepy and clever",
+        "power": "Create marshmallow clouds",
+        "secondary_color": "sky",
+        "size": "standard",
+        "tail": "cloud",
+        "texture": "cloudy",
+        "wings": "cloud"
+      },
+      "Crystal Guardian": {
+        "accessory": "cape",
+        "arms": "strong",
+        "body": "crystal",
+        "color": "aqua",
+        "ears": "elf",
+        "eyes": "star",
+        "face": "🧌",
+        "horns": "crystal",
+        "legs": "long",
+        "mood": "Brave",
+        "mouth": "smile",
+        "pattern": "lightning",
+        "personality": "Brave but ticklish",
+        "power": "Find lost toys",
+        "secondary_color": "violet",
+        "size": "giant",
+        "tail": "crystal",
+        "texture": "crystal",
+        "wings": "crystal"
+      },
+      "Forest Sprout": {
+        "accessory": "flower",
+        "arms": "branch",
+        "body": "plant",
+        "color": "lime",
+        "ears": "leaf",
+        "eyes": "heart",
+        "face": "🦄",
+        "horns": "antlers",
+        "legs": "roots",
+        "mood": "Happy",
+        "mouth": "smile",
+        "pattern": "patches",
+        "personality": "Helpful and bouncy",
+        "power": "Make plants sing",
+        "secondary_color": "brown",
+        "size": "mini",
+        "tail": "leaf",
+        "texture": "leafy",
+        "wings": "leaf"
+      },
+      "Friendly Dragon": {
+        "accessory": "medal",
+        "arms": "claws",
+        "body": "dragon",
+        "color": "red",
+        "ears": "dragon",
+        "eyes": "cat",
+        "face": "🐲",
+        "horns": "dragon",
+        "legs": "claws",
+        "mood": "Proud",
+        "mouth": "fangs",
+        "pattern": "scales",
+        "personality": "Protective and gentle",
+        "power": "Paint rainbows in the air",
+        "secondary_color": "gold",
+        "size": "giant",
+        "tail": "dragon",
+        "texture": "rocky",
+        "wings": "dragon"
+      },
+      "Galaxy Octopus": {
+        "accessory": "crown",
+        "arms": "tentacle",
+        "body": "octopus",
+        "color": "midnight",
+        "ears": "fin",
+        "eyes": "six",
+        "face": "🐙",
+        "horns": "star",
+        "legs": "tentacles",
+        "mood": "Curious",
+        "mouth": "bubble",
+        "pattern": "galaxy",
+        "personality": "Mysterious but friendly",
+        "power": "Open friendly portals",
+        "secondary_color": "pink",
+        "size": "standard",
+        "tail": "rainbow",
+        "texture": "cosmic",
+        "wings": "star"
+      },
+      "Robot Monster": {
+        "accessory": "headphones",
+        "arms": "robot",
+        "body": "robot",
+        "color": "silver",
+        "ears": "robot",
+        "eyes": "robot",
+        "face": "🤖",
+        "horns": "antenna",
+        "legs": "robot",
+        "mood": "Excited",
+        "mouth": "robot",
+        "pattern": "checker",
+        "personality": "Inventive and messy",
+        "power": "Build pillow forts instantly",
+        "secondary_color": "aqua",
+        "size": "standard",
+        "tail": "robot",
+        "texture": "metallic",
+        "wings": "robot"
+      },
+      "Wobblepop Classic": {}
+    },
+    "MONSTER_SIZES": {
+      "giant": 1.16,
+      "mini": 0.82,
+      "standard": 1.0
+    },
+    "MONSTER_TEXTURES": {
+      "cloudy": "Cloud Soft",
+      "cosmic": "Cosmic Glow",
+      "crystal": "Crystal",
+      "fluffy": "Extra Fluffy",
+      "jelly": "Translucent Jelly",
+      "leafy": "Leafy",
+      "metallic": "Metallic",
+      "rocky": "Rocky",
+      "slimy": "Shiny Slime",
+      "smooth": "Smooth"
+    }
+  },
+  "web": {
+    "options": {
+      "animation": [
+        "Bounce",
+        "Spin",
+        "Roar",
+        "Fly",
+        "Dance",
+        "Sleep"
+      ],
+      "arms": [
+        "Tiny arms",
+        "Claw arms",
+        "Four arms",
+        "Tentacles",
+        "Giant hands",
+        "Robot arms",
+        "Wing arms"
+      ],
+      "body": [
+        "Blob",
+        "Dragon",
+        "Jungle Beast",
+        "Stone Golem",
+        "Spirit",
+        "Cosmic",
+        "Aquatic",
+        "Candy",
+        "Mecha",
+        "Royal",
+        "Volcano",
+        "Ice Beast",
+        "Alien",
+        "Dinosaur",
+        "Cloud"
+      ],
+      "color": [
+        "Aqua",
+        "Purple",
+        "Lime",
+        "Orange",
+        "Pink",
+        "Blue",
+        "Red",
+        "Gold",
+        "Midnight",
+        "Pearl",
+        "Emerald",
+        "Crimson"
+      ],
+      "eyes": [
+        "One eye",
+        "Two eyes",
+        "Three eyes",
+        "Four eyes",
+        "Star eyes",
+        "Sleepy eyes",
+        "Robot visor",
+        "Anime eyes",
+        "Fire eyes",
+        "Galaxy eyes"
+      ],
+      "habitat": [
+        "Crystal Cave",
+        "Cloud Nest",
+        "Jungle Hut",
+        "Ocean Dome",
+        "Candy Castle",
+        "Moon Base",
+        "Volcano Fort",
+        "Ice Palace",
+        "Mecha Garage",
+        "Star Garden"
+      ],
+      "horns": [
+        "No horns",
+        "Tiny horns",
+        "Crystal horns",
+        "Dragon horns",
+        "Antlers",
+        "Unicorn horn",
+        "Mecha antenna",
+        "Flame horns"
+      ],
+      "legs": [
+        "Tiny feet",
+        "Dinosaur legs",
+        "Spider legs",
+        "Hover base",
+        "Spring legs",
+        "Robot treads",
+        "Mermaid tail"
+      ],
+      "mouth": [
+        "Friendly smile",
+        "Fang smile",
+        "Big grin",
+        "Tiny mouth",
+        "Beak",
+        "Robot speaker",
+        "Dragon snout"
+      ],
+      "pattern": [
+        "Solid",
+        "Spots",
+        "Stripes",
+        "Galaxy",
+        "Scales",
+        "Candy swirl",
+        "Lightning",
+        "Stars",
+        "Camouflage",
+        "Circuit lines"
+      ],
+      "personality": [
+        "Curious",
+        "Silly",
+        "Brave",
+        "Shy",
+        "Helpful",
+        "Sleepy",
+        "Loyal",
+        "Mischievous",
+        "Wise",
+        "Playful"
+      ],
+      "power": [
+        "Rainbow shield",
+        "Bubble beam",
+        "Plant growth",
+        "Moonlight",
+        "Super jump",
+        "Friendly roar",
+        "Fire breath",
+        "Ice blast",
+        "Teleport",
+        "Healing sparkle",
+        "Thunder clap",
+        "Invisibility"
+      ],
+      "tail": [
+        "No tail",
+        "Dragon tail",
+        "Lion tail",
+        "Scorpion tail",
+        "Fish tail",
+        "Flame tail",
+        "Robot cable"
+      ],
+      "texture": [
+        "Smooth",
+        "Furry",
+        "Crystal",
+        "Stone",
+        "Slime",
+        "Metal",
+        "Cloud",
+        "Lava"
+      ],
+      "wings": [
+        "No wings",
+        "Bat wings",
+        "Dragon wings",
+        "Star wings",
+        "Butterfly wings",
+        "Mecha wings",
+        "Angel wings",
+        "Fire wings"
+      ]
+    }
+  }
+}

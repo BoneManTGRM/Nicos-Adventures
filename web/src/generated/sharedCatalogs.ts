@@ -1,0 +1,5197 @@
+/* Generated shared catalogs. Do not edit by hand.
+ * Run `python scripts/generate_shared_catalog_views.py` after changing
+ * `shared/catalogs/*.json`.
+ */
+
+export const ANIMAL_CATALOG = {
+  "animals": [
+    {
+      "adaptation": "Spotted fur helps them disappear in broken forest light.",
+      "diet": "Carnivore",
+      "emoji": "🐆",
+      "fact": "Jaguars are powerful swimmers and can bite through turtle shells.",
+      "group": "Mammal",
+      "habitat": "Rainforest",
+      "id": "jaguar",
+      "imageTitle": "Jaguar",
+      "mission": "Find an animal whose camouflage helps it hunt.",
+      "name": "Jaguar",
+      "region": "Central and South America"
+    },
+    {
+      "adaptation": "Its long bill reaches fruit on branches too thin to stand on.",
+      "diet": "Omnivore",
+      "emoji": "🦜",
+      "fact": "A toucan's huge bill is surprisingly light because it is filled with air spaces.",
+      "group": "Bird",
+      "habitat": "Rainforest",
+      "id": "toucan",
+      "imageTitle": "Toucan",
+      "mission": "Find a bird with a tool-like beak.",
+      "name": "Toucan",
+      "region": "Central and South America"
+    },
+    {
+      "adaptation": "Moving slowly saves energy on a low-calorie leaf diet.",
+      "diet": "Herbivore",
+      "emoji": "🦥",
+      "fact": "Sloths can hold their breath longer than many dolphins.",
+      "group": "Mammal",
+      "habitat": "Rainforest",
+      "id": "sloth",
+      "imageTitle": "Sloth",
+      "mission": "Find an animal that saves energy by moving slowly.",
+      "name": "Sloth",
+      "region": "Central and South America"
+    },
+    {
+      "adaptation": "Bright colors warn predators to stay away.",
+      "diet": "Carnivore",
+      "emoji": "🐸",
+      "fact": "Some poison dart frogs carry tadpoles on their backs.",
+      "group": "Amphibian",
+      "habitat": "Rainforest",
+      "id": "poison-dart-frog",
+      "imageTitle": "Poison Dart Frog",
+      "mission": "Find an animal that uses warning colors.",
+      "name": "Poison Dart Frog",
+      "region": "Central and South America"
+    },
+    {
+      "adaptation": "Baleen plates filter tiny krill from enormous mouthfuls of water.",
+      "diet": "Carnivore",
+      "emoji": "🐋",
+      "fact": "A blue whale is the largest animal known to have lived on Earth.",
+      "group": "Mammal",
+      "habitat": "Ocean",
+      "id": "blue-whale",
+      "imageTitle": "Blue Whale",
+      "mission": "Find the largest animal in the forest library.",
+      "name": "Blue Whale",
+      "region": "Worldwide oceans"
+    },
+    {
+      "adaptation": "It can change color and texture to hide almost instantly.",
+      "diet": "Carnivore",
+      "emoji": "🐙",
+      "fact": "An octopus has three hearts and blue blood.",
+      "group": "Mollusk",
+      "habitat": "Ocean",
+      "id": "giant-pacific-octopus",
+      "imageTitle": "Giant Pacific Octopus",
+      "mission": "Find an animal with three hearts.",
+      "name": "Giant Pacific Octopus",
+      "region": "North Pacific"
+    },
+    {
+      "adaptation": "Long front flippers carry them across entire oceans.",
+      "diet": "Omnivore",
+      "emoji": "🐢",
+      "fact": "Female sea turtles often return to the beach where they hatched.",
+      "group": "Reptile",
+      "habitat": "Ocean",
+      "id": "sea-turtle",
+      "imageTitle": "Sea Turtle",
+      "mission": "Find a reptile that travels thousands of miles.",
+      "name": "Sea Turtle",
+      "region": "Warm oceans"
+    },
+    {
+      "adaptation": "Wide fins let them glide efficiently while filtering plankton.",
+      "diet": "Carnivore",
+      "emoji": "🐟",
+      "fact": "Manta rays can recognize themselves in a mirror.",
+      "group": "Fish",
+      "habitat": "Ocean",
+      "id": "manta-ray",
+      "imageTitle": "Manta Ray",
+      "mission": "Find a fish that seems to fly underwater.",
+      "name": "Manta Ray",
+      "region": "Tropical oceans"
+    },
+    {
+      "adaptation": "A rough tongue helps scrape meat from bones.",
+      "diet": "Carnivore",
+      "emoji": "🦁",
+      "fact": "Lion prides cooperate to guard territory and raise cubs.",
+      "group": "Mammal",
+      "habitat": "Savanna",
+      "id": "lion",
+      "imageTitle": "Lion",
+      "mission": "Find a social cat that lives in a group.",
+      "name": "Lion",
+      "region": "Africa"
+    },
+    {
+      "adaptation": "Large ears release heat like giant cooling fans.",
+      "diet": "Herbivore",
+      "emoji": "🐘",
+      "fact": "Elephants communicate using low rumbles that travel through the ground.",
+      "group": "Mammal",
+      "habitat": "Savanna",
+      "id": "african-elephant",
+      "imageTitle": "African Elephant",
+      "mission": "Find an animal that can hear through its feet.",
+      "name": "African Elephant",
+      "region": "Africa"
+    },
+    {
+      "adaptation": "A long neck and tongue reach leaves other animals cannot.",
+      "diet": "Herbivore",
+      "emoji": "🦒",
+      "fact": "Giraffes have the same number of neck bones as people: seven.",
+      "group": "Mammal",
+      "habitat": "Savanna",
+      "id": "giraffe",
+      "imageTitle": "Giraffe",
+      "mission": "Find the tallest land animal.",
+      "name": "Giraffe",
+      "region": "Africa"
+    },
+    {
+      "adaptation": "Dark patches around the eyes reduce sun glare.",
+      "diet": "Omnivore",
+      "emoji": "🐾",
+      "fact": "One meerkat often stands guard while the rest search for food.",
+      "group": "Mammal",
+      "habitat": "Savanna",
+      "id": "meerkat",
+      "imageTitle": "Meerkat",
+      "mission": "Find an animal that uses a lookout system.",
+      "name": "Meerkat",
+      "region": "Southern Africa"
+    },
+    {
+      "adaptation": "Thick fat and hollow fur trap heat in freezing weather.",
+      "diet": "Carnivore",
+      "emoji": "🐻‍❄️",
+      "fact": "Polar bear skin is black beneath its clear-looking fur.",
+      "group": "Mammal",
+      "habitat": "Arctic",
+      "id": "polar-bear",
+      "imageTitle": "Polar Bear",
+      "mission": "Find an animal whose skin and fur work together to keep it warm.",
+      "name": "Polar Bear",
+      "region": "Arctic Ocean"
+    },
+    {
+      "adaptation": "Their coat changes color with the seasons.",
+      "diet": "Omnivore",
+      "emoji": "🦊",
+      "fact": "Arctic foxes can hear small animals moving beneath snow.",
+      "group": "Mammal",
+      "habitat": "Arctic",
+      "id": "arctic-fox",
+      "imageTitle": "Arctic Fox",
+      "mission": "Find an animal that changes coat color.",
+      "name": "Arctic Fox",
+      "region": "Arctic tundra"
+    },
+    {
+      "adaptation": "Groups huddle and rotate positions to share warmth.",
+      "diet": "Carnivore",
+      "emoji": "🐧",
+      "fact": "Emperor penguin fathers balance eggs on their feet through winter.",
+      "group": "Bird",
+      "habitat": "Arctic",
+      "id": "emperor-penguin",
+      "imageTitle": "Emperor Penguin",
+      "mission": "Find a bird that cannot fly but dives deeply.",
+      "name": "Emperor Penguin",
+      "region": "Antarctica"
+    },
+    {
+      "adaptation": "Tusks help pull their heavy bodies onto ice.",
+      "diet": "Carnivore",
+      "emoji": "🦭",
+      "fact": "Walruses use sensitive whiskers to find clams on dark seafloors.",
+      "group": "Mammal",
+      "habitat": "Arctic",
+      "id": "walrus",
+      "imageTitle": "Walrus",
+      "mission": "Find an animal that uses whiskers to search underwater.",
+      "name": "Walrus",
+      "region": "Arctic seas"
+    },
+    {
+      "adaptation": "Huge ears release heat and detect quiet sounds.",
+      "diet": "Omnivore",
+      "emoji": "🦊",
+      "fact": "Fennec foxes can hear prey moving underground.",
+      "group": "Mammal",
+      "habitat": "Desert",
+      "id": "fennec-fox",
+      "imageTitle": "Fennec Fox",
+      "mission": "Find the animal with the biggest ears for its body size.",
+      "name": "Fennec Fox",
+      "region": "Sahara Desert"
+    },
+    {
+      "adaptation": "Closing nostrils and double eyelashes block blowing sand.",
+      "diet": "Herbivore",
+      "emoji": "🐫",
+      "fact": "Camel humps store fat, not water.",
+      "group": "Mammal",
+      "habitat": "Desert",
+      "id": "camel",
+      "imageTitle": "Camel",
+      "mission": "Find an animal built for sandstorms.",
+      "name": "Camel",
+      "region": "Africa and Asia"
+    },
+    {
+      "adaptation": "Long legs and a balancing tail help with sudden turns.",
+      "diet": "Omnivore",
+      "emoji": "🐦",
+      "fact": "Roadrunners can run fast enough to catch rattlesnakes.",
+      "group": "Bird",
+      "habitat": "Desert",
+      "id": "roadrunner",
+      "imageTitle": "Roadrunner",
+      "mission": "Find a desert bird that prefers running.",
+      "name": "Roadrunner",
+      "region": "North America"
+    },
+    {
+      "adaptation": "Fat stored in the tail helps them survive scarce food.",
+      "diet": "Carnivore",
+      "emoji": "🦎",
+      "fact": "Gila monsters may eat only a few large meals each year.",
+      "group": "Reptile",
+      "habitat": "Desert",
+      "id": "gila-monster",
+      "imageTitle": "Gila Monster",
+      "mission": "Find a venomous lizard.",
+      "name": "Gila Monster",
+      "region": "North America"
+    },
+    {
+      "adaptation": "A false thumb helps grip bamboo.",
+      "diet": "Omnivore",
+      "emoji": "🐾",
+      "fact": "Red pandas wrap their fluffy tails around themselves like blankets.",
+      "group": "Mammal",
+      "habitat": "Forest",
+      "id": "red-panda",
+      "imageTitle": "Red Panda",
+      "mission": "Find an animal with an extra gripping thumb.",
+      "name": "Red Panda",
+      "region": "Himalayan forests"
+    },
+    {
+      "adaptation": "A skin membrane works like a controllable parachute.",
+      "diet": "Omnivore",
+      "emoji": "🐿️",
+      "fact": "Flying squirrels glide rather than truly fly.",
+      "group": "Mammal",
+      "habitat": "Forest",
+      "id": "flying-squirrel",
+      "imageTitle": "Flying Squirrel",
+      "mission": "Find a mammal that glides between trees.",
+      "name": "Flying Squirrel",
+      "region": "Forests worldwide"
+    },
+    {
+      "adaptation": "Soft-edged feathers make flight nearly silent.",
+      "diet": "Carnivore",
+      "emoji": "🦉",
+      "fact": "Owls can turn their heads far because extra neck bones protect blood flow.",
+      "group": "Bird",
+      "habitat": "Forest",
+      "id": "great-horned-owl",
+      "imageTitle": "Great Horned Owl",
+      "mission": "Find a silent nighttime hunter.",
+      "name": "Great Horned Owl",
+      "region": "The Americas"
+    },
+    {
+      "adaptation": "Transparent eyelids work like swimming goggles.",
+      "diet": "Herbivore",
+      "emoji": "🦫",
+      "fact": "Beaver dams create wetlands used by many other species.",
+      "group": "Mammal",
+      "habitat": "Forest",
+      "id": "beaver",
+      "imageTitle": "Beaver",
+      "mission": "Find an ecosystem engineer.",
+      "name": "Beaver",
+      "region": "North America and Europe"
+    },
+    {
+      "adaptation": "Feathery external gills gather oxygen underwater.",
+      "diet": "Carnivore",
+      "emoji": "🦎",
+      "fact": "Axolotls can regrow limbs and parts of several organs.",
+      "group": "Amphibian",
+      "habitat": "Wetlands",
+      "id": "axolotl",
+      "imageTitle": "Axolotl",
+      "mission": "Find a Mexican amphibian that stays aquatic as an adult.",
+      "name": "Axolotl",
+      "region": "Mexico"
+    },
+    {
+      "adaptation": "Eyes, ears, and nostrils sit high on the head for swimming.",
+      "diet": "Herbivore",
+      "emoji": "🦫",
+      "fact": "Capybaras are the world's largest rodents.",
+      "group": "Mammal",
+      "habitat": "Wetlands",
+      "id": "capybara",
+      "imageTitle": "Capybara",
+      "mission": "Find the largest rodent.",
+      "name": "Capybara",
+      "region": "South America"
+    },
+    {
+      "adaptation": "Their upside-down bills filter tiny food from water.",
+      "diet": "Omnivore",
+      "emoji": "🦩",
+      "fact": "Flamingos are pink because of pigments in their food.",
+      "group": "Bird",
+      "habitat": "Wetlands",
+      "id": "flamingo",
+      "imageTitle": "Flamingo",
+      "mission": "Find a bird colored by its diet.",
+      "name": "Flamingo",
+      "region": "Africa, Asia, Europe, and the Americas"
+    },
+    {
+      "adaptation": "Their bills sense electrical signals from prey.",
+      "diet": "Carnivore",
+      "emoji": "🦆",
+      "fact": "Platypuses are mammals that lay eggs.",
+      "group": "Mammal",
+      "habitat": "Wetlands",
+      "id": "platypus",
+      "imageTitle": "Platypus",
+      "mission": "Find an egg-laying mammal.",
+      "name": "Platypus",
+      "region": "Australia"
+    },
+    {
+      "adaptation": "Its tail balances jumps and wraps around the face for warmth.",
+      "diet": "Carnivore",
+      "emoji": "🐆",
+      "fact": "A snow leopard's tail can be nearly as long as its body.",
+      "group": "Mammal",
+      "habitat": "Mountains",
+      "id": "snow-leopard",
+      "imageTitle": "Snow Leopard",
+      "mission": "Find a mountain cat with a blanket-like tail.",
+      "name": "Snow Leopard",
+      "region": "Central Asia"
+    },
+    {
+      "adaptation": "Split hooves spread apart and rough pads grip rock.",
+      "diet": "Herbivore",
+      "emoji": "🐐",
+      "fact": "Mountain goats can climb slopes that look almost vertical.",
+      "group": "Mammal",
+      "habitat": "Mountains",
+      "id": "mountain-goat",
+      "imageTitle": "Mountain Goat",
+      "mission": "Find an animal with natural climbing shoes.",
+      "name": "Mountain Goat",
+      "region": "North America"
+    },
+    {
+      "adaptation": "Huge wings ride rising columns of warm air.",
+      "diet": "Carnivore",
+      "emoji": "🦅",
+      "fact": "Andean condors can soar for hours while barely flapping.",
+      "group": "Bird",
+      "habitat": "Mountains",
+      "id": "andean-condor",
+      "imageTitle": "Andean Condor",
+      "mission": "Find one of the world's largest flying birds.",
+      "name": "Andean Condor",
+      "region": "South America"
+    },
+    {
+      "adaptation": "Dense wool and a thick undercoat block icy wind.",
+      "diet": "Herbivore",
+      "emoji": "🐂",
+      "fact": "Yaks have large lungs and hearts for life at high altitude.",
+      "group": "Mammal",
+      "habitat": "Mountains",
+      "id": "yak",
+      "imageTitle": "Yak",
+      "mission": "Find an animal adapted to thin mountain air.",
+      "name": "Yak",
+      "region": "Himalayas and Central Asia"
+    },
+    {
+      "adaptation": "Broad wings and a long tail provide control between crowded trees.",
+      "diet": "Carnivore",
+      "emoji": "🦅",
+      "fact": "Harpy eagles have enormous talons that help them catch animals high in the canopy.",
+      "group": "Bird",
+      "habitat": "Rainforest",
+      "id": "harpy-eagle",
+      "imageTitle": "Harpy Eagle",
+      "mission": "Find a powerful bird that hunts beneath the rainforest roof.",
+      "name": "Harpy Eagle",
+      "region": "Central and South America"
+    },
+    {
+      "adaptation": "A flexible, trunk-like snout gathers leaves and works like a snorkel in water.",
+      "diet": "Herbivore",
+      "emoji": "🐗",
+      "fact": "Baird's tapirs spread seeds as they travel through tropical forests.",
+      "group": "Mammal",
+      "habitat": "Rainforest",
+      "id": "baird-s-tapir",
+      "imageTitle": "Baird's tapir",
+      "mission": "Find a large seed-spreading mammal from Mexico.",
+      "name": "Baird's Tapir",
+      "region": "Mexico and Central America"
+    },
+    {
+      "adaptation": "An enlarged throat chamber turns a small body into a powerful sound system.",
+      "diet": "Herbivore",
+      "emoji": "🐒",
+      "fact": "Howler monkey calls can carry for several kilometers through the forest.",
+      "group": "Mammal",
+      "habitat": "Rainforest",
+      "id": "howler-monkey",
+      "imageTitle": "Howler Monkey",
+      "mission": "Find one of the loudest land animals.",
+      "name": "Howler Monkey",
+      "region": "Central and South America"
+    },
+    {
+      "adaptation": "Large colonies divide jobs among workers of different sizes.",
+      "diet": "Fungivore",
+      "emoji": "🐜",
+      "fact": "Leafcutter ants use pieces of leaves to grow fungus for food.",
+      "group": "Insect",
+      "habitat": "Rainforest",
+      "id": "leafcutter-ant",
+      "imageTitle": "Leafcutter ant",
+      "mission": "Find an insect that farms its own food.",
+      "name": "Leafcutter Ant",
+      "region": "The Americas"
+    },
+    {
+      "adaptation": "Sensitive echolocation helps it navigate cloudy coastal water.",
+      "diet": "Carnivore",
+      "emoji": "🐬",
+      "fact": "The vaquita lives only in the northern Gulf of California.",
+      "group": "Mammal",
+      "habitat": "Ocean",
+      "id": "vaquita",
+      "imageTitle": "Vaquita",
+      "mission": "Find Mexico's tiny and extremely rare porpoise.",
+      "name": "Vaquita",
+      "region": "Gulf of California, Mexico"
+    },
+    {
+      "adaptation": "A huge mouth filters plankton while the shark swims slowly forward.",
+      "diet": "Planktivore",
+      "emoji": "🦈",
+      "fact": "The whale shark is the largest fish in the world.",
+      "group": "Fish",
+      "habitat": "Ocean",
+      "id": "whale-shark",
+      "imageTitle": "Whale shark",
+      "mission": "Find a gentle shark that eats tiny drifting food.",
+      "name": "Whale Shark",
+      "region": "Warm oceans worldwide"
+    },
+    {
+      "adaptation": "The densest fur of any mammal traps warm air beside the skin.",
+      "diet": "Carnivore",
+      "emoji": "🦦",
+      "fact": "Sea otters use rocks as tools to open hard-shelled prey.",
+      "group": "Mammal",
+      "habitat": "Ocean",
+      "id": "sea-otter",
+      "imageTitle": "Sea otter",
+      "mission": "Find a marine mammal that carries a favorite tool.",
+      "name": "Sea Otter",
+      "region": "North Pacific"
+    },
+    {
+      "adaptation": "A curling tail grips seagrass so currents do not sweep it away.",
+      "diet": "Carnivore",
+      "emoji": "🐠",
+      "fact": "Male seahorses carry developing young in a pouch.",
+      "group": "Fish",
+      "habitat": "Ocean",
+      "id": "seahorse",
+      "imageTitle": "Seahorse",
+      "mission": "Find a fish whose father carries the babies.",
+      "name": "Seahorse",
+      "region": "Shallow oceans worldwide"
+    },
+    {
+      "adaptation": "A flexible spine, long legs, and gripping claws create explosive speed.",
+      "diet": "Carnivore",
+      "emoji": "🐆",
+      "fact": "Cheetahs are the fastest land animals over short distances.",
+      "group": "Mammal",
+      "habitat": "Savanna",
+      "id": "cheetah",
+      "imageTitle": "Cheetah",
+      "mission": "Find the fastest runner on land.",
+      "name": "Cheetah",
+      "region": "Africa"
+    },
+    {
+      "adaptation": "Strong social groups watch for danger while members graze.",
+      "diet": "Herbivore",
+      "emoji": "🦓",
+      "fact": "Every zebra has a stripe pattern as individual as a fingerprint.",
+      "group": "Mammal",
+      "habitat": "Savanna",
+      "id": "plains-zebra",
+      "imageTitle": "Plains zebra",
+      "mission": "Find an animal whose stripes are never exactly repeated.",
+      "name": "Plains Zebra",
+      "region": "Eastern and southern Africa"
+    },
+    {
+      "adaptation": "Powerful two-toed legs make it a very fast runner.",
+      "diet": "Omnivore",
+      "emoji": "🪶",
+      "fact": "The ostrich is the world's largest living bird.",
+      "group": "Bird",
+      "habitat": "Savanna",
+      "id": "ostrich",
+      "imageTitle": "Ostrich",
+      "mission": "Find a bird that runs instead of flying.",
+      "name": "Ostrich",
+      "region": "Africa"
+    },
+    {
+      "adaptation": "Long legs and great endurance help the pack travel far.",
+      "diet": "Carnivore",
+      "emoji": "🐕",
+      "fact": "African wild dogs cooperate closely when hunting and caring for pups.",
+      "group": "Mammal",
+      "habitat": "Savanna",
+      "id": "african-wild-dog",
+      "imageTitle": "African wild dog",
+      "mission": "Find a team-working hunter with a patchy coat.",
+      "name": "African Wild Dog",
+      "region": "Sub-Saharan Africa"
+    },
+    {
+      "adaptation": "A thick layer of blubber stores energy and blocks icy water.",
+      "diet": "Carnivore",
+      "emoji": "🐋",
+      "fact": "A narwhal's famous tusk is actually a long spiral tooth.",
+      "group": "Mammal",
+      "habitat": "Arctic",
+      "id": "narwhal",
+      "imageTitle": "Narwhal",
+      "mission": "Find the whale sometimes called the unicorn of the sea.",
+      "name": "Narwhal",
+      "region": "Arctic seas"
+    },
+    {
+      "adaptation": "The herd forms a defensive ring around calves when threatened.",
+      "diet": "Herbivore",
+      "emoji": "🐂",
+      "fact": "Musk oxen grow an extremely warm undercoat called qiviut.",
+      "group": "Mammal",
+      "habitat": "Arctic",
+      "id": "musk-ox",
+      "imageTitle": "Muskox",
+      "mission": "Find an Arctic animal that protects young in a circle.",
+      "name": "Musk Ox",
+      "region": "Arctic tundra"
+    },
+    {
+      "adaptation": "Feathers cover even their feet to reduce heat loss.",
+      "diet": "Carnivore",
+      "emoji": "🦉",
+      "fact": "Snowy owls often hunt during daylight in the bright Arctic summer.",
+      "group": "Bird",
+      "habitat": "Arctic",
+      "id": "snowy-owl",
+      "imageTitle": "Snowy Owl",
+      "mission": "Find a white owl that can hunt under the midnight sun.",
+      "name": "Snowy Owl",
+      "region": "Arctic tundra"
+    },
+    {
+      "adaptation": "A long, streamlined body and powerful front flippers create fast turns.",
+      "diet": "Carnivore",
+      "emoji": "🦭",
+      "fact": "Leopard seals make complex underwater calls during breeding season.",
+      "group": "Mammal",
+      "habitat": "Arctic",
+      "id": "leopard-seal",
+      "imageTitle": "Leopard seal",
+      "mission": "Find a spotted polar seal built for speed.",
+      "name": "Leopard Seal",
+      "region": "Antarctic waters"
+    },
+    {
+      "adaptation": "Powerful hind legs launch sudden jumps away from predators.",
+      "diet": "Herbivore",
+      "emoji": "🐭",
+      "fact": "Kangaroo rats get nearly all the water they need from dry seeds.",
+      "group": "Mammal",
+      "habitat": "Desert",
+      "id": "kangaroo-rat",
+      "imageTitle": "Kangaroo rat",
+      "mission": "Find a tiny desert mammal that rarely needs to drink.",
+      "name": "Kangaroo Rat",
+      "region": "North America"
+    },
+    {
+      "adaptation": "Their bodies can store water for long dry periods.",
+      "diet": "Herbivore",
+      "emoji": "🐢",
+      "fact": "Desert tortoises spend much of the year inside cool underground burrows.",
+      "group": "Reptile",
+      "habitat": "Desert",
+      "id": "desert-tortoise",
+      "imageTitle": "Desert tortoise",
+      "mission": "Find a slow reptile that escapes heat underground.",
+      "name": "Desert Tortoise",
+      "region": "North America"
+    },
+    {
+      "adaptation": "Spines, camouflage, and a false head help confuse predators.",
+      "diet": "Carnivore",
+      "emoji": "🦎",
+      "fact": "Grooves between a thorny devil's scales move water toward its mouth.",
+      "group": "Reptile",
+      "habitat": "Desert",
+      "id": "thorny-devil",
+      "imageTitle": "Thorny devil",
+      "mission": "Find a lizard that drinks through channels in its skin.",
+      "name": "Thorny Devil",
+      "region": "Australia"
+    },
+    {
+      "adaptation": "Sideways movement keeps only a small part of the body on hot ground.",
+      "diet": "Carnivore",
+      "emoji": "🐍",
+      "fact": "The sidewinder leaves a series of J-shaped tracks in loose sand.",
+      "group": "Reptile",
+      "habitat": "Desert",
+      "id": "sidewinder-rattlesnake",
+      "imageTitle": "Crotalus cerastes",
+      "mission": "Find a snake that travels sideways.",
+      "name": "Sidewinder Rattlesnake",
+      "region": "North America"
+    },
+    {
+      "adaptation": "Several generations complete one enormous migration cycle.",
+      "diet": "Herbivore",
+      "emoji": "🦋",
+      "fact": "Millions of monarch butterflies spend winter in mountain forests in Mexico.",
+      "group": "Insect",
+      "habitat": "Forest",
+      "id": "monarch-butterfly",
+      "imageTitle": "Monarch butterfly",
+      "mission": "Find an insect that travels across a continent.",
+      "name": "Monarch Butterfly",
+      "region": "North America and Mexico"
+    },
+    {
+      "adaptation": "Curved claws help them climb trees and tear open logs.",
+      "diet": "Omnivore",
+      "emoji": "🐻",
+      "fact": "Black bears are strong climbers and can remember reliable food locations.",
+      "group": "Mammal",
+      "habitat": "Forest",
+      "id": "american-black-bear",
+      "imageTitle": "American black bear",
+      "mission": "Find a large forest animal that climbs surprisingly well.",
+      "name": "American Black Bear",
+      "region": "North America"
+    },
+    {
+      "adaptation": "A reinforced skull and shock-absorbing tissues protect the brain while pecking.",
+      "diet": "Omnivore",
+      "emoji": "🐦",
+      "fact": "Pileated woodpeckers carve large rectangular holes while searching for insects.",
+      "group": "Bird",
+      "habitat": "Forest",
+      "id": "pileated-woodpecker",
+      "imageTitle": "Pileated woodpecker",
+      "mission": "Find a bird that works like a forest carpenter.",
+      "name": "Pileated Woodpecker",
+      "region": "North America"
+    },
+    {
+      "adaptation": "Long legs and efficient movement help packs patrol large territories.",
+      "diet": "Carnivore",
+      "emoji": "🐺",
+      "fact": "Mexican gray wolves live in family groups and communicate with howls.",
+      "group": "Mammal",
+      "habitat": "Forest",
+      "id": "mexican-gray-wolf",
+      "imageTitle": "Mexican wolf",
+      "mission": "Find a rare wolf native to Mexico.",
+      "name": "Mexican Gray Wolf",
+      "region": "Northern Mexico and the southwestern United States"
+    },
+    {
+      "adaptation": "Dense bones help control buoyancy while grazing underwater.",
+      "diet": "Herbivore",
+      "emoji": "🦭",
+      "fact": "Manatees are gentle plant-eaters related to elephants.",
+      "group": "Mammal",
+      "habitat": "Wetlands",
+      "id": "west-indian-manatee",
+      "imageTitle": "West Indian manatee",
+      "mission": "Find a slow-moving mammal sometimes called a sea cow.",
+      "name": "West Indian Manatee",
+      "region": "Caribbean, Gulf of Mexico, and Atlantic rivers"
+    },
+    {
+      "adaptation": "Eyes and nostrils on top of the head allow nearly hidden swimming.",
+      "diet": "Carnivore",
+      "emoji": "🐊",
+      "fact": "Alligator-made water holes can shelter many wetland animals during dry weather.",
+      "group": "Reptile",
+      "habitat": "Wetlands",
+      "id": "american-alligator",
+      "imageTitle": "American alligator",
+      "mission": "Find a reptile that creates habitat for other species.",
+      "name": "American Alligator",
+      "region": "Southeastern United States"
+    },
+    {
+      "adaptation": "A huge hooked bill grabs slippery prey in thick marsh plants.",
+      "diet": "Carnivore",
+      "emoji": "🦤",
+      "fact": "Shoebills can stand almost motionless while waiting for fish.",
+      "group": "Bird",
+      "habitat": "Wetlands",
+      "id": "shoebill",
+      "imageTitle": "Shoebill",
+      "mission": "Find a patient bird with a shoe-shaped bill.",
+      "name": "Shoebill",
+      "region": "East and central Africa"
+    },
+    {
+      "adaptation": "Closable ears and nostrils keep water out during dives.",
+      "diet": "Carnivore",
+      "emoji": "🦦",
+      "fact": "River otters slide on mud and snow as both play and efficient travel.",
+      "group": "Mammal",
+      "habitat": "Wetlands",
+      "id": "north-american-river-otter",
+      "imageTitle": "North American river otter",
+      "mission": "Find a playful swimmer with waterproof fur.",
+      "name": "North American River Otter",
+      "region": "North America"
+    },
+    {
+      "adaptation": "Broad wings use mountain updrafts to soar with little effort.",
+      "diet": "Carnivore",
+      "emoji": "🦅",
+      "fact": "Golden eagles can spot small prey from very high above the ground.",
+      "group": "Bird",
+      "habitat": "Mountains",
+      "id": "golden-eagle",
+      "imageTitle": "Golden Eagle",
+      "mission": "Find a mountain hunter with exceptional eyesight.",
+      "name": "Golden Eagle",
+      "region": "Northern Hemisphere"
+    },
+    {
+      "adaptation": "A compact body and thick fur conserve heat among cold rocks.",
+      "diet": "Herbivore",
+      "emoji": "🐹",
+      "fact": "Pikas gather summer plants into hay piles for winter food.",
+      "group": "Mammal",
+      "habitat": "Mountains",
+      "id": "american-pika",
+      "imageTitle": "American pika",
+      "mission": "Find a tiny mammal that makes its own haystack.",
+      "name": "American Pika",
+      "region": "Western North America"
+    },
+    {
+      "adaptation": "Hooves have hard rims for edges and soft centers for grip.",
+      "diet": "Herbivore",
+      "emoji": "🐐",
+      "fact": "Alpine ibex can balance on extremely narrow rocky ledges.",
+      "group": "Mammal",
+      "habitat": "Mountains",
+      "id": "alpine-ibex",
+      "imageTitle": "Alpine ibex",
+      "mission": "Find a goat with built-in climbing boots.",
+      "name": "Alpine Ibex",
+      "region": "European Alps"
+    },
+    {
+      "adaptation": "Efficient blood and large lungs help them use thin mountain air.",
+      "diet": "Herbivore",
+      "emoji": "🦙",
+      "fact": "Vicuñas produce exceptionally fine wool while living high in the Andes.",
+      "group": "Mammal",
+      "habitat": "Mountains",
+      "id": "vicuna",
+      "imageTitle": "Vicuña",
+      "mission": "Find a wild relative of the llama adapted to high altitude.",
+      "name": "Vicuña",
+      "region": "Andes of South America"
+    }
+  ],
+  "habitats": {
+    "Arctic": [
+      "❄️",
+      "Frozen lands and seas where animals conserve heat."
+    ],
+    "Desert": [
+      "🏜️",
+      "Dry places where animals avoid heat and save water."
+    ],
+    "Forest": [
+      "🌲",
+      "Woodlands with trees, burrows, streams, and changing seasons."
+    ],
+    "Mountains": [
+      "🏔️",
+      "High, rocky habitats with thin air and steep slopes."
+    ],
+    "Ocean": [
+      "🌊",
+      "Saltwater worlds from sunny reefs to the deep sea."
+    ],
+    "Rainforest": [
+      "🌴",
+      "Warm, wet forests filled with layers of life."
+    ],
+    "Savanna": [
+      "🌾",
+      "Open grasslands with scattered trees and large herds."
+    ],
+    "Wetlands": [
+      "🪷",
+      "Marshes, lakes, and riverbanks rich with food and shelter."
+    ]
+  },
+  "photoTitleOverrides": {
+    "African Wild Dog": "African wild dog",
+    "Alpine Ibex": "Alpine ibex",
+    "American Alligator": "American alligator",
+    "American Black Bear": "American black bear",
+    "American Pika": "American pika",
+    "Baird's Tapir": "Baird's tapir",
+    "Desert Tortoise": "Desert tortoise",
+    "Kangaroo Rat": "Kangaroo rat",
+    "Leafcutter Ant": "Leafcutter ant",
+    "Leopard Seal": "Leopard seal",
+    "Mexican Gray Wolf": "Mexican wolf",
+    "Monarch Butterfly": "Monarch butterfly",
+    "Musk Ox": "Muskox",
+    "North American River Otter": "North American river otter",
+    "Pileated Woodpecker": "Pileated woodpecker",
+    "Plains Zebra": "Plains zebra",
+    "Sea Otter": "Sea otter",
+    "Sidewinder Rattlesnake": "Crotalus cerastes",
+    "Thorny Devil": "Thorny devil",
+    "West Indian Manatee": "West Indian manatee",
+    "Whale Shark": "Whale shark"
+  },
+  "schemaVersion": 1
+} as const;
+
+export const KNOWLEDGE_CATALOG = {
+  "entries": [
+    {
+      "answer": {
+        "en": "Nico’s World keeps profiles and creations on this device. It does not need a child account, advertising tracker, or cloud upload.",
+        "es-MX": "El Mundo de Nico guarda los perfiles y las creaciones en este dispositivo. No necesita una cuenta infantil, rastreadores publicitarios ni subir contenido a la nube."
+      },
+      "id": "privacy",
+      "keywords": {
+        "en": [
+          "private",
+          "privacy",
+          "internet",
+          "online",
+          "cloud",
+          "account",
+          "tracking"
+        ],
+        "es-MX": [
+          "privado",
+          "privacidad",
+          "internet",
+          "línea",
+          "nube",
+          "cuenta",
+          "rastreo"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Open Robo Lab to choose robot parts, colors, powers, personalities, voices, and jobs. Saving a robot earns stars.",
+        "es-MX": "Abre el Laboratorio Robot para elegir piezas, colores, poderes, personalidades, voces y trabajos. Guardar un robot gana estrellas."
+      },
+      "id": "robots",
+      "keywords": {
+        "en": [
+          "robot",
+          "robo lab",
+          "build robot",
+          "boltbot",
+          "parts"
+        ],
+        "es-MX": [
+          "robot",
+          "laboratorio robot",
+          "construir robot",
+          "boltbot",
+          "piezas"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Animal Forest has wildlife facts, habitats, discoveries, favorites, and field-guide missions. Try searching for the axolotl or jaguar.",
+        "es-MX": "El Bosque Animal tiene datos de fauna, hábitats, descubrimientos, favoritos y misiones de guía de campo. Busca el ajolote o el jaguar."
+      },
+      "id": "animals",
+      "keywords": {
+        "en": [
+          "animal",
+          "forest",
+          "wildlife",
+          "jaguar",
+          "axolotl"
+        ],
+        "es-MX": [
+          "animal",
+          "bosque",
+          "fauna",
+          "jaguar",
+          "ajolote"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Dinosaur Valley lets you start expeditions, discover dinosaurs, and collect fossils for the Memory Museum.",
+        "es-MX": "El Valle de Dinosaurios te permite iniciar expediciones, descubrir dinosaurios y coleccionar fósiles para el Museo de Recuerdos."
+      },
+      "id": "dinosaurs",
+      "keywords": {
+        "en": [
+          "dinosaur",
+          "fossil",
+          "t rex",
+          "triceratops",
+          "jurassic"
+        ],
+        "es-MX": [
+          "dinosaurio",
+          "fósil",
+          "t rex",
+          "triceratops",
+          "jurásico"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Monster Lab makes friendly creatures from bodies, eyes, horns, wings, colors, powers, and personalities. Visit their habitats to grow friendship.",
+        "es-MX": "El Laboratorio de Monstruos crea criaturas amistosas con cuerpos, ojos, cuernos, alas, colores, poderes y personalidades. Visita sus hábitats para aumentar la amistad."
+      },
+      "id": "monsters",
+      "keywords": {
+        "en": [
+          "monster",
+          "monster lab",
+          "habitat",
+          "friendship"
+        ],
+        "es-MX": [
+          "monstruo",
+          "laboratorio de monstruos",
+          "hábitat",
+          "amistad"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Robot Pet Workshop lets you build a companion, choose accessories and personality, train tricks, and grow its bond.",
+        "es-MX": "El Taller de Mascotas Robot te permite crear un compañero, elegir accesorios y personalidad, entrenar trucos y fortalecer su vínculo."
+      },
+      "id": "pets",
+      "keywords": {
+        "en": [
+          "pet",
+          "robot pet",
+          "dog",
+          "cat",
+          "train trick"
+        ],
+        "es-MX": [
+          "mascota",
+          "mascota robot",
+          "perro",
+          "gato",
+          "entrenar truco"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Story Castle builds English, Spanish, or bilingual adventures with your saved friends. The browser can read the story aloud locally.",
+        "es-MX": "El Castillo de Cuentos crea aventuras en inglés, español o bilingües con tus amigos guardados. El navegador puede leer el cuento en voz alta localmente."
+      },
+      "id": "stories",
+      "keywords": {
+        "en": [
+          "story",
+          "book",
+          "read",
+          "castle",
+          "speech"
+        ],
+        "es-MX": [
+          "cuento",
+          "libro",
+          "leer",
+          "castillo",
+          "voz"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Art Studio lets you combine a background, frame, subject, caption, and stickers, then display the result in Robot Home.",
+        "es-MX": "El Estudio de Arte te permite combinar fondo, marco, personaje, texto y calcomanías, y luego mostrar el resultado en la Casa Robot."
+      },
+      "id": "art",
+      "keywords": {
+        "en": [
+          "art",
+          "draw",
+          "poster",
+          "picture",
+          "studio"
+        ],
+        "es-MX": [
+          "arte",
+          "dibujar",
+          "póster",
+          "imagen",
+          "estudio"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Game Arcade has quick learning games for animals, patterns, robot memory, dinosaurs, navigation, and arithmetic.",
+        "es-MX": "La Sala de Juegos tiene juegos rápidos de animales, patrones, memoria robot, dinosaurios, navegación y aritmética."
+      },
+      "id": "games",
+      "keywords": {
+        "en": [
+          "game",
+          "arcade",
+          "score",
+          "play"
+        ],
+        "es-MX": [
+          "juego",
+          "sala de juegos",
+          "puntuación",
+          "jugar"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "You earn stars by creating, discovering, completing jobs, playing games, and finishing missions. Badges mark important milestones.",
+        "es-MX": "Ganas estrellas al crear, descubrir, completar trabajos, jugar y terminar misiones. Las insignias marcan logros importantes."
+      },
+      "id": "stars",
+      "keywords": {
+        "en": [
+          "star",
+          "stars",
+          "earn",
+          "badge",
+          "level"
+        ],
+        "es-MX": [
+          "estrella",
+          "estrellas",
+          "ganar",
+          "insignia",
+          "nivel"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Showtime Studio makes a short video entirely on this device. Pick up to three characters and a pose sequence, then ask a grown-up before recording and downloading.",
+        "es-MX": "Showtime Studio crea un video corto completamente en este dispositivo. Elige hasta tres personajes y una secuencia de poses, y pide permiso a un adulto antes de grabar y descargar."
+      },
+      "id": "movies",
+      "keywords": {
+        "en": [
+          "movie",
+          "video",
+          "showtime",
+          "record",
+          "download"
+        ],
+        "es-MX": [
+          "película",
+          "video",
+          "showtime",
+          "grabar",
+          "descargar"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Nico’s Phase 2 closet has 26 local outfits, including science, health, community, nature, creative, sports, adventure, and leadership jobs. Use the search box to find one quickly.",
+        "es-MX": "El armario Fase 2 de Nico tiene 26 trajes locales, con trabajos de ciencia, salud, comunidad, naturaleza, creatividad, deportes, aventura y liderazgo. Usa el buscador para encontrar uno rápido."
+      },
+      "id": "nico-clothes",
+      "keywords": {
+        "en": [
+          "nico",
+          "outfit",
+          "costume",
+          "dress",
+          "job",
+          "profession",
+          "how many outfits"
+        ],
+        "es-MX": [
+          "nico",
+          "ropa",
+          "disfraz",
+          "vestir",
+          "trabajo",
+          "profesión",
+          "cuántos trajes"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Scientists test ideas, engineers design and repair, and astronauts study space. Nico can try each role in the Dress Up tab and use the outfit in Showtime.",
+        "es-MX": "Los científicos prueban ideas, los ingenieros diseñan y reparan, y los astronautas estudian el espacio. Nico puede probar cada papel en Disfraces y usar el traje en Showtime."
+      },
+      "id": "science-jobs",
+      "keywords": {
+        "en": [
+          "scientist",
+          "engineer",
+          "astronaut",
+          "science job",
+          "inventor",
+          "experiment"
+        ],
+        "es-MX": [
+          "científico",
+          "ingeniero",
+          "astronauta",
+          "trabajo de ciencia",
+          "inventor",
+          "experimento"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Doctors help people, dentists care for teeth, and veterinarians care for animals. These Clubhouse roles are pretend-play learning tools, not medical advice.",
+        "es-MX": "Los doctores ayudan a las personas, los dentistas cuidan los dientes y los veterinarios cuidan animales. Estos papeles son juegos educativos, no consejos médicos."
+      },
+      "id": "health-helper-jobs",
+      "keywords": {
+        "en": [
+          "doctor",
+          "dentist",
+          "veterinarian",
+          "health job",
+          "help people",
+          "help animals"
+        ],
+        "es-MX": [
+          "doctor",
+          "dentista",
+          "veterinario",
+          "trabajo de salud",
+          "ayudar personas",
+          "ayudar animales"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Teachers, firefighters, police officers, and librarians help communities in different ways. Nico’s outfits focus on learning, safety, teamwork, and kindness.",
+        "es-MX": "Los maestros, bomberos, policías y bibliotecarios ayudan a la comunidad de distintas maneras. Los trajes de Nico se enfocan en aprendizaje, seguridad, trabajo en equipo y amabilidad."
+      },
+      "id": "community-jobs",
+      "keywords": {
+        "en": [
+          "teacher",
+          "police officer",
+          "firefighter",
+          "librarian",
+          "community helper"
+        ],
+        "es-MX": [
+          "maestro",
+          "policía",
+          "bombero",
+          "bibliotecario",
+          "ayudante de la comunidad"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Gardeners and farmers grow things, zookeepers care for habitats, and artists, chefs, and musicians create experiences for others. Try one and make a themed Showtime movie.",
+        "es-MX": "Los jardineros y granjeros cultivan, los cuidadores protegen hábitats, y los artistas, chefs y músicos crean experiencias. Prueba uno y crea una película temática en Showtime."
+      },
+      "id": "nature-creative-jobs",
+      "keywords": {
+        "en": [
+          "gardener",
+          "farmer",
+          "zookeeper",
+          "artist",
+          "chef",
+          "musician",
+          "nature job",
+          "creative job"
+        ],
+        "es-MX": [
+          "jardinero",
+          "granjero",
+          "cuidador del zoológico",
+          "artista",
+          "chef",
+          "músico",
+          "trabajo de naturaleza",
+          "trabajo creativo"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Soccer and tennis build practice, focus, movement, and fair play. Lifeguards learn water safety and rescue skills. Nico can wear each sports outfit for pretend play.",
+        "es-MX": "El fútbol y el tenis desarrollan práctica, concentración, movimiento y juego limpio. Los salvavidas aprenden seguridad acuática y rescate. Nico puede usar cada traje deportivo para jugar."
+      },
+      "id": "sports-jobs",
+      "keywords": {
+        "en": [
+          "soccer",
+          "tennis",
+          "athlete",
+          "sports",
+          "lifeguard"
+        ],
+        "es-MX": [
+          "fútbol",
+          "tenis",
+          "atleta",
+          "deportes",
+          "salvavidas"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "Open Parent & Settings to download a private JSON backup. Keep important backups somewhere safe because browser data can be erased.",
+        "es-MX": "Abre Adultos y Ajustes para descargar un respaldo JSON privado. Guarda los respaldos importantes en un lugar seguro porque los datos del navegador pueden borrarse."
+      },
+      "id": "backup",
+      "keywords": {
+        "en": [
+          "backup",
+          "save",
+          "restore",
+          "export",
+          "import",
+          "lost progress"
+        ],
+        "es-MX": [
+          "respaldo",
+          "guardar",
+          "restaurar",
+          "exportar",
+          "importar",
+          "perder progreso"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "After the first successful visit, the PWA can keep its main activities available offline. Wildlife photos may need the internet the first time.",
+        "es-MX": "Después de la primera visita exitosa, la PWA puede mantener disponibles sus actividades principales sin conexión. Las fotos de fauna pueden necesitar internet la primera vez."
+      },
+      "id": "offline",
+      "keywords": {
+        "en": [
+          "offline",
+          "no internet",
+          "without internet",
+          "install"
+        ],
+        "es-MX": [
+          "sin conexión",
+          "sin internet",
+          "instalar"
+        ]
+      }
+    },
+    {
+      "answer": {
+        "en": "I am a safe local helper, not an online generative AI. I match your question to a bilingual answer library stored inside Nico’s World, so your question stays on this device.",
+        "es-MX": "Soy un ayudante local seguro, no una IA generativa en línea. Comparo tu pregunta con una biblioteca bilingüe guardada dentro del Mundo de Nico, así que tu pregunta permanece en este dispositivo."
+      },
+      "id": "safe-question",
+      "keywords": {
+        "en": [
+          "are you ai",
+          "artificial intelligence",
+          "how do you answer",
+          "real ai"
+        ],
+        "es-MX": [
+          "eres ia",
+          "inteligencia artificial",
+          "cómo respondes",
+          "ia real"
+        ]
+      }
+    }
+  ],
+  "schemaVersion": 1
+} as const;
+
+export const MONSTER_CATALOG = {
+  "schemaVersion": 1,
+  "streamlit": {
+    "MONSTER_ANIMATIONS": {
+      "blink": "Blink",
+      "bounce": "Bounce",
+      "celebrate": "Celebrate",
+      "dance": "Dance",
+      "fly": "Fly",
+      "idle": "Breathe",
+      "roar": "Silly Roar",
+      "sleep": "Sleep",
+      "wiggle": "Wiggle"
+    },
+    "MONSTER_COLORS": {
+      "aqua": [
+        "Aqua Glow",
+        "#22D3EE"
+      ],
+      "black": [
+        "Cosmic Black",
+        "#1E293B"
+      ],
+      "brown": [
+        "Chocolate Brown",
+        "#92400E"
+      ],
+      "gold": [
+        "Golden",
+        "#FACC15"
+      ],
+      "lime": [
+        "Lime Green",
+        "#84CC16"
+      ],
+      "midnight": [
+        "Midnight Blue",
+        "#312E81"
+      ],
+      "mint": [
+        "Mint",
+        "#6EE7B7"
+      ],
+      "orange": [
+        "Orange",
+        "#FB923C"
+      ],
+      "peach": [
+        "Peach",
+        "#FDBA74"
+      ],
+      "pink": [
+        "Bubblegum Pink",
+        "#F472B6"
+      ],
+      "purple": [
+        "Purple",
+        "#8B5CF6"
+      ],
+      "rainbow": [
+        "Rainbow",
+        "#EC4899"
+      ],
+      "red": [
+        "Cherry Red",
+        "#EF4444"
+      ],
+      "silver": [
+        "Glowing Silver",
+        "#CBD5E1"
+      ],
+      "sky": [
+        "Sky Blue",
+        "#38BDF8"
+      ],
+      "teal": [
+        "Ocean Teal",
+        "#14B8A6"
+      ],
+      "violet": [
+        "Electric Violet",
+        "#C084FC"
+      ],
+      "white": [
+        "Moon White",
+        "#F8FAFC"
+      ]
+    },
+    "MONSTER_DEFAULTS": {
+      "accessory": "none",
+      "arms": "tiny",
+      "body": "fluffy",
+      "color": "purple",
+      "ears": "round",
+      "eyes": "two_round",
+      "face": "👾",
+      "horns": "none",
+      "legs": "bouncy",
+      "mood": "Happy",
+      "mouth": "smile",
+      "pattern": "spots",
+      "personality": "Curious and polite",
+      "power": "Sneeze confetti",
+      "secondary_color": "lime",
+      "size": "standard",
+      "tail": "curly",
+      "texture": "fluffy",
+      "wings": "none"
+    },
+    "MONSTER_MOODS": [
+      "Happy",
+      "Excited",
+      "Curious",
+      "Sleepy",
+      "Silly",
+      "Proud",
+      "Surprised",
+      "Calm"
+    ],
+    "MONSTER_PARTS": {
+      "accessory": {
+        "backpack": "Tiny Backpack",
+        "bow": "Big Bow",
+        "cape": "Hero Cape",
+        "crown": "Monster Crown",
+        "flower": "Flower Clip",
+        "glasses": "Smart Glasses",
+        "hat": "Adventure Hat",
+        "headphones": "Music Headphones",
+        "medal": "Friendship Medal",
+        "none": "No Accessory",
+        "scarf": "Cozy Scarf",
+        "space": "Space Helmet"
+      },
+      "arms": {
+        "branch": "Branch Arms",
+        "claws": "Friendly Claws",
+        "flippers": "Flipper Arms",
+        "four": "Four Arms",
+        "long": "Long Wobbly Arms",
+        "none": "No Arms",
+        "robot": "Robot Arms",
+        "spring": "Spring Arms",
+        "strong": "Strong Arms",
+        "tentacle": "Tentacle Arms",
+        "tiny": "Tiny Arms",
+        "wings": "Wing Arms"
+      },
+      "body": {
+        "cloud": "Cloud Creature",
+        "crystal": "Crystal Beast",
+        "dragon": "Dragon Body",
+        "fluffy": "Fluffy Puff",
+        "ghost": "Friendly Ghost",
+        "jelly": "Jelly Drop",
+        "octopus": "Octopus Body",
+        "plant": "Plant Sprout",
+        "robot": "Clockwork Monster",
+        "rock": "Rock Golem",
+        "round": "Round Blob",
+        "star": "Star Creature"
+      },
+      "ears": {
+        "bat": "Bat Ears",
+        "bunny": "Bunny Ears",
+        "cat": "Cat Ears",
+        "cloud": "Cloud Ears",
+        "dragon": "Dragon Ears",
+        "elf": "Elf Ears",
+        "fin": "Ocean Fins",
+        "leaf": "Leaf Ears",
+        "none": "No Ears",
+        "robot": "Robot Receivers",
+        "round": "Round Ears",
+        "star": "Star Ears"
+      },
+      "eyes": {
+        "cat": "Cat Eyes",
+        "heart": "Heart Eyes",
+        "invisible": "Invisible Eyes",
+        "one_giant": "One Giant Eye",
+        "rainbow": "Rainbow Eyes",
+        "robot": "Robot Scanner Eyes",
+        "six": "Six Blinking Eyes",
+        "sleepy": "Sleepy Eyes",
+        "spiral": "Spiral Eyes",
+        "star": "Star Eyes",
+        "three": "Three Tiny Eyes",
+        "two_round": "Two Round Eyes"
+      },
+      "horns": {
+        "antenna": "Antenna Horns",
+        "antlers": "Forest Antlers",
+        "crown": "Crown Horns",
+        "crystal": "Crystal Horns",
+        "curly": "Curly Ram Horns",
+        "dragon": "Dragon Horns",
+        "flame": "Flame Horns",
+        "moon": "Moon Horns",
+        "none": "No Horns",
+        "star": "Star Horns",
+        "tiny": "Tiny Horns",
+        "unicorn": "Unicorn Horn"
+      },
+      "legs": {
+        "bouncy": "Bouncy Legs",
+        "claws": "Clawed Feet",
+        "cloud": "Cloud Floater",
+        "four": "Four Legs",
+        "hooves": "Little Hooves",
+        "long": "Long Legs",
+        "none": "Floating",
+        "robot": "Robot Legs",
+        "roots": "Plant Roots",
+        "tentacles": "Tentacle Base",
+        "tiny": "Tiny Feet",
+        "wheels": "Monster Wheels"
+      },
+      "mouth": {
+        "beak": "Bird Beak",
+        "bubble": "Bubble Mouth",
+        "fangs": "Silly Fangs",
+        "grin": "Giant Grin",
+        "mustache": "Mustache Mouth",
+        "none": "No Mouth",
+        "robot": "Robot Vent",
+        "smile": "Friendly Smile",
+        "speaker": "Speaker Mouth",
+        "tiny": "Tiny Mouth",
+        "tongue": "Wiggly Tongue",
+        "zipper": "Zipper Mouth"
+      },
+      "tail": {
+        "cloud": "Cloud Trail",
+        "crystal": "Crystal Tail",
+        "curly": "Curly Tail",
+        "dragon": "Dragon Tail",
+        "fish": "Fish Tail",
+        "flame": "Flame Tail",
+        "leaf": "Leaf Tail",
+        "none": "No Tail",
+        "rainbow": "Rainbow Tail",
+        "robot": "Cable Tail",
+        "star": "Star Tail",
+        "tiny": "Tiny Tail"
+      },
+      "wings": {
+        "bat": "Bat Wings",
+        "bird": "Feather Wings",
+        "butterfly": "Butterfly Wings",
+        "cloud": "Cloud Wings",
+        "crystal": "Crystal Wings",
+        "dragon": "Dragon Wings",
+        "flame": "Flame Wings",
+        "leaf": "Leaf Wings",
+        "none": "No Wings",
+        "robot": "Mechanical Wings",
+        "star": "Star Wings",
+        "tiny": "Tiny Wings"
+      }
+    },
+    "MONSTER_PATTERNS": {
+      "checker": "Checkerboard",
+      "galaxy": "Galaxy",
+      "lightning": "Lightning",
+      "patches": "Patchwork",
+      "scales": "Dragon Scales",
+      "solid": "Solid",
+      "spots": "Polka Dots",
+      "stars": "Stars",
+      "stripes": "Stripes",
+      "swirls": "Magic Swirls"
+    },
+    "MONSTER_PERSONALITIES": [
+      "Brave but ticklish",
+      "Shy and musical",
+      "Curious and polite",
+      "Wildly dramatic",
+      "Sleepy and clever",
+      "Helpful and bouncy",
+      "Serious about snacks",
+      "Friendly but forgetful",
+      "Excited by everything",
+      "Quietly hilarious",
+      "Protective and gentle",
+      "Inventive and messy",
+      "Royal and kind",
+      "Mysterious but friendly"
+    ],
+    "MONSTER_POWERS": [
+      "Sneeze confetti",
+      "Turn hiccups into bubbles",
+      "Talk to socks",
+      "Grow pizza flowers",
+      "Make tiny thunder",
+      "Freeze puddles into slides",
+      "Summon dancing bananas",
+      "Turn shadows into puppets",
+      "Make books giggle",
+      "Create marshmallow clouds",
+      "Paint rainbows in the air",
+      "Find lost toys",
+      "Make plants sing",
+      "Open friendly portals",
+      "Build pillow forts instantly",
+      "Translate animal sounds"
+    ],
+    "MONSTER_PRESETS": {
+      "Cloud Dreamer": {
+        "accessory": "scarf",
+        "arms": "none",
+        "body": "cloud",
+        "color": "white",
+        "ears": "cloud",
+        "eyes": "sleepy",
+        "face": "👻",
+        "horns": "moon",
+        "legs": "cloud",
+        "mood": "Sleepy",
+        "mouth": "tiny",
+        "pattern": "stars",
+        "personality": "Sleepy and clever",
+        "power": "Create marshmallow clouds",
+        "secondary_color": "sky",
+        "size": "standard",
+        "tail": "cloud",
+        "texture": "cloudy",
+        "wings": "cloud"
+      },
+      "Crystal Guardian": {
+        "accessory": "cape",
+        "arms": "strong",
+        "body": "crystal",
+        "color": "aqua",
+        "ears": "elf",
+        "eyes": "star",
+        "face": "🧌",
+        "horns": "crystal",
+        "legs": "long",
+        "mood": "Brave",
+        "mouth": "smile",
+        "pattern": "lightning",
+        "personality": "Brave but ticklish",
+        "power": "Find lost toys",
+        "secondary_color": "violet",
+        "size": "giant",
+        "tail": "crystal",
+        "texture": "crystal",
+        "wings": "crystal"
+      },
+      "Forest Sprout": {
+        "accessory": "flower",
+        "arms": "branch",
+        "body": "plant",
+        "color": "lime",
+        "ears": "leaf",
+        "eyes": "heart",
+        "face": "🦄",
+        "horns": "antlers",
+        "legs": "roots",
+        "mood": "Happy",
+        "mouth": "smile",
+        "pattern": "patches",
+        "personality": "Helpful and bouncy",
+        "power": "Make plants sing",
+        "secondary_color": "brown",
+        "size": "mini",
+        "tail": "leaf",
+        "texture": "leafy",
+        "wings": "leaf"
+      },
+      "Friendly Dragon": {
+        "accessory": "medal",
+        "arms": "claws",
+        "body": "dragon",
+        "color": "red",
+        "ears": "dragon",
+        "eyes": "cat",
+        "face": "🐲",
+        "horns": "dragon",
+        "legs": "claws",
+        "mood": "Proud",
+        "mouth": "fangs",
+        "pattern": "scales",
+        "personality": "Protective and gentle",
+        "power": "Paint rainbows in the air",
+        "secondary_color": "gold",
+        "size": "giant",
+        "tail": "dragon",
+        "texture": "rocky",
+        "wings": "dragon"
+      },
+      "Galaxy Octopus": {
+        "accessory": "crown",
+        "arms": "tentacle",
+        "body": "octopus",
+        "color": "midnight",
+        "ears": "fin",
+        "eyes": "six",
+        "face": "🐙",
+        "horns": "star",
+        "legs": "tentacles",
+        "mood": "Curious",
+        "mouth": "bubble",
+        "pattern": "galaxy",
+        "personality": "Mysterious but friendly",
+        "power": "Open friendly portals",
+        "secondary_color": "pink",
+        "size": "standard",
+        "tail": "rainbow",
+        "texture": "cosmic",
+        "wings": "star"
+      },
+      "Robot Monster": {
+        "accessory": "headphones",
+        "arms": "robot",
+        "body": "robot",
+        "color": "silver",
+        "ears": "robot",
+        "eyes": "robot",
+        "face": "🤖",
+        "horns": "antenna",
+        "legs": "robot",
+        "mood": "Excited",
+        "mouth": "robot",
+        "pattern": "checker",
+        "personality": "Inventive and messy",
+        "power": "Build pillow forts instantly",
+        "secondary_color": "aqua",
+        "size": "standard",
+        "tail": "robot",
+        "texture": "metallic",
+        "wings": "robot"
+      },
+      "Wobblepop Classic": {}
+    },
+    "MONSTER_SIZES": {
+      "giant": 1.16,
+      "mini": 0.82,
+      "standard": 1.0
+    },
+    "MONSTER_TEXTURES": {
+      "cloudy": "Cloud Soft",
+      "cosmic": "Cosmic Glow",
+      "crystal": "Crystal",
+      "fluffy": "Extra Fluffy",
+      "jelly": "Translucent Jelly",
+      "leafy": "Leafy",
+      "metallic": "Metallic",
+      "rocky": "Rocky",
+      "slimy": "Shiny Slime",
+      "smooth": "Smooth"
+    }
+  },
+  "web": {
+    "options": {
+      "animation": [
+        "Bounce",
+        "Spin",
+        "Roar",
+        "Fly",
+        "Dance",
+        "Sleep"
+      ],
+      "arms": [
+        "Tiny arms",
+        "Claw arms",
+        "Four arms",
+        "Tentacles",
+        "Giant hands",
+        "Robot arms",
+        "Wing arms"
+      ],
+      "body": [
+        "Blob",
+        "Dragon",
+        "Jungle Beast",
+        "Stone Golem",
+        "Spirit",
+        "Cosmic",
+        "Aquatic",
+        "Candy",
+        "Mecha",
+        "Royal",
+        "Volcano",
+        "Ice Beast",
+        "Alien",
+        "Dinosaur",
+        "Cloud"
+      ],
+      "color": [
+        "Aqua",
+        "Purple",
+        "Lime",
+        "Orange",
+        "Pink",
+        "Blue",
+        "Red",
+        "Gold",
+        "Midnight",
+        "Pearl",
+        "Emerald",
+        "Crimson"
+      ],
+      "eyes": [
+        "One eye",
+        "Two eyes",
+        "Three eyes",
+        "Four eyes",
+        "Star eyes",
+        "Sleepy eyes",
+        "Robot visor",
+        "Anime eyes",
+        "Fire eyes",
+        "Galaxy eyes"
+      ],
+      "habitat": [
+        "Crystal Cave",
+        "Cloud Nest",
+        "Jungle Hut",
+        "Ocean Dome",
+        "Candy Castle",
+        "Moon Base",
+        "Volcano Fort",
+        "Ice Palace",
+        "Mecha Garage",
+        "Star Garden"
+      ],
+      "horns": [
+        "No horns",
+        "Tiny horns",
+        "Crystal horns",
+        "Dragon horns",
+        "Antlers",
+        "Unicorn horn",
+        "Mecha antenna",
+        "Flame horns"
+      ],
+      "legs": [
+        "Tiny feet",
+        "Dinosaur legs",
+        "Spider legs",
+        "Hover base",
+        "Spring legs",
+        "Robot treads",
+        "Mermaid tail"
+      ],
+      "mouth": [
+        "Friendly smile",
+        "Fang smile",
+        "Big grin",
+        "Tiny mouth",
+        "Beak",
+        "Robot speaker",
+        "Dragon snout"
+      ],
+      "pattern": [
+        "Solid",
+        "Spots",
+        "Stripes",
+        "Galaxy",
+        "Scales",
+        "Candy swirl",
+        "Lightning",
+        "Stars",
+        "Camouflage",
+        "Circuit lines"
+      ],
+      "personality": [
+        "Curious",
+        "Silly",
+        "Brave",
+        "Shy",
+        "Helpful",
+        "Sleepy",
+        "Loyal",
+        "Mischievous",
+        "Wise",
+        "Playful"
+      ],
+      "power": [
+        "Rainbow shield",
+        "Bubble beam",
+        "Plant growth",
+        "Moonlight",
+        "Super jump",
+        "Friendly roar",
+        "Fire breath",
+        "Ice blast",
+        "Teleport",
+        "Healing sparkle",
+        "Thunder clap",
+        "Invisibility"
+      ],
+      "tail": [
+        "No tail",
+        "Dragon tail",
+        "Lion tail",
+        "Scorpion tail",
+        "Fish tail",
+        "Flame tail",
+        "Robot cable"
+      ],
+      "texture": [
+        "Smooth",
+        "Furry",
+        "Crystal",
+        "Stone",
+        "Slime",
+        "Metal",
+        "Cloud",
+        "Lava"
+      ],
+      "wings": [
+        "No wings",
+        "Bat wings",
+        "Dragon wings",
+        "Star wings",
+        "Butterfly wings",
+        "Mecha wings",
+        "Angel wings",
+        "Fire wings"
+      ]
+    }
+  }
+} as const;
+
+export const POSE_CATALOG = {
+  "schemaVersion": 1,
+  "showtimePoses": [
+    {
+      "durationMs": 1000,
+      "emoji": "🙂",
+      "id": "idle",
+      "kinds": [
+        "nico",
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Ready",
+        "es-MX": "Listo"
+      }
+    },
+    {
+      "durationMs": 1200,
+      "emoji": "👋",
+      "id": "wave",
+      "kinds": [
+        "nico",
+        "robot",
+        "pet"
+      ],
+      "name": {
+        "en": "Wave",
+        "es-MX": "Saludar"
+      }
+    },
+    {
+      "durationMs": 1400,
+      "emoji": "🎉",
+      "id": "celebrate",
+      "kinds": [
+        "nico",
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Celebrate",
+        "es-MX": "Celebrar"
+      }
+    },
+    {
+      "durationMs": 1500,
+      "emoji": "🚀",
+      "id": "launch",
+      "kinds": [
+        "robot",
+        "pet"
+      ],
+      "name": {
+        "en": "Launch",
+        "es-MX": "Despegar"
+      }
+    },
+    {
+      "durationMs": 1500,
+      "emoji": "💃",
+      "id": "dance",
+      "kinds": [
+        "nico",
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Dance",
+        "es-MX": "Bailar"
+      }
+    },
+    {
+      "durationMs": 1200,
+      "emoji": "🔄",
+      "id": "spin",
+      "kinds": [
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Spin",
+        "es-MX": "Girar"
+      }
+    },
+    {
+      "durationMs": 1100,
+      "emoji": "⬆️",
+      "id": "bounce",
+      "kinds": [
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Bounce",
+        "es-MX": "Rebotar"
+      }
+    },
+    {
+      "durationMs": 1300,
+      "emoji": "🗯️",
+      "id": "roar",
+      "kinds": [
+        "monster"
+      ],
+      "name": {
+        "en": "Roar",
+        "es-MX": "Rugir"
+      }
+    },
+    {
+      "durationMs": 1500,
+      "emoji": "😴",
+      "id": "sleep",
+      "kinds": [
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Sleep",
+        "es-MX": "Dormir"
+      }
+    }
+  ],
+  "streamlitMonsterAnimations": {
+    "blink": "Blink",
+    "bounce": "Bounce",
+    "celebrate": "Celebrate",
+    "dance": "Dance",
+    "fly": "Fly",
+    "idle": "Breathe",
+    "roar": "Silly Roar",
+    "sleep": "Sleep",
+    "wiggle": "Wiggle"
+  },
+  "streamlitRobotAnimations": {
+    "blink": [
+      "Blink",
+      "😊"
+    ],
+    "bounce": [
+      "Bounce",
+      "🏀"
+    ],
+    "celebrate": [
+      "Celebrate",
+      "🎉"
+    ],
+    "charge": [
+      "Power Charge",
+      "🔋"
+    ],
+    "dance": [
+      "Dance",
+      "💃"
+    ],
+    "flash": [
+      "Flash Lights",
+      "⚡"
+    ],
+    "fly": [
+      "Fly",
+      "🚀"
+    ],
+    "moonwalk": [
+      "Moonwalk",
+      "🌙"
+    ],
+    "spin": [
+      "Spin",
+      "🔄"
+    ],
+    "walk": [
+      "Walk",
+      "🛞"
+    ],
+    "wave": [
+      "Wave",
+      "👋"
+    ]
+  },
+  "webRobotActions": [
+    {
+      "en": "Wave",
+      "es": "Saludar",
+      "icon": "👋",
+      "pose": "wave"
+    },
+    {
+      "en": "Fly",
+      "es": "Volar",
+      "icon": "🚀",
+      "pose": "launch"
+    },
+    {
+      "en": "Dance",
+      "es": "Bailar",
+      "icon": "💃",
+      "pose": "dance"
+    },
+    {
+      "en": "Spin",
+      "es": "Girar",
+      "icon": "🔄",
+      "pose": "spin"
+    },
+    {
+      "en": "Blink",
+      "es": "Parpadear",
+      "icon": "😊",
+      "pose": "blink"
+    },
+    {
+      "en": "Scan",
+      "es": "Escanear",
+      "icon": "📡",
+      "pose": "scan"
+    },
+    {
+      "en": "Charge",
+      "es": "Cargar",
+      "icon": "🔋",
+      "pose": "charge"
+    },
+    {
+      "en": "Hover",
+      "es": "Flotar",
+      "icon": "🛸",
+      "pose": "hover"
+    },
+    {
+      "en": "Power Stomp",
+      "es": "Pisotón",
+      "icon": "🦾",
+      "pose": "stomp"
+    },
+    {
+      "en": "Salute",
+      "es": "Saludar firme",
+      "icon": "🫡",
+      "pose": "salute"
+    },
+    {
+      "en": "Repair",
+      "es": "Reparar",
+      "icon": "🔧",
+      "pose": "repair"
+    },
+    {
+      "en": "Shield",
+      "es": "Escudo",
+      "icon": "🛡️",
+      "pose": "shield"
+    },
+    {
+      "en": "Flash Lights",
+      "es": "Luces",
+      "icon": "⚡",
+      "pose": "lights"
+    },
+    {
+      "en": "Celebrate",
+      "es": "Celebrar",
+      "icon": "🎉",
+      "pose": "celebrate"
+    }
+  ]
+} as const;
+
+export const PROFESSION_CATALOG = {
+  "professions": [
+    {
+      "accent": "#16a34a",
+      "costume": "explorer",
+      "emoji": "🧭",
+      "id": "explorer",
+      "name": {
+        "en": "Explorer",
+        "es-MX": "Explorador"
+      },
+      "tagline": {
+        "en": "Discover animals, places, and clues.",
+        "es-MX": "Descubre animales, lugares y pistas."
+      }
+    },
+    {
+      "accent": "#2563eb",
+      "costume": "astronaut",
+      "emoji": "🚀",
+      "id": "astronaut",
+      "name": {
+        "en": "Astronaut",
+        "es-MX": "Astronauta"
+      },
+      "tagline": {
+        "en": "Study stars and travel through space.",
+        "es-MX": "Estudia las estrellas y viaja por el espacio."
+      }
+    },
+    {
+      "accent": "#0891b2",
+      "costume": "doctor",
+      "emoji": "🩺",
+      "id": "doctor",
+      "name": {
+        "en": "Doctor",
+        "es-MX": "Doctor"
+      },
+      "tagline": {
+        "en": "Help people feel safe and healthy.",
+        "es-MX": "Ayuda a las personas a sentirse seguras y saludables."
+      }
+    },
+    {
+      "accent": "#7c3aed",
+      "costume": "scientist",
+      "emoji": "🔬",
+      "id": "scientist",
+      "name": {
+        "en": "Scientist",
+        "es-MX": "Científico"
+      },
+      "tagline": {
+        "en": "Ask questions and test ideas.",
+        "es-MX": "Haz preguntas y prueba ideas."
+      }
+    },
+    {
+      "accent": "#ea580c",
+      "costume": "engineer",
+      "emoji": "⚙️",
+      "id": "engineer",
+      "name": {
+        "en": "Engineer",
+        "es-MX": "Ingeniero"
+      },
+      "tagline": {
+        "en": "Design, build, test, and repair.",
+        "es-MX": "Diseña, construye, prueba y repara."
+      }
+    },
+    {
+      "accent": "#f97316",
+      "costume": "builder",
+      "emoji": "🛠️",
+      "id": "builder",
+      "name": {
+        "en": "Builder",
+        "es-MX": "Constructor"
+      },
+      "tagline": {
+        "en": "Use tools and plans to build something strong.",
+        "es-MX": "Usa herramientas y planos para construir algo resistente."
+      }
+    },
+    {
+      "accent": "#059669",
+      "costume": "veterinarian",
+      "emoji": "🐾",
+      "id": "veterinarian",
+      "name": {
+        "en": "Veterinarian",
+        "es-MX": "Veterinario"
+      },
+      "tagline": {
+        "en": "Care for animals of every size.",
+        "es-MX": "Cuida animales de todos los tamaños."
+      }
+    },
+    {
+      "accent": "#65a30d",
+      "costume": "dinosaur",
+      "emoji": "🦖",
+      "id": "dinosaur",
+      "name": {
+        "en": "Dinosaur Hero",
+        "es-MX": "Héroe dinosaurio"
+      },
+      "tagline": {
+        "en": "Roar, explore, and learn about fossils.",
+        "es-MX": "Ruge, explora y aprende sobre fósiles."
+      }
+    },
+    {
+      "accent": "#334155",
+      "costume": "suit",
+      "emoji": "👔",
+      "id": "suit",
+      "name": {
+        "en": "Young Leader",
+        "es-MX": "Joven líder"
+      },
+      "tagline": {
+        "en": "Plan a mission and help the team.",
+        "es-MX": "Planea una misión y ayuda al equipo."
+      }
+    },
+    {
+      "accent": "#dc2626",
+      "costume": "firefighter",
+      "emoji": "🚒",
+      "id": "firefighter",
+      "name": {
+        "en": "Firefighter",
+        "es-MX": "Bombero"
+      },
+      "tagline": {
+        "en": "Practice courage, safety, and teamwork.",
+        "es-MX": "Practica valor, seguridad y trabajo en equipo."
+      }
+    },
+    {
+      "accent": "#d97706",
+      "costume": "chef",
+      "emoji": "👨‍🍳",
+      "id": "chef",
+      "name": {
+        "en": "Chef",
+        "es-MX": "Chef"
+      },
+      "tagline": {
+        "en": "Measure, mix, and create something tasty.",
+        "es-MX": "Mide, mezcla y crea algo sabroso."
+      }
+    },
+    {
+      "accent": "#db2777",
+      "costume": "artist",
+      "emoji": "🎨",
+      "id": "artist",
+      "name": {
+        "en": "Artist",
+        "es-MX": "Artista"
+      },
+      "tagline": {
+        "en": "Turn imagination into pictures and stories.",
+        "es-MX": "Convierte la imaginación en imágenes y cuentos."
+      }
+    },
+    {
+      "accent": "#0f766e",
+      "costume": "pilot",
+      "emoji": "✈️",
+      "id": "pilot",
+      "name": {
+        "en": "Pilot",
+        "es-MX": "Piloto"
+      },
+      "tagline": {
+        "en": "Navigate carefully and explore the sky.",
+        "es-MX": "Navega con cuidado y explora el cielo."
+      }
+    },
+    {
+      "accent": "#15803d",
+      "costume": "gardener",
+      "emoji": "🌱",
+      "id": "gardener",
+      "name": {
+        "en": "Gardener",
+        "es-MX": "Jardinero"
+      },
+      "tagline": {
+        "en": "Grow plants and care for living things.",
+        "es-MX": "Cultiva plantas y cuida a los seres vivos."
+      }
+    },
+    {
+      "accent": "#4f46e5",
+      "costume": "teacher",
+      "emoji": "🧑‍🏫",
+      "id": "teacher",
+      "name": {
+        "en": "Teacher",
+        "es-MX": "Maestro"
+      },
+      "tagline": {
+        "en": "Explain ideas and help friends learn.",
+        "es-MX": "Explica ideas y ayuda a tus amigos a aprender."
+      }
+    },
+    {
+      "accent": "#06b6d4",
+      "costume": "dentist",
+      "emoji": "🦷",
+      "id": "dentist",
+      "name": {
+        "en": "Dentist",
+        "es-MX": "Dentista"
+      },
+      "tagline": {
+        "en": "Teach healthy smiles and gentle care.",
+        "es-MX": "Enseña sonrisas saludables y cuidado amable."
+      }
+    },
+    {
+      "accent": "#1d4ed8",
+      "costume": "police-officer",
+      "emoji": "👮",
+      "id": "police-officer",
+      "name": {
+        "en": "Police Officer",
+        "es-MX": "Policía"
+      },
+      "tagline": {
+        "en": "Help the community and practice safety.",
+        "es-MX": "Ayuda a la comunidad y practica la seguridad."
+      }
+    },
+    {
+      "accent": "#65a30d",
+      "costume": "zookeeper",
+      "emoji": "🦒",
+      "id": "zookeeper",
+      "name": {
+        "en": "Zookeeper",
+        "es-MX": "Cuidador del zoológico"
+      },
+      "tagline": {
+        "en": "Protect habitats and learn animal needs.",
+        "es-MX": "Protege hábitats y aprende lo que necesitan los animales."
+      }
+    },
+    {
+      "accent": "#9333ea",
+      "costume": "musician",
+      "emoji": "🎸",
+      "id": "musician",
+      "name": {
+        "en": "Musician",
+        "es-MX": "Músico"
+      },
+      "tagline": {
+        "en": "Create rhythms, melodies, and happy sounds.",
+        "es-MX": "Crea ritmos, melodías y sonidos alegres."
+      }
+    },
+    {
+      "accent": "#a16207",
+      "costume": "farmer",
+      "emoji": "🚜",
+      "id": "farmer",
+      "name": {
+        "en": "Farmer",
+        "es-MX": "Granjero"
+      },
+      "tagline": {
+        "en": "Grow food and care for the land.",
+        "es-MX": "Cultiva alimentos y cuida la tierra."
+      }
+    },
+    {
+      "accent": "#e11d48",
+      "costume": "lifeguard",
+      "emoji": "🛟",
+      "id": "lifeguard",
+      "name": {
+        "en": "Lifeguard",
+        "es-MX": "Salvavidas"
+      },
+      "tagline": {
+        "en": "Watch the water and practice rescue safety.",
+        "es-MX": "Vigila el agua y practica rescates seguros."
+      }
+    },
+    {
+      "accent": "#6d28d9",
+      "costume": "magician",
+      "emoji": "🎩",
+      "id": "magician",
+      "name": {
+        "en": "Magician",
+        "es-MX": "Mago"
+      },
+      "tagline": {
+        "en": "Practice surprising tricks and creative stories.",
+        "es-MX": "Practica trucos sorprendentes y cuentos creativos."
+      }
+    },
+    {
+      "accent": "#16a34a",
+      "costume": "soccer-player",
+      "emoji": "⚽",
+      "id": "soccer-player",
+      "name": {
+        "en": "Soccer Player",
+        "es-MX": "Futbolista"
+      },
+      "tagline": {
+        "en": "Train skills, teamwork, and fair play.",
+        "es-MX": "Entrena habilidades, trabajo en equipo y juego limpio."
+      }
+    },
+    {
+      "accent": "#84cc16",
+      "costume": "tennis-player",
+      "emoji": "🎾",
+      "id": "tennis-player",
+      "name": {
+        "en": "Tennis Player",
+        "es-MX": "Tenista"
+      },
+      "tagline": {
+        "en": "Practice focus, movement, and sportsmanship.",
+        "es-MX": "Practica concentración, movimiento y deportividad."
+      }
+    },
+    {
+      "accent": "#92400e",
+      "costume": "detective",
+      "emoji": "🕵️",
+      "id": "detective",
+      "name": {
+        "en": "Detective",
+        "es-MX": "Detective"
+      },
+      "tagline": {
+        "en": "Observe details and solve friendly mysteries.",
+        "es-MX": "Observa detalles y resuelve misterios amistosos."
+      }
+    },
+    {
+      "accent": "#0f766e",
+      "costume": "librarian",
+      "emoji": "📚",
+      "id": "librarian",
+      "name": {
+        "en": "Librarian",
+        "es-MX": "Bibliotecario"
+      },
+      "tagline": {
+        "en": "Find books and connect readers with stories.",
+        "es-MX": "Encuentra libros y conecta lectores con cuentos."
+      }
+    }
+  ],
+  "schemaVersion": 1
+} as const;
+
+export const ROBOT_CATALOG = {
+  "schemaVersion": 1,
+  "streamlit": {
+    "ANIMATIONS": {
+      "blink": [
+        "Blink",
+        "😊"
+      ],
+      "bounce": [
+        "Bounce",
+        "🏀"
+      ],
+      "celebrate": [
+        "Celebrate",
+        "🎉"
+      ],
+      "charge": [
+        "Power Charge",
+        "🔋"
+      ],
+      "dance": [
+        "Dance",
+        "💃"
+      ],
+      "flash": [
+        "Flash Lights",
+        "⚡"
+      ],
+      "fly": [
+        "Fly",
+        "🚀"
+      ],
+      "moonwalk": [
+        "Moonwalk",
+        "🌙"
+      ],
+      "spin": [
+        "Spin",
+        "🔄"
+      ],
+      "walk": [
+        "Walk",
+        "🛞"
+      ],
+      "wave": [
+        "Wave",
+        "👋"
+      ]
+    },
+    "DEFAULT_ANIMALS": [
+      {
+        "emoji": "🐾",
+        "fact": "Red pandas use their fluffy tails like warm blankets.",
+        "habitat": "Mountain forests",
+        "name": "Red Panda"
+      },
+      {
+        "emoji": "🦎",
+        "fact": "Axolotls can regrow parts of their limbs.",
+        "habitat": "Freshwater lakes",
+        "name": "Axolotl"
+      },
+      {
+        "emoji": "🐘",
+        "fact": "Elephants communicate with rumbles that travel through the ground.",
+        "habitat": "Grasslands and forests",
+        "name": "Elephant"
+      },
+      {
+        "emoji": "🐙",
+        "fact": "An octopus has three hearts.",
+        "habitat": "Oceans",
+        "name": "Octopus"
+      },
+      {
+        "emoji": "🐼",
+        "fact": "Giant pandas spend much of the day eating bamboo.",
+        "habitat": "Bamboo forests",
+        "name": "Panda"
+      },
+      {
+        "emoji": "🦁",
+        "fact": "A lion's roar can travel several miles.",
+        "habitat": "Savannas",
+        "name": "Lion"
+      },
+      {
+        "emoji": "🐬",
+        "fact": "Dolphins use unique whistles a little like names.",
+        "habitat": "Oceans and rivers",
+        "name": "Dolphin"
+      },
+      {
+        "emoji": "🦉",
+        "fact": "Snowy owls have feathers covering their feet.",
+        "habitat": "Arctic tundra",
+        "name": "Snowy Owl"
+      },
+      {
+        "emoji": "🦫",
+        "fact": "Capybaras are excellent swimmers and can rest in water.",
+        "habitat": "Wetlands and riverbanks",
+        "name": "Capybara"
+      },
+      {
+        "emoji": "🦊",
+        "fact": "Its huge ears help release heat and hear tiny animals underground.",
+        "habitat": "Sahara Desert",
+        "name": "Fennec Fox"
+      },
+      {
+        "emoji": "🦐",
+        "fact": "Mantis shrimp can see kinds of light that people cannot.",
+        "habitat": "Tropical seas",
+        "name": "Mantis Shrimp"
+      },
+      {
+        "emoji": "🐿️",
+        "fact": "Flying squirrels glide using a flap of skin between their legs.",
+        "habitat": "Forests",
+        "name": "Flying Squirrel"
+      }
+    ],
+    "ROBOT_COLORS": {
+      "Aqua Glow": "#06B6D4",
+      "Bubblegum Pink": "#EC4899",
+      "Chocolate Brown": "#92400E",
+      "Cloud White": "#E2E8F0",
+      "Copper": "#B45309",
+      "Coral Blast": "#FB7185",
+      "Cosmic Black": "#334155",
+      "Deep Teal": "#0F766E",
+      "Electric Blue": "#3B82F6",
+      "Emerald": "#059669",
+      "Galaxy Purple": "#8B5CF6",
+      "Hot Magenta": "#D946EF",
+      "Ice Blue": "#93C5FD",
+      "Jungle Green": "#22C55E",
+      "Lava Orange": "#F97316",
+      "Midnight Navy": "#1E3A8A",
+      "Mint Green": "#34D399",
+      "Neon Lime": "#84CC16",
+      "Rocket Red": "#EF4444",
+      "Royal Gold": "#EAB308",
+      "Silver": "#94A3B8",
+      "Sunny Yellow": "#FBBF24",
+      "Sunset Peach": "#FB923C",
+      "Violet Glow": "#7C3AED"
+    },
+    "ROBOT_EYE_GLOWS": {
+      "Aqua": "#BFFBFF",
+      "Blue": "#93C5FD",
+      "Gold": "#FDE047",
+      "Green": "#86EFAC",
+      "Lime": "#BEF264",
+      "Night": "#67E8F9",
+      "Orange": "#FDBA74",
+      "Pink": "#F9A8D4",
+      "Purple": "#D8B4FE",
+      "Rainbow": "#F0ABFC",
+      "Red": "#FCA5A5",
+      "White": "#FFFFFF"
+    },
+    "ROBOT_FINISHES": {
+      "Brushed Metal": "Workshop texture",
+      "Candy": "Sweet translucent shine",
+      "Chrome": "Mirror-like metal",
+      "Glossy": "Bright showroom shine",
+      "Holographic": "Color-shifting light",
+      "Ice": "Frozen crystal look",
+      "Lava": "Hot glowing seams",
+      "Matte": "Soft and smooth",
+      "Neon Glow": "Glowing edges",
+      "Rainbow": "Full-spectrum shine",
+      "Stealth": "Dark low-reflection armor",
+      "Woodland": "Warm natural panels"
+    },
+    "ROBOT_MOODS": [
+      "Happy",
+      "Excited",
+      "Curious",
+      "Brave",
+      "Silly",
+      "Calm",
+      "Proud",
+      "Sleepy"
+    ],
+    "ROBOT_PARTS": {
+      "antenna": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Antenna",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "📡",
+          "id": "single",
+          "label": "Single Signal Antenna",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "〽️",
+          "id": "double",
+          "label": "Double Antenna",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "💡",
+          "id": "lightbulb",
+          "label": "Idea Bulb Antenna",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🛰️",
+          "id": "satellite",
+          "label": "Satellite Dish",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "🌼",
+          "id": "flower",
+          "label": "Flower Antenna",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🚁",
+          "id": "propeller",
+          "label": "Tiny Propeller",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "⚡",
+          "id": "lightning",
+          "label": "Lightning Rod",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "🌈",
+          "id": "rainbow",
+          "label": "Rainbow Signal",
+          "unlock_stars": 23
+        },
+        {
+          "emoji": "🔷",
+          "id": "crystal",
+          "label": "Crystal Antenna",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🌙",
+          "id": "moon",
+          "label": "Moon Antenna",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Beacon",
+          "unlock_stars": 42
+        }
+      ],
+      "arms": [
+        {
+          "emoji": "C C",
+          "id": "grabber",
+          "label": "Grabber Arms",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "≋ ≋",
+          "id": "spring",
+          "label": "Spring Arms",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🧲 🧲",
+          "id": "magnet",
+          "label": "Magnet Hands",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🔧 🔨",
+          "id": "builder",
+          "label": "Builder Tools",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "✊ ✊",
+          "id": "giant",
+          "label": "Giant Hands",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "〰 〰",
+          "id": "stretchy",
+          "label": "Stretchy Arms",
+          "unlock_stars": 17
+        },
+        {
+          "emoji": "◁ ▷",
+          "id": "wings",
+          "label": "Wing Arms",
+          "unlock_stars": 21
+        },
+        {
+          "emoji": "🛡️ 🛡️",
+          "id": "shield",
+          "label": "Shield Arms",
+          "unlock_stars": 25
+        },
+        {
+          "emoji": "🥁 🥁",
+          "id": "drum",
+          "label": "Drum Arms",
+          "unlock_stars": 29
+        },
+        {
+          "emoji": "🐙 🐙",
+          "id": "tentacle",
+          "label": "Tentacle Arms",
+          "unlock_stars": 33
+        },
+        {
+          "emoji": "🚀 🚀",
+          "id": "rocket",
+          "label": "Rocket Arms",
+          "unlock_stars": 39
+        },
+        {
+          "emoji": "✨ ✨",
+          "id": "hologram",
+          "label": "Hologram Hands",
+          "unlock_stars": 46
+        }
+      ],
+      "backpack": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Backpack",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🧰",
+          "id": "toolbox",
+          "label": "Tool Backpack",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "🔋",
+          "id": "battery",
+          "label": "Mega Battery",
+          "unlock_stars": 7
+        },
+        {
+          "emoji": "🛸",
+          "id": "pet_drone",
+          "label": "Pet Drone",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "🫧",
+          "id": "bubble_tank",
+          "label": "Bubble Tank",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "🚀",
+          "id": "jetpack",
+          "label": "Jetpack",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🪂",
+          "id": "parachute",
+          "label": "Parachute Pack",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "🌱",
+          "id": "garden",
+          "label": "Tiny Garden",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "🍪",
+          "id": "snack",
+          "label": "Snack Pack",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🎶",
+          "id": "music",
+          "label": "Music Pack",
+          "unlock_stars": 32
+        },
+        {
+          "emoji": "🌀",
+          "id": "portal",
+          "label": "Pocket Portal",
+          "unlock_stars": 38
+        },
+        {
+          "emoji": "🌙",
+          "id": "moon",
+          "label": "Moon Base Pack",
+          "unlock_stars": 44
+        }
+      ],
+      "base": [
+        {
+          "emoji": "◉ ◉",
+          "id": "bronze_wheels",
+          "label": "Bronze Wheels",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "╱ ╲",
+          "id": "bouncy_legs",
+          "label": "Bouncy Legs",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🔵",
+          "id": "hover_ball",
+          "label": "Hover Ball",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "╱╲╱╲",
+          "id": "spider_legs",
+          "label": "Spider Legs",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "▰▰",
+          "id": "tank_tracks",
+          "label": "Tank Tracks",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🛼 🛼",
+          "id": "skates",
+          "label": "Speed Skates",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "🚀 🚀",
+          "id": "rocket_boots",
+          "label": "Rocket Boots",
+          "unlock_stars": 18
+        },
+        {
+          "emoji": "☁️",
+          "id": "cloud",
+          "label": "Cloud Floater",
+          "unlock_stars": 22
+        },
+        {
+          "emoji": "🌊",
+          "id": "submarine",
+          "label": "Submarine Base",
+          "unlock_stars": 26
+        },
+        {
+          "emoji": "🦿 🦿",
+          "id": "pogo",
+          "label": "Super Pogo Legs",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "🐾 🐾",
+          "id": "dragon_feet",
+          "label": "Dragon Feet",
+          "unlock_stars": 36
+        },
+        {
+          "emoji": "🛸",
+          "id": "teleport",
+          "label": "Teleport Pad",
+          "unlock_stars": 44
+        }
+      ],
+      "body": [
+        {
+          "emoji": "⚙️",
+          "id": "classic_core",
+          "label": "Classic Gear Core",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🔘",
+          "id": "round_core",
+          "label": "Round Power Core",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🧰",
+          "id": "toolbox",
+          "label": "Toolbox Body",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🐠",
+          "id": "aquarium",
+          "label": "Aquarium Body",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "🎵",
+          "id": "speaker",
+          "label": "Music Speaker Body",
+          "unlock_stars": 14
+        },
+        {
+          "emoji": "💠",
+          "id": "crystal",
+          "label": "Crystal Body",
+          "unlock_stars": 18
+        },
+        {
+          "emoji": "🦖",
+          "id": "dinosaur",
+          "label": "Dinosaur Body",
+          "unlock_stars": 22
+        },
+        {
+          "emoji": "🪐",
+          "id": "space_suit",
+          "label": "Space-Suit Body",
+          "unlock_stars": 26
+        },
+        {
+          "emoji": "🍬",
+          "id": "candy",
+          "label": "Candy Machine Body",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "🥷",
+          "id": "stealth",
+          "label": "Stealth Body",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🏰",
+          "id": "castle",
+          "label": "Castle Body",
+          "unlock_stars": 40
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Core",
+          "unlock_stars": 48
+        }
+      ],
+      "chest": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "Blank Chest Plate",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "⭐",
+          "id": "star",
+          "label": "Explorer Star",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "⚡",
+          "id": "bolt",
+          "label": "Power Bolt",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "💛",
+          "id": "heart",
+          "label": "Friendship Heart",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🐾",
+          "id": "paw",
+          "label": "Animal Scout Paw",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "👾",
+          "id": "monster",
+          "label": "Monster Lab Badge",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🪐",
+          "id": "planet",
+          "label": "Space Planet Badge",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "🛡️",
+          "id": "shield",
+          "label": "Hero Shield",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "👑",
+          "id": "crown",
+          "label": "Royal Crest",
+          "unlock_stars": 23
+        },
+        {
+          "emoji": "🐲",
+          "id": "dragon",
+          "label": "Dragon Crest",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🌀",
+          "id": "portal",
+          "label": "Portal Crest",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Medal",
+          "unlock_stars": 42
+        }
+      ],
+      "companion": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Mini Companion",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🔵",
+          "id": "orb",
+          "label": "Floating Helper Orb",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🐝",
+          "id": "bee",
+          "label": "Robo Bee",
+          "unlock_stars": 5
+        },
+        {
+          "emoji": "🦋",
+          "id": "butterfly",
+          "label": "Pixel Butterfly",
+          "unlock_stars": 7
+        },
+        {
+          "emoji": "🐱",
+          "id": "cat",
+          "label": "Mini Robo Cat",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "🐶",
+          "id": "dog",
+          "label": "Mini Robo Dog",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "🦉",
+          "id": "owl",
+          "label": "Scout Owl Drone",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🐉",
+          "id": "dragon",
+          "label": "Pocket Dragon",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "👽",
+          "id": "alien",
+          "label": "Tiny Alien Friend",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "👻",
+          "id": "ghost",
+          "label": "Friendly Holo Ghost",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🌙",
+          "id": "moon",
+          "label": "Moon Sprite",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Pet",
+          "unlock_stars": 42
+        }
+      ],
+      "ears": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Ears",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "◉ ◉",
+          "id": "round",
+          "label": "Round Audio Dishes",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "🔊 🔊",
+          "id": "speaker",
+          "label": "Speaker Ears",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "▲ ▲",
+          "id": "cat",
+          "label": "Robot Cat Ears",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "🐰",
+          "id": "bunny",
+          "label": "Bunny Receiver Ears",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "◁ ▷",
+          "id": "elf",
+          "label": "Pointed Sensor Ears",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🎧",
+          "id": "headphones",
+          "label": "Music Headphones",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "🪽 🪽",
+          "id": "wing",
+          "label": "Wing Ears",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "📡 📡",
+          "id": "radar",
+          "label": "Radar Ears",
+          "unlock_stars": 23
+        },
+        {
+          "emoji": "🐲",
+          "id": "dragon",
+          "label": "Dragon Ears",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "💎 💎",
+          "id": "crystal",
+          "label": "Crystal Ears",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌀 🌀",
+          "id": "portal",
+          "label": "Portal Receivers",
+          "unlock_stars": 42
+        }
+      ],
+      "eyes": [
+        {
+          "emoji": "● ●",
+          "id": "round",
+          "label": "Friendly Round Eyes",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "■ ■",
+          "id": "square",
+          "label": "Square Scout Eyes",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "★ ★",
+          "id": "star",
+          "label": "Star Eyes",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "— —",
+          "id": "sleepy",
+          "label": "Sleepy Eyes",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "◉ ◎",
+          "id": "googly",
+          "label": "Googly Eyes",
+          "unlock_stars": 8
+        },
+        {
+          "emoji": "◉ ◉",
+          "id": "laser",
+          "label": "Laser Eyes",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "▦ ▦",
+          "id": "pixel",
+          "label": "Pixel Eyes",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "♥ ♥",
+          "id": "heart",
+          "label": "Heart Eyes",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "☾ ☾",
+          "id": "night",
+          "label": "Night-Vision Eyes",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "🌈 🌈",
+          "id": "rainbow",
+          "label": "Rainbow Eyes",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "✥ ✥",
+          "id": "compass",
+          "label": "Compass Eyes",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "✦ ✦",
+          "id": "galaxy",
+          "label": "Galaxy Eyes",
+          "unlock_stars": 38
+        }
+      ],
+      "hat": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "No Hat",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🧢",
+          "id": "cap",
+          "label": "Adventure Cap",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "🎿",
+          "id": "beanie",
+          "label": "Cozy Beanie",
+          "unlock_stars": 5
+        },
+        {
+          "emoji": "🤠",
+          "id": "cowboy",
+          "label": "Cowboy Hat",
+          "unlock_stars": 8
+        },
+        {
+          "emoji": "🏴‍☠️",
+          "id": "pirate",
+          "label": "Pirate Hat",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "👑",
+          "id": "crown",
+          "label": "Robot Crown",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "🚁",
+          "id": "propeller",
+          "label": "Propeller Hat",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🧙",
+          "id": "wizard",
+          "label": "Wizard Hat",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "🪐",
+          "id": "astronaut",
+          "label": "Space Helmet",
+          "unlock_stars": 22
+        },
+        {
+          "emoji": "👨‍🍳",
+          "id": "chef",
+          "label": "Chef Hat",
+          "unlock_stars": 26
+        },
+        {
+          "emoji": "🕵️",
+          "id": "detective",
+          "label": "Detective Hat",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "🌌",
+          "id": "galaxy",
+          "label": "Galaxy Crown",
+          "unlock_stars": 38
+        }
+      ],
+      "head": [
+        {
+          "emoji": "▣",
+          "id": "box",
+          "label": "Classic Box Head",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "◠",
+          "id": "dome",
+          "label": "Space Dome",
+          "unlock_stars": 3
+        },
+        {
+          "emoji": "▤",
+          "id": "screen",
+          "label": "Screen Head",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "⌁",
+          "id": "antenna",
+          "label": "Rainbow Antenna Head",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "💎",
+          "id": "crystal",
+          "label": "Crystal Head",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🐱",
+          "id": "cat",
+          "label": "Cat-Ear Head",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🪖",
+          "id": "knight",
+          "label": "Knight Helmet",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "🧑‍🚀",
+          "id": "astronaut",
+          "label": "Astronaut Helmet",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "⚓",
+          "id": "submarine",
+          "label": "Submarine Dome",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "🐲",
+          "id": "dragon",
+          "label": "Dragon Head",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "♛",
+          "id": "royal",
+          "label": "Royal Robot Head",
+          "unlock_stars": 40
+        },
+        {
+          "emoji": "🌀",
+          "id": "portal",
+          "label": "Portal Head",
+          "unlock_stars": 48
+        }
+      ],
+      "mouth": [
+        {
+          "emoji": "◡",
+          "id": "smile",
+          "label": "Friendly Smile",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "•",
+          "id": "tiny",
+          "label": "Tiny Beep Mouth",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "〰",
+          "id": "zigzag",
+          "label": "Zigzag Mouth",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "▿",
+          "id": "grin",
+          "label": "Big Robot Grin",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "▥",
+          "id": "speaker",
+          "label": "Speaker Mouth",
+          "unlock_stars": 8
+        },
+        {
+          "emoji": "▽▽",
+          "id": "fangs",
+          "label": "Silly Fangs",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "〰〰",
+          "id": "mustache",
+          "label": "Metal Mustache",
+          "unlock_stars": 13
+        },
+        {
+          "emoji": "▦",
+          "id": "pixel",
+          "label": "Pixel Mouth",
+          "unlock_stars": 16
+        },
+        {
+          "emoji": "🌈",
+          "id": "rainbow",
+          "label": "Rainbow Smile",
+          "unlock_stars": 20
+        },
+        {
+          "emoji": "○",
+          "id": "whistle",
+          "label": "Whistle Port",
+          "unlock_stars": 24
+        },
+        {
+          "emoji": "🐲",
+          "id": "dragon",
+          "label": "Dragon Grin",
+          "unlock_stars": 30
+        },
+        {
+          "emoji": "🌀",
+          "id": "portal",
+          "label": "Portal Mouth",
+          "unlock_stars": 38
+        }
+      ],
+      "power": [
+        {
+          "emoji": "🫧",
+          "id": "bubble",
+          "label": "Bubble Blaster",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "🔎",
+          "id": "scanner",
+          "label": "Super Scanner",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "🧲",
+          "id": "magnet",
+          "label": "Magnet Beam",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "😂",
+          "id": "joke",
+          "label": "Joke Beam",
+          "unlock_stars": 8
+        },
+        {
+          "emoji": "❄️",
+          "id": "freeze",
+          "label": "Freeze Ray",
+          "unlock_stars": 10
+        },
+        {
+          "emoji": "🎵",
+          "id": "music",
+          "label": "Music Pulse",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🌈",
+          "id": "rainbow",
+          "label": "Rainbow Shield",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "👻",
+          "id": "invisible",
+          "label": "Invisible Cloak",
+          "unlock_stars": 18
+        },
+        {
+          "emoji": "📖",
+          "id": "story",
+          "label": "Story Spark",
+          "unlock_stars": 21
+        },
+        {
+          "emoji": "⛅",
+          "id": "weather",
+          "label": "Weather Maker",
+          "unlock_stars": 25
+        },
+        {
+          "emoji": "⏳",
+          "id": "time",
+          "label": "Time Twister",
+          "unlock_stars": 31
+        },
+        {
+          "emoji": "💛",
+          "id": "friendship",
+          "label": "Friendship Force",
+          "unlock_stars": 38
+        }
+      ],
+      "shoulders": [
+        {
+          "emoji": "",
+          "id": "none",
+          "label": "Plain Shoulders",
+          "unlock_stars": 0
+        },
+        {
+          "emoji": "● ●",
+          "id": "caps",
+          "label": "Round Shoulder Caps",
+          "unlock_stars": 2
+        },
+        {
+          "emoji": "🔩 🔩",
+          "id": "bolts",
+          "label": "Giant Shoulder Bolts",
+          "unlock_stars": 4
+        },
+        {
+          "emoji": "▰ ▰",
+          "id": "pads",
+          "label": "Adventure Pads",
+          "unlock_stars": 6
+        },
+        {
+          "emoji": "💡 💡",
+          "id": "lights",
+          "label": "Shoulder Lights",
+          "unlock_stars": 9
+        },
+        {
+          "emoji": "🪽 🪽",
+          "id": "wings",
+          "label": "Mini Shoulder Wings",
+          "unlock_stars": 12
+        },
+        {
+          "emoji": "🚀 🚀",
+          "id": "rockets",
+          "label": "Shoulder Rockets",
+          "unlock_stars": 15
+        },
+        {
+          "emoji": "🛡️ 🛡️",
+          "id": "shield",
+          "label": "Shield Shoulders",
+          "unlock_stars": 19
+        },
+        {
+          "emoji": "💎 💎",
+          "id": "crystal",
+          "label": "Crystal Shoulders",
+          "unlock_stars": 23
+        },
+        {
+          "emoji": "🐲 🐲",
+          "id": "dragon",
+          "label": "Dragon Spikes",
+          "unlock_stars": 28
+        },
+        {
+          "emoji": "☁️ ☁️",
+          "id": "cloud",
+          "label": "Cloud Shoulders",
+          "unlock_stars": 34
+        },
+        {
+          "emoji": "🌌 🌌",
+          "id": "galaxy",
+          "label": "Galaxy Shoulders",
+          "unlock_stars": 42
+        }
+      ]
+    },
+    "ROBOT_PATTERNS": {
+      "Camouflage": "Adventure camouflage",
+      "Checkerboard": "Fast racing squares",
+      "Circuit Lines": "Electronic pathways",
+      "Flames": "Speed flames",
+      "Galaxy": "Deep-space pattern",
+      "Hearts": "Friendship hearts",
+      "Lightning": "Electric bolts",
+      "Polka Dots": "Playful dots",
+      "Racing Stripe": "A bold center stripe",
+      "Solid": "One clean color",
+      "Stars": "A field of stars",
+      "Two-Tone": "Split primary and secondary colors"
+    },
+    "ROBOT_PERSONALITIES": {
+      "Animal Guardian": "Every creature deserves a friend.",
+      "Brave Hero": "Adventure systems ready!",
+      "Creative Artist": "Let us make the world colorful.",
+      "Curious Explorer": "What can we discover next?",
+      "Gentle Helper": "I am here to help.",
+      "Music Star": "Turn up the robot rhythm!",
+      "Mystery Detective": "Clue scanner activated.",
+      "Royal Protector": "Nico's World is under friendly protection.",
+      "Silly Comedian": "My joke circuits are fully charged!",
+      "Sleepy Dreamer": "I dreamed of a moon made of cookies.",
+      "Space Captain": "Prepare for launch!",
+      "Wild Inventor": "Let us build something impossible!"
+    },
+    "ROBOT_PRESETS": {
+      "Classic Buddy": {
+        "antenna": "single",
+        "arms": "grabber",
+        "backpack": "none",
+        "base": "bronze_wheels",
+        "body": "classic_core",
+        "chest": "star",
+        "color": "Electric Blue",
+        "companion": "orb",
+        "ears": "round",
+        "eye_glow": "Aqua",
+        "eyes": "round",
+        "finish": "Glossy",
+        "hat": "none",
+        "head": "box",
+        "mouth": "smile",
+        "pattern": "Two-Tone",
+        "personality": "Curious Explorer",
+        "power": "bubble",
+        "secondary_color": "Sunny Yellow",
+        "shoulders": "caps",
+        "size": "Standard",
+        "unlock_stars": 0,
+        "voice": "Classic Beep"
+      },
+      "Dragon Guardian": {
+        "antenna": "lightning",
+        "arms": "shield",
+        "backpack": "portal",
+        "base": "dragon_feet",
+        "body": "dinosaur",
+        "chest": "dragon",
+        "color": "Lava Orange",
+        "companion": "dragon",
+        "ears": "dragon",
+        "eye_glow": "Red",
+        "eyes": "galaxy",
+        "finish": "Lava",
+        "hat": "crown",
+        "head": "dragon",
+        "mouth": "dragon",
+        "pattern": "Flames",
+        "personality": "Brave Hero",
+        "power": "friendship",
+        "secondary_color": "Cosmic Black",
+        "shoulders": "dragon",
+        "size": "Mega",
+        "unlock_stars": 38,
+        "voice": "Deep Hero"
+      },
+      "Forest Ranger": {
+        "antenna": "flower",
+        "arms": "builder",
+        "backpack": "garden",
+        "base": "bouncy_legs",
+        "body": "toolbox",
+        "chest": "paw",
+        "color": "Jungle Green",
+        "companion": "owl",
+        "ears": "cat",
+        "eye_glow": "Green",
+        "eyes": "night",
+        "finish": "Woodland",
+        "hat": "cap",
+        "head": "cat",
+        "mouth": "smile",
+        "pattern": "Camouflage",
+        "personality": "Animal Guardian",
+        "power": "scanner",
+        "secondary_color": "Chocolate Brown",
+        "shoulders": "pads",
+        "size": "Standard",
+        "unlock_stars": 12,
+        "voice": "Animal Friend"
+      },
+      "Galaxy Wizard": {
+        "antenna": "galaxy",
+        "arms": "hologram",
+        "backpack": "moon",
+        "base": "teleport",
+        "body": "galaxy",
+        "chest": "galaxy",
+        "color": "Galaxy Purple",
+        "companion": "galaxy",
+        "ears": "portal",
+        "eye_glow": "Rainbow",
+        "eyes": "galaxy",
+        "finish": "Holographic",
+        "hat": "galaxy",
+        "head": "portal",
+        "mouth": "portal",
+        "pattern": "Galaxy",
+        "personality": "Sleepy Dreamer",
+        "power": "time",
+        "secondary_color": "Aqua Glow",
+        "shoulders": "galaxy",
+        "size": "Standard",
+        "unlock_stars": 48,
+        "voice": "Wizard Bot"
+      },
+      "Joke Machine": {
+        "antenna": "propeller",
+        "arms": "spring",
+        "backpack": "snack",
+        "base": "skates",
+        "body": "candy",
+        "chest": "heart",
+        "color": "Bubblegum Pink",
+        "companion": "bee",
+        "ears": "headphones",
+        "eye_glow": "Gold",
+        "eyes": "googly",
+        "finish": "Candy",
+        "hat": "propeller",
+        "head": "screen",
+        "mouth": "grin",
+        "pattern": "Polka Dots",
+        "personality": "Silly Comedian",
+        "power": "joke",
+        "secondary_color": "Sunny Yellow",
+        "shoulders": "lights",
+        "size": "Mini",
+        "unlock_stars": 10,
+        "voice": "Comedian"
+      },
+      "Rocket Captain": {
+        "antenna": "satellite",
+        "arms": "rocket",
+        "backpack": "jetpack",
+        "base": "rocket_boots",
+        "body": "space_suit",
+        "chest": "planet",
+        "color": "Cloud White",
+        "companion": "alien",
+        "ears": "radar",
+        "eye_glow": "Blue",
+        "eyes": "star",
+        "finish": "Chrome",
+        "hat": "astronaut",
+        "head": "astronaut",
+        "mouth": "speaker",
+        "pattern": "Racing Stripe",
+        "personality": "Space Captain",
+        "power": "weather",
+        "secondary_color": "Rocket Red",
+        "shoulders": "rockets",
+        "size": "Mega",
+        "unlock_stars": 20,
+        "voice": "Space Radio"
+      }
+    },
+    "ROBOT_SIZES": {
+      "Mega": 1.16,
+      "Mini": 0.82,
+      "Standard": 1.0
+    },
+    "ROBOT_VOICES": {
+      "Animal Friend": "Gentle forest guide",
+      "Classic Beep": "Beep-boop explorer",
+      "Comedian": "Always ready with a joke",
+      "Deep Hero": "Bold and brave",
+      "Musical": "Sings little notes",
+      "Pirate Bot": "Arrr-tificial intelligence",
+      "Royal Announcer": "Grand and dramatic",
+      "Sleepy": "Calm and cozy",
+      "Space Radio": "Mission-control sound",
+      "Speedy": "Fast-talking adventurer",
+      "Tiny Squeak": "Small and cheerful",
+      "Wizard Bot": "Magical and mysterious"
+    }
+  },
+  "web": {
+    "actions": [
+      {
+        "en": "Wave",
+        "es": "Saludar",
+        "icon": "👋",
+        "pose": "wave"
+      },
+      {
+        "en": "Fly",
+        "es": "Volar",
+        "icon": "🚀",
+        "pose": "launch"
+      },
+      {
+        "en": "Dance",
+        "es": "Bailar",
+        "icon": "💃",
+        "pose": "dance"
+      },
+      {
+        "en": "Spin",
+        "es": "Girar",
+        "icon": "🔄",
+        "pose": "spin"
+      },
+      {
+        "en": "Blink",
+        "es": "Parpadear",
+        "icon": "😊",
+        "pose": "blink"
+      },
+      {
+        "en": "Scan",
+        "es": "Escanear",
+        "icon": "📡",
+        "pose": "scan"
+      },
+      {
+        "en": "Charge",
+        "es": "Cargar",
+        "icon": "🔋",
+        "pose": "charge"
+      },
+      {
+        "en": "Hover",
+        "es": "Flotar",
+        "icon": "🛸",
+        "pose": "hover"
+      },
+      {
+        "en": "Power Stomp",
+        "es": "Pisotón",
+        "icon": "🦾",
+        "pose": "stomp"
+      },
+      {
+        "en": "Salute",
+        "es": "Saludar firme",
+        "icon": "🫡",
+        "pose": "salute"
+      },
+      {
+        "en": "Repair",
+        "es": "Reparar",
+        "icon": "🔧",
+        "pose": "repair"
+      },
+      {
+        "en": "Shield",
+        "es": "Escudo",
+        "icon": "🛡️",
+        "pose": "shield"
+      },
+      {
+        "en": "Flash Lights",
+        "es": "Luces",
+        "icon": "⚡",
+        "pose": "lights"
+      },
+      {
+        "en": "Celebrate",
+        "es": "Celebrar",
+        "icon": "🎉",
+        "pose": "celebrate"
+      }
+    ],
+    "jobs": [
+      "Scout Animal Forest",
+      "Wildlife Photographer",
+      "Animal Translator",
+      "Scan Monster Lab",
+      "Monster Habitat Keeper",
+      "Organize Memory Museum",
+      "Charge the Workshop",
+      "Recommend a Story",
+      "Find a Hidden Part",
+      "Dinosaur Fossil Hunter",
+      "Pet Trainer",
+      "Arcade Coach",
+      "Art Gallery Curator",
+      "Robot Home Decorator",
+      "Rescue Pilot",
+      "Weather Watcher",
+      "Joke Broadcaster",
+      "Night Guard",
+      "Map Navigator",
+      "Friendship Helper",
+      "Science Assistant",
+      "Repair Engineer",
+      "Space Explorer",
+      "Treasure Finder"
+    ],
+    "options": {
+      "arms": [
+        "Guardian Arms",
+        "Photon Blades",
+        "Giant Hands",
+        "Tool Arms",
+        "Shield Arms",
+        "Rocket Fists",
+        "Drill Arms",
+        "Claw Hands",
+        "Magnet Hands",
+        "Rescue Grippers",
+        "Energy Cannons",
+        "Painter Arms"
+      ],
+      "backpack": [
+        "Wing Binders",
+        "Jetpack",
+        "Pet Drone",
+        "Rocket Rack",
+        "Solar Wings",
+        "Bubble Pack",
+        "Samurai Flags",
+        "Rescue Crane",
+        "Satellite Dish",
+        "Dino Tail Pack",
+        "Tool Workshop",
+        "Parachute"
+      ],
+      "base": [
+        "Vernier Legs",
+        "Tank Treads",
+        "Hover Ring",
+        "Rocket Boots",
+        "Spider Legs",
+        "Speed Wheels",
+        "Dino Legs",
+        "Moon Boots",
+        "Skates",
+        "Aqua Fins",
+        "Spring Legs",
+        "Four-Wheel Drive"
+      ],
+      "body": [
+        "Star Reactor",
+        "Guardian Core",
+        "Dragon Chest",
+        "Stealth Frame",
+        "Rescue Armor",
+        "Crystal Reactor",
+        "Mecha Samurai",
+        "Heavy Titan",
+        "Speed Frame",
+        "Aqua Armor",
+        "Space Knight",
+        "Dinosaur Core",
+        "Solar Guardian",
+        "Construction Frame"
+      ],
+      "color": [
+        "Electric Blue",
+        "Crimson Red",
+        "Emerald Green",
+        "Royal Purple",
+        "Solar Orange",
+        "Pearl White",
+        "Midnight Black",
+        "Rose Gold",
+        "Arctic Cyan",
+        "Volcanic Red",
+        "Galaxy Violet",
+        "Jungle Green"
+      ],
+      "eyes": [
+        "Photon Visor",
+        "Twin Emerald Eyes",
+        "Cyclops Lens",
+        "Star Eyes",
+        "Scanner Array",
+        "Friendly Pixels",
+        "Anime Eyes",
+        "Laser Eyes",
+        "Night Vision",
+        "Rainbow Optics",
+        "Hologram Face",
+        "Six Sensor Array"
+      ],
+      "head": [
+        "Vanguard Crown",
+        "Samurai Helm",
+        "Dragon Helm",
+        "Explorer Dome",
+        "Knight Visor",
+        "Cat Ear Helm",
+        "Gundam Crest",
+        "Shogun Kabuto",
+        "Falcon Helm",
+        "Astronaut Bubble",
+        "Dino Helm",
+        "Lion Mane Helm",
+        "Ninja Hood",
+        "Crystal Crown",
+        "Rescue Helmet"
+      ],
+      "mood": [
+        "Happy",
+        "Excited",
+        "Curious",
+        "Brave",
+        "Silly",
+        "Calm",
+        "Sleepy",
+        "Focused"
+      ],
+      "personality": [
+        "Brave Guardian",
+        "Curious Explorer",
+        "Silly Inventor",
+        "Gentle Helper",
+        "Fast Adventurer",
+        "Wise Captain",
+        "Loyal Sidekick",
+        "Joke Master",
+        "Quiet Scientist",
+        "Bold Rescue Hero",
+        "Creative Artist",
+        "Animal Friend"
+      ],
+      "power": [
+        "Star Reactor",
+        "Bubble Blaster",
+        "Animal Translator",
+        "Rescue Beam",
+        "Rainbow Shield",
+        "Dinosaur Scanner",
+        "Time Slow Field",
+        "Plant Grower",
+        "Weather Maker",
+        "Super Magnet",
+        "Healing Light",
+        "Portal Generator"
+      ],
+      "secondary_color": [
+        "Sunny Yellow",
+        "Neon Cyan",
+        "Hot Pink",
+        "Silver",
+        "Lime",
+        "Copper",
+        "Pearl White",
+        "Orange",
+        "Electric Purple",
+        "Ice Blue"
+      ],
+      "voice": [
+        "Classic Beep",
+        "Hero Voice",
+        "Tiny Chirp",
+        "Deep Captain",
+        "Silly Squeak",
+        "Robot Whisper",
+        "Musical Chime",
+        "Space Radio"
+      ]
+    }
+  }
+} as const;
+
+export const SCHEMA_REGISTRY = {
+  "clients": {
+    "api": {
+      "apiVersion": "3.0.0",
+      "profileSchemaVersion": 4,
+      "repairEndpoint": "/api/v1/profile/repair",
+      "versionField": "schema_version"
+    },
+    "streamlit": {
+      "exportFormat": "complete-profile-json",
+      "profileSchemaVersion": 5,
+      "versionField": "version"
+    },
+    "web": {
+      "exportFormat": "nicos-world-local-profile-v3",
+      "legacyStorageKeys": [
+        "nicos-world-local-save-v2",
+        "nicos-world-local-save-v1"
+      ],
+      "profileSchemaVersion": 3,
+      "storageKey": "nicos-world-local-save-v3",
+      "versionField": "schemaVersion"
+    }
+  },
+  "compatibility": [
+    {
+      "consumer": "web-v3",
+      "notes": "Local storage normalization preserves bounded profile data.",
+      "producer": "web-v1/v2",
+      "status": "automatic"
+    },
+    {
+      "consumer": "streamlit-v5",
+      "notes": "Separate save shapes; shared catalogs and movie metadata contract only.",
+      "producer": "web-v3",
+      "status": "not-interchangeable"
+    },
+    {
+      "consumer": "streamlit-v5",
+      "notes": "normalize_profile migrates older saves.",
+      "producer": "streamlit-v1-v5",
+      "status": "automatic"
+    },
+    {
+      "consumer": "api-v4",
+      "notes": "Pydantic repair upgrades schema_version to 4.",
+      "producer": "api-v1-v3",
+      "status": "repair-endpoint"
+    }
+  ],
+  "registryVersion": 1
+} as const;
+
+export const SHOWTIME_CATALOG = {
+  "durationOptionsMs": [
+    4000,
+    6000,
+    8000
+  ],
+  "poses": [
+    {
+      "durationMs": 1000,
+      "emoji": "🙂",
+      "id": "idle",
+      "kinds": [
+        "nico",
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Ready",
+        "es-MX": "Listo"
+      }
+    },
+    {
+      "durationMs": 1200,
+      "emoji": "👋",
+      "id": "wave",
+      "kinds": [
+        "nico",
+        "robot",
+        "pet"
+      ],
+      "name": {
+        "en": "Wave",
+        "es-MX": "Saludar"
+      }
+    },
+    {
+      "durationMs": 1400,
+      "emoji": "🎉",
+      "id": "celebrate",
+      "kinds": [
+        "nico",
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Celebrate",
+        "es-MX": "Celebrar"
+      }
+    },
+    {
+      "durationMs": 1500,
+      "emoji": "🚀",
+      "id": "launch",
+      "kinds": [
+        "robot",
+        "pet"
+      ],
+      "name": {
+        "en": "Launch",
+        "es-MX": "Despegar"
+      }
+    },
+    {
+      "durationMs": 1500,
+      "emoji": "💃",
+      "id": "dance",
+      "kinds": [
+        "nico",
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Dance",
+        "es-MX": "Bailar"
+      }
+    },
+    {
+      "durationMs": 1200,
+      "emoji": "🔄",
+      "id": "spin",
+      "kinds": [
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Spin",
+        "es-MX": "Girar"
+      }
+    },
+    {
+      "durationMs": 1100,
+      "emoji": "⬆️",
+      "id": "bounce",
+      "kinds": [
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Bounce",
+        "es-MX": "Rebotar"
+      }
+    },
+    {
+      "durationMs": 1300,
+      "emoji": "🗯️",
+      "id": "roar",
+      "kinds": [
+        "monster"
+      ],
+      "name": {
+        "en": "Roar",
+        "es-MX": "Rugir"
+      }
+    },
+    {
+      "durationMs": 1500,
+      "emoji": "😴",
+      "id": "sleep",
+      "kinds": [
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Sleep",
+        "es-MX": "Dormir"
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "background": "linear-gradient(160deg,#020617,#1d4ed8 55%,#7c3aed)",
+      "emoji": "🌟",
+      "id": "star-stage",
+      "name": {
+        "en": "Star Stage",
+        "es-MX": "Escenario de estrellas"
+      }
+    },
+    {
+      "background": "linear-gradient(180deg,#0c4a6e 0 42%,#1e3a8a 43% 72%,#5b3a22 73%)",
+      "emoji": "🏠",
+      "id": "robot-home",
+      "name": {
+        "en": "Robot Home",
+        "es-MX": "Casa Robot"
+      }
+    },
+    {
+      "background": "linear-gradient(180deg,#38bdf8 0 34%,#15803d 35% 72%,#713f12 73%)",
+      "emoji": "🌿",
+      "id": "jungle",
+      "name": {
+        "en": "Animal Forest",
+        "es-MX": "Bosque animal"
+      }
+    },
+    {
+      "background": "radial-gradient(circle at 25% 20%,#e0f2fe 0 2px,transparent 3px),radial-gradient(circle at 72% 34%,#fef3c7 0 2px,transparent 3px),linear-gradient(145deg,#020617,#312e81)",
+      "emoji": "🚀",
+      "id": "space",
+      "name": {
+        "en": "Deep Space",
+        "es-MX": "Espacio profundo"
+      }
+    },
+    {
+      "background": "linear-gradient(180deg,#7dd3fc 0 36%,#65a30d 37% 70%,#854d0e 71%)",
+      "emoji": "🦖",
+      "id": "dinosaur-valley",
+      "name": {
+        "en": "Dinosaur Valley",
+        "es-MX": "Valle de dinosaurios"
+      }
+    },
+    {
+      "background": "linear-gradient(160deg,#312e81,#7c2d12 60%,#f59e0b)",
+      "emoji": "🏰",
+      "id": "castle",
+      "name": {
+        "en": "Story Castle",
+        "es-MX": "Castillo de cuentos"
+      }
+    }
+  ],
+  "schemaVersion": 1
+} as const;
+
+export const WORLD_CATALOG = {
+  "art": {
+    "backgrounds": {
+      "Crystal Castle": [
+        "#C4B5FD",
+        "#FDE68A"
+      ],
+      "Dinosaur Valley": [
+        "#FDBA74",
+        "#4ADE80"
+      ],
+      "Moon Base": [
+        "#111827",
+        "#475569"
+      ],
+      "Ocean Station": [
+        "#0EA5E9",
+        "#164E63"
+      ],
+      "Rainbow Sky": [
+        "#F9A8D4",
+        "#67E8F9"
+      ],
+      "Sunrise Meadow": [
+        "#7DD3FC",
+        "#86EFAC"
+      ]
+    },
+    "frames": [
+      "Golden Stars",
+      "Robot Bolts",
+      "Jungle Vines",
+      "Monster Spots",
+      "Crystal Glow",
+      "Space Window"
+    ],
+    "stickers": [
+      "⭐",
+      "🤖",
+      "🐾",
+      "👾",
+      "🦖",
+      "🚀",
+      "🌈",
+      "💎",
+      "🌙",
+      "🏆",
+      "🐉",
+      "🎨"
+    ]
+  },
+  "campaignMissions": {
+    "crystal_01": {
+      "ability": "repair",
+      "chapter": 6,
+      "description": "Combine repair skill and monster magic to open the castle safely.",
+      "emoji": "💎",
+      "objectives": [
+        [
+          "ability_repair",
+          1,
+          "Prepare a repair teammate"
+        ],
+        [
+          "monster_friendship",
+          35,
+          "Reach 35 total monster friendship"
+        ]
+      ],
+      "reward": 11,
+      "title": "The Crystal Castle Door"
+    },
+    "crystal_02": {
+      "ability": "creative",
+      "chapter": 6,
+      "description": "Show the world what Nico's creative team can build together.",
+      "emoji": "🛠️",
+      "objectives": [
+        [
+          "robot_customizations",
+          2,
+          "Customize robots twice"
+        ],
+        [
+          "artworks",
+          5,
+          "Create five artworks"
+        ],
+        [
+          "pet_tricks",
+          2,
+          "Teach robot pets two tricks"
+        ]
+      ],
+      "reward": 12,
+      "title": "Festival of Inventors"
+    },
+    "dino_01": {
+      "ability": "scanner",
+      "chapter": 3,
+      "description": "Open Dinosaur Valley and identify its first ancient resident.",
+      "emoji": "🦕",
+      "objectives": [
+        [
+          "dinosaurs_discovered",
+          1,
+          "Discover one dinosaur"
+        ],
+        [
+          "fossils",
+          1,
+          "Recover one fossil"
+        ]
+      ],
+      "reward": 6,
+      "title": "Footprints from the Past"
+    },
+    "dino_02": {
+      "ability": "strength",
+      "chapter": 3,
+      "description": "Use strength and careful observation to repair a fossil bridge.",
+      "emoji": "🦴",
+      "objectives": [
+        [
+          "dinosaurs_discovered",
+          3,
+          "Discover three dinosaurs"
+        ],
+        [
+          "ability_strength",
+          1,
+          "Prepare a strong teammate"
+        ]
+      ],
+      "reward": 7,
+      "title": "The Fossil Bridge"
+    },
+    "dino_03": {
+      "ability": "flight",
+      "chapter": 3,
+      "description": "Reach the high nesting grounds without disturbing the eggs.",
+      "emoji": "🪽",
+      "objectives": [
+        [
+          "dinosaurs_discovered",
+          5,
+          "Discover five dinosaurs"
+        ],
+        [
+          "ability_flight",
+          1,
+          "Prepare a flying teammate"
+        ]
+      ],
+      "reward": 8,
+      "title": "Sky Nest Mystery"
+    },
+    "dino_04": {
+      "ability": "repair",
+      "chapter": 3,
+      "description": "Complete the valley expedition and preserve its discoveries.",
+      "emoji": "🌋",
+      "objectives": [
+        [
+          "dinosaurs_discovered",
+          7,
+          "Discover seven dinosaurs"
+        ],
+        [
+          "fossils",
+          4,
+          "Recover four fossils"
+        ],
+        [
+          "arcade_wins",
+          3,
+          "Win three Arcade rounds"
+        ]
+      ],
+      "reward": 10,
+      "title": "Valley of Gentle Giants"
+    },
+    "finale_01": {
+      "ability": "teamwork",
+      "chapter": 7,
+      "description": "Restore the machine that connects every part of Nico's World.",
+      "emoji": "🌠",
+      "objectives": [
+        [
+          "campaign_completed",
+          16,
+          "Complete sixteen earlier missions"
+        ],
+        [
+          "world_growth",
+          5,
+          "Grow the living world to stage five"
+        ]
+      ],
+      "reward": 15,
+      "title": "Return of the Star Machine"
+    },
+    "finale_02": {
+      "ability": "teamwork",
+      "chapter": 7,
+      "description": "Finish the campaign with a complete creative adventure team.",
+      "emoji": "👑",
+      "objectives": [
+        [
+          "campaign_completed",
+          19,
+          "Complete nineteen earlier missions"
+        ],
+        [
+          "robot_pets",
+          2,
+          "Create two robot pets"
+        ],
+        [
+          "monster_habitats",
+          2,
+          "Build two monster habitats"
+        ],
+        [
+          "dinosaurs_discovered",
+          8,
+          "Discover eight dinosaurs"
+        ]
+      ],
+      "reward": 20,
+      "title": "Guardian of Nico's World"
+    },
+    "forest_01": {
+      "ability": "scanner",
+      "chapter": 2,
+      "description": "Restore the forest sensors without frightening its animals.",
+      "emoji": "🌳",
+      "objectives": [
+        [
+          "animal_discoveries",
+          4,
+          "Discover four animals"
+        ],
+        [
+          "robot_jobs",
+          2,
+          "Complete two robot jobs"
+        ]
+      ],
+      "reward": 5,
+      "title": "The Whispering Canopy"
+    },
+    "forest_02": {
+      "ability": "aquatic",
+      "chapter": 2,
+      "description": "Use aquatic equipment to reach a stranded forest friend.",
+      "emoji": "🌊",
+      "objectives": [
+        [
+          "animal_expeditions",
+          1,
+          "Complete an animal expedition"
+        ],
+        [
+          "ability_aquatic",
+          1,
+          "Prepare an aquatic-capable teammate"
+        ]
+      ],
+      "reward": 6,
+      "title": "River Rescue Route"
+    },
+    "forest_03": {
+      "ability": "creative",
+      "chapter": 2,
+      "description": "Create a field poster that helps explorers follow the safe trail.",
+      "emoji": "🎨",
+      "objectives": [
+        [
+          "artworks",
+          1,
+          "Create an artwork"
+        ],
+        [
+          "stories_created",
+          1,
+          "Create a story"
+        ]
+      ],
+      "reward": 6,
+      "title": "The Painted Trail"
+    },
+    "forest_04": {
+      "ability": "translator",
+      "chapter": 2,
+      "description": "Complete the forest chapter with a robot, monster, and animal team.",
+      "emoji": "🦉",
+      "objectives": [
+        [
+          "animal_discoveries",
+          6,
+          "Discover six animals"
+        ],
+        [
+          "monster_friendship",
+          15,
+          "Build monster friendship"
+        ],
+        [
+          "robot_jobs",
+          4,
+          "Complete four robot jobs"
+        ]
+      ],
+      "reward": 8,
+      "title": "Guardian of the Great Tree"
+    },
+    "moon_01": {
+      "ability": "flight",
+      "chapter": 5,
+      "description": "Train a pet and prepare a flight-capable exploration team.",
+      "emoji": "🚀",
+      "objectives": [
+        [
+          "robot_pets",
+          1,
+          "Create a robot pet"
+        ],
+        [
+          "ability_flight",
+          1,
+          "Prepare a flying teammate"
+        ]
+      ],
+      "reward": 9,
+      "title": "Launch to the Moon"
+    },
+    "moon_02": {
+      "ability": "creative",
+      "chapter": 5,
+      "description": "Recover a forgotten story and illustrate its final page.",
+      "emoji": "🌙",
+      "objectives": [
+        [
+          "stories_created",
+          3,
+          "Create three stories"
+        ],
+        [
+          "artworks",
+          3,
+          "Create three artworks"
+        ]
+      ],
+      "reward": 10,
+      "title": "The Silent Moon Library"
+    },
+    "ocean_01": {
+      "ability": "aquatic",
+      "chapter": 4,
+      "description": "Dive below the waves and restart the station beacons.",
+      "emoji": "🐋",
+      "objectives": [
+        [
+          "ability_aquatic",
+          1,
+          "Prepare an aquatic teammate"
+        ],
+        [
+          "animal_discoveries",
+          8,
+          "Discover eight animals"
+        ]
+      ],
+      "reward": 8,
+      "title": "Ocean Station Emergency"
+    },
+    "ocean_02": {
+      "ability": "translator",
+      "chapter": 4,
+      "description": "Translate the reef's music and solve its color pattern.",
+      "emoji": "🐠",
+      "objectives": [
+        [
+          "ability_translator",
+          1,
+          "Prepare a translator teammate"
+        ],
+        [
+          "arcade_wins",
+          5,
+          "Win five Arcade rounds"
+        ]
+      ],
+      "reward": 9,
+      "title": "The Singing Reef"
+    },
+    "spark_01": {
+      "ability": "scanner",
+      "chapter": 1,
+      "description": "Build a sidekick and restore the first light in Robo City.",
+      "emoji": "⭐",
+      "objectives": [
+        [
+          "robot_builds",
+          1,
+          "Build a robot sidekick"
+        ],
+        [
+          "robot_moves",
+          1,
+          "Try one robot animation"
+        ]
+      ],
+      "reward": 3,
+      "title": "The First Lost Energy Star"
+    },
+    "spark_02": {
+      "ability": "translator",
+      "chapter": 1,
+      "description": "Follow an animal clue through the old power station.",
+      "emoji": "🐾",
+      "objectives": [
+        [
+          "animal_discoveries",
+          2,
+          "Discover two animals"
+        ],
+        [
+          "animal_quiz_correct",
+          1,
+          "Solve an animal challenge"
+        ]
+      ],
+      "reward": 4,
+      "title": "Pawprints in the Power Station"
+    },
+    "spark_03": {
+      "ability": "monster_magic",
+      "chapter": 1,
+      "description": "Create a monster guardian and learn its unusual power.",
+      "emoji": "👾",
+      "objectives": [
+        [
+          "monsters",
+          1,
+          "Create a monster"
+        ],
+        [
+          "monster_plays",
+          1,
+          "Play with a monster"
+        ]
+      ],
+      "reward": 4,
+      "title": "The Friendly Monster Signal"
+    },
+    "spark_04": {
+      "ability": "repair",
+      "chapter": 1,
+      "description": "Make headquarters feel like a real home.",
+      "emoji": "🏠",
+      "objectives": [
+        [
+          "home_decorations",
+          2,
+          "Place two room decorations"
+        ],
+        [
+          "home_moments",
+          2,
+          "Use two Robot Home activities"
+        ]
+      ],
+      "reward": 5,
+      "title": "A Home for the Team"
+    }
+  },
+  "monsterHabitats": {
+    "foods": [
+      "Moon Berries",
+      "Crunchy Star Chips",
+      "Rainbow Noodles",
+      "Bubble Soup",
+      "Dinosaur Leaf Wraps",
+      "Marshmallow Clouds"
+    ],
+    "themes": [
+      "Crystal Cave",
+      "Cloud Nest",
+      "Jungle Hideaway",
+      "Ocean Bubble",
+      "Moon Pod",
+      "Candy Garden",
+      "Volcano Workshop",
+      "Royal Tower"
+    ],
+    "toys": [
+      "Bouncy Meteor",
+      "Puzzle Cube",
+      "Squeaky Rocket",
+      "Mini Castle",
+      "Dancing Banana",
+      "Hologram Fish"
+    ]
+  },
+  "robotPets": {
+    "accessories": [
+      "None",
+      "Explorer Bandana",
+      "Tiny Jetpack",
+      "Crystal Collar",
+      "Tool Harness",
+      "Royal Cape",
+      "Star Antenna"
+    ],
+    "colors": {
+      "Armor Black": "#334155",
+      "Bubblegum Pink": "#EC4899",
+      "Cloud White": "#E2E8F0",
+      "Galaxy Purple": "#8B5CF6",
+      "Jungle Green": "#22C55E",
+      "Photon Blue": "#38BDF8",
+      "Rocket Red": "#EF4444",
+      "Sunny Gold": "#FACC15"
+    },
+    "personalities": [
+      "Brave Scout",
+      "Cuddly Helper",
+      "Silly Acrobat",
+      "Calm Guardian",
+      "Curious Explorer",
+      "Musical Friend"
+    ],
+    "species": {
+      "cat": "🐈",
+      "dinosaur": "🦖",
+      "dog": "🐕",
+      "dragon": "🐉",
+      "fox": "🦊",
+      "owl": "🦉",
+      "penguin": "🐧",
+      "space_orb": "🛸"
+    }
+  },
+  "schemaVersion": 1,
+  "seasonalEvents": [
+    {
+      "challenge": "Complete three activities and decorate a cozy headquarters.",
+      "emoji": "❄️",
+      "idPrefix": "winter",
+      "months": [
+        12,
+        1,
+        2
+      ],
+      "title": "Winter Star Festival"
+    },
+    {
+      "challenge": "Discover an animal and create a colorful artwork.",
+      "emoji": "🌼",
+      "idPrefix": "spring",
+      "months": [
+        3,
+        4,
+        5
+      ],
+      "title": "Spring Animal Celebration"
+    },
+    {
+      "challenge": "Prepare an aquatic teammate and win an Arcade round.",
+      "emoji": "🌊",
+      "idPrefix": "summer",
+      "months": [
+        6,
+        7,
+        8
+      ],
+      "title": "Summer Ocean Expedition"
+    },
+    {
+      "challenge": "Visit a monster habitat and create a new story.",
+      "emoji": "🎃",
+      "idPrefix": "autumn",
+      "months": [
+        9,
+        10,
+        11
+      ],
+      "title": "Autumn Monster Masquerade"
+    }
+  ]
+} as const;
+
+export const SHARED_CATALOG_SCHEMA_VERSION = 1 as const;
+
+export type SharedAnimal = (typeof ANIMAL_CATALOG.animals)[number];
+export type SharedProfession = (typeof PROFESSION_CATALOG.professions)[number];
+export type SharedShowtimePose = (typeof SHOWTIME_CATALOG.poses)[number];
+export type SharedShowtimeScene = (typeof SHOWTIME_CATALOG.scenes)[number];

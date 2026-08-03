@@ -1,0 +1,190 @@
+{
+  "durationOptionsMs": [
+    4000,
+    6000,
+    8000
+  ],
+  "poses": [
+    {
+      "durationMs": 1000,
+      "emoji": "🙂",
+      "id": "idle",
+      "kinds": [
+        "nico",
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Ready",
+        "es-MX": "Listo"
+      }
+    },
+    {
+      "durationMs": 1200,
+      "emoji": "👋",
+      "id": "wave",
+      "kinds": [
+        "nico",
+        "robot",
+        "pet"
+      ],
+      "name": {
+        "en": "Wave",
+        "es-MX": "Saludar"
+      }
+    },
+    {
+      "durationMs": 1400,
+      "emoji": "🎉",
+      "id": "celebrate",
+      "kinds": [
+        "nico",
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Celebrate",
+        "es-MX": "Celebrar"
+      }
+    },
+    {
+      "durationMs": 1500,
+      "emoji": "🚀",
+      "id": "launch",
+      "kinds": [
+        "robot",
+        "pet"
+      ],
+      "name": {
+        "en": "Launch",
+        "es-MX": "Despegar"
+      }
+    },
+    {
+      "durationMs": 1500,
+      "emoji": "💃",
+      "id": "dance",
+      "kinds": [
+        "nico",
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Dance",
+        "es-MX": "Bailar"
+      }
+    },
+    {
+      "durationMs": 1200,
+      "emoji": "🔄",
+      "id": "spin",
+      "kinds": [
+        "robot",
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Spin",
+        "es-MX": "Girar"
+      }
+    },
+    {
+      "durationMs": 1100,
+      "emoji": "⬆️",
+      "id": "bounce",
+      "kinds": [
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Bounce",
+        "es-MX": "Rebotar"
+      }
+    },
+    {
+      "durationMs": 1300,
+      "emoji": "🗯️",
+      "id": "roar",
+      "kinds": [
+        "monster"
+      ],
+      "name": {
+        "en": "Roar",
+        "es-MX": "Rugir"
+      }
+    },
+    {
+      "durationMs": 1500,
+      "emoji": "😴",
+      "id": "sleep",
+      "kinds": [
+        "monster",
+        "pet"
+      ],
+      "name": {
+        "en": "Sleep",
+        "es-MX": "Dormir"
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "background": "linear-gradient(160deg,#020617,#1d4ed8 55%,#7c3aed)",
+      "emoji": "🌟",
+      "id": "star-stage",
+      "name": {
+        "en": "Star Stage",
+        "es-MX": "Escenario de estrellas"
+      }
+    },
+    {
+      "background": "linear-gradient(180deg,#0c4a6e 0 42%,#1e3a8a 43% 72%,#5b3a22 73%)",
+      "emoji": "🏠",
+      "id": "robot-home",
+      "name": {
+        "en": "Robot Home",
+        "es-MX": "Casa Robot"
+      }
+    },
+    {
+      "background": "linear-gradient(180deg,#38bdf8 0 34%,#15803d 35% 72%,#713f12 73%)",
+      "emoji": "🌿",
+      "id": "jungle",
+      "name": {
+        "en": "Animal Forest",
+        "es-MX": "Bosque animal"
+      }
+    },
+    {
+      "background": "radial-gradient(circle at 25% 20%,#e0f2fe 0 2px,transparent 3px),radial-gradient(circle at 72% 34%,#fef3c7 0 2px,transparent 3px),linear-gradient(145deg,#020617,#312e81)",
+      "emoji": "🚀",
+      "id": "space",
+      "name": {
+        "en": "Deep Space",
+        "es-MX": "Espacio profundo"
+      }
+    },
+    {
+      "background": "linear-gradient(180deg,#7dd3fc 0 36%,#65a30d 37% 70%,#854d0e 71%)",
+      "emoji": "🦖",
+      "id": "dinosaur-valley",
+      "name": {
+        "en": "Dinosaur Valley",
+        "es-MX": "Valle de dinosaurios"
+      }
+    },
+    {
+      "background": "linear-gradient(160deg,#312e81,#7c2d12 60%,#f59e0b)",
+      "emoji": "🏰",
+      "id": "castle",
+      "name": {
+        "en": "Story Castle",
+        "es-MX": "Castillo de cuentos"
+      }
+    }
+  ],
+  "schemaVersion": 1
+}

@@ -1,0 +1,369 @@
+{
+  "professions": [
+    {
+      "accent": "#16a34a",
+      "costume": "explorer",
+      "emoji": "🧭",
+      "id": "explorer",
+      "name": {
+        "en": "Explorer",
+        "es-MX": "Explorador"
+      },
+      "tagline": {
+        "en": "Discover animals, places, and clues.",
+        "es-MX": "Descubre animales, lugares y pistas."
+      }
+    },
+    {
+      "accent": "#2563eb",
+      "costume": "astronaut",
+      "emoji": "🚀",
+      "id": "astronaut",
+      "name": {
+        "en": "Astronaut",
+        "es-MX": "Astronauta"
+      },
+      "tagline": {
+        "en": "Study stars and travel through space.",
+        "es-MX": "Estudia las estrellas y viaja por el espacio."
+      }
+    },
+    {
+      "accent": "#0891b2",
+      "costume": "doctor",
+      "emoji": "🩺",
+      "id": "doctor",
+      "name": {
+        "en": "Doctor",
+        "es-MX": "Doctor"
+      },
+      "tagline": {
+        "en": "Help people feel safe and healthy.",
+        "es-MX": "Ayuda a las personas a sentirse seguras y saludables."
+      }
+    },
+    {
+      "accent": "#7c3aed",
+      "costume": "scientist",
+      "emoji": "🔬",
+      "id": "scientist",
+      "name": {
+        "en": "Scientist",
+        "es-MX": "Científico"
+      },
+      "tagline": {
+        "en": "Ask questions and test ideas.",
+        "es-MX": "Haz preguntas y prueba ideas."
+      }
+    },
+    {
+      "accent": "#ea580c",
+      "costume": "engineer",
+      "emoji": "⚙️",
+      "id": "engineer",
+      "name": {
+        "en": "Engineer",
+        "es-MX": "Ingeniero"
+      },
+      "tagline": {
+        "en": "Design, build, test, and repair.",
+        "es-MX": "Diseña, construye, prueba y repara."
+      }
+    },
+    {
+      "accent": "#f97316",
+      "costume": "builder",
+      "emoji": "🛠️",
+      "id": "builder",
+      "name": {
+        "en": "Builder",
+        "es-MX": "Constructor"
+      },
+      "tagline": {
+        "en": "Use tools and plans to build something strong.",
+        "es-MX": "Usa herramientas y planos para construir algo resistente."
+      }
+    },
+    {
+      "accent": "#059669",
+      "costume": "veterinarian",
+      "emoji": "🐾",
+      "id": "veterinarian",
+      "name": {
+        "en": "Veterinarian",
+        "es-MX": "Veterinario"
+      },
+      "tagline": {
+        "en": "Care for animals of every size.",
+        "es-MX": "Cuida animales de todos los tamaños."
+      }
+    },
+    {
+      "accent": "#65a30d",
+      "costume": "dinosaur",
+      "emoji": "🦖",
+      "id": "dinosaur",
+      "name": {
+        "en": "Dinosaur Hero",
+        "es-MX": "Héroe dinosaurio"
+      },
+      "tagline": {
+        "en": "Roar, explore, and learn about fossils.",
+        "es-MX": "Ruge, explora y aprende sobre fósiles."
+      }
+    },
+    {
+      "accent": "#334155",
+      "costume": "suit",
+      "emoji": "👔",
+      "id": "suit",
+      "name": {
+        "en": "Young Leader",
+        "es-MX": "Joven líder"
+      },
+      "tagline": {
+        "en": "Plan a mission and help the team.",
+        "es-MX": "Planea una misión y ayuda al equipo."
+      }
+    },
+    {
+      "accent": "#dc2626",
+      "costume": "firefighter",
+      "emoji": "🚒",
+      "id": "firefighter",
+      "name": {
+        "en": "Firefighter",
+        "es-MX": "Bombero"
+      },
+      "tagline": {
+        "en": "Practice courage, safety, and teamwork.",
+        "es-MX": "Practica valor, seguridad y trabajo en equipo."
+      }
+    },
+    {
+      "accent": "#d97706",
+      "costume": "chef",
+      "emoji": "👨‍🍳",
+      "id": "chef",
+      "name": {
+        "en": "Chef",
+        "es-MX": "Chef"
+      },
+      "tagline": {
+        "en": "Measure, mix, and create something tasty.",
+        "es-MX": "Mide, mezcla y crea algo sabroso."
+      }
+    },
+    {
+      "accent": "#db2777",
+      "costume": "artist",
+      "emoji": "🎨",
+      "id": "artist",
+      "name": {
+        "en": "Artist",
+        "es-MX": "Artista"
+      },
+      "tagline": {
+        "en": "Turn imagination into pictures and stories.",
+        "es-MX": "Convierte la imaginación en imágenes y cuentos."
+      }
+    },
+    {
+      "accent": "#0f766e",
+      "costume": "pilot",
+      "emoji": "✈️",
+      "id": "pilot",
+      "name": {
+        "en": "Pilot",
+        "es-MX": "Piloto"
+      },
+      "tagline": {
+        "en": "Navigate carefully and explore the sky.",
+        "es-MX": "Navega con cuidado y explora el cielo."
+      }
+    },
+    {
+      "accent": "#15803d",
+      "costume": "gardener",
+      "emoji": "🌱",
+      "id": "gardener",
+      "name": {
+        "en": "Gardener",
+        "es-MX": "Jardinero"
+      },
+      "tagline": {
+        "en": "Grow plants and care for living things.",
+        "es-MX": "Cultiva plantas y cuida a los seres vivos."
+      }
+    },
+    {
+      "accent": "#4f46e5",
+      "costume": "teacher",
+      "emoji": "🧑‍🏫",
+      "id": "teacher",
+      "name": {
+        "en": "Teacher",
+        "es-MX": "Maestro"
+      },
+      "tagline": {
+        "en": "Explain ideas and help friends learn.",
+        "es-MX": "Explica ideas y ayuda a tus amigos a aprender."
+      }
+    },
+    {
+      "accent": "#06b6d4",
+      "costume": "dentist",
+      "emoji": "🦷",
+      "id": "dentist",
+      "name": {
+        "en": "Dentist",
+        "es-MX": "Dentista"
+      },
+      "tagline": {
+        "en": "Teach healthy smiles and gentle care.",
+        "es-MX": "Enseña sonrisas saludables y cuidado amable."
+      }
+    },
+    {
+      "accent": "#1d4ed8",
+      "costume": "police-officer",
+      "emoji": "👮",
+      "id": "police-officer",
+      "name": {
+        "en": "Police Officer",
+        "es-MX": "Policía"
+      },
+      "tagline": {
+        "en": "Help the community and practice safety.",
+        "es-MX": "Ayuda a la comunidad y practica la seguridad."
+      }
+    },
+    {
+      "accent": "#65a30d",
+      "costume": "zookeeper",
+      "emoji": "🦒",
+      "id": "zookeeper",
+      "name": {
+        "en": "Zookeeper",
+        "es-MX": "Cuidador del zoológico"
+      },
+      "tagline": {
+        "en": "Protect habitats and learn animal needs.",
+        "es-MX": "Protege hábitats y aprende lo que necesitan los animales."
+      }
+    },
+    {
+      "accent": "#9333ea",
+      "costume": "musician",
+      "emoji": "🎸",
+      "id": "musician",
+      "name": {
+        "en": "Musician",
+        "es-MX": "Músico"
+      },
+      "tagline": {
+        "en": "Create rhythms, melodies, and happy sounds.",
+        "es-MX": "Crea ritmos, melodías y sonidos alegres."
+      }
+    },
+    {
+      "accent": "#a16207",
+      "costume": "farmer",
+      "emoji": "🚜",
+      "id": "farmer",
+      "name": {
+        "en": "Farmer",
+        "es-MX": "Granjero"
+      },
+      "tagline": {
+        "en": "Grow food and care for the land.",
+        "es-MX": "Cultiva alimentos y cuida la tierra."
+      }
+    },
+    {
+      "accent": "#e11d48",
+      "costume": "lifeguard",
+      "emoji": "🛟",
+      "id": "lifeguard",
+      "name": {
+        "en": "Lifeguard",
+        "es-MX": "Salvavidas"
+      },
+      "tagline": {
+        "en": "Watch the water and practice rescue safety.",
+        "es-MX": "Vigila el agua y practica rescates seguros."
+      }
+    },
+    {
+      "accent": "#6d28d9",
+      "costume": "magician",
+      "emoji": "🎩",
+      "id": "magician",
+      "name": {
+        "en": "Magician",
+        "es-MX": "Mago"
+      },
+      "tagline": {
+        "en": "Practice surprising tricks and creative stories.",
+        "es-MX": "Practica trucos sorprendentes y cuentos creativos."
+      }
+    },
+    {
+      "accent": "#16a34a",
+      "costume": "soccer-player",
+      "emoji": "⚽",
+      "id": "soccer-player",
+      "name": {
+        "en": "Soccer Player",
+        "es-MX": "Futbolista"
+      },
+      "tagline": {
+        "en": "Train skills, teamwork, and fair play.",
+        "es-MX": "Entrena habilidades, trabajo en equipo y juego limpio."
+      }
+    },
+    {
+      "accent": "#84cc16",
+      "costume": "tennis-player",
+      "emoji": "🎾",
+      "id": "tennis-player",
+      "name": {
+        "en": "Tennis Player",
+        "es-MX": "Tenista"
+      },
+      "tagline": {
+        "en": "Practice focus, movement, and sportsmanship.",
+        "es-MX": "Practica concentración, movimiento y deportividad."
+      }
+    },
+    {
+      "accent": "#92400e",
+      "costume": "detective",
+      "emoji": "🕵️",
+      "id": "detective",
+      "name": {
+        "en": "Detective",
+        "es-MX": "Detective"
+      },
+      "tagline": {
+        "en": "Observe details and solve friendly mysteries.",
+        "es-MX": "Observa detalles y resuelve misterios amistosos."
+      }
+    },
+    {
+      "accent": "#0f766e",
+      "costume": "librarian",
+      "emoji": "📚",
+      "id": "librarian",
+      "name": {
+        "en": "Librarian",
+        "es-MX": "Bibliotecario"
+      },
+      "tagline": {
+        "en": "Find books and connect readers with stories.",
+        "es-MX": "Encuentra libros y conecta lectores con cuentos."
+      }
+    }
+  ],
+  "schemaVersion": 1
+}

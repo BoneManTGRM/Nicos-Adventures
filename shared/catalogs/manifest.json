@@ -1,0 +1,15 @@
+{
+  "catalogSchemaVersion": 1,
+  "files": [
+    "animals.json",
+    "knowledge.json",
+    "monster.json",
+    "poses.json",
+    "professions.json",
+    "robot.json",
+    "schema-registry.json",
+    "showtime.json",
+    "world.json"
+  ],
+  "policy": "Canonical JSON is the source of truth. Generated Python and TypeScript views must be refreshed and checked in CI."
+}
