@@ -82,8 +82,56 @@ export type ArtworkRecord = { id: string; title: string; background: string; sub
 export type StoryRecord = { id: string; title: string; hero: string; place: string; problem: string; ending: string; language: Language; };
 export type DinosaurRecord = { id: string; name: string; emoji: string; period: string; discovered: boolean; };
 
+export type NicoProfessionId =
+  | "explorer"
+  | "astronaut"
+  | "doctor"
+  | "scientist"
+  | "engineer"
+  | "veterinarian"
+  | "dinosaur"
+  | "suit"
+  | "firefighter"
+  | "chef"
+  | "artist"
+  | "pilot";
+
+export type NicoPreferences = {
+  profession: NicoProfessionId;
+  accentColor: string;
+  speechEnabled: boolean;
+};
+
+export type MovieCharacterKind = "nico" | "robot" | "monster" | "pet";
+export type MoviePose = "idle" | "wave" | "celebrate" | "launch" | "dance" | "spin" | "bounce" | "roar" | "sleep";
+
+export type MovieCharacterRef = {
+  kind: MovieCharacterKind;
+  id: string;
+  name: string;
+};
+
+export type MoviePoseStep = {
+  pose: MoviePose;
+  durationMs: number;
+};
+
+export type MovieProject = {
+  id: string;
+  title: string;
+  characters: MovieCharacterRef[];
+  poseSequence: MoviePoseStep[];
+  background: string;
+  caption: string;
+  language: Language;
+  durationMs: number;
+  createdAt: string;
+  lastDownloadedAt?: string;
+  lastMimeType?: string;
+};
+
 export type LocalProfile = {
-  schemaVersion: 2;
+  schemaVersion: 3;
   id: string;
   playerName: string;
   language: Language;
@@ -104,8 +152,10 @@ export type LocalProfile = {
   arcadeScores: Record<string, number>;
   decorations: string[];
   badges: string[];
+  movieProjects: MovieProject[];
+  nico: NicoPreferences;
   createdAt: string;
   updatedAt: string;
 };
 
-export type LocalSaveStore = { schemaVersion: 2; activeProfileId: string; profiles: LocalProfile[]; };
+export type LocalSaveStore = { schemaVersion: 3; activeProfileId: string; profiles: LocalProfile[]; };
