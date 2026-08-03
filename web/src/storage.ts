@@ -14,6 +14,7 @@ import type {
 } from "./types";
 
 export const STORAGE_KEY = "nicos-world-local-save-v3";
+export const PROFILE_EVENT = "nicos-world-profile-updated";
 const LEGACY_KEYS = ["nicos-world-local-save-v2", "nicos-world-local-save-v1"] as const;
 const now = (): string => new Date().toISOString();
 const id = (prefix: string): string => `${prefix}-${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}`;
@@ -248,7 +249,12 @@ export const loadLocalStore = (): LocalSaveStore => {
 
 export const saveLocalStore = (store: LocalSaveStore): boolean => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeStore(store)));
+    const serialized = JSON.stringify(normalizeStore(store));
+    if (localStorage.getItem(STORAGE_KEY) === serialized) return true;
+    localStorage.setItem(STORAGE_KEY, serialized);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(PROFILE_EVENT, { detail: { source: "app" } }));
+    }
     return true;
   } catch {
     return false;
