@@ -94,7 +94,20 @@ export type NicoProfessionId =
   | "firefighter"
   | "chef"
   | "artist"
-  | "pilot";
+  | "pilot"
+  | "gardener"
+  | "teacher"
+  | "dentist"
+  | "police-officer"
+  | "zookeeper"
+  | "musician"
+  | "farmer"
+  | "lifeguard"
+  | "magician"
+  | "soccer-player"
+  | "tennis-player"
+  | "detective"
+  | "librarian";
 
 export type NicoPreferences = {
   profession: NicoProfessionId;
