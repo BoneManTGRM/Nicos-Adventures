@@ -1,0 +1,14 @@
+[
+  {"id":"explorer","emoji":"🧭","name":{"en":"Explorer","es-MX":"Explorador"},"tagline":{"en":"Discover animals, places, and clues.","es-MX":"Descubre animales, lugares y pistas."},"costume":"explorer","accent":"#16a34a"},
+  {"id":"astronaut","emoji":"🚀","name":{"en":"Astronaut","es-MX":"Astronauta"},"tagline":{"en":"Study stars and travel through space.","es-MX":"Estudia las estrellas y viaja por el espacio."},"costume":"astronaut","accent":"#2563eb"},
+  {"id":"doctor","emoji":"🩺","name":{"en":"Doctor","es-MX":"Doctor"},"tagline":{"en":"Help people feel safe and healthy.","es-MX":"Ayuda a las personas a sentirse seguras y saludables."},"costume":"doctor","accent":"#0891b2"},
+  {"id":"scientist","emoji":"🔬","name":{"en":"Scientist","es-MX":"Científico"},"tagline":{"en":"Ask questions and test ideas.","es-MX":"Haz preguntas y prueba ideas."},"costume":"scientist","accent":"#7c3aed"},
+  {"id":"engineer","emoji":"⚙️","name":{"en":"Engineer","es-MX":"Ingeniero"},"tagline":{"en":"Design, build, test, and repair.","es-MX":"Diseña, construye, prueba y repara."},"costume":"engineer","accent":"#ea580c"},
+  {"id":"veterinarian","emoji":"🐾","name":{"en":"Veterinarian","es-MX":"Veterinario"},"tagline":{"en":"Care for animals of every size.","es-MX":"Cuida animales de todos los tamaños."},"costume":"veterinarian","accent":"#059669"},
+  {"id":"dinosaur","emoji":"🦖","name":{"en":"Dinosaur Hero","es-MX":"Héroe dinosaurio"},"tagline":{"en":"Roar, explore, and learn about fossils.","es-MX":"Ruge, explora y aprende sobre fósiles."},"costume":"dinosaur","accent":"#65a30d"},
+  {"id":"suit","emoji":"👔","name":{"en":"Young Leader","es-MX":"Joven líder"},"tagline":{"en":"Plan a mission and help the team.","es-MX":"Planea una misión y ayuda al equipo."},"costume":"suit","accent":"#334155"},
+  {"id":"firefighter","emoji":"🚒","name":{"en":"Firefighter","es-MX":"Bombero"},"tagline":{"en":"Practice courage, safety, and teamwork.","es-MX":"Practica valor, seguridad y trabajo en equipo."},"costume":"firefighter","accent":"#dc2626"},
+  {"id":"chef","emoji":"👨‍🍳","name":{"en":"Chef","es-MX":"Chef"},"tagline":{"en":"Measure, mix, and create something tasty.","es-MX":"Mide, mezcla y crea algo sabroso."},"costume":"chef","accent":"#d97706"},
+  {"id":"artist","emoji":"🎨","name":{"en":"Artist","es-MX":"Artista"},"tagline":{"en":"Turn imagination into pictures and stories.","es-MX":"Convierte la imaginación en imágenes y cuentos."},"costume":"artist","accent":"#db2777"},
+  {"id":"pilot","emoji":"✈️","name":{"en":"Pilot","es-MX":"Piloto"},"tagline":{"en":"Navigate carefully and explore the sky.","es-MX":"Navega con cuidado y explora el cielo."},"costume":"pilot","accent":"#0f766e"}
+]
