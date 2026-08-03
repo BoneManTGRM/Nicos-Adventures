@@ -16,6 +16,7 @@ type ProfessionOption = {
 type Props = {
   language: Language;
   artSource: string;
+  outfitArtSource: string;
   preferences: NicoPreferences;
   onSave: (preferences: NicoPreferences) => void;
 };
@@ -54,7 +55,7 @@ export function filterNicoProfessions(query: string, language: Language): Profes
   );
 }
 
-export function NicoDressUp({ language, artSource, preferences, onSave }: Props) {
+export function NicoDressUp({ language, artSource, outfitArtSource, preferences, onSave }: Props) {
   const text = copy[language];
   const [draft, setDraft] = useState<NicoPreferences>(preferences);
   const [saved, setSaved] = useState(false);
@@ -88,6 +89,7 @@ export function NicoDressUp({ language, artSource, preferences, onSave }: Props)
         <div className="nico-dress-preview">
           <NicoCostumeFigure
             artSource={artSource}
+            outfitArtSource={outfitArtSource}
             profession={draft.profession}
             accentColor={draft.accentColor}
             alt={`${selected.name[language]} Nico`}
