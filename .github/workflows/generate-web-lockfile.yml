@@ -1,0 +1,30 @@
+name: Verify web lockfile
+
+on:
+  pull_request:
+    paths:
+      - "web/package.json"
+      - "web/package-lock.json"
+      - "web/.npmrc"
+      - ".github/workflows/generate-web-lockfile.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install from committed lockfile
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify package manifest and lockfile agree
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund && git diff --exit-code -- package-lock.json

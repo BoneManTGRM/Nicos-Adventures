@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import "./nico-guide.css";
 
 type GuideLanguage = "en" | "es-MX";
+type NicoHubTab = "ask" | "dress" | "showtime" | "movies";
 
 type GuideCopy = {
   eyebrow: string;
   title: string;
   body: string;
   worldMap: string;
+  askNico: string;
+  clubhouse: string;
   switchLanguage: string;
   openLabel: string;
   closeLabel: string;
@@ -15,27 +18,32 @@ type GuideCopy = {
 };
 
 const GUIDE_LANGUAGE_KEY = "nicos-world-guide-language";
-const SAVE_KEY = "nicos-world-local-save-v2";
+const SAVE_KEYS = ["nicos-world-local-save-v3", "nicos-world-local-save-v2"] as const;
 const NICO_ART_PAYLOAD = "/assets/nico/nico-guide-art.b64?v=2";
+const OPEN_NICO_EVENT = "nicos-world-open-nico";
 
 const copy: Record<GuideLanguage, GuideCopy> = {
   en: {
-    eyebrow: "Your adventure guide",
+    eyebrow: "Your local adventure guide",
     title: "Hi, I'm Nico!",
-    body: "This is my world. Pick a destination, build a robot, discover animals, create stories, and collect stars.",
+    body: "Ask me safe questions, choose an outfit, make a little movie, or continue exploring my world. Your questions and creations stay on this device.",
     worldMap: "Open World Map",
+    askNico: "Ask Nico",
+    clubhouse: "Open Clubhouse",
     switchLanguage: "Español",
-    openLabel: "Meet Nico, your adventure guide",
+    openLabel: "Meet Nico, your local adventure guide",
     closeLabel: "Close Nico's guide",
     artAlt: "Nico wearing red glasses and exploring with a magnifying glass",
   },
   "es-MX": {
-    eyebrow: "Tu guía de aventuras",
+    eyebrow: "Tu guía local de aventuras",
     title: "¡Hola, soy Nico!",
-    body: "Este es mi mundo. Elige un destino, construye un robot, descubre animales, crea cuentos y colecciona estrellas.",
+    body: "Hazme preguntas seguras, elige un traje, crea una pequeña película o sigue explorando mi mundo. Tus preguntas y creaciones permanecen en este dispositivo.",
     worldMap: "Abrir mapa del mundo",
+    askNico: "Pregúntale a Nico",
+    clubhouse: "Abrir Casa Club",
     switchLanguage: "English",
-    openLabel: "Conoce a Nico, tu guía de aventuras",
+    openLabel: "Conoce a Nico, tu guía local de aventuras",
     closeLabel: "Cerrar la guía de Nico",
     artAlt: "Nico con lentes rojos explorando con una lupa",
   },
@@ -46,7 +54,8 @@ function detectLanguage(): GuideLanguage {
   if (savedGuideLanguage === "en" || savedGuideLanguage === "es-MX") return savedGuideLanguage;
 
   try {
-    const store = JSON.parse(localStorage.getItem(SAVE_KEY) ?? "null") as {
+    const raw = SAVE_KEYS.map((key) => localStorage.getItem(key)).find((value) => value !== null) ?? "null";
+    const store = JSON.parse(raw) as {
       activeProfileId?: string;
       profiles?: Array<{ id?: string; language?: string }>;
     } | null;
@@ -71,7 +80,7 @@ export default function NicoGuide() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(NICO_ART_PAYLOAD, { cache: "no-store", signal: controller.signal })
+    fetch(NICO_ART_PAYLOAD, { cache: "force-cache", signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error(`Nico art request failed: ${response.status}`);
         return response.text();
@@ -88,6 +97,11 @@ export default function NicoGuide() {
   const openWorldMap = () => {
     document.querySelector<HTMLButtonElement>(".fw-brand")?.click();
     window.scrollTo({ top: 0, behavior: "smooth" });
+    setIsOpen(false);
+  };
+
+  const openNico = (tab: NicoHubTab) => {
+    window.dispatchEvent(new CustomEvent(OPEN_NICO_EVENT, { detail: { tab } }));
     setIsOpen(false);
   };
 
@@ -111,12 +125,12 @@ export default function NicoGuide() {
             <h2 id="nico-guide-title">{text.title}</h2>
             <p>{text.body}</p>
             <div className="nico-guide__actions">
-              <button type="button" className="nico-guide__primary" onClick={openWorldMap}>
-                🌍 {text.worldMap}
+              <button type="button" className="nico-guide__primary" onClick={() => openNico("ask")}>
+                💬 {text.askNico}
               </button>
-              <button type="button" onClick={() => setLanguage(language === "en" ? "es-MX" : "en")}>
-                {text.switchLanguage}
-              </button>
+              <button type="button" onClick={() => openNico("dress")}>🧰 {text.clubhouse}</button>
+              <button type="button" onClick={openWorldMap}>🌍 {text.worldMap}</button>
+              <button type="button" onClick={() => setLanguage(language === "en" ? "es-MX" : "en")}>{text.switchLanguage}</button>
             </div>
           </div>
         </section>
