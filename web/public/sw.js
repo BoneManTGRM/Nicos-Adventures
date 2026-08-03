@@ -1,4 +1,4 @@
-const CACHE = "nicos-world-static-v13";
+const CACHE = "nicos-world-static-v14";
 const SHELL = [
   "/",
   "/index.html",
