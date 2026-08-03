@@ -88,6 +88,7 @@ export type NicoProfessionId =
   | "doctor"
   | "scientist"
   | "engineer"
+  | "builder"
   | "veterinarian"
   | "dinosaur"
   | "suit"
