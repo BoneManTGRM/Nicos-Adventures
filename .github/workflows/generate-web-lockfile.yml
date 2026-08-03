@@ -1,34 +1,30 @@
-name: Generate web lockfile
+name: Verify web lockfile
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    paths:
+      - "web/package.json"
+      - "web/package-lock.json"
+      - "web/.npmrc"
+      - ".github/workflows/generate-web-lockfile.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   lockfile:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feature/nico-clubhouse-showtime-mvp' }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: "22.12.0"
-      - name: Generate exact package lock
-        working-directory: web
-        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-      - name: Commit lockfile
-        run: |
-          if [ -z "$(git status --porcelain -- web/package-lock.json)" ]; then
-            echo "Lockfile is already current."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add web/package-lock.json
-          git commit -m "Generate exact web package lock [lockfile generated]"
-          git push origin HEAD:${{ github.head_ref }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install from committed lockfile
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify package manifest and lockfile agree
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund && git diff --exit-code -- package-lock.json
