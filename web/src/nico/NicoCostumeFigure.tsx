@@ -1,8 +1,10 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import type { NicoProfessionId } from "../types";
+import { approvedCharacterStyle, approvedOutfitStyle } from "./approvedNicoArt";
 
 type Props = {
   artSource: string;
+  outfitArtSource?: string;
   profession: NicoProfessionId;
   accentColor?: string;
   compact?: boolean;
@@ -46,6 +48,7 @@ export const NICO_COSTUME_DECORATIONS: Record<NicoProfessionId, CostumeDecoratio
 
 export function NicoCostumeFigure({
   artSource,
+  outfitArtSource = "",
   profession,
   accentColor = "#22c55e",
   compact = false,
@@ -53,27 +56,21 @@ export function NicoCostumeFigure({
 }: Props) {
   const decoration = NICO_COSTUME_DECORATIONS[profession];
   const style = { "--nico-costume-accent": accentColor } as CSSProperties;
-  const [imageFailed, setImageFailed] = useState(false);
-
-  useEffect(() => setImageFailed(false), [artSource]);
-  const showImage = Boolean(artSource) && !imageFailed;
+  const outfitStyle = approvedOutfitStyle(outfitArtSource, profession);
+  const artState = outfitStyle ? "approved-outfit" : artSource ? "approved-character" : "fallback";
 
   return (
     <figure
       className={`nico-costume nico-costume--${profession} ${compact ? "nico-costume--compact" : ""}`.trim()}
       style={style}
       data-profession={profession}
-      data-art-state={showImage ? "loaded" : "fallback"}
+      data-art-state={artState}
     >
       <div className="nico-costume__frame">
-        {showImage ? (
-          <img
-            src={artSource}
-            alt={alt}
-            data-asset-recovery="ignore"
-            decoding="async"
-            onError={() => setImageFailed(true)}
-          />
+        {outfitStyle ? (
+          <span className="nico-costume__approved" style={outfitStyle} role="img" aria-label={alt} data-approved-nico-outfit="true" />
+        ) : artSource ? (
+          <span className="nico-costume__approved" style={approvedCharacterStyle(artSource, "full")} role="img" aria-label={alt} data-approved-nico-art="true" />
         ) : (
           <div className="nico-costume__fallback" role="img" aria-label={alt}>
             <span className="nico-costume__fallback-hair" aria-hidden="true" />

@@ -1,5 +1,15 @@
-const CACHE = "nicos-world-static-v16";
+const CACHE = "nicos-world-static-v17";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
+const APPROVED_NICO_ART = [
+  "/assets/nico/approved/character.part1.b64",
+  "/assets/nico/approved/character.part2.b64",
+  "/assets/nico/approved/character.part3.b64",
+  "/assets/nico/approved/outfits.part1.b64",
+  "/assets/nico/approved/outfits.part2.b64",
+  "/assets/nico/approved/outfits.part3.b64",
+  "/assets/nico/approved/outfits.part4.b64",
+  "/assets/nico/approved/outfits.part5.b64",
+];
 const SHELL = [
   "/",
   "/index.html",
@@ -8,6 +18,7 @@ const SHELL = [
   "/asset-recovery.js",
   "/dinosaur-art.js",
   NICO_ART,
+  ...APPROVED_NICO_ART,
 ];
 
 self.addEventListener("install", (event) => {
@@ -32,15 +43,13 @@ self.addEventListener("fetch", (event) => {
 
   if (url.origin === self.location.origin && url.pathname.endsWith("/assets/nico/nico-fullbody.b64")) {
     event.respondWith(
-      fetch(NICO_ART, { cache: "no-store" })
-        .then((response) => {
-          if (response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(NICO_ART, copy));
-          }
-          return response;
-        })
-        .catch(async () => (await caches.match(NICO_ART)) || Response.error())
+      Promise.all(APPROVED_NICO_ART.slice(0, 3).map(async (path) => {
+        const response = await fetch(path, { cache: "no-store" }).catch(() => caches.match(path));
+        if (!response) throw new Error("Approved Nico art unavailable");
+        return response.text();
+      })).then((chunks) => new Response(chunks.join(""), {
+        headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+      })).catch(async () => (await caches.match(NICO_ART)) || Response.error())
     );
     return;
   }

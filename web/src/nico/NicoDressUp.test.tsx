@@ -23,8 +23,8 @@ describe("Nico Phase 2 dress-up catalog", () => {
   });
 });
 
-describe("Nico art regression", () => {
-  it("renders a recognizable character fallback when local art is unavailable", () => {
+describe("Nico approved-art regression", () => {
+  it("renders a recognizable character fallback only when approved local art is unavailable", () => {
     const html = renderToStaticMarkup(
       <NicoCostumeFigure artSource="" profession="doctor" alt="Doctor Nico" />,
     );
@@ -32,16 +32,36 @@ describe("Nico art regression", () => {
     expect(html).toContain('data-art-state="fallback"');
     expect(html).toContain("nico-costume__fallback-face");
     expect(html).toContain('aria-label="Doctor Nico"');
-    expect(html).not.toContain("<img");
   });
 
-  it("renders the approved local image when a source is available", () => {
+  it("renders the exact approved outfit sprite for mapped professions", () => {
     const html = renderToStaticMarkup(
-      <NicoCostumeFigure artSource="data:image/jpeg;base64,/9j/test" profession="astronaut" alt="Astronaut Nico" />,
+      <NicoCostumeFigure
+        artSource="data:image/jpeg;base64,/9j/character"
+        outfitArtSource="data:image/jpeg;base64,/9j/outfits"
+        profession="astronaut"
+        alt="Astronaut Nico"
+      />,
     );
 
-    expect(html).toContain('data-art-state="loaded"');
-    expect(html).toContain("data:image/jpeg;base64,/9j/test");
-    expect(html).toContain('data-profession="astronaut"');
+    expect(html).toContain('data-art-state="approved-outfit"');
+    expect(html).toContain('data-approved-nico-outfit="true"');
+    expect(html).toContain("600% 200%");
+    expect(html).not.toContain("nico-costume__fallback-face");
+  });
+
+  it("uses the approved full-body Nico art for professions without a dedicated sheet crop", () => {
+    const html = renderToStaticMarkup(
+      <NicoCostumeFigure
+        artSource="data:image/jpeg;base64,/9j/character"
+        outfitArtSource="data:image/jpeg;base64,/9j/outfits"
+        profession="gardener"
+        alt="Gardener Nico"
+      />,
+    );
+
+    expect(html).toContain('data-art-state="approved-character"');
+    expect(html).toContain('data-approved-nico-art="true"');
+    expect(html).toContain("200% 100%");
   });
 });
