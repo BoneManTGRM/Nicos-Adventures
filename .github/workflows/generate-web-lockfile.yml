@@ -1,0 +1,35 @@
+name: Generate web lockfile
+
+on:
+  push:
+    branches:
+      - feature/nico-clubhouse-showtime-mvp
+
+permissions:
+  contents: write
+
+jobs:
+  lockfile:
+    if: ${{ !contains(github.event.head_commit.message, '[lockfile generated]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/nico-clubhouse-showtime-mvp
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+      - name: Generate exact package lock
+        working-directory: web
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit lockfile
+        run: |
+          if git diff --quiet -- web/package-lock.json; then
+            echo "Lockfile is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/package-lock.json
+          git commit -m "Generate exact web package lock [lockfile generated]"
+          git push origin HEAD:feature/nico-clubhouse-showtime-mvp
