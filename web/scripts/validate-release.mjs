@@ -12,6 +12,7 @@ const requiredFiles = [
   "public/assets/nico/nico-guide-art.b64",
   "public/sw.js",
   "src/FullApp.tsx",
+  "src/FullAppSync.tsx",
   "src/FeatureArt.tsx",
   "src/NicoGuide.tsx",
   "src/nico-guide.css",
@@ -52,6 +53,7 @@ const appPos = index.indexOf('/src/main.tsx');
 if (directorPos < 0 || appPos < 0 || directorPos > appPos) throw new Error("Wildlife director must load before React");
 
 const main = fs.readFileSync(path.join(root, "src/main.tsx"), "utf8");
+if (!main.includes("<FullAppSync />")) throw new Error("The synchronized FullApp boundary is not mounted");
 if (!main.includes("<NicoGuide />")) throw new Error("Nico guide is not mounted in the website shell");
 if (!main.includes("<NicoWorldExperience />")) throw new Error("Nico Clubhouse is not mounted in the website shell");
 
@@ -68,10 +70,13 @@ if (!recovery.includes('dataset.assetRecovery === "ignore"')) throw new Error("A
 
 const types = fs.readFileSync(path.join(root, "src/types.ts"), "utf8");
 const storage = fs.readFileSync(path.join(root, "src/storage.ts"), "utf8");
+const syncBoundary = fs.readFileSync(path.join(root, "src/FullAppSync.tsx"), "utf8");
 if (!types.includes("schemaVersion: 3")) throw new Error("Web profile type is not on schema v3");
 if (!types.includes("movieProjects: MovieProject[]")) throw new Error("Movie project metadata is missing from the profile schema");
 if (!storage.includes('nicos-world-local-save-v3')) throw new Error("Storage migration is not using the v3 key");
 if (!storage.includes('"nicos-world-local-save-v2"')) throw new Error("The v2 migration path is missing");
+if (!storage.includes("PROFILE_EVENT")) throw new Error("Same-tab profile synchronization events are missing");
+if (!syncBoundary.includes("PROFILE_EVENT")) throw new Error("FullApp is not subscribed to Clubhouse profile synchronization");
 
 const showtime = fs.readFileSync(path.join(root, "src/showtime/ShowtimeStudio.tsx"), "utf8");
 const recorder = fs.readFileSync(path.join(root, "src/showtime/recordMovie.ts"), "utf8");
