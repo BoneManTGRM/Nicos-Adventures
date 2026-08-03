@@ -19,7 +19,7 @@ type Props = {
   onSave: (preferences: NicoPreferences) => void;
 };
 
-const professions = professionData as ProfessionOption[];
+export const NICO_PROFESSIONS = professionData as ProfessionOption[];
 
 const copy = {
   en: {
@@ -28,6 +28,9 @@ const copy = {
     save: "Save Nico’s outfit",
     saved: "Outfit saved",
     voice: "Let Nico read answers aloud",
+    search: "Search jobs and costumes…",
+    noResults: "No outfit matches that search.",
+    options: "local outfit options",
   },
   "es-MX": {
     title: "El armario de disfraces de Nico",
@@ -35,14 +38,27 @@ const copy = {
     save: "Guardar el traje de Nico",
     saved: "Traje guardado",
     voice: "Permitir que Nico lea respuestas en voz alta",
+    search: "Buscar trabajos y disfraces…",
+    noResults: "Ningún traje coincide con la búsqueda.",
+    options: "opciones locales de traje",
   },
 } as const;
+
+export function filterNicoProfessions(query: string, language: Language): ProfessionOption[] {
+  const normalized = query.trim().toLocaleLowerCase(language === "es-MX" ? "es-MX" : "en-US");
+  if (!normalized) return NICO_PROFESSIONS;
+  return NICO_PROFESSIONS.filter((profession) =>
+    `${profession.name[language]} ${profession.tagline[language]}`.toLocaleLowerCase(language === "es-MX" ? "es-MX" : "en-US").includes(normalized),
+  );
+}
 
 export function NicoDressUp({ language, artSource, preferences, onSave }: Props) {
   const text = copy[language];
   const [draft, setDraft] = useState<NicoPreferences>(preferences);
   const [saved, setSaved] = useState(false);
-  const selected = useMemo(() => professions.find((item) => item.id === draft.profession) ?? professions[0], [draft.profession]);
+  const [query, setQuery] = useState("");
+  const selected = useMemo(() => NICO_PROFESSIONS.find((item) => item.id === draft.profession) ?? NICO_PROFESSIONS[0], [draft.profession]);
+  const visibleProfessions = useMemo(() => filterNicoProfessions(query, language), [language, query]);
 
   useEffect(() => setDraft(preferences), [preferences]);
 
@@ -60,7 +76,7 @@ export function NicoDressUp({ language, artSource, preferences, onSave }: Props)
     <section className="nico-dress-up" aria-labelledby="nico-dress-title">
       <header className="nico-feature-heading">
         <div>
-          <small>🧰 {language === "es-MX" ? "12 opciones locales" : "12 local options"}</small>
+          <small>🧰 {NICO_PROFESSIONS.length} {text.options}</small>
           <h2 id="nico-dress-title">{text.title}</h2>
           <p>{text.intro}</p>
         </div>
@@ -83,26 +99,40 @@ export function NicoDressUp({ language, artSource, preferences, onSave }: Props)
           </div>
         </div>
 
-        <div>
-          <div className="nico-profession-grid" role="list" aria-label={text.title}>
-            {professions.map((profession) => {
-              const active = profession.id === draft.profession;
-              return (
-                <button
-                  type="button"
-                  role="listitem"
-                  aria-pressed={active}
-                  className={active ? "selected" : ""}
-                  key={profession.id}
-                  onClick={() => choose(profession)}
-                >
-                  <span>{profession.emoji}</span>
-                  <strong>{profession.name[language]}</strong>
-                  <small>{profession.tagline[language]}</small>
-                </button>
-              );
-            })}
-          </div>
+        <div className="nico-dress-controls">
+          <label className="nico-outfit-search">
+            <span className="sr-only">{text.search}</span>
+            <input
+              type="search"
+              value={query}
+              placeholder={text.search}
+              autoComplete="off"
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </label>
+
+          {visibleProfessions.length ? (
+            <div className="nico-profession-grid" role="list" aria-label={text.title}>
+              {visibleProfessions.map((profession) => {
+                const active = profession.id === draft.profession;
+                return (
+                  <button
+                    type="button"
+                    role="listitem"
+                    aria-pressed={active}
+                    className={active ? "selected" : ""}
+                    style={{ "--nico-costume-accent": profession.accent } as React.CSSProperties}
+                    key={profession.id}
+                    onClick={() => choose(profession)}
+                  >
+                    <span>{profession.emoji}</span>
+                    <strong>{profession.name[language]}</strong>
+                    <small>{profession.tagline[language]}</small>
+                  </button>
+                );
+              })}
+            </div>
+          ) : <p className="nico-outfit-empty" role="status">{text.noResults}</p>}
 
           <label className="nico-speech-toggle">
             <input
