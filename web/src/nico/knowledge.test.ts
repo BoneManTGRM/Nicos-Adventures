@@ -15,6 +15,22 @@ describe("answerNicoQuestion", () => {
     expect(answer.text).toContain("Ganas estrellas");
   });
 
+  it("explains Phase 2 jobs in both languages", () => {
+    const science = answerNicoQuestion("What does a scientist do?", "en");
+    expect(science.id).toBe("science-jobs");
+    expect(science.text).toContain("Scientists test ideas");
+
+    const sports = answerNicoQuestion("¿Qué hace un tenista?", "es-MX");
+    expect(sports.id).toBe("sports-jobs");
+    expect(sports.text).toContain("tenis");
+  });
+
+  it("reports the expanded local outfit catalog", () => {
+    const answer = answerNicoQuestion("How many outfits does Nico have?", "en");
+    expect(answer.id).toBe("nico-clothes");
+    expect(answer.text).toContain("26 local outfits");
+  });
+
   it("performs bounded arithmetic without evaluating arbitrary code", () => {
     expect(answerNicoQuestion("12 * 7", "en").text).toBe("The answer is 84.");
     expect(answerNicoQuestion("10 / 0", "en").id).toBe("math-divide-zero");
