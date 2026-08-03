@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import { answerNicoQuestion, suggestedQuestions, type NicoAnswer } from "./knowledge";
 import type { Language } from "../types";
 
