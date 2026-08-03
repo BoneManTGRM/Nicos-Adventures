@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import professionData from "../catalogs/nico-professions.json";
 import professionPhase2Extra from "../catalogs/nico-professions-phase2-extra.json";
 import type { Language, LocalizedText, NicoPreferences, NicoProfessionId } from "../types";
+import { useApprovedNicoArt } from "./approvedNicoArt";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
 
 type ProfessionOption = {
@@ -15,8 +16,8 @@ type ProfessionOption = {
 
 type Props = {
   language: Language;
-  artSource: string;
-  outfitArtSource: string;
+  artSource?: string;
+  outfitArtSource?: string;
   preferences: NicoPreferences;
   onSave: (preferences: NicoPreferences) => void;
 };
@@ -55,8 +56,11 @@ export function filterNicoProfessions(query: string, language: Language): Profes
   );
 }
 
-export function NicoDressUp({ language, artSource, outfitArtSource, preferences, onSave }: Props) {
+export function NicoDressUp({ language, artSource = "", outfitArtSource = "", preferences, onSave }: Props) {
   const text = copy[language];
+  const approvedArt = useApprovedNicoArt();
+  const characterSource = artSource || approvedArt.characterSource;
+  const outfitsSource = outfitArtSource || approvedArt.outfitSource;
   const [draft, setDraft] = useState<NicoPreferences>(preferences);
   const [saved, setSaved] = useState(false);
   const [query, setQuery] = useState("");
@@ -88,8 +92,8 @@ export function NicoDressUp({ language, artSource, outfitArtSource, preferences,
       <div className="nico-dress-layout">
         <div className="nico-dress-preview">
           <NicoCostumeFigure
-            artSource={artSource}
-            outfitArtSource={outfitArtSource}
+            artSource={characterSource}
+            outfitArtSource={outfitsSource}
             profession={draft.profession}
             accentColor={draft.accentColor}
             alt={`${selected.name[language]} Nico`}
