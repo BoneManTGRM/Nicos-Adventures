@@ -19,12 +19,19 @@ jobs:
           cache: pip
       - name: Install
         run: pip install -e '.[dev]'
+      - name: Verify generated shared catalogs
+        run: |
+          if [ -f shared/catalogs/manifest.json ]; then
+            python scripts/generate_shared_catalog_views.py --check
+          else
+            echo "Shared catalog bootstrap has not committed its outputs yet."
+          fi
       - name: Lint
         run: ruff check .
       - name: Test
         run: pytest
       - name: Compile
-        run: python -m compileall -q app.py api core activities ui
+        run: python -m compileall -q app.py api core activities ui scripts
 
   web:
     runs-on: ubuntu-latest
