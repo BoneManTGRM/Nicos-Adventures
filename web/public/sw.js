@@ -1,4 +1,4 @@
-const CACHE = "nicos-world-static-v15";
+const CACHE = "nicos-world-static-v16";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const SHELL = [
   "/",
@@ -20,6 +20,10 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
   );
   self.clients.claim();
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("fetch", (event) => {
