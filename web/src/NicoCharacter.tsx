@@ -16,9 +16,10 @@ const SHEET_WIDTH = 1122;
 const SHEET_HEIGHT = 1402;
 const SHEET_SRC = "/characters/nico/nico-approved-character-sheet.webp";
 
+const fullGuideCrop: Crop = { x: 150, y: 70, width: 470, height: 1280 };
 const crops: Record<NicoPose, Crop> = {
   avatar: { x: 210, y: 95, width: 360, height: 350 },
-  guide: { x: 150, y: 70, width: 470, height: 1280 },
+  guide: { x: 175, y: 85, width: 430, height: 650 },
   explorer: { x: 665, y: 15, width: 385, height: 455 },
   celebrate: { x: 650, y: 475, width: 420, height: 455 },
   reading: { x: 640, y: 920, width: 410, height: 465 },
@@ -31,7 +32,8 @@ export function NicoCharacter({
   decorative = false,
   style,
 }: NicoCharacterProps) {
-  const crop = crops[pose];
+  const useFullGuide = pose === "guide" && (decorative || className.includes("nico-world-guide__character"));
+  const crop = useFullGuide ? fullGuideCrop : crops[pose];
   const imageStyle: CSSProperties = {
     width: `${(SHEET_WIDTH / crop.width) * 100}%`,
     height: `${(SHEET_HEIGHT / crop.height) * 100}%`,
