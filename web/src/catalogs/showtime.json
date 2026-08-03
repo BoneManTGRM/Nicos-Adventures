@@ -1,0 +1,22 @@
+{
+  "durationOptionsMs": [4000, 6000, 8000],
+  "scenes": [
+    {"id":"star-stage","emoji":"🌟","name":{"en":"Star Stage","es-MX":"Escenario de estrellas"},"background":"linear-gradient(160deg,#020617,#1d4ed8 55%,#7c3aed)"},
+    {"id":"robot-home","emoji":"🏠","name":{"en":"Robot Home","es-MX":"Casa Robot"},"background":"linear-gradient(180deg,#0c4a6e 0 42%,#1e3a8a 43% 72%,#5b3a22 73%)"},
+    {"id":"jungle","emoji":"🌿","name":{"en":"Animal Forest","es-MX":"Bosque animal"},"background":"linear-gradient(180deg,#38bdf8 0 34%,#15803d 35% 72%,#713f12 73%)"},
+    {"id":"space","emoji":"🚀","name":{"en":"Deep Space","es-MX":"Espacio profundo"},"background":"radial-gradient(circle at 25% 20%,#e0f2fe 0 2px,transparent 3px),radial-gradient(circle at 72% 34%,#fef3c7 0 2px,transparent 3px),linear-gradient(145deg,#020617,#312e81)"},
+    {"id":"dinosaur-valley","emoji":"🦖","name":{"en":"Dinosaur Valley","es-MX":"Valle de dinosaurios"},"background":"linear-gradient(180deg,#7dd3fc 0 36%,#65a30d 37% 70%,#854d0e 71%)"},
+    {"id":"castle","emoji":"🏰","name":{"en":"Story Castle","es-MX":"Castillo de cuentos"},"background":"linear-gradient(160deg,#312e81,#7c2d12 60%,#f59e0b)"}
+  ],
+  "poses": [
+    {"id":"idle","emoji":"🙂","name":{"en":"Ready","es-MX":"Listo"},"durationMs":1000,"kinds":["nico","robot","monster","pet"]},
+    {"id":"wave","emoji":"👋","name":{"en":"Wave","es-MX":"Saludar"},"durationMs":1200,"kinds":["nico","robot","pet"]},
+    {"id":"celebrate","emoji":"🎉","name":{"en":"Celebrate","es-MX":"Celebrar"},"durationMs":1400,"kinds":["nico","robot","monster","pet"]},
+    {"id":"launch","emoji":"🚀","name":{"en":"Launch","es-MX":"Despegar"},"durationMs":1500,"kinds":["robot","pet"]},
+    {"id":"dance","emoji":"💃","name":{"en":"Dance","es-MX":"Bailar"},"durationMs":1500,"kinds":["nico","robot","monster","pet"]},
+    {"id":"spin","emoji":"🔄","name":{"en":"Spin","es-MX":"Girar"},"durationMs":1200,"kinds":["robot","monster","pet"]},
+    {"id":"bounce","emoji":"⬆️","name":{"en":"Bounce","es-MX":"Rebotar"},"durationMs":1100,"kinds":["monster","pet"]},
+    {"id":"roar","emoji":"🗯️","name":{"en":"Roar","es-MX":"Rugir"},"durationMs":1300,"kinds":["monster"]},
+    {"id":"sleep","emoji":"😴","name":{"en":"Sleep","es-MX":"Dormir"},"durationMs":1500,"kinds":["monster","pet"]}
+  ]
+}
