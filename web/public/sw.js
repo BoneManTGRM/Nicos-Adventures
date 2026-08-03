@@ -1,4 +1,4 @@
-const CACHE = "nicos-world-static-v12";
+const CACHE = "nicos-world-static-v13";
 const SHELL = [
   "/",
   "/index.html",
@@ -6,7 +6,7 @@ const SHELL = [
   "/wildlife-director.js",
   "/asset-recovery.js",
   "/dinosaur-art.js",
-  "/assets/nico/nico-guide-art.svg",
+  "/assets/nico/nico-guide-art.b64",
 ];
 
 self.addEventListener("install", (event) => {
