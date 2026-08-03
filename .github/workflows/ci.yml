@@ -69,3 +69,5 @@ jobs:
         run: npm run build
       - name: Verify both output paths
         run: test -f dist/index.html && test -f web/dist/index.html
+      - name: Validate Wrangler static deployment package
+        run: npx --yes wrangler@4.114.0 deploy --dry-run --outdir .wrangler-dry-run
