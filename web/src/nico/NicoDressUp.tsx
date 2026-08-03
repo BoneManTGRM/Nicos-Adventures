@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import professionData from "../catalogs/nico-professions.json";
+import professionPhase2Extra from "../catalogs/nico-professions-phase2-extra.json";
 import type { Language, LocalizedText, NicoPreferences, NicoProfessionId } from "../types";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
 
@@ -19,7 +20,7 @@ type Props = {
   onSave: (preferences: NicoPreferences) => void;
 };
 
-export const NICO_PROFESSIONS = professionData as ProfessionOption[];
+export const NICO_PROFESSIONS = [...professionData, ...professionPhase2Extra] as ProfessionOption[];
 
 const copy = {
   en: {
