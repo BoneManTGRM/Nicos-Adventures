@@ -16,8 +16,11 @@ const requiredFiles = [
   "src/FullAppSync.tsx",
   "src/FeatureArt.tsx",
   "src/NicoGuide.tsx",
+  "src/ServiceWorkerRefresh.tsx",
   "src/nico-guide.css",
   "src/nico/NicoWorldExperience.tsx",
+  "src/nico/NicoRestoreLauncher.tsx",
+  "src/nico/nico-restore-launcher.css",
   "src/nico/AskNico.tsx",
   "src/nico/NicoDressUp.tsx",
   "src/nico/NicoCostumeFigure.tsx",
@@ -59,12 +62,19 @@ const main = fs.readFileSync(path.join(root, "src/main.tsx"), "utf8");
 if (!main.includes("<FullAppSync />")) throw new Error("The synchronized FullApp boundary is not mounted");
 if (!main.includes("<NicoGuide />")) throw new Error("Nico guide is not mounted in the website shell");
 if (!main.includes("<NicoWorldExperience />")) throw new Error("Nico Clubhouse is not mounted in the website shell");
+if (!main.includes("<NicoRestoreLauncher />")) throw new Error("Permanent Nico Clubhouse restoration launcher is not mounted");
+if (!main.includes("<ServiceWorkerRefresh />")) throw new Error("Service worker restoration refresh is not mounted");
 if (!main.includes("nico-phase2.css")) throw new Error("Phase 2 Nico art styles are not loaded");
 
 const nicoGuide = fs.readFileSync(path.join(root, "src/NicoGuide.tsx"), "utf8");
 if (!nicoGuide.includes("data:image/jpeg;base64")) throw new Error("Nico guide is not decoding the Safari-safe JPEG");
 if (!nicoGuide.includes('data-asset-recovery="ignore"')) throw new Error("Nico artwork is not protected from wildlife fallback replacement");
 if (!nicoGuide.includes("nicos-world-open-nico")) throw new Error("Nico guide is not connected to the Clubhouse");
+
+const restoreLauncher = fs.readFileSync(path.join(root, "src/nico/NicoRestoreLauncher.tsx"), "utf8");
+const swRefresh = fs.readFileSync(path.join(root, "src/ServiceWorkerRefresh.tsx"), "utf8");
+if (!restoreLauncher.includes("#nico/ask") || !restoreLauncher.includes("NicoCostumeFigure")) throw new Error("Permanent Clubhouse launcher is incomplete");
+if (!swRefresh.includes('updateViaCache: "none"') || !swRefresh.includes("v16")) throw new Error("Stale service worker refresh safeguard is incomplete");
 
 const nicoPayload = fs.readFileSync(path.join(root, "public/assets/nico/nico-guide-art.b64"), "utf8").trim();
 if (!nicoPayload.startsWith("/9j/") || nicoPayload.length < 10000) throw new Error("Nico's approved JPEG payload is missing or invalid");
@@ -118,9 +128,9 @@ if (packageLock.lockfileVersion !== 3) throw new Error("Web package lock must us
 if (!packageJson.scripts?.test?.includes("vitest")) throw new Error("Vitest test script is missing");
 
 const sw = fs.readFileSync(path.join(root, "public/sw.js"), "utf8");
-if (!sw.includes("nicos-world-static-v15")) throw new Error("Release cache version is not v15");
+if (!sw.includes("nicos-world-static-v16")) throw new Error("Release cache version is not v16");
 if (!sw.includes('/wildlife-director.js')) throw new Error("Wildlife director is not in the offline shell");
 if (!sw.includes("nico-fullbody.b64") || !sw.includes("NICO_ART")) throw new Error("Service worker Nico art alias is missing");
 if (!sw.includes('/assets/nico/nico-guide-art.b64')) throw new Error("Nico JPEG payload is not in the offline shell");
 
-console.log(`Release validation passed for ${labels.length} wildlife species, ${professions.length} Nico outfits, Ask Nico, Clubhouse, and Showtime Studio.`);
+console.log(`Release validation passed for ${labels.length} wildlife species, ${professions.length} Nico outfits, Ask Nico, Clubhouse restoration, and Showtime Studio.`);
