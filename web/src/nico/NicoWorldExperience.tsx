@@ -1,108 +1,72 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  loadLocalStore,
-  normalizeStore,
-  saveLocalStore,
-  touchProfile,
-} from "../storage";
-import type {
-  LocalProfile,
-  LocalSaveStore,
-  MovieProject,
-  NicoPreferences,
-} from "../types";
+import { useActiveProfileStore } from "../hooks/useActiveProfileStore";
+import { useDialogFocusTrap } from "../hooks/useDialogFocusTrap";
+import type { MovieProject, NicoPreferences } from "../types";
 import { NicoMovieLibrary } from "../showtime/NicoMovieLibrary";
 import { ShowtimeStudio } from "../showtime/ShowtimeStudio";
 import { AskNico } from "./AskNico";
 import { NicoDressUp } from "./NicoDressUp";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
-import { useLocalBase64Asset } from "./useLocalBase64Asset";
+import {
+  isNicoHubHistoryState,
+  makeNicoHubHistoryState,
+  nicoHubHash,
+  parseNicoHubHash,
+  type NicoHubTab,
+} from "./nicoHubRoute";
+import { useNicoDragArt } from "./nicoDragArt";
 import "./nico-world-experience.css";
 import "../showtime/showtime.css";
 
-export type NicoHubTab = "ask" | "dress" | "showtime" | "movies";
-
-type PortalTargets = {
-  worldMap: Element | null;
-  robotHome: Element | null;
-  memoryMain: Element | null;
-};
+export type { NicoHubTab } from "./nicoHubRoute";
 
 type OpenNicoDetail = {
   tab?: NicoHubTab;
   projectId?: string;
 };
 
-const emptyTargets: PortalTargets = { worldMap: null, robotHome: null, memoryMain: null };
-const FULL_BODY_ASSET = "/assets/nico/nico-fullbody.b64?v=1";
-const PROFILE_EVENT = "nicos-world-profile-updated";
 const OPEN_EVENT = "nicos-world-open-nico";
 
 const copy = {
   en: {
     clubhouse: "Nico’s Clubhouse",
-    clubhouseDescription: "Ask Nico, choose an outfit, and make little movies.",
     ask: "Ask Nico",
     dress: "Dress Up",
     showtime: "Showtime",
     movies: "Movies",
     close: "Close Nico’s Clubhouse",
-    robotHome: "Visit Nico’s Clubhouse",
     memoryTitle: "Showtime Movies",
-    memoryIntro: "Recreate saved projects to make another private local download.",
+    memoryIntro: "Recreate a saved project to make another private local download.",
     noMovies: "No movie projects yet.",
     openShowtime: "Open Showtime Studio",
     firstBadge: "First Movie Director badge earned!",
-    deleteConfirm: "Delete this movie project? The downloaded video file, if any, is not stored in the app.",
+    deleteConfirm: "Delete this movie project? Downloaded video files are not stored in the app.",
+    artWarning: "Nico’s artwork could not load. The activities remain available with a simple fallback.",
   },
   "es-MX": {
     clubhouse: "Casa Club de Nico",
-    clubhouseDescription: "Pregúntale a Nico, elige un traje y crea pequeñas películas.",
     ask: "Pregúntale",
     dress: "Disfraces",
     showtime: "Showtime",
     movies: "Películas",
     close: "Cerrar la Casa Club de Nico",
-    robotHome: "Visitar la Casa Club de Nico",
     memoryTitle: "Películas Showtime",
-    memoryIntro: "Recrea proyectos guardados para hacer otra descarga privada y local.",
+    memoryIntro: "Recrea un proyecto guardado para hacer otra descarga privada y local.",
     noMovies: "Todavía no hay proyectos de película.",
     openShowtime: "Abrir Estudio Showtime",
     firstBadge: "¡Ganaste la insignia de Director de Primera Película!",
-    deleteConfirm: "¿Eliminar este proyecto? El archivo de video descargado, si existe, no está guardado en la app.",
+    deleteConfirm: "¿Eliminar este proyecto? Los videos descargados no se guardan en la aplicación.",
+    artWarning: "El arte de Nico no pudo cargarse. Las actividades siguen disponibles con una imagen sencilla.",
   },
 } as const;
-
-function currentTargets(): PortalTargets {
-  const heading = document.querySelector<HTMLElement>(".fw-page-header h1")?.textContent?.trim() ?? "";
-  const worldMap = heading === "World Map" || heading === "Mapa del mundo"
-    ? document.querySelector(".fw-destination-grid")
-    : null;
-  const robotHome = heading === "Robot Home" || heading === "Casa Robot"
-    ? document.querySelector(".fw-room")
-    : null;
-  const memoryMain = heading === "Memory Museum" || heading === "Museo de recuerdos"
-    ? document.querySelector(".fw-app main")
-    : null;
-  return { worldMap, robotHome, memoryMain };
-}
-
-function targetsEqual(left: PortalTargets, right: PortalTargets) {
-  return left.worldMap === right.worldMap && left.robotHome === right.robotHome && left.memoryMain === right.memoryMain;
-}
-
-function parseHash(): NicoHubTab | null {
-  const match = window.location.hash.match(/^#nico\/(ask|dress|showtime|movies)$/);
-  return match ? match[1] as NicoHubTab : null;
-}
 
 function MemoryMovieShelf({
   profile,
   onOpenProject,
   onOpenStudio,
 }: {
-  profile: LocalProfile;
+  profile: ReturnType<typeof useActiveProfileStore>["profile"];
   onOpenProject: (project: MovieProject) => void;
   onOpenStudio: () => void;
 }) {
@@ -134,118 +98,101 @@ function MemoryMovieShelf({
 }
 
 export default function NicoWorldExperience() {
-  const [store, setStore] = useState<LocalSaveStore>(() => loadLocalStore());
-  const [targets, setTargets] = useState<PortalTargets>(emptyTargets);
-  const [open, setOpen] = useState(() => parseHash() !== null);
-  const [tab, setTab] = useState<NicoHubTab>(() => parseHash() ?? "ask");
+  const { profile, commitProfile } = useActiveProfileStore();
+  const art = useNicoDragArt();
+  const initialTab = parseNicoHubHash(window.location.hash);
+  const [open, setOpen] = useState(initialTab !== null);
+  const [tab, setTab] = useState<NicoHubTab>(initialTab ?? "ask");
   const [editingProject, setEditingProject] = useState<MovieProject | null>(null);
   const [notice, setNotice] = useState("");
+  const [memoryTarget, setMemoryTarget] = useState<Element | null>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-  const art = useLocalBase64Asset(FULL_BODY_ASSET, "image/jpeg", "/9j/");
-  const profile = useMemo(
-    () => store.profiles.find((item) => item.id === store.activeProfileId) ?? store.profiles[0],
-    [store],
-  );
   const text = copy[profile.language];
 
-  useEffect(() => {
-    let frame = 0;
-    const syncTargets = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const next = currentTargets();
-        setTargets((current) => targetsEqual(current, next) ? current : next);
-      });
-    };
-    syncTargets();
-    const observer = new MutationObserver(syncTargets);
-    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
-    return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-    };
+  const openHub = useCallback((nextTab: NicoHubTab, project: MovieProject | null = null) => {
+    setEditingProject(project);
+    setTab(nextTab);
+    setOpen(true);
+    const nextHash = nicoHubHash(nextTab);
+    const nextState = makeNicoHubHistoryState(window.history.state);
+    if (parseNicoHubHash(window.location.hash)) {
+      window.history.replaceState(nextState, "", nextHash);
+    } else {
+      window.history.pushState(nextState, "", nextHash);
+    }
   }, []);
 
-  useEffect(() => {
-    const syncStore = () => setStore(loadLocalStore());
-    window.addEventListener("storage", syncStore);
-    window.addEventListener(PROFILE_EVENT, syncStore);
-    return () => {
-      window.removeEventListener("storage", syncStore);
-      window.removeEventListener(PROFILE_EVENT, syncStore);
-    };
+  const closeHub = useCallback(() => {
+    setOpen(false);
+    setNotice("");
+    setEditingProject(null);
+    if (!parseNicoHubHash(window.location.hash)) return;
+    if (isNicoHubHistoryState(window.history.state)) {
+      window.history.back();
+    } else {
+      window.history.replaceState(window.history.state, "", `${window.location.pathname}${window.location.search}`);
+    }
   }, []);
 
+  useDialogFocusTrap({
+    open,
+    dialogRef,
+    initialFocusRef: closeButtonRef,
+    onClose: closeHub,
+  });
+
   useEffect(() => {
-    const onHashChange = () => {
-      const next = parseHash();
+    const syncFromLocation = () => {
+      const next = parseNicoHubHash(window.location.hash);
       if (next) {
         setTab(next);
         setOpen(true);
       } else {
         setOpen(false);
+        setEditingProject(null);
+        setNotice("");
       }
     };
+    window.addEventListener("hashchange", syncFromLocation);
+    window.addEventListener("popstate", syncFromLocation);
+    return () => {
+      window.removeEventListener("hashchange", syncFromLocation);
+      window.removeEventListener("popstate", syncFromLocation);
+    };
+  }, []);
+
+  useEffect(() => {
     const onOpen = (event: Event) => {
       const detail = (event as CustomEvent<OpenNicoDetail>).detail;
       const nextTab = detail?.tab ?? "ask";
-      const project = detail?.projectId ? profile.movieProjects.find((item) => item.id === detail.projectId) ?? null : null;
-      setEditingProject(project);
-      openHub(nextTab);
+      const project = detail?.projectId
+        ? profile.movieProjects.find((item) => item.id === detail.projectId) ?? null
+        : null;
+      openHub(nextTab, project);
     };
-    window.addEventListener("hashchange", onHashChange);
     window.addEventListener(OPEN_EVENT, onOpen);
-    return () => {
-      window.removeEventListener("hashchange", onHashChange);
-      window.removeEventListener(OPEN_EVENT, onOpen);
-    };
-  }, [profile.movieProjects]);
+    return () => window.removeEventListener(OPEN_EVENT, onOpen);
+  }, [openHub, profile.movieProjects]);
 
   useEffect(() => {
-    if (!open) return;
-    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const timer = window.setTimeout(() => closeButtonRef.current?.focus(), 0);
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeHub();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
-      previousFocusRef.current?.focus();
-    };
-  }, [open]);
-
-  const commitProfile = (mutate: (current: LocalProfile) => LocalProfile) => {
-    setStore((currentStore) => {
-      const profiles = currentStore.profiles.map((item) => item.id === currentStore.activeProfileId ? touchProfile(mutate(item)) : item);
-      const next = normalizeStore({ ...currentStore, profiles });
-      saveLocalStore(next);
-      queueMicrotask(() => window.dispatchEvent(new Event(PROFILE_EVENT)));
-      return next;
-    });
-  };
-
-  const openHub = (nextTab: NicoHubTab, project: MovieProject | null = null) => {
-    setEditingProject(project);
-    setTab(nextTab);
-    setOpen(true);
-    const nextHash = `#nico/${nextTab}`;
-    if (window.location.hash !== nextHash) window.history.pushState(null, "", nextHash);
-  };
-
-  const closeHub = () => {
-    setOpen(false);
-    setNotice("");
-    setEditingProject(null);
-    if (window.location.hash.startsWith("#nico/")) {
-      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    if (profile.selectedSection !== "memory-book") {
+      setMemoryTarget(null);
+      return;
     }
-  };
+    let frame = 0;
+    const syncTarget = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => setMemoryTarget(document.querySelector(".fw-app main")));
+    };
+    syncTarget();
+    const observer = new MutationObserver(syncTarget);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [profile.selectedSection]);
 
   const saveNicoPreferences = (preferences: NicoPreferences) => {
     commitProfile((current) => ({ ...current, nico: preferences }));
@@ -282,55 +229,55 @@ export default function NicoWorldExperience() {
 
   const deleteProject = (projectId: string) => {
     if (!window.confirm(text.deleteConfirm)) return;
-    commitProfile((current) => ({ ...current, movieProjects: current.movieProjects.filter((item) => item.id !== projectId) }));
+    commitProfile((current) => ({
+      ...current,
+      movieProjects: current.movieProjects.filter((item) => item.id !== projectId),
+    }));
     if (editingProject?.id === projectId) setEditingProject(null);
   };
 
-  const portalNodes: ReactNode[] = [];
-  if (targets.worldMap) {
-    portalNodes.push(createPortal(
-      <button type="button" className="fw-destination nico-world-destination" onClick={() => openHub("ask")}>
-        <span>🧒</span>
-        <strong>{text.clubhouse}</strong>
-        <small>{text.clubhouseDescription}</small>
-      </button>,
-      targets.worldMap,
-      "nico-world-destination",
-    ));
-  }
-  if (targets.robotHome) {
-    portalNodes.push(createPortal(
-      <button type="button" className="nico-room-entry" onClick={() => openHub("dress")}>
-        <span>🧒</span><strong>{text.robotHome}</strong>
-      </button>,
-      targets.robotHome,
-      "nico-room-entry",
-    ));
-  }
-  if (targets.memoryMain) {
-    portalNodes.push(createPortal(
-      <MemoryMovieShelf
-        profile={profile}
-        onOpenStudio={() => openHub("showtime")}
-        onOpenProject={(project) => openHub("showtime", project)}
-      />,
-      targets.memoryMain,
-      "nico-memory-shelf",
-    ));
-  }
-
   return (
     <>
-      {portalNodes}
+      {memoryTarget && createPortal(
+        <MemoryMovieShelf
+          profile={profile}
+          onOpenStudio={() => openHub("showtime")}
+          onOpenProject={(project) => openHub("showtime", project)}
+        />,
+        memoryTarget,
+        "nico-memory-shelf",
+      )}
+
       {open && createPortal(
-        <div className="nico-hub-backdrop" role="presentation" onMouseDown={(event) => {
-          if (event.target === event.currentTarget) closeHub();
-        }}>
-          <section className="nico-hub" role="dialog" aria-modal="true" aria-labelledby="nico-hub-title">
+        <div
+          className="nico-hub-backdrop"
+          role="presentation"
+          onPointerDown={(event) => {
+            if (event.target === event.currentTarget) closeHub();
+          }}
+        >
+          <section
+            ref={dialogRef}
+            className="nico-hub"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="nico-hub-title"
+            tabIndex={-1}
+          >
             <header className="nico-hub__header">
               <div className="nico-hub__brand">
-                <NicoCostumeFigure artSource={art.source} profession={profile.nico.profession} accentColor={profile.nico.accentColor} compact alt="Nico" />
-                <div><small>{profile.language === "es-MX" ? "Privado · Local · Bilingüe" : "Private · Local · Bilingual"}</small><h1 id="nico-hub-title">{text.clubhouse}</h1></div>
+                <NicoCostumeFigure
+                  baseArtSource={art.baseSource}
+                  dragOutfitSource={art.outfitSource}
+                  profession={profile.nico.profession}
+                  accentColor={profile.nico.accentColor}
+                  compact
+                  alt="Nico"
+                />
+                <div>
+                  <small>{profile.language === "es-MX" ? "Privado · Local · Bilingüe" : "Private · Local · Bilingual"}</small>
+                  <h1 id="nico-hub-title">{text.clubhouse}</h1>
+                </div>
               </div>
               <button ref={closeButtonRef} type="button" className="nico-hub__close" onClick={closeHub} aria-label={text.close}>×</button>
             </header>
@@ -355,15 +302,34 @@ export default function NicoWorldExperience() {
             </nav>
 
             {notice && <p className="nico-hub__notice" role="status">🏆 {notice}</p>}
-            {art.error && <p className="nico-hub__warning" role="status">{profile.language === "es-MX" ? "El arte de Nico no pudo cargarse, pero las funciones siguen disponibles." : "Nico’s artwork could not load, but the features remain available."}</p>}
+            {art.error && <p className="nico-hub__warning" role="status">{text.artWarning}</p>}
 
             <div className="nico-hub__content">
-              {tab === "ask" && <AskNico language={profile.language} speechEnabled={profile.nico.speechEnabled} />}
-              {tab === "dress" && <NicoDressUp language={profile.language} artSource={art.source} preferences={profile.nico} onSave={saveNicoPreferences} />}
+              {tab === "ask" && (
+                <AskNico
+                  language={profile.language}
+                  speechEnabled={profile.nico.speechEnabled}
+                  aboutSource={art.aboutSource}
+                  baseArtSource={art.baseSource}
+                  outfitArtSource={art.outfitSource}
+                  profession={profile.nico.profession}
+                  accentColor={profile.nico.accentColor}
+                />
+              )}
+              {tab === "dress" && (
+                <NicoDressUp
+                  language={profile.language}
+                  baseArtSource={art.baseSource}
+                  dragOutfitSource={art.outfitSource}
+                  preferences={profile.nico}
+                  onSave={saveNicoPreferences}
+                />
+              )}
               {tab === "showtime" && (
                 <ShowtimeStudio
                   profile={profile}
-                  nicoArtSource={art.source}
+                  nicoBaseSource={art.baseSource}
+                  nicoOutfitSource={art.outfitSource}
                   initialProject={editingProject}
                   onProjectSaved={saveMovieProject}
                   onProjectDownloaded={markDownloaded}
