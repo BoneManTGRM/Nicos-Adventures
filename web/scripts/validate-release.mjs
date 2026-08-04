@@ -19,6 +19,9 @@ const requiredFiles = [
   "public/assets/nico/approved/outfits.part3.b64",
   "public/assets/nico/approved/outfits.part4.b64",
   "public/assets/nico/approved/outfits.part5.b64",
+  "public/assets/nico/drag/nico-base.webp.b64",
+  "public/assets/nico/drag/outfits.webp.b64",
+  "public/assets/nico/drag/about.webp.b64",
   "public/sw.js",
   "src/FullApp.tsx",
   "src/FullAppSync.tsx",
@@ -28,6 +31,10 @@ const requiredFiles = [
   "src/nico-guide.css",
   "src/nico/approvedNicoArt.tsx",
   "src/nico/approved-nico-art.css",
+  "src/nico/nicoDragArt.tsx",
+  "src/nico/nico-drag-studio.css",
+  "src/nico/nico-about.css",
+  "src/nico/NicoPortalArt.tsx",
   "src/nico/NicoWorldExperience.tsx",
   "src/nico/AskNico.tsx",
   "src/nico/NicoDressUp.tsx",
@@ -70,18 +77,30 @@ const main = fs.readFileSync(path.join(root, "src/main.tsx"), "utf8");
 if (!main.includes("<FullAppSync />")) throw new Error("The synchronized FullApp boundary is not mounted");
 if (!main.includes("<NicoGuide />")) throw new Error("The single Nico guide launcher is not mounted");
 if (!main.includes("<NicoWorldExperience />")) throw new Error("Nico Clubhouse is not mounted");
+if (!main.includes("<NicoPortalArt />")) throw new Error("World Map and Robot Home are not using the synchronized Nico character");
 if (!main.includes("<ServiceWorkerRefresh />")) throw new Error("Service worker refresh is not mounted");
 if (main.includes("NicoRestoreLauncher")) throw new Error("The duplicate Nico Clubhouse launcher must not be mounted or imported");
-if (!main.includes("approved-nico-art.css")) throw new Error("Approved Nico art styles are not loaded");
+if (!main.includes("approved-nico-art.css") || !main.includes("nico-drag-studio.css") || !main.includes("nico-about.css")) {
+  throw new Error("Nico art styles are not loaded");
+}
 
 const guide = fs.readFileSync(path.join(root, "src/NicoGuide.tsx"), "utf8");
 const approvedArt = fs.readFileSync(path.join(root, "src/nico/approvedNicoArt.tsx"), "utf8");
+const dragArt = fs.readFileSync(path.join(root, "src/nico/nicoDragArt.tsx"), "utf8");
 const costume = fs.readFileSync(path.join(root, "src/nico/NicoCostumeFigure.tsx"), "utf8");
 const dressUp = fs.readFileSync(path.join(root, "src/nico/NicoDressUp.tsx"), "utf8");
-if (!guide.includes("ApprovedNicoCharacter") || !guide.includes('pose="guide"')) throw new Error("Nico guide does not use the approved artwork crop");
-if (!approvedArt.includes("APPROVED_OUTFIT_INDEX") || !approvedArt.includes("backgroundSize: \"600% 200%\"")) throw new Error("Approved Nico outfit sprite mapping is incomplete");
-if (!costume.includes("data-approved-nico-outfit") || !costume.includes("data-approved-nico-art")) throw new Error("Dress Up is not rendering approved Nico artwork");
-if (!dressUp.includes("useApprovedNicoArt") || !dressUp.includes("outfitArtSource")) throw new Error("Dress Up does not load the approved outfit sheet");
+const portalArt = fs.readFileSync(path.join(root, "src/nico/NicoPortalArt.tsx"), "utf8");
+if (!guide.includes("NicoCostumeFigure") || !guide.includes("PROFILE_EVENT")) throw new Error("Nico guide is not using the synchronized composed character");
+if (!approvedArt.includes("APPROVED_OUTFIT_INDEX") || !approvedArt.includes("backgroundSize: \"600% 200%\"")) throw new Error("Legacy approved Nico art fallback is incomplete");
+if (!dragArt.includes("NICO_OUTFIT_ALIASES") || !dragArt.includes('backgroundSize: "400% 300%"') || !dragArt.includes("ABOUT_ART_PATH")) {
+  throw new Error("Draggable Nico art mapping is incomplete");
+}
+if (!costume.includes("data-composed-nico") || !costume.includes('data-art-state={artState}')) throw new Error("Nico is not rendered from one body plus an outfit layer");
+if (!dressUp.includes("onPointerDown") || !dressUp.includes("onPointerMove") || !dressUp.includes("data-nico-drop-zone")) throw new Error("Touch drag-and-drop outfit behavior is incomplete");
+if (!dressUp.includes("applyNicoProfession") || !dressUp.includes("useNicoDragArt")) throw new Error("Nico outfit persistence or local art loading is incomplete");
+if (!portalArt.includes("nico-world-destination") || !portalArt.includes("nico-room-entry") || !portalArt.includes("PROFILE_EVENT")) {
+  throw new Error("Nico world entry-point synchronization is incomplete");
+}
 
 const characterPayload = [1, 2, 3]
   .map((part) => fs.readFileSync(path.join(root, `public/assets/nico/approved/character.part${part}.b64`), "utf8").trim())
@@ -89,8 +108,14 @@ const characterPayload = [1, 2, 3]
 const outfitPayload = [1, 2, 3, 4, 5]
   .map((part) => fs.readFileSync(path.join(root, `public/assets/nico/approved/outfits.part${part}.b64`), "utf8").trim())
   .join("");
+const dragBasePayload = fs.readFileSync(path.join(root, "public/assets/nico/drag/nico-base.webp.b64"), "utf8").trim();
+const dragOutfitPayload = fs.readFileSync(path.join(root, "public/assets/nico/drag/outfits.webp.b64"), "utf8").trim();
+const aboutPayload = fs.readFileSync(path.join(root, "public/assets/nico/drag/about.webp.b64"), "utf8").trim();
 if (!characterPayload.startsWith("/9j/") || characterPayload.length < 15000) throw new Error("Approved Nico character artwork is missing or incomplete");
 if (!outfitPayload.startsWith("/9j/") || outfitPayload.length < 25000) throw new Error("Approved Nico outfit artwork is missing or incomplete");
+if (!dragBasePayload.startsWith("UklG") || dragBasePayload.length < 10000) throw new Error("Canonical Nico body artwork is missing or incomplete");
+if (!dragOutfitPayload.startsWith("UklG") || dragOutfitPayload.length < 10000) throw new Error("Draggable Nico outfit sprite is missing or incomplete");
+if (!aboutPayload.startsWith("UklG") || aboutPayload.length < 10000) throw new Error("Nico About artwork is missing or incomplete");
 
 const recovery = fs.readFileSync(path.join(root, "public/asset-recovery.js"), "utf8");
 if (!recovery.includes('dataset.assetRecovery === "ignore"')) throw new Error("Asset recovery does not exempt protected artwork");
@@ -109,6 +134,11 @@ const professions = JSON.parse(fs.readFileSync(path.join(root, "src/catalogs/nic
 if (!Array.isArray(professions) || professions.length < 26) throw new Error("Phase 2 must provide at least 26 Nico outfits");
 for (const required of ["gardener", "teacher", "dentist", "police-officer", "soccer-player", "tennis-player", "detective", "librarian"]) {
   if (!professions.some((item) => item.id === required)) throw new Error(`Missing Nico outfit: ${required}`);
+}
+
+const askNico = fs.readFileSync(path.join(root, "src/nico/AskNico.tsx"), "utf8");
+if (!askNico.includes("nico-ask-hero__art") || !askNico.includes("aboutSource") || !askNico.includes("NicoCostumeFigure")) {
+  throw new Error("Ask Nico is not using the new character artwork with a composed fallback");
 }
 
 const showtime = fs.readFileSync(path.join(root, "src/showtime/ShowtimeStudio.tsx"), "utf8");
@@ -130,9 +160,13 @@ if (!packageJson.scripts?.test?.includes("vitest")) throw new Error("Vitest test
 
 const sw = fs.readFileSync(path.join(root, "public/sw.js"), "utf8");
 const swRefresh = fs.readFileSync(path.join(root, "src/ServiceWorkerRefresh.tsx"), "utf8");
-if (!sw.includes("nicos-world-static-v17") || !swRefresh.includes('"v17"')) throw new Error("Approved Nico art cache version is not v17");
-for (const asset of ["character.part1.b64", "character.part2.b64", "character.part3.b64", "outfits.part1.b64", "outfits.part2.b64", "outfits.part3.b64", "outfits.part4.b64", "outfits.part5.b64"]) {
-  if (!sw.includes(asset)) throw new Error(`Approved Nico asset is not cached: ${asset}`);
+if (!sw.includes("nicos-world-static-v18") || !swRefresh.includes('"v18"')) throw new Error("Nico drag studio cache version is not v18");
+for (const asset of [
+  "character.part1.b64", "character.part2.b64", "character.part3.b64",
+  "outfits.part1.b64", "outfits.part2.b64", "outfits.part3.b64", "outfits.part4.b64", "outfits.part5.b64",
+  "nico-base.webp.b64", "outfits.webp.b64", "about.webp.b64",
+]) {
+  if (!sw.includes(asset)) throw new Error(`Nico asset is not cached: ${asset}`);
 }
 
-console.log(`Release validation passed for ${labels.length} wildlife species, ${professions.length} Nico outfits, one Nico launcher, approved Nico artwork, Ask Nico, Clubhouse, and Showtime Studio.`);
+console.log(`Release validation passed for ${labels.length} wildlife species, ${professions.length} draggable Nico outfits, one synchronized Nico character, improved Ask Nico art, Clubhouse, World Map, Robot Home, and Showtime Studio.`);

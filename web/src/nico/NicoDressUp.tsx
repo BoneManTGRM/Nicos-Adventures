@@ -1,9 +1,17 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import professionData from "../catalogs/nico-professions.json";
 import professionPhase2Extra from "../catalogs/nico-professions-phase2-extra.json";
 import type { Language, LocalizedText, NicoPreferences, NicoProfessionId } from "../types";
 import { useApprovedNicoArt } from "./approvedNicoArt";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
+import { nicoOutfitSpriteStyle, useNicoDragArt } from "./nicoDragArt";
 
 type ProfessionOption = {
   id: NicoProfessionId;
@@ -18,32 +26,47 @@ type Props = {
   language: Language;
   artSource?: string;
   outfitArtSource?: string;
+  baseArtSource?: string;
+  dragOutfitSource?: string;
   preferences: NicoPreferences;
   onSave: (preferences: NicoPreferences) => void;
+};
+
+type DragState = {
+  profession: ProfessionOption;
+  pointerId: number;
+  originX: number;
+  originY: number;
+  x: number;
+  y: number;
 };
 
 export const NICO_PROFESSIONS = [...professionData, ...professionPhase2Extra] as ProfessionOption[];
 
 const copy = {
   en: {
-    title: "Nico’s Dress-Up Closet",
-    intro: "Choose a profession or adventure costume. The choice stays in this profile and appears in Showtime Studio.",
+    title: "Nico’s Drag-and-Drop Studio",
+    intro: "Drag an outfit onto Nico, or tap one to dress him. Everything stays private on this device.",
     save: "Save Nico’s outfit",
     saved: "Outfit saved",
     voice: "Let Nico read answers aloud",
     search: "Search jobs and costumes…",
     noResults: "No outfit matches that search.",
     options: "local outfit options",
+    drop: "Drop the outfit on Nico",
+    dressed: (name: string) => `Nico is dressed as ${name}.`,
   },
   "es-MX": {
-    title: "El armario de disfraces de Nico",
-    intro: "Elige una profesión o un disfraz de aventura. La elección queda en este perfil y aparece en el Estudio Showtime.",
+    title: "Estudio de disfraces de Nico",
+    intro: "Arrastra un traje sobre Nico o tócalo para vestirlo. Todo permanece privado en este dispositivo.",
     save: "Guardar el traje de Nico",
     saved: "Traje guardado",
     voice: "Permitir que Nico lea respuestas en voz alta",
     search: "Buscar trabajos y disfraces…",
     noResults: "Ningún traje coincide con la búsqueda.",
     options: "opciones locales de traje",
+    drop: "Suelta el traje sobre Nico",
+    dressed: (name: string) => `Nico está vestido de ${name}.`,
   },
 } as const;
 
@@ -56,22 +79,89 @@ export function filterNicoProfessions(query: string, language: Language): Profes
   );
 }
 
-export function NicoDressUp({ language, artSource = "", outfitArtSource = "", preferences, onSave }: Props) {
+export function applyNicoProfession(
+  preferences: NicoPreferences,
+  profession: Pick<ProfessionOption, "id" | "accent">,
+): NicoPreferences {
+  return { ...preferences, profession: profession.id, accentColor: profession.accent };
+}
+
+export function NicoDressUp({
+  language,
+  artSource = "",
+  outfitArtSource = "",
+  baseArtSource = "",
+  dragOutfitSource = "",
+  preferences,
+  onSave,
+}: Props) {
   const text = copy[language];
   const approvedArt = useApprovedNicoArt();
+  const dragArt = useNicoDragArt();
   const characterSource = artSource || approvedArt.characterSource;
-  const outfitsSource = outfitArtSource || approvedArt.outfitSource;
+  const legacyOutfitsSource = outfitArtSource || approvedArt.outfitSource;
+  const nicoBaseSource = baseArtSource || dragArt.baseSource;
+  const nicoOutfitsSource = dragOutfitSource || dragArt.outfitSource;
   const [draft, setDraft] = useState<NicoPreferences>(preferences);
   const [saved, setSaved] = useState(false);
   const [query, setQuery] = useState("");
-  const selected = useMemo(() => NICO_PROFESSIONS.find((item) => item.id === draft.profession) ?? NICO_PROFESSIONS[0], [draft.profession]);
+  const [drag, setDrag] = useState<DragState | null>(null);
+  const [announcement, setAnnouncement] = useState("");
+  const suppressClickRef = useRef(false);
+  const movedRef = useRef(false);
+  const selected = useMemo(
+    () => NICO_PROFESSIONS.find((item) => item.id === draft.profession) ?? NICO_PROFESSIONS[0],
+    [draft.profession],
+  );
   const visibleProfessions = useMemo(() => filterNicoProfessions(query, language), [language, query]);
 
   useEffect(() => setDraft(preferences), [preferences]);
 
   const choose = (profession: ProfessionOption) => {
     setSaved(false);
-    setDraft((current) => ({ ...current, profession: profession.id, accentColor: profession.accent }));
+    setDraft((current) => applyNicoProfession(current, profession));
+    setAnnouncement(text.dressed(profession.name[language]));
+  };
+
+  const beginDrag = (event: ReactPointerEvent<HTMLButtonElement>, profession: ProfessionOption) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    movedRef.current = false;
+    suppressClickRef.current = false;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDrag({
+      profession,
+      pointerId: event.pointerId,
+      originX: event.clientX,
+      originY: event.clientY,
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
+  const moveDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    setDrag((current) => {
+      if (!current || current.pointerId !== event.pointerId) return current;
+      if (Math.hypot(event.clientX - current.originX, event.clientY - current.originY) > 8) {
+        movedRef.current = true;
+      }
+      return { ...current, x: event.clientX, y: event.clientY };
+    });
+  };
+
+  const endDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const current = drag;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const dropTarget = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-nico-drop-zone]");
+    if (movedRef.current) {
+      suppressClickRef.current = true;
+      if (dropTarget) choose(current.profession);
+    }
+    setDrag(null);
+  };
+
+  const cancelDrag = () => {
+    suppressClickRef.current = movedRef.current;
+    setDrag(null);
   };
 
   const save = () => {
@@ -80,7 +170,7 @@ export function NicoDressUp({ language, artSource = "", outfitArtSource = "", pr
   };
 
   return (
-    <section className="nico-dress-up" aria-labelledby="nico-dress-title">
+    <section className="nico-dress-up nico-drag-studio" aria-labelledby="nico-dress-title">
       <header className="nico-feature-heading">
         <div>
           <small>🧰 {NICO_PROFESSIONS.length} {text.options}</small>
@@ -89,11 +179,14 @@ export function NicoDressUp({ language, artSource = "", outfitArtSource = "", pr
         </div>
       </header>
 
-      <div className="nico-dress-layout">
-        <div className="nico-dress-preview">
+      <div className="nico-drag-layout">
+        <div className={`nico-drag-stage ${drag ? "nico-drag-stage--active" : ""}`} data-nico-drop-zone="true">
+          <span className="nico-drag-stage__hint">{drag ? text.drop : selected.name[language]}</span>
           <NicoCostumeFigure
             artSource={characterSource}
-            outfitArtSource={outfitsSource}
+            outfitArtSource={legacyOutfitsSource}
+            baseArtSource={nicoBaseSource}
+            dragOutfitSource={nicoOutfitsSource}
             profession={draft.profession}
             accentColor={draft.accentColor}
             alt={`${selected.name[language]} Nico`}
@@ -120,7 +213,7 @@ export function NicoDressUp({ language, artSource = "", outfitArtSource = "", pr
           </label>
 
           {visibleProfessions.length ? (
-            <div className="nico-profession-grid" role="list" aria-label={text.title}>
+            <div className="nico-profession-grid nico-drag-outfit-grid" role="list" aria-label={text.title}>
               {visibleProfessions.map((profession) => {
                 const active = profession.id === draft.profession;
                 return (
@@ -131,9 +224,23 @@ export function NicoDressUp({ language, artSource = "", outfitArtSource = "", pr
                     className={active ? "selected" : ""}
                     style={{ "--nico-costume-accent": profession.accent } as CSSProperties}
                     key={profession.id}
-                    onClick={() => choose(profession)}
+                    onPointerDown={(event) => beginDrag(event, profession)}
+                    onPointerMove={moveDrag}
+                    onPointerUp={endDrag}
+                    onPointerCancel={cancelDrag}
+                    onClick={() => {
+                      if (suppressClickRef.current) {
+                        suppressClickRef.current = false;
+                        return;
+                      }
+                      choose(profession);
+                    }}
                   >
-                    <span>{profession.emoji}</span>
+                    <span
+                      className="nico-outfit-thumbnail"
+                      style={nicoOutfitSpriteStyle(nicoOutfitsSource, profession.id)}
+                      aria-hidden="true"
+                    />
                     <strong>{profession.name[language]}</strong>
                     <small>{profession.tagline[language]}</small>
                   </button>
@@ -155,8 +262,20 @@ export function NicoDressUp({ language, artSource = "", outfitArtSource = "", pr
           </label>
 
           <button type="button" className="nico-primary-action" onClick={save}>💾 {saved ? text.saved : text.save}</button>
+          <p className="sr-only" aria-live="polite">{announcement}</p>
         </div>
       </div>
+
+      {drag && (
+        <div
+          className="nico-drag-ghost"
+          style={{ left: drag.x, top: drag.y } as CSSProperties}
+          aria-hidden="true"
+        >
+          <span style={nicoOutfitSpriteStyle(nicoOutfitsSource, drag.profession.id)} />
+          <strong>{drag.profession.name[language]}</strong>
+        </div>
+      )}
     </section>
   );
 }
