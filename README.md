@@ -1,161 +1,83 @@
 # Nico's World 4
 
-**Nico's World** is a private, kid-friendly adventure playground built around a custom robot
-sidekick and an expanding world of animals, monsters, art, stories, pets, dinosaurs, games,
-missions, memories, and short local movies.
+Nico's World is a private, bilingual, kid-friendly creative playground built around robots, animals, monsters, stories, art, pets, dinosaurs, games, missions, memories, Nico's Clubhouse, and short local movies.
 
-The project does not require a child account, advertising service, analytics tracker, open chat,
-or external generative-AI service.
+The project does not require child accounts, advertising, analytics, open chat, external generative AI, or cloud storage of child content.
 
-## Nico's Clubhouse and Showtime Studio
+## Product principles
 
-The web PWA includes a new Nico-centered experience reachable from the World Map, Robot Home,
-Memory Museum, and Nico's floating guide:
+- local-first profiles and creations
+- English and Mexican Spanish (`es-MX`)
+- large touch-friendly controls
+- keyboard, focus, and reduced-motion support
+- installable offline-capable PWA
+- manual JSON profile backup and restore
+- no video uploads or video blobs in localStorage
 
-- **Ask Nico:** a bounded bilingual local answer library for questions about the app, animals,
-  dinosaurs, robots, stars, privacy, backups, and simple arithmetic. Questions stay in browser
-  memory and are never sent to an AI service.
-- **Nico's Dress-Up Closet:** choose from twelve professions and adventure costumes, including
-  explorer, astronaut, doctor, scientist, engineer, veterinarian, dinosaur hero, young leader,
-  firefighter, chef, artist, and pilot.
-- **Showtime Studio:** select one to three owned characters, reuse familiar pose sequences, choose
-  a scene and caption, preview the animation, and record a four- to eight-second WebM video with
-  `canvas.captureStream()` and `MediaRecorder`.
-- **My Little Movies:** retain lightweight project instructions in the local profile and recreate a
-  video later. Full video blobs are never stored in localStorage or profile backups.
+## React PWA
 
-A grown-up confirmation is required before recording and downloading. Unsupported browsers retain
-the editor and live preview while showing a clear capability message. See
-[`docs/SHOWTIME_STUDIO.md`](docs/SHOWTIME_STUDIO.md) and
-[`docs/PROFILE_SCHEMA_V3.md`](docs/PROFILE_SCHEMA_V3.md).
+The primary portable client lives in `web/` and is deployed as static assets.
 
-## Static bilingual website
+### Nico's Clubhouse
 
-The React/Vite progressive web app under `web/` is a fully static, local-first website:
+- **Ask Nico:** a bounded bilingual answer library stored inside the app. Questions are not sent to an AI service.
+- **Drag-and-Drop Studio:** one reusable Nico character with 26 bilingual profession and adventure choices. Kids can drag or tap an outfit, then save the lightweight profession preference locally.
+- **Showtime Studio:** select one to three owned characters, choose poses and a scene, add a caption, preview locally, and create a four- to eight-second WebM video with `canvas.captureStream()` and `MediaRecorder`.
+- **My Little Movies:** stores only project instructions so a movie can be recreated later. The full video remains in the browser session until downloaded.
 
-- no FastAPI, Render, server process, database, Cloudflare Function, or paid compute is required
-- all fourteen core destinations plus Nico's Clubhouse have English and Mexican Spanish controls
-- each browser automatically stores independent player progress in local storage
-- multiple named player profiles can share one device
-- each friend who opens the same public URL receives a separate save in that friend's browser
-- stars, destination visits, mission completion, language, robot level, Nico preferences, and
-  lightweight movie projects save after changes
-- player profiles support JSON download and import for manual backup or transfer
-- the service worker provides an installable, offline-ready PWA after the first successful load
+Nico's saved outfit is synchronized across the persistent guide, Clubhouse header, Ask Nico, World Map, Robot Home, live Showtime preview, and recorded video frames.
 
-Local browser saves do not sync between devices and can be erased by private browsing, browser-data
-cleanup, or device reset. Important progress should be downloaded from the Parent screen.
+### Core destinations
 
-### Cloudflare Pages deployment
+The web PWA includes:
 
-Use a static Cloudflare Pages project, not Pages Functions:
+- World Map
+- Robo Lab
+- Animal Forest
+- Monster Lab
+- Monster Habitats
+- Art Studio
+- Story Castle
+- Game Arcade
+- Dinosaur Valley
+- Robot Pet Workshop
+- Robot Home
+- Memory Museum
+- Badge Observatory
+- Parent and Settings
+- Nico's Clubhouse
 
-- root directory: `web`
-- build command: `npm run build`
-- output directory: `dist`
-- production branch: `main`
+Each browser stores separate local profiles. Saves do not automatically sync between devices and can be erased by private browsing, browser-data cleanup, or device reset. Important progress should be exported from Parent and Settings.
 
-The included `web/public/_redirects` file provides the SPA fallback. The included `_headers` file
-adds security and cache headers. Static deployment requires no runtime environment variables.
+## Streamlit client
 
-## Current Streamlit experience
+The Streamlit app remains the richer session-state experience for the original World 4 activities, including the large robot and monster builders, living campaign, animal library, habitats, stories, art, games, dinosaurs, pets, Robot Home, Memory Museum, badges, and parent tools.
 
-- **Living World Map:** a seven-stage world that visibly grows as Nico creates, explores, and
-  completes a twenty-mission campaign.
-- **Robo Lab:** build and edit robot friends from more than 220 physical choices across fourteen
-  categories, with colors, patterns, finishes, personalities, voices, jobs, XP, and memories.
-- **Mecha Art V3:** layered inline-SVG robots with five body frames, mechanical joints, armor,
-  reactors, wings, thrusters, materials, lighting, and animations.
-- **Animal Forest:** explore 64 built-in animals balanced across eight habitats, with wildlife
-  photographs, field guides, quizzes, expeditions, discoveries, favorites, and kid-created entries.
-- **Monster Lab:** build monsters from 120 physical choices across ten categories, plus eighteen
-  colors, patterns, textures, powers, personalities, editing, animation, and safe old-save
-  migration.
-- **Monster Art V2:** adds ten inferred creature families, stronger silhouettes, expression layers,
-  highlights, shadows, family ornaments, atmospheric particles, scene lighting, and polished
-  collection cards without changing saved monster parts.
-- **Monster Habitats:** create themed homes, choose food and toys, record visits, and grow a
-  persistent friendship level with each monster.
-- **Art Studio:** make original illustrated posters from backgrounds, frames, subjects, captions,
-  and stickers; display them in Robot Home or attach them to stories.
-- **Story Castle:** create illustrated English, Spanish, or bilingual stories starring saved
-  robots, animals, monsters, and robot pets.
-- **Game Arcade:** six replayable learning games covering animals, patterns, robot memory,
-  dinosaurs, navigation, and arithmetic.
-- **Showtime Studio bridge:** explains the local video privacy contract and opens the full web PWA
-  studio without attaching Streamlit profile or child content to the link.
-- **Dinosaur Valley:** complete expeditions, discover twelve prehistoric animals, recover fossils,
-  use team abilities, and play field-guide challenges.
-- **Robot Pet Workshop:** customize eight kinds of companions, choose colors and accessories,
-  build bonds, train tricks, and select an active pet.
-- **Pet Art V2:** replaces emoji cards with eight distinct layered SVG species, mechanical anatomy,
-  expressive faces, accessories, energy cores, scene lighting, bond displays, and action-specific
-  animations.
-- **Robot Home:** a layered headquarters with eighteen visible decorations, six room themes,
-  weather and lighting controls, robot interactions, a featured-art gallery, and an illustrated
-  companion corner.
-- **Memory Museum:** review the complete timeline and every major collection, including robots,
-  animals, monsters, habitats, artwork, stories, illustrated pets, dinosaurs, fossils, and campaign
-  progress.
-- **Badge Observatory:** track stars, explorer levels, badges, and milestones.
-- **Parent & Settings:** language, local browser read-aloud, reduced motion, diagnostics, bounded
-  recovery snapshots, three in-session save slots, and private backups.
+Streamlit includes a privacy explanation and link to the web Showtime Studio. It does not upload Streamlit profile content into the web client.
 
-## Shared responsive layout
+The Streamlit and web profile formats remain intentionally separate. Their version and migration rules are documented in [`docs/PROFILE_SCHEMA_V3.md`](docs/PROFILE_SCHEMA_V3.md).
 
-Every Streamlit destination uses one alignment system for page width, spacing, columns, cards,
-forms, metrics, buttons, tabs, preview stages, desktop layouts, tablet wrapping, and phone stacking.
-The web Clubhouse and Showtime interfaces use large touch targets, keyboard focus indicators,
-responsive layouts, ARIA labels, and reduced-motion fallbacks.
+## Shared catalogs and architecture
 
-## Connected progression
+Canonical JSON catalogs are used where practical for professions, Showtime options, local Ask Nico knowledge, and other shared data. The system-wide improvement program is tracked in [issue #40](https://github.com/BoneManTGRM/Nicos-Adventures/issues/40).
 
-Customization choices now affect adventure readiness. Existing robot parts and monster traits are
-used to infer abilities such as:
+The active priorities are:
 
-- scanner
-- translator
-- aquatic travel
-- strength
-- flight
-- repair
-- creativity
-- monster magic
-- teamwork
+1. production stabilization and architecture
+2. bilingual and accessibility parity
+3. destination completeness
+4. Nico intelligence and character depth
+5. Showtime and Memory Museum polish
+6. dual-client shared-data reduction
 
-The twenty campaign missions use progress from across the entire app rather than operating as
-isolated checklists. A built-in seasonal event rotates by calendar season without requiring a
-paid content service. The first successful Showtime project awards a Movie Director badge and
-stars in the web profile.
+## Local privacy
 
-## Memory and privacy
-
-Progress in the Streamlit version is maintained in session state while the app is open. The
-**Version 5 Complete Memory Save** stores:
-
-- robots, customization, XP, jobs, and memories
-- animals, discoveries, and favorites
-- monsters, customization, play history, habitats, and friendship
-- artwork and featured Robot Home art
-- stories and attached illustrations
-- robot pets, bond, tricks, and active companion
-- dinosaurs and fossils
-- campaign, living-world, seasonal, arcade, decoration, badge, and settings state
-
-The web PWA uses profile schema v3. It adds Nico preferences and bounded movie-project metadata.
-The Streamlit and web versions remain separate save formats; the version matrix and migration rules
-are documented in `docs/PROFILE_SCHEMA_V3.md`.
-
-The Parent page also provides three in-session recovery slots. These slots are useful for undo and
-recovery during the current Streamlit session.
-
-**Streamlit session state is not cloud storage.** Reliable cross-session or cross-device use
-currently requires downloading the private JSON save and restoring it later.
-
-## Local read-aloud
-
-Story, educational narration, Ask Nico answers, and optional Showtime captions use the browser's
-local Speech Synthesis API. Text is not sent to an external narration provider by this project.
+- Profiles are stored in browser localStorage in the web PWA.
+- Ask Nico exchanges remain in React memory and are not uploaded.
+- Speech uses the browser's local Speech Synthesis API.
+- Showtime recording happens in the browser.
+- Movie video blobs are never written to localStorage or exported in profile JSON.
+- No analytics or advertising SDK is included.
 
 ## Run Streamlit locally
 
@@ -166,9 +88,9 @@ pip install -e '.[dev]'
 streamlit run app.py
 ```
 
-## Run the static website locally
+## Run the web PWA locally
 
-The supported Node version is recorded in `web/.nvmrc`. Web dependencies are exact-pinned.
+The supported Node version is pinned in `.node-version`, `.nvmrc`, and `web/.nvmrc`. Web dependencies are exact-pinned in `web/package-lock.json`.
 
 ```bash
 cd web
@@ -176,7 +98,7 @@ npm ci
 npm run dev
 ```
 
-## Run validation
+## Validation
 
 ```bash
 ruff check .
@@ -188,26 +110,27 @@ npm test
 npm run build
 ```
 
-The test suite includes pure state and rendering tests, save migration and round-trip tests, API
-tests, artwork, creature-art, responsive-layout, campaign tests, local Ask Nico matching, web
-profile-v3 migration, Showtime MIME/timeline helpers, and the Python movie-metadata contract. The
-web build performs release validation and TypeScript checking before creating the Vite bundle.
+The web build runs Cloudflare routing validation, release-contract validation, TypeScript, and Vite before creating `web/dist`.
 
-## Deploy Streamlit Community Cloud
+## Production deployment
 
-1. Push the repository to GitHub.
-2. Create or open the Streamlit Community Cloud app.
-3. Select `app.py` as the entrypoint.
-4. Deploy or reboot the app after changes reach `main`.
+Production uses a **Cloudflare Worker with static assets**, not a child-data backend.
 
-No secrets are required for the account-free Streamlit experience.
+```text
+Production branch: main
+Root directory: /
+Build command: npm install --prefix web && npm run build --prefix web
+Deploy command: npx wrangler deploy --assets=web/dist --name nicos-world --compatibility-date=2026-08-01
+```
 
-## API foundation
+The authoritative SPA fallback is in `wrangler.jsonc`. Do not add a catch-all index rewrite to `_redirects`; Cloudflare rejects the duplicate as an infinite loop.
 
-The repository retains a FastAPI foundation under `api/` for possible future cloud-sync or shared
-online features. The static website does not call it and does not require it to run. There is no
-Showtime video upload endpoint.
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for complete build, dry-run, cache, and troubleshooting instructions.
 
-## Add another activity
+## Showtime technical notes
+
+See [`docs/SHOWTIME_STUDIO.md`](docs/SHOWTIME_STUDIO.md) for the local recording architecture, project metadata contract, browser support, and privacy boundary.
+
+## Add an activity
 
 See [`docs/ADDING_AN_ACTIVITY.md`](docs/ADDING_AN_ACTIVITY.md).
