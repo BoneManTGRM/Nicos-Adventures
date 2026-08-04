@@ -1,10 +1,15 @@
 import { useMemo, useRef, useState, type FormEvent } from "react";
 import { answerNicoQuestion, suggestedQuestions, type NicoAnswer } from "./knowledge";
-import type { Language } from "../types";
+import type { Language, NicoProfessionId } from "../types";
+import { NicoCostumeFigure } from "./NicoCostumeFigure";
 
 type Props = {
   language: Language;
   speechEnabled: boolean;
+  baseArtSource?: string;
+  outfitArtSource?: string;
+  profession?: NicoProfessionId;
+  accentColor?: string;
 };
 
 type Exchange = {
@@ -22,6 +27,8 @@ const copy = {
     read: "Read answer",
     fallback: "Try one of these questions",
     private: "Private and on-device",
+    heroTitle: "Curious, smart, kind, and adventurous",
+    heroBody: "Nico can explain the world, help with the app, and suggest a safe next adventure.",
   },
   "es-MX": {
     title: "Pregúntale a Nico",
@@ -31,12 +38,21 @@ const copy = {
     read: "Leer respuesta",
     fallback: "Prueba una de estas preguntas",
     private: "Privado y en este dispositivo",
+    heroTitle: "Curioso, inteligente, amable y aventurero",
+    heroBody: "Nico puede explicar el mundo, ayudar con la aplicación y sugerir una aventura segura.",
   },
 } as const;
 
 const makeId = () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
 
-export function AskNico({ language, speechEnabled }: Props) {
+export function AskNico({
+  language,
+  speechEnabled,
+  baseArtSource = "",
+  outfitArtSource = "",
+  profession = "explorer",
+  accentColor = "#22c55e",
+}: Props) {
   const text = copy[language];
   const [question, setQuestion] = useState("");
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
@@ -74,6 +90,21 @@ export function AskNico({ language, speechEnabled }: Props) {
           <p>{text.intro}</p>
         </div>
       </header>
+
+      <div className="nico-ask-hero">
+        <NicoCostumeFigure
+          baseArtSource={baseArtSource}
+          dragOutfitSource={outfitArtSource}
+          profession={profession}
+          accentColor={accentColor}
+          compact
+          alt="Nico"
+        />
+        <div>
+          <h3>{text.heroTitle}</h3>
+          <p>{text.heroBody}</p>
+        </div>
+      </div>
 
       <div className="nico-chat-log" aria-live="polite">
         {exchanges.length === 0 ? (
