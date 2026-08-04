@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { defaultWardrobe } from "../storage";
 import { NicoCostumeFigure, NICO_COSTUME_DECORATIONS } from "./NicoCostumeFigure";
 import { applyNicoProfession, filterNicoProfessions, NICO_PROFESSIONS } from "./NicoDressUp";
 import { getNicoOutfitCell, NICO_OUTFIT_ALIASES } from "./nicoDragArt";
@@ -30,18 +31,20 @@ describe("Nico drag-and-drop dress-up catalog", () => {
     expect(filterNicoProfessions("libros", "es-MX").map((item) => item.id)).toContain("librarian");
   });
 
-  it("preserves unrelated local preferences when an outfit is applied", () => {
+  it("preserves unrelated local preferences and updates the wardrobe preset", () => {
     const astronaut = NICO_PROFESSIONS.find((item) => item.id === "astronaut");
     expect(astronaut).toBeDefined();
+    const wardrobe = defaultWardrobe("explorer", "#16a34a");
     const next = applyNicoProfession(
-      { profession: "explorer", accentColor: "#16a34a", speechEnabled: false },
+      { profession: "explorer", accentColor: "#16a34a", speechEnabled: false, wardrobe },
       astronaut!,
     );
-    expect(next).toEqual({
-      profession: "astronaut",
-      accentColor: astronaut!.accent,
-      speechEnabled: false,
-    });
+    expect(next.profession).toBe("astronaut");
+    expect(next.accentColor).toBe(astronaut!.accent);
+    expect(next.speechEnabled).toBe(false);
+    expect(next.wardrobe.presetId).toBe("astronaut");
+    expect(next.wardrobe.accentColor).toBe(astronaut!.accent);
+    expect(next.wardrobe.eyewear).toBe("nico-red-glasses");
   });
 
   it("keeps fallback decorations defined for every profession", () => {

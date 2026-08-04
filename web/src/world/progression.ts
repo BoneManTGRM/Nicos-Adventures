@@ -1,5 +1,7 @@
 import type { LocalProfile } from "../types";
 
+export const COMPLETED_MISSION_LIMIT = 1000;
+
 export type CompletionResult = {
   profile: LocalProfile;
   awarded: boolean;
@@ -15,7 +17,7 @@ export function completeOnce(profile: LocalProfile, missionId: string, rewardSta
     awarded: true,
     profile: {
       ...profile,
-      completedMissions: [...profile.completedMissions, missionId].slice(-200),
+      completedMissions: [...profile.completedMissions, missionId].slice(-COMPLETED_MISSION_LIMIT),
       stars: profile.stars + Math.max(0, Math.round(rewardStars)),
     },
   };

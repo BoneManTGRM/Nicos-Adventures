@@ -18,10 +18,18 @@ The project does not require child accounts, advertising, analytics, open chat, 
 
 The primary portable client lives in `web/` and is deployed as static assets.
 
+### Application foundation
+
+The React client mounts through one `AppShell` and one canonical local-profile provider. The world, Nico guide, Clubhouse, Showtime, and synchronized Nico surfaces consume the same store instead of creating independent browser-state owners.
+
+Browser profiles use schema v4. The profile includes explicit active robot, pet, and displayed-artwork IDs; strict bounded import normalization; newest-first reward-history retention; backup timestamps; and lightweight Nico wardrobe slots for the true layered clothing system tracked in issue #47.
+
+See [`docs/PROFILE_SCHEMA_V4.md`](docs/PROFILE_SCHEMA_V4.md).
+
 ### Nico's Clubhouse
 
 - **Ask Nico:** a bounded bilingual answer library stored inside the app. Questions are not sent to an AI service.
-- **Drag-and-Drop Studio:** one reusable Nico character with 26 bilingual profession and adventure choices. Kids can drag or tap an outfit, then save the lightweight profession preference locally.
+- **Profession Studio:** one reusable Nico character with 26 bilingual profession and adventure presets. The current preset selector writes lightweight wardrobe metadata; issue #47 replaces flattened outfit images with independent garment layers on one persistent body.
 - **Showtime Studio:** select one to three owned characters, choose poses and a scene, add a caption, preview locally, and create a four- to eight-second WebM video with `canvas.captureStream()` and `MediaRecorder`.
 - **My Little Movies:** stores only project instructions so a movie can be recreated later. The full video remains in the browser session until downloaded.
 
@@ -55,20 +63,21 @@ The Streamlit app remains the richer session-state experience for the original W
 
 Streamlit includes a privacy explanation and link to the web Showtime Studio. It does not upload Streamlit profile content into the web client.
 
-The Streamlit and web profile formats remain intentionally separate. Their version and migration rules are documented in [`docs/PROFILE_SCHEMA_V3.md`](docs/PROFILE_SCHEMA_V3.md).
+The Streamlit and web profile formats remain intentionally separate. The web migration rules are documented in [`docs/PROFILE_SCHEMA_V4.md`](docs/PROFILE_SCHEMA_V4.md); intentional client differences remain documented until the dual-client consolidation phase.
 
 ## Shared catalogs and architecture
 
-Canonical JSON catalogs are used where practical for professions, Showtime options, local Ask Nico knowledge, and other shared data. The system-wide improvement program is tracked in [issue #40](https://github.com/BoneManTGRM/Nicos-Adventures/issues/40).
+Canonical JSON catalogs are used where practical for professions, Showtime options, local Ask Nico knowledge, and other shared data. The system-wide school-showcase program is tracked in [issue #40](https://github.com/BoneManTGRM/Nicos-Adventures/issues/40).
 
-The active priorities are:
+The active delivery order is:
 
-1. production stabilization and architecture
-2. bilingual and accessibility parity
-3. destination completeness
-4. Nico intelligence and character depth
-5. Showtime and Memory Museum polish
-6. dual-client shared-data reduction
+1. platform reliability and schema-v4 foundation
+2. true one-body layered Nico wardrobe
+3. asset/media pipeline and browser-level tests
+4. World Map campaign and destination depth
+5. safe contextual Ask Nico and Showtime polish
+6. School Showcase Mode
+7. dual-client consolidation
 
 ## Local privacy
 
