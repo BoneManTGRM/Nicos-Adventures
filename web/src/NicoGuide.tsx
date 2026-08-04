@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-import { loadLocalStore, PROFILE_EVENT } from "./storage";
-import type { NicoPreferences } from "./types";
+import { useEffect, useRef, useState } from "react";
+import { useActiveProfileStore } from "./hooks/useActiveProfileStore";
 import { NicoCostumeFigure } from "./nico/NicoCostumeFigure";
+import { openNicoWorld } from "./nico/NicoWorldExperience";
+import { useNicoDragArt } from "./nico/nicoDragArt";
 import "./nico-guide.css";
-
-type GuideLanguage = "en" | "es-MX";
-type NicoHubTab = "ask" | "dress" | "showtime" | "movies";
 
 type GuideCopy = {
   eyebrow: string;
@@ -20,10 +18,7 @@ type GuideCopy = {
   artAlt: string;
 };
 
-const GUIDE_LANGUAGE_KEY = "nicos-world-guide-language";
-const OPEN_NICO_EVENT = "nicos-world-open-nico";
-
-const copy: Record<GuideLanguage, GuideCopy> = {
+const copy: Record<"en" | "es-MX", GuideCopy> = {
   en: {
     eyebrow: "Your local adventure guide",
     title: "Hi, I'm Nico!",
@@ -50,43 +45,24 @@ const copy: Record<GuideLanguage, GuideCopy> = {
   },
 };
 
-function activeNico(): NicoPreferences {
-  const store = loadLocalStore();
-  return (store.profiles.find((profile) => profile.id === store.activeProfileId) ?? store.profiles[0]).nico;
-}
-
-function detectLanguage(): GuideLanguage {
-  const savedGuideLanguage = localStorage.getItem(GUIDE_LANGUAGE_KEY);
-  if (savedGuideLanguage === "en" || savedGuideLanguage === "es-MX") return savedGuideLanguage;
-  try {
-    const store = loadLocalStore();
-    const activeProfile = store.profiles.find((profile) => profile.id === store.activeProfileId) ?? store.profiles[0];
-    if (activeProfile.language === "es-MX") return "es-MX";
-  } catch {
-    // Use the browser language when no valid local profile is available.
-  }
-  return navigator.language.toLowerCase().startsWith("es") ? "es-MX" : "en";
-}
-
 export default function NicoGuide() {
+  const { profile, commitProfile } = useActiveProfileStore();
+  const art = useNicoDragArt();
   const [isOpen, setIsOpen] = useState(false);
-  const [language, setLanguage] = useState<GuideLanguage>(detectLanguage);
-  const [nico, setNico] = useState<NicoPreferences>(activeNico);
-  const text = copy[language];
+  const launcherRef = useRef<HTMLButtonElement>(null);
+  const text = copy[profile.language];
 
   useEffect(() => {
-    localStorage.setItem(GUIDE_LANGUAGE_KEY, language);
-  }, [language]);
-
-  useEffect(() => {
-    const sync = () => setNico(activeNico());
-    window.addEventListener("storage", sync);
-    window.addEventListener(PROFILE_EVENT, sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener(PROFILE_EVENT, sync);
+    if (!isOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      setIsOpen(false);
+      launcherRef.current?.focus();
     };
-  }, []);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen]);
 
   const openWorldMap = () => {
     document.querySelector<HTMLButtonElement>(".fw-brand")?.click();
@@ -94,15 +70,24 @@ export default function NicoGuide() {
     setIsOpen(false);
   };
 
-  const openNico = (tab: NicoHubTab) => {
-    window.dispatchEvent(new CustomEvent(OPEN_NICO_EVENT, { detail: { tab } }));
+  const openNico = (tab: "ask" | "dress") => {
+    openNicoWorld(tab);
     setIsOpen(false);
+  };
+
+  const switchLanguage = () => {
+    commitProfile((current) => ({
+      ...current,
+      language: current.language === "en" ? "es-MX" : "en",
+    }));
   };
 
   const character = (alt: string) => (
     <NicoCostumeFigure
-      profession={nico.profession}
-      accentColor={nico.accentColor}
+      baseArtSource={art.baseSource}
+      dragOutfitSource={art.outfitSource}
+      profession={profile.nico.profession}
+      accentColor={profile.nico.accentColor}
       compact
       alt={alt}
     />
@@ -122,13 +107,14 @@ export default function NicoGuide() {
               <button type="button" className="nico-guide__primary" onClick={() => openNico("ask")}>💬 {text.askNico}</button>
               <button type="button" onClick={() => openNico("dress")}>🧰 {text.clubhouse}</button>
               <button type="button" onClick={openWorldMap}>🌍 {text.worldMap}</button>
-              <button type="button" onClick={() => setLanguage(language === "en" ? "es-MX" : "en")}>{text.switchLanguage}</button>
+              <button type="button" onClick={switchLanguage}>{text.switchLanguage}</button>
             </div>
           </div>
         </section>
       )}
 
       <button
+        ref={launcherRef}
         className="nico-guide__launcher"
         type="button"
         onClick={() => setIsOpen((current) => !current)}
@@ -137,7 +123,7 @@ export default function NicoGuide() {
         aria-label={isOpen ? text.closeLabel : text.openLabel}
       >
         {character("")}
-        <span>{language === "es-MX" ? "¡Hola!" : "Hi!"}</span>
+        <span>{profile.language === "es-MX" ? "¡Hola!" : "Hi!"}</span>
       </button>
     </aside>
   );
