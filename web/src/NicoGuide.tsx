@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useAppStore } from "./app/AppStoreContext";
 import { NicoCostumeFigure } from "./nico/NicoCostumeFigure";
 import { openNicoWorld } from "./nico/NicoWorldExperience";
-import { useNicoDragArt } from "./nico/nicoDragArt";
 import "./nico-guide.css";
 
 type GuideCopy = {
@@ -22,32 +21,31 @@ const copy: Record<"en" | "es-MX", GuideCopy> = {
   en: {
     eyebrow: "Your local adventure guide",
     title: "Hi, I'm Nico!",
-    body: "Ask me safe questions, drag an outfit onto me, make a little movie, or continue exploring my world. Everything stays on this device.",
+    body: "Ask me safe questions, build my outfit piece by piece, make a little movie, or continue exploring my world. Everything stays on this device.",
     worldMap: "Open World Map",
     askNico: "Ask Nico",
     clubhouse: "Open Clubhouse",
     switchLanguage: "Español",
     openLabel: "Meet Nico, your local adventure guide",
     closeLabel: "Close Nico's guide",
-    artAlt: "Nico wearing his saved outfit",
+    artAlt: "Nico wearing his saved layered wardrobe",
   },
   "es-MX": {
     eyebrow: "Tu guía local de aventuras",
     title: "¡Hola, soy Nico!",
-    body: "Hazme preguntas seguras, arrastra un traje sobre mí, crea una pequeña película o sigue explorando. Todo permanece en este dispositivo.",
+    body: "Hazme preguntas seguras, arma mi ropa pieza por pieza, crea una pequeña película o sigue explorando. Todo permanece en este dispositivo.",
     worldMap: "Abrir mapa del mundo",
     askNico: "Pregúntale a Nico",
     clubhouse: "Abrir Casa Club",
     switchLanguage: "English",
     openLabel: "Conoce a Nico, tu guía local de aventuras",
     closeLabel: "Cerrar la guía de Nico",
-    artAlt: "Nico con su traje guardado",
+    artAlt: "Nico con su guardarropa en capas guardado",
   },
 };
 
 export default function NicoGuide() {
   const { profile, commitProfile } = useAppStore();
-  const art = useNicoDragArt();
   const [isOpen, setIsOpen] = useState(false);
   const launcherRef = useRef<HTMLButtonElement>(null);
   const text = copy[profile.language];
@@ -84,9 +82,8 @@ export default function NicoGuide() {
 
   const character = (alt: string) => (
     <NicoCostumeFigure
-      baseArtSource={art.baseSource}
-      dragOutfitSource={art.outfitSource}
       profession={profile.nico.profession}
+      wardrobe={profile.nico.wardrobe}
       accentColor={profile.nico.accentColor}
       compact
       alt={alt}
