@@ -2,17 +2,29 @@ import { useEffect, useState } from "react";
 
 export const PHOTO_NICO_WIDTH = 510;
 export const PHOTO_NICO_HEIGHT = 1467;
-export const PHOTO_NICO_BODY_PATH = "/assets/nico/photo/nico-photo-body.webp.b64";
+export const PHOTO_NICO_BODY_PATHS = [
+  "/assets/nico/photo/nico-photo-body.part1.b64",
+  "/assets/nico/photo/nico-photo-body.part2.b64",
+  "/assets/nico/photo/nico-photo-body.part3.b64",
+  "/assets/nico/photo/nico-photo-body.part4.b64",
+  "/assets/nico/photo/nico-photo-body.part5.b64",
+  "/assets/nico/photo/nico-photo-body.part6.b64",
+] as const;
 
 let sourcePromise: Promise<string> | null = null;
 
 export function loadPhotoNicoBodySource(): Promise<string> {
   if (!sourcePromise) {
-    sourcePromise = fetch(PHOTO_NICO_BODY_PATH, { cache: "force-cache" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(`Nico body asset failed with ${response.status}`);
-        const encoded = (await response.text()).replace(/\s+/g, "");
-        if (!encoded || encoded.length < 1000) throw new Error("Nico body asset is incomplete");
+    sourcePromise = Promise.all(
+      PHOTO_NICO_BODY_PATHS.map(async (path) => {
+        const response = await fetch(path, { cache: "force-cache" });
+        if (!response.ok) throw new Error(`Nico body asset failed with ${response.status}: ${path}`);
+        return response.text();
+      }),
+    )
+      .then((chunks) => {
+        const encoded = chunks.join("").replace(/\s+/g, "");
+        if (encoded.length !== 110_880) throw new Error("Nico body asset is incomplete");
         return `data:image/webp;base64,${encoded}`;
       })
       .catch((error) => {
