@@ -1,0 +1,30 @@
+{
+  "name": "nicos-world-web",
+  "private": true,
+  "version": "3.2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "validate:cloudflare": "node scripts/validate-cloudflare-routing.mjs",
+    "validate:release": "node scripts/validate-release.mjs && node scripts/validate-system-parity.mjs && node scripts/validate-interactive-progression.mjs && node scripts/validate-creative-memory.mjs",
+    "build": "npm run validate:cloudflare && npm run validate:release && npm run typecheck && vite build"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.4",
+    "typescript": "7.0.2",
+    "vite": "8.1.5",
+    "vitest": "4.1.10"
+  }
+}
