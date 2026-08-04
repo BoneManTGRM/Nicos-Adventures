@@ -5,6 +5,7 @@ import { resolveWardrobeItem, type WardrobeItem } from "./catalog";
 import { usePhotoNicoBody } from "./photoNicoBody";
 import { photoWardrobeBackgroundDataUrl, photoWardrobeForegroundDataUrl } from "./photoWardrobeSvg";
 import "./wardrobe.css";
+import "./photo-wardrobe.css";
 
 export function NicoLayeredCharacter({
   wardrobe,
