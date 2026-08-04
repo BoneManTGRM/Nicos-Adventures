@@ -1,10 +1,13 @@
 import type { CSSProperties } from "react";
 import type { NicoProfessionId } from "../types";
 import { approvedCharacterStyle, approvedOutfitStyle } from "./approvedNicoArt";
+import { nicoOutfitSpriteStyle } from "./nicoDragArt";
 
 type Props = {
-  artSource: string;
+  artSource?: string;
   outfitArtSource?: string;
+  baseArtSource?: string;
+  dragOutfitSource?: string;
   profession: NicoProfessionId;
   accentColor?: string;
   compact?: boolean;
@@ -47,8 +50,10 @@ export const NICO_COSTUME_DECORATIONS: Record<NicoProfessionId, CostumeDecoratio
 };
 
 export function NicoCostumeFigure({
-  artSource,
+  artSource = "",
   outfitArtSource = "",
+  baseArtSource = "",
+  dragOutfitSource = "",
   profession,
   accentColor = "#22c55e",
   compact = false,
@@ -56,8 +61,15 @@ export function NicoCostumeFigure({
 }: Props) {
   const decoration = NICO_COSTUME_DECORATIONS[profession];
   const style = { "--nico-costume-accent": accentColor } as CSSProperties;
-  const outfitStyle = approvedOutfitStyle(outfitArtSource, profession);
-  const artState = outfitStyle ? "approved-outfit" : artSource ? "approved-character" : "fallback";
+  const legacyOutfitStyle = approvedOutfitStyle(outfitArtSource, profession);
+  const composed = Boolean(baseArtSource && dragOutfitSource);
+  const artState = composed
+    ? "drag-composed"
+    : legacyOutfitStyle
+      ? "approved-outfit"
+      : artSource
+        ? "approved-character"
+        : "fallback";
 
   return (
     <figure
@@ -67,23 +79,28 @@ export function NicoCostumeFigure({
       data-art-state={artState}
     >
       <div className="nico-costume__frame">
-        {outfitStyle ? (
-          <span className="nico-costume__approved" style={outfitStyle} role="img" aria-label={alt} data-approved-nico-outfit="true" />
+        {composed ? (
+          <div className="nico-composed" role="img" aria-label={alt} data-composed-nico="true">
+            <img src={baseArtSource} alt="" data-asset-recovery="ignore" decoding="async" draggable={false} />
+            <span className="nico-composed__outfit" style={nicoOutfitSpriteStyle(dragOutfitSource, profession)} aria-hidden="true" />
+          </div>
+        ) : legacyOutfitStyle ? (
+          <span className="nico-costume__approved" style={legacyOutfitStyle} role="img" aria-label={alt} data-approved-nico-outfit="true" />
         ) : artSource ? (
           <span className="nico-costume__approved" style={approvedCharacterStyle(artSource, compact ? "guide" : "full")} role="img" aria-label={alt} data-approved-nico-art="true" />
         ) : (
           <div className="nico-costume__fallback" role="img" aria-label={alt}>
             <span className="nico-costume__fallback-hair" aria-hidden="true" />
-            <span className="nico-costume__fallback-face" aria-hidden="true">
-              <i /><i />
-            </span>
+            <span className="nico-costume__fallback-face" aria-hidden="true"><i /><i /></span>
             <span className="nico-costume__fallback-shirt" aria-hidden="true" />
           </div>
         )}
-        <span className="nico-costume__uniform" aria-hidden="true" />
-        {decoration.head && <span className="nico-costume__head" aria-hidden="true">{decoration.head}</span>}
-        {decoration.prop && <span className="nico-costume__prop" aria-hidden="true">{decoration.prop}</span>}
-        {decoration.badge && <span className="nico-costume__badge" aria-hidden="true">{decoration.badge}</span>}
+        {!composed && artState !== "approved-outfit" && <>
+          <span className="nico-costume__uniform" aria-hidden="true" />
+          {decoration.head && <span className="nico-costume__head" aria-hidden="true">{decoration.head}</span>}
+          {decoration.prop && <span className="nico-costume__prop" aria-hidden="true">{decoration.prop}</span>}
+          {decoration.badge && <span className="nico-costume__badge" aria-hidden="true">{decoration.badge}</span>}
+        </>}
       </div>
     </figure>
   );
