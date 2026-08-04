@@ -43,10 +43,41 @@ describe("true Nico wardrobe catalog", () => {
     expect(svg).toContain('data-item="spoon-prop"');
   });
 
+  it("tailors every equipped layer to the fixed body anchors", () => {
+    const svg = buildNicoWardrobeSvg(wardrobeForPreset("firefighter"));
+    for (const slot of slots) {
+      const itemId = wardrobeForPreset("firefighter")[slot];
+      if (!itemId) continue;
+      expect(svg).toContain(`data-tailored-fit="${slot}"`);
+    }
+    expect(svg).toContain("scale(.91 .93)");
+    expect(svg).toContain("scale(.76)");
+  });
+
+  it("does not show neutral underlayers through occupied clothing slots", () => {
+    const dressed = buildNicoWardrobeSvg(wardrobeForPreset("explorer"));
+    expect(dressed).not.toContain('data-base-shirt="visible"');
+    expect(dressed).not.toContain('data-base-shorts="visible"');
+    expect(dressed).not.toContain('data-base-shoes="visible"');
+
+    const empty = {
+      ...wardrobeForPreset("explorer"),
+      top: null,
+      outerwear: null,
+      bottoms: null,
+      shoes: null,
+    };
+    const neutral = buildNicoWardrobeSvg(empty);
+    expect(neutral).toContain('data-base-shirt="visible"');
+    expect(neutral).toContain('data-base-shorts="visible"');
+    expect(neutral).toContain('data-base-shoes="visible"');
+  });
+
   it("renders a dragged garment without the Nico body", () => {
     const shirt = resolveWardrobeItem("soccer-jersey")!;
     const svg = buildGarmentSvg(shirt);
     expect(svg).toContain('data-item="soccer-jersey"');
+    expect(svg).toContain('data-tailored-fit="top"');
     expect(svg).not.toContain("data-nico-body");
   });
 
