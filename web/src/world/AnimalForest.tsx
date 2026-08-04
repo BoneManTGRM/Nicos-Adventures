@@ -67,16 +67,21 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
     return matchesHabitat && matchesQuery;
   }), [animals, habitat, language, query]);
 
-  const toggle = (animalId: string, field: "discovered" | "favorite") => {
+  const discover = (animalId: string) => {
+    const animal = animals.find((item) => item.id === animalId);
+    if (!animal || animal.discovered) return;
+    const updated = animals.map((item) => item.id === animalId ? { ...item, discovered: true } : item);
+    update({ ...profile, animals: updated, stars: profile.stars + 1 });
+    announce(`${localizeAnimalCompat(animal, language).name}: ${tr(ui.inGuide, language)}`);
+  };
+
+  const toggleFavorite = (animalId: string) => {
     const animal = animals.find((item) => item.id === animalId);
     if (!animal) return;
-    const updated = animals.map((item) => item.id === animalId ? { ...item, [field]: !item[field] } : item);
-    const newlyDiscovered = field === "discovered" && !animal.discovered;
-    update({ ...profile, animals: updated, stars: newlyDiscovered ? profile.stars + 1 : profile.stars });
+    const updated = animals.map((item) => item.id === animalId ? { ...item, favorite: !item.favorite } : item);
+    update({ ...profile, animals: updated });
     const localized = localizeAnimalCompat(animal, language);
-    announce(field === "discovered"
-      ? `${localized.name}: ${newlyDiscovered ? tr(ui.inGuide, language) : tr(ui.discover, language)}`
-      : `${localized.name}: ${animal.favorite ? tr(ui.removeFavorite, language) : tr(ui.favorite, language)}`);
+    announce(`${localized.name}: ${animal.favorite ? tr(ui.removeFavorite, language) : tr(ui.favorite, language)}`);
   };
 
   return (
@@ -122,12 +127,12 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
                   <p>{sourceAnimal.discovered ? animal.fact : tr(ui.hiddenFact, language)}</p>
                   {sourceAnimal.discovered && animal.adaptation && <small><b>{tr(ui.adaptation, language)}:</b> {animal.adaptation}</small>}
                   <div className="fw-action-row">
-                    <button type="button" onClick={() => toggle(sourceAnimal.id, "discovered")}>
+                    <button type="button" onClick={() => discover(sourceAnimal.id)} disabled={sourceAnimal.discovered}>
                       {sourceAnimal.discovered ? `✅ ${tr(ui.inGuide, language)}` : `🔭 ${tr(ui.discover, language)}`}
                     </button>
                     <button
                       type="button"
-                      onClick={() => toggle(sourceAnimal.id, "favorite")}
+                      onClick={() => toggleFavorite(sourceAnimal.id)}
                       aria-label={`${sourceAnimal.favorite ? tr(ui.removeFavorite, language) : tr(ui.favorite, language)}: ${animal.name}`}
                       aria-pressed={sourceAnimal.favorite}
                     >
