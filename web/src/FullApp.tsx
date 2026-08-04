@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import { loadLocalStore, saveLocalStore, touchProfile } from "./storage";
-import type { LocalProfile, LocalSaveStore, SectionId } from "./types";
+import { useEffect } from "react";
+import type { SectionId } from "./types";
 import { tr, ui } from "./i18n/core";
+import { useAppStore } from "./app/AppStoreContext";
 import { AnimalForest } from "./world/AnimalForest";
 import { Arcade } from "./world/Arcade";
 import { ArtStudio } from "./world/ArtStudio";
@@ -28,18 +28,9 @@ import "./world/local-media-art.css";
 type Announcement = { id: number; message: string };
 
 export default function FullApp() {
-  const [store, setStore] = useState<LocalSaveStore>(() => loadLocalStore());
-  const [announcement, setAnnouncement] = useState<Announcement>({ id: 0, message: "" });
-  const profile = useMemo(
-    () => store.profiles.find((item) => item.id === store.activeProfileId) ?? store.profiles[0],
-    [store],
-  );
-
+  const { store, profile, setStore, updateProfile } = useAppStore();
+  const [announcement, setAnnouncement] = React.useState<Announcement>({ id: 0, message: "" });
   const announce = (message: string) => setAnnouncement((current) => ({ id: current.id + 1, message }));
-
-  useEffect(() => {
-    saveLocalStore(store, "app");
-  }, [store]);
 
   useEffect(() => {
     const section = WORLD_SECTIONS.find((item) => item.id === profile.selectedSection) ?? WORLD_SECTIONS[0];
@@ -47,16 +38,9 @@ export default function FullApp() {
     document.title = `${tr(section.name, profile.language)} · ${profile.language === "es-MX" ? "El Mundo de Nico" : "Nico's World"}`;
   }, [profile.language, profile.selectedSection]);
 
-  const update = (next: LocalProfile) => {
-    setStore((current) => ({
-      ...current,
-      profiles: current.profiles.map((item) => item.id === current.activeProfileId ? touchProfile(next) : item),
-    }));
-  };
-
   const open = (sectionId: SectionId) => {
     const section = WORLD_SECTIONS.find((item) => item.id === sectionId) ?? WORLD_SECTIONS[0];
-    update({
+    updateProfile({
       ...profile,
       selectedSection: sectionId,
       sectionVisits: {
@@ -69,7 +53,7 @@ export default function FullApp() {
   };
 
   const page = (() => {
-    const props = { profile, update, announce };
+    const props = { profile, update: updateProfile, announce };
     switch (profile.selectedSection) {
       case "world-map": return <WorldMap profile={profile} open={open} />;
       case "robo-lab": return <RoboLab {...props} />;
@@ -84,7 +68,7 @@ export default function FullApp() {
       case "robot-home": return <RobotHome {...props} />;
       case "memory-book": return <Museum profile={profile} />;
       case "badge-book": return <Badges profile={profile} />;
-      case "parent-settings": return <Settings store={store} profile={profile} setStore={setStore} update={update} announce={announce} />;
+      case "parent-settings": return <Settings store={store} profile={profile} setStore={setStore} update={updateProfile} announce={announce} />;
       default: return <WorldMap profile={profile} open={open} />;
     }
   })();
@@ -92,7 +76,7 @@ export default function FullApp() {
   return (
     <div className="fw-app" data-active-section={profile.selectedSection}>
       <a className="fw-skip-link" href="#main-content">{tr(ui.skipToContent, profile.language)}</a>
-      <AppHeader profile={profile} open={open} update={update} announce={announce} />
+      <AppHeader profile={profile} open={open} update={updateProfile} announce={announce} />
       <div className="sr-only" aria-live="polite" aria-atomic="true" key={announcement.id}>{announcement.message}</div>
       <main id="main-content" data-section-id={profile.selectedSection}>
         <PageTitle sectionId={profile.selectedSection} language={profile.language} />
