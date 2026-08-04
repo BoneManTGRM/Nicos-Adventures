@@ -95,14 +95,16 @@ export function AskNico({
       </header>
 
       <div className="nico-ask-hero">
-        <NicoCostumeFigure
-          baseArtSource={baseArtSource}
-          dragOutfitSource={outfitArtSource}
-          profession={profession}
-          accentColor={accentColor}
-          compact
-          alt={text.artAlt}
-        />
+        <div className="nico-ask-hero__art">
+          <NicoCostumeFigure
+            baseArtSource={baseArtSource}
+            dragOutfitSource={outfitArtSource}
+            profession={profession}
+            accentColor={accentColor}
+            compact
+            alt={text.artAlt}
+          />
+        </div>
         <div>
           <h3>{text.heroTitle}</h3>
           <p>{text.heroBody}</p>
