@@ -37,13 +37,16 @@ export function Settings({
   }, [store]);
 
   const download = () => {
-    const blob = new Blob([exportProfile(profile)], { type: "application/json" });
+    const backedUpAt = new Date().toISOString();
+    const backedUpProfile = { ...profile, lastBackupAt: backedUpAt };
+    const blob = new Blob([exportProfile(backedUpProfile)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = `nicos-world-${profile.playerName.replace(/[^a-z0-9-]+/gi, "-").toLowerCase() || "profile"}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
+    update(backedUpProfile);
     setStatus(language === "es-MX" ? "Respaldo descargado." : "Backup downloaded.");
     announce(language === "es-MX" ? "Respaldo descargado." : "Backup downloaded.");
   };
@@ -138,6 +141,7 @@ export function Settings({
       <section className="settings-card" aria-labelledby="settings-backup-heading">
         <header><span aria-hidden="true">💾</span><div><small>{formatBytes(localBytes)}</small><h2 id="settings-backup-heading">{language === "es-MX" ? "Respaldo y almacenamiento" : "Backup and storage"}</h2></div></header>
         <p>{language === "es-MX" ? "Descarga un respaldo antes de borrar datos del navegador o cambiar de dispositivo." : "Download a backup before clearing browser data or changing devices."}</p>
+        <p><strong>{language === "es-MX" ? "Último respaldo" : "Last backup"}:</strong> {profile.lastBackupAt ? new Date(profile.lastBackupAt).toLocaleString(language === "es-MX" ? "es-MX" : "en-US") : (language === "es-MX" ? "Todavía no" : "Not yet")}</p>
         <div className="storage-meter">
           <div><span>{language === "es-MX" ? "Tamaño del perfil" : "Profile size"}</span><strong>{formatBytes(localBytes)}</strong></div>
           {storageEstimate.usage !== undefined && storageEstimate.quota !== undefined && <><progress max={storageEstimate.quota} value={storageEstimate.usage}>{storageEstimate.usage}/{storageEstimate.quota}</progress><small>{formatBytes(storageEstimate.usage)} / {formatBytes(storageEstimate.quota)}</small></>}
