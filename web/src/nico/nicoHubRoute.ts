@@ -1,4 +1,4 @@
-import type { NicoHubTab } from "./NicoWorldExperience";
+export type NicoHubTab = "ask" | "dress" | "showtime" | "movies";
 
 export const NICO_HUB_STATE_KEY = "nicosWorldHub";
 
