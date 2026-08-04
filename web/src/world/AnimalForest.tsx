@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { mergeAnimalLibrary } from "../FeatureArt";
 import type { AnimalRecord, Language, LocalProfile } from "../types";
-import { localizeAnimal } from "../i18n/animals";
+import { localizeAnimalCompat } from "../i18n/animalsCompat";
 import { tr, ui } from "../i18n/core";
-import { optionLabel } from "../i18n/options";
+import { optionLabel } from "../i18n/display";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState } from "./common";
 
@@ -60,7 +60,7 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
   const [query, setQuery] = useState("");
   const habitats = useMemo(() => ["All", ...new Set(animals.map((animal) => animal.habitat))], [animals]);
   const shown = useMemo(() => animals.filter((animal) => {
-    const localized = localizeAnimal(animal, language);
+    const localized = localizeAnimalCompat(animal, language);
     const matchesHabitat = habitat === "All" || animal.habitat === habitat;
     const normalized = query.trim().toLocaleLowerCase(language === "es-MX" ? "es-MX" : "en-US");
     const matchesQuery = !normalized || `${animal.name} ${localized.name}`.toLocaleLowerCase(language === "es-MX" ? "es-MX" : "en-US").includes(normalized);
@@ -73,7 +73,7 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
     const updated = animals.map((item) => item.id === animalId ? { ...item, [field]: !item[field] } : item);
     const newlyDiscovered = field === "discovered" && !animal.discovered;
     update({ ...profile, animals: updated, stars: newlyDiscovered ? profile.stars + 1 : profile.stars });
-    const localized = localizeAnimal(animal, language);
+    const localized = localizeAnimalCompat(animal, language);
     announce(field === "discovered"
       ? `${localized.name}: ${newlyDiscovered ? tr(ui.inGuide, language) : tr(ui.discover, language)}`
       : `${localized.name}: ${animal.favorite ? tr(ui.removeFavorite, language) : tr(ui.favorite, language)}`);
@@ -108,7 +108,7 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
       {!shown.length ? <EmptyState emoji="🔎">{tr(ui.noAnimalResults, language)}</EmptyState> : (
         <div className="fw-card-grid">
           {shown.map((sourceAnimal) => {
-            const animal = localizeAnimal(sourceAnimal, language);
+            const animal = localizeAnimalCompat(sourceAnimal, language);
             return (
               <article className={`fw-creature-card animal-card-v2 ${sourceAnimal.discovered ? "is-discovered" : ""}`} key={sourceAnimal.id}>
                 <WildlifePhoto animal={{ ...sourceAnimal, name: animal.name }} language={language} />
