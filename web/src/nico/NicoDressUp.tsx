@@ -9,7 +9,7 @@ import {
 import professionData from "../catalogs/nico-professions.json";
 import professionPhase2Extra from "../catalogs/nico-professions-phase2-extra.json";
 import type { Language, LocalizedText, NicoPreferences, NicoProfessionId } from "../types";
-import { useApprovedNicoArt } from "./approvedNicoArt";
+import { approvedOutfitStyle, useApprovedNicoArt } from "./approvedNicoArt";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
 import { nicoOutfitSpriteStyle, useNicoDragArt } from "./nicoDragArt";
 
@@ -99,7 +99,7 @@ export function NicoDressUp({
   const approvedArt = useApprovedNicoArt();
   const dragArt = useNicoDragArt();
   const characterSource = artSource || approvedArt.characterSource;
-  const legacyOutfitsSource = outfitArtSource || approvedArt.outfitSource;
+  const approvedOutfitsSource = outfitArtSource || approvedArt.outfitSource;
   const nicoBaseSource = baseArtSource || dragArt.baseSource;
   const nicoOutfitsSource = dragOutfitSource || dragArt.outfitSource;
   const [draft, setDraft] = useState<NicoPreferences>(preferences);
@@ -141,9 +141,7 @@ export function NicoDressUp({
   const moveDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
     setDrag((current) => {
       if (!current || current.pointerId !== event.pointerId) return current;
-      if (Math.hypot(event.clientX - current.originX, event.clientY - current.originY) > 8) {
-        movedRef.current = true;
-      }
+      if (Math.hypot(event.clientX - current.originX, event.clientY - current.originY) > 8) movedRef.current = true;
       return { ...current, x: event.clientX, y: event.clientY };
     });
   };
@@ -169,6 +167,19 @@ export function NicoDressUp({
     setSaved(true);
   };
 
+  const thumbnail = (profession: ProfessionOption) => {
+    const approvedStyle = approvedOutfitStyle(approvedOutfitsSource, profession.id);
+    return approvedStyle ? (
+      <span className="nico-outfit-thumbnail nico-outfit-thumbnail--approved" aria-hidden="true">
+        <span style={approvedStyle} />
+      </span>
+    ) : (
+      <span className="nico-outfit-thumbnail" style={nicoOutfitSpriteStyle(nicoOutfitsSource, profession.id)} aria-hidden="true" />
+    );
+  };
+
+  const dragPreview = drag ? approvedOutfitStyle(approvedOutfitsSource, drag.profession.id) : null;
+
   return (
     <section className="nico-dress-up nico-drag-studio" aria-labelledby="nico-dress-title">
       <header className="nico-feature-heading">
@@ -184,7 +195,7 @@ export function NicoDressUp({
           <span className="nico-drag-stage__hint">{drag ? text.drop : selected.name[language]}</span>
           <NicoCostumeFigure
             artSource={characterSource}
-            outfitArtSource={legacyOutfitsSource}
+            outfitArtSource={approvedOutfitsSource}
             baseArtSource={nicoBaseSource}
             dragOutfitSource={nicoOutfitsSource}
             profession={draft.profession}
@@ -236,11 +247,7 @@ export function NicoDressUp({
                       choose(profession);
                     }}
                   >
-                    <span
-                      className="nico-outfit-thumbnail"
-                      style={nicoOutfitSpriteStyle(nicoOutfitsSource, profession.id)}
-                      aria-hidden="true"
-                    />
+                    {thumbnail(profession)}
                     <strong>{profession.name[language]}</strong>
                     <small>{profession.tagline[language]}</small>
                   </button>
@@ -267,12 +274,12 @@ export function NicoDressUp({
       </div>
 
       {drag && (
-        <div
-          className="nico-drag-ghost"
-          style={{ left: drag.x, top: drag.y } as CSSProperties}
-          aria-hidden="true"
-        >
-          <span style={nicoOutfitSpriteStyle(nicoOutfitsSource, drag.profession.id)} />
+        <div className="nico-drag-ghost" style={{ left: drag.x, top: drag.y } as CSSProperties} aria-hidden="true">
+          {dragPreview ? (
+            <span className="nico-drag-ghost__approved"><span style={dragPreview} /></span>
+          ) : (
+            <span style={nicoOutfitSpriteStyle(nicoOutfitsSource, drag.profession.id)} />
+          )}
           <strong>{drag.profession.name[language]}</strong>
         </div>
       )}

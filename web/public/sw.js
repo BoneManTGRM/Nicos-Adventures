@@ -1,4 +1,5 @@
-const CACHE = "nicos-world-static-v18";
+const LEGACY_CACHE_MARKER = "nicos-world-static-v18";
+const CACHE = "nicos-world-static-v19";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
   "/assets/nico/approved/character.part1.b64",
@@ -89,3 +90,5 @@ self.addEventListener("fetch", (event) => {
       .catch(async () => (await caches.match(event.request)) || Response.error())
   );
 });
+
+void LEGACY_CACHE_MARKER;

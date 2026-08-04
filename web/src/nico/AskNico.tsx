@@ -2,7 +2,6 @@ import { useMemo, useRef, useState, type FormEvent } from "react";
 import { answerNicoQuestion, suggestedQuestions, type NicoAnswer } from "./knowledge";
 import type { Language, NicoProfessionId } from "../types";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
-import { useNicoDragArt } from "./nicoDragArt";
 
 type Props = {
   language: Language;
@@ -31,7 +30,7 @@ const copy = {
     private: "Private and on-device",
     heroTitle: "Curious, smart, kind, and adventurous",
     heroBody: "Nico can explain the world, help with the app, and suggest a safe next adventure.",
-    artAlt: "Nico character guide",
+    artAlt: "Nico wearing his saved outfit",
   },
   "es-MX": {
     title: "Pregúntale a Nico",
@@ -43,7 +42,7 @@ const copy = {
     private: "Privado y en este dispositivo",
     heroTitle: "Curioso, inteligente, amable y aventurero",
     heroBody: "Nico puede explicar el mundo, ayudar con la aplicación y sugerir una aventura segura.",
-    artAlt: "Guía del personaje Nico",
+    artAlt: "Nico con su traje guardado",
   },
 } as const;
 
@@ -52,17 +51,12 @@ const makeId = () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString
 export function AskNico({
   language,
   speechEnabled,
-  aboutSource = "",
   baseArtSource = "",
   outfitArtSource = "",
   profession = "explorer",
   accentColor = "#22c55e",
 }: Props) {
   const text = copy[language];
-  const localArt = useNicoDragArt();
-  const resolvedAbout = aboutSource || localArt.aboutSource;
-  const resolvedBase = baseArtSource || localArt.baseSource;
-  const resolvedOutfits = outfitArtSource || localArt.outfitSource;
   const [question, setQuestion] = useState("");
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -101,18 +95,16 @@ export function AskNico({
       </header>
 
       <div className="nico-ask-hero">
-        {resolvedAbout ? (
-          <img className="nico-ask-hero__art" src={resolvedAbout} alt={text.artAlt} data-asset-recovery="ignore" decoding="async" />
-        ) : (
+        <div className="nico-ask-hero__art">
           <NicoCostumeFigure
-            baseArtSource={resolvedBase}
-            dragOutfitSource={resolvedOutfits}
+            baseArtSource={baseArtSource}
+            dragOutfitSource={outfitArtSource}
             profession={profession}
             accentColor={accentColor}
             compact
-            alt="Nico"
+            alt={text.artAlt}
           />
-        )}
+        </div>
         <div>
           <h3>{text.heroTitle}</h3>
           <p>{text.heroBody}</p>

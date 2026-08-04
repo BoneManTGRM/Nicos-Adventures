@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
-const SERVICE_WORKER_VERSION = "v18";
+const LEGACY_SERVICE_WORKER_VERSION = "v18";
+const SERVICE_WORKER_VERSION = "v19";
 const RELOAD_KEY = `nicos-world-${SERVICE_WORKER_VERSION}-reloaded`;
 
 export default function ServiceWorkerRefresh() {
@@ -32,3 +33,5 @@ export default function ServiceWorkerRefresh() {
 
   return null;
 }
+
+void LEGACY_SERVICE_WORKER_VERSION;
