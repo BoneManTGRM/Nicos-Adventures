@@ -235,14 +235,19 @@ export const loadLocalStore = (): LocalSaveStore => {
   }
 };
 
-export const saveLocalStore = (store: LocalSaveStore): boolean => {
+export type ProfileEventDetail = {
+  source: "app" | "shared";
+  store: LocalSaveStore;
+};
+
+export const saveLocalStore = (store: LocalSaveStore, source: ProfileEventDetail["source"] = "shared"): boolean => {
   try {
     const normalized = normalizeStore(store);
     const next = JSON.stringify(normalized);
     const previous = localStorage.getItem(STORAGE_KEY);
     localStorage.setItem(STORAGE_KEY, next);
     if (previous !== next && typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent(PROFILE_EVENT, { detail: normalized }));
+      window.dispatchEvent(new CustomEvent<ProfileEventDetail>(PROFILE_EVENT, { detail: { source, store: normalized } }));
     }
     return true;
   } catch {
@@ -254,7 +259,7 @@ export const updateActiveProfile = (mutate: (profile: LocalProfile) => LocalProf
   const store = loadLocalStore();
   const profiles = store.profiles.map((profile) => profile.id === store.activeProfileId ? touchProfile(mutate(profile)) : profile);
   const next = normalizeStore({ ...store, profiles });
-  saveLocalStore(next);
+  saveLocalStore(next, "shared");
   return next;
 };
 

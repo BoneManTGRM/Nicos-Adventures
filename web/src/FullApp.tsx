@@ -1,95 +1,95 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { RobotStage } from "./RobotStage";
-import {
-  AnimalPhoto,
-  mergeAnimalLibrary,
-  MonsterStage,
-  ROBOT_ACTIONS,
-  ROBOT_JOBS,
-  useMonsterMotion,
-  type RobotPose,
-} from "./FeatureArt";
-import { createProfile, exportProfile, importProfile, loadLocalStore, saveLocalStore, touchProfile } from "./storage";
-import type {
-  ArtworkRecord,
-  Language,
-  LocalProfile,
-  LocalSaveStore,
-  MonsterRecord,
-  PetRecord,
-  Robot,
-  SectionId,
-  StoryRecord,
-} from "./types";
+import { useEffect, useMemo, useState } from "react";
+import { loadLocalStore, saveLocalStore, touchProfile } from "./storage";
+import type { LocalProfile, LocalSaveStore, SectionId } from "./types";
+import { tr, ui } from "./i18n/core";
+import { AnimalForest } from "./world/AnimalForest";
+import { Arcade, DinosaurValley, PetWorkshop, RobotHome } from "./world/AdventureWorld";
+import { AppHeader, BottomNavigation, PageTitle } from "./world/common";
+import { ArtStudio, StoryCastle } from "./world/CreativeWorld";
+import { Badges, Museum, Settings } from "./world/MemorySettings";
+import { MonsterHabitats, MonsterLab } from "./world/MonsterWorld";
+import { RoboLab } from "./world/RoboLab";
+import { WorldMap } from "./world/WorldMap";
+import { WORLD_SECTIONS } from "./world/catalogs";
 import "./styles.css";
 import "./full-world.css";
 import "./feature-parity.css";
+import "./world/system-parity.css";
 
-type Copy = { en: string; "es-MX": string };
-const t = (copy: Copy, language: Language) => copy[language];
-const id = (prefix: string) => `${prefix}-${crypto.randomUUID?.() ?? Math.random().toString(36).slice(2)}`;
+type Announcement = { id: number; message: string };
 
-const sections: Array<{ id: SectionId; emoji: string; name: Copy; description: Copy }> = [
-  ["world-map","🌍","World Map","Mapa del mundo","Choose a destination and continue the adventure.","Elige un destino y continúa la aventura."],
-  ["robo-lab","🤖","Robo Lab","Laboratorio robot","Build, customize, save, animate, and assign jobs to robot friends.","Construye, personaliza, anima y asigna trabajos a amigos robot."],
-  ["animal-forest","🐾","Animal Forest","Bosque animal","Explore real wildlife photos, habitats, facts, favorites, and field missions.","Explora fotos reales de fauna, hábitats, datos, favoritos y misiones."],
-  ["monster-lab","👾","Monster Lab","Laboratorio de monstruos","Create detailed layered monsters with powers, movement, and personalities.","Crea monstruos detallados con poderes, movimientos y personalidades."],
-  ["monster-habitats","🏕️","Monster Habitats","Hábitats de monstruos","Care for monsters and grow their friendship.","Cuida a los monstruos y aumenta su amistad."],
-  ["art-studio","🎨","Art Studio","Estudio de arte","Make posters and decorate Robot Home.","Crea pósters y decora la Casa Robot."],
-  ["story-castle","📚","Story Castle","Castillo de cuentos","Create bilingual stories starring saved friends.","Crea cuentos bilingües con tus amigos guardados."],
-  ["game-arcade","🕹️","Game Arcade","Sala de juegos","Play six quick learning and memory games.","Juega seis juegos rápidos de aprendizaje y memoria."],
-  ["dinosaur-valley","🦖","Dinosaur Valley","Valle de dinosaurios","Explore, discover dinosaurs, and collect fossils.","Explora, descubre dinosaurios y colecciona fósiles."],
-  ["pet-workshop","🐕","Robot Pet Workshop","Taller de mascotas robot","Build pets, train tricks, and grow bonds.","Construye mascotas, entrena trucos y crea vínculos."],
-  ["robot-home","🏠","Robot Home","Casa Robot","See robots, pets, artwork, and decorations together.","Ve robots, mascotas, arte y decoraciones juntos."],
-  ["memory-book","🏛️","Memory Museum","Museo de recuerdos","Review every saved creation and discovery.","Revisa cada creación y descubrimiento guardado."],
-  ["badge-book","🏆","Badge Observatory","Observatorio de insignias","Track stars, levels, badges, and milestones.","Sigue estrellas, niveles, insignias y logros."],
-  ["parent-settings","⚙️","Parent & Settings","Adultos y ajustes","Manage language, profiles, backups, and privacy.","Administra idioma, perfiles, respaldos y privacidad."],
-].map(([sectionId,emoji,en,es,descriptionEn,descriptionEs]) => ({
-  id: sectionId as SectionId, emoji, name:{en,"es-MX":es}, description:{en:descriptionEn,"es-MX":descriptionEs},
-}));
+export default function FullApp() {
+  const [store, setStore] = useState<LocalSaveStore>(() => loadLocalStore());
+  const [announcement, setAnnouncement] = useState<Announcement>({ id: 0, message: "" });
+  const profile = useMemo(
+    () => store.profiles.find((item) => item.id === store.activeProfileId) ?? store.profiles[0],
+    [store],
+  );
 
-const robotOptions: Record<string,string[]> = {
-  color:["Electric Blue","Crimson Red","Emerald Green","Royal Purple","Solar Orange","Pearl White","Midnight Black","Rose Gold","Arctic Cyan","Volcanic Red","Galaxy Violet","Jungle Green"],
-  secondary_color:["Sunny Yellow","Neon Cyan","Hot Pink","Silver","Lime","Copper","Pearl White","Orange","Electric Purple","Ice Blue"],
-  head:["Vanguard Crown","Samurai Helm","Dragon Helm","Explorer Dome","Knight Visor","Cat Ear Helm","Gundam Crest","Shogun Kabuto","Falcon Helm","Astronaut Bubble","Dino Helm","Lion Mane Helm","Ninja Hood","Crystal Crown","Rescue Helmet"],
-  eyes:["Photon Visor","Twin Emerald Eyes","Cyclops Lens","Star Eyes","Scanner Array","Friendly Pixels","Anime Eyes","Laser Eyes","Night Vision","Rainbow Optics","Hologram Face","Six Sensor Array"],
-  body:["Star Reactor","Guardian Core","Dragon Chest","Stealth Frame","Rescue Armor","Crystal Reactor","Mecha Samurai","Heavy Titan","Speed Frame","Aqua Armor","Space Knight","Dinosaur Core","Solar Guardian","Construction Frame"],
-  arms:["Guardian Arms","Photon Blades","Giant Hands","Tool Arms","Shield Arms","Rocket Fists","Drill Arms","Claw Hands","Magnet Hands","Rescue Grippers","Energy Cannons","Painter Arms"],
-  base:["Vernier Legs","Tank Treads","Hover Ring","Rocket Boots","Spider Legs","Speed Wheels","Dino Legs","Moon Boots","Skates","Aqua Fins","Spring Legs","Four-Wheel Drive"],
-  backpack:["Wing Binders","Jetpack","Pet Drone","Rocket Rack","Solar Wings","Bubble Pack","Samurai Flags","Rescue Crane","Satellite Dish","Dino Tail Pack","Tool Workshop","Parachute"],
-  power:["Star Reactor","Bubble Blaster","Animal Translator","Rescue Beam","Rainbow Shield","Dinosaur Scanner","Time Slow Field","Plant Grower","Weather Maker","Super Magnet","Healing Light","Portal Generator"],
-  personality:["Brave Guardian","Curious Explorer","Silly Inventor","Gentle Helper","Fast Adventurer","Wise Captain","Loyal Sidekick","Joke Master","Quiet Scientist","Bold Rescue Hero","Creative Artist","Animal Friend"],
-  mood:["Happy","Excited","Curious","Brave","Silly","Calm","Sleepy","Focused"],
-  voice:["Classic Beep","Hero Voice","Tiny Chirp","Deep Captain","Silly Squeak","Robot Whisper","Musical Chime","Space Radio"],
-};
+  const announce = (message: string) => setAnnouncement((current) => ({ id: current.id + 1, message }));
 
-function Header({profile,open,update}:{profile:LocalProfile;open:(id:SectionId)=>void;update:(p:LocalProfile)=>void}) {
-  return <header className="fw-topbar"><button className="fw-brand" onClick={()=>open("world-map")}><span>⚡</span><div><small>{profile.language==="es-MX"?"EL MUNDO DE":"NICO'S"}</small><strong>{profile.language==="es-MX"?"NICO":"WORLD"}</strong></div></button><div className="fw-profile-pill">👤 {profile.playerName}</div><div className="fw-profile-pill">⭐ {profile.stars}</div><button onClick={()=>update({...profile,language:profile.language==="en"?"es-MX":"en"})}>{profile.language==="en"?"🇲🇽 Español":"🇺🇸 English"}</button></header>;
+  useEffect(() => {
+    saveLocalStore(store, "app");
+  }, [store]);
+
+  useEffect(() => {
+    const section = WORLD_SECTIONS.find((item) => item.id === profile.selectedSection) ?? WORLD_SECTIONS[0];
+    document.documentElement.lang = profile.language;
+    document.title = `${tr(section.name, profile.language)} · ${profile.language === "es-MX" ? "El Mundo de Nico" : "Nico's World"}`;
+  }, [profile.language, profile.selectedSection]);
+
+  const update = (next: LocalProfile) => {
+    setStore((current) => ({
+      ...current,
+      profiles: current.profiles.map((item) => item.id === current.activeProfileId ? touchProfile(next) : item),
+    }));
+  };
+
+  const open = (sectionId: SectionId) => {
+    const section = WORLD_SECTIONS.find((item) => item.id === sectionId) ?? WORLD_SECTIONS[0];
+    update({
+      ...profile,
+      selectedSection: sectionId,
+      sectionVisits: {
+        ...profile.sectionVisits,
+        [sectionId]: Number(profile.sectionVisits[sectionId] ?? 0) + 1,
+      },
+    });
+    announce(`${tr(ui.openDestination, profile.language)}: ${tr(section.name, profile.language)}`);
+    window.requestAnimationFrame(() => document.getElementById("page-title")?.focus());
+  };
+
+  const page = (() => {
+    const props = { profile, update, announce };
+    switch (profile.selectedSection) {
+      case "world-map": return <WorldMap profile={profile} open={open} />;
+      case "robo-lab": return <RoboLab {...props} />;
+      case "animal-forest": return <AnimalForest {...props} />;
+      case "monster-lab": return <MonsterLab {...props} />;
+      case "monster-habitats": return <MonsterHabitats {...props} />;
+      case "art-studio": return <ArtStudio {...props} />;
+      case "story-castle": return <StoryCastle {...props} />;
+      case "game-arcade": return <Arcade {...props} />;
+      case "dinosaur-valley": return <DinosaurValley {...props} />;
+      case "pet-workshop": return <PetWorkshop {...props} />;
+      case "robot-home": return <RobotHome {...props} />;
+      case "memory-book": return <Museum profile={profile} />;
+      case "badge-book": return <Badges profile={profile} />;
+      case "parent-settings": return <Settings store={store} profile={profile} setStore={setStore} update={update} announce={announce} />;
+      default: return <WorldMap profile={profile} open={open} />;
+    }
+  })();
+
+  return (
+    <div className="fw-app" data-active-section={profile.selectedSection}>
+      <a className="fw-skip-link" href="#main-content">{tr(ui.skipToContent, profile.language)}</a>
+      <AppHeader profile={profile} open={open} update={update} announce={announce} />
+      <div className="sr-only" aria-live="polite" aria-atomic="true" key={announcement.id}>{announcement.message}</div>
+      <main id="main-content" data-section-id={profile.selectedSection}>
+        <PageTitle sectionId={profile.selectedSection} language={profile.language} />
+        {page}
+      </main>
+      <BottomNavigation profile={profile} open={open} />
+    </div>
+  );
 }
-function PageTitle({id:sectionId,language}:{id:SectionId;language:Language}) { const section=sections.find(i=>i.id===sectionId)??sections[0]; return <header className="fw-page-header"><span>{section.emoji}</span><div><small>{t({en:"Nico's World destination","es-MX":"Destino del Mundo de Nico"},language)}</small><h1>{t(section.name,language)}</h1><p>{t(section.description,language)}</p></div></header>; }
-function WorldMap({profile,open}:{profile:LocalProfile;open:(id:SectionId)=>void}) { return <div className="fw-grid fw-grid--map"><article className="fw-hero-card"><RobotStage robot={profile.robot} statusLabel={t({en:"READY","es-MX":"LISTO"},profile.language)} levelLabel={profile.language==="es-MX"?"NV":"LV"}/><div className="fw-stat-row"><span>⭐ {profile.stars}</span><span>🤖 {profile.robots.length}</span><span>🐾 {mergeAnimalLibrary(profile.animals).filter(a=>a.discovered).length}</span><span>👾 {profile.monsters.length}</span></div></article><section className="fw-destination-grid">{sections.filter(i=>i.id!=="world-map").map(section=><button className="fw-destination" key={section.id} onClick={()=>open(section.id)}><span>{section.emoji}</span><strong>{t(section.name,profile.language)}</strong><small>{t(section.description,profile.language)}</small></button>)}</section></div>; }
-function AnimatedRobot({robot,pose,statusLabel}:{robot:Robot;pose:RobotPose;statusLabel:string}) { return <RobotStage robot={robot} pose={pose as never} statusLabel={statusLabel} levelLabel="LV"/>; }
-function RoboLab({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) {
-  const [draft,setDraft]=useState<Robot>({...profile.robot,job:profile.robot.job||ROBOT_JOBS[0],mood:profile.robot.mood||"Happy",voice:profile.robot.voice||"Classic Beep"}); const [pose,setPose]=useState<RobotPose>("idle"); const set=(key:keyof Robot,value:string)=>setDraft(c=>({...c,[key]:value})); const play=(next:RobotPose)=>{setPose(next);setTimeout(()=>setPose("idle"),1600);};
-  const randomize=()=>{const pick=(v:string[])=>v[Math.floor(Math.random()*v.length)];setDraft(c=>({...c,id:id("robot"),name:`BoltBot ${Math.floor(Math.random()*900+100)}`,color:pick(robotOptions.color),secondary_color:pick(robotOptions.secondary_color),head:pick(robotOptions.head),eyes:pick(robotOptions.eyes),body:pick(robotOptions.body),arms:pick(robotOptions.arms),base:pick(robotOptions.base),backpack:pick(robotOptions.backpack),power:pick(robotOptions.power),personality:pick(robotOptions.personality),mood:pick(robotOptions.mood),voice:pick(robotOptions.voice),job:pick(ROBOT_JOBS),level:1,xp:0}));};
-  const save=()=>{const robot={...draft,id:draft.id||id("robot"),name:draft.name.trim()||"BoltBot"};const robots=profile.robots.some(i=>i.id===robot.id)?profile.robots.map(i=>i.id===robot.id?robot:i):[...profile.robots,robot];update({...profile,robot,robots,stars:profile.stars+2});play("celebrate");}; const doJob=()=>{const xp=draft.xp+20;const robot={...draft,xp,level:Math.floor(xp/50)+1};setDraft(robot);update({...profile,robot,robots:profile.robots.map(i=>i.id===robot.id?robot:i),stars:profile.stars+1});play("scan");};
-  return <div className="fw-builder-layout"><div><AnimatedRobot robot={draft} pose={pose} statusLabel={draft.job||"BUILD PREVIEW"}/><div className="robot-action-grid">{ROBOT_ACTIONS.map(a=><button key={a.pose} onClick={()=>play(a.pose)}>{a.icon} {profile.language==="es-MX"?a.es:a.en}</button>)}</div></div><section className="fw-panel"><label>Robot name<input value={draft.name} onChange={e=>set("name",e.target.value)}/></label><div className="fw-form-grid">{Object.entries(robotOptions).map(([key,values])=><label key={key}>{key.replaceAll("_"," ")}<select value={String(draft[key as keyof Robot]||values[0])} onChange={e=>set(key as keyof Robot,e.target.value)}>{values.map(v=><option key={v}>{v}</option>)}</select></label>)}</div><div className="monster-form-section"><h2>Robot jobs</h2><div className="job-grid">{ROBOT_JOBS.map(job=><button className={draft.job===job?"active":""} key={job} onClick={()=>set("job",job)}>{job}</button>)}</div><div className="job-readout"><b>Current job:</b> {draft.job}<br/><small>Complete jobs to earn XP and stars.</small></div><button onClick={doJob}>⚙️ Do this job</button></div><div className="fw-action-row"><button onClick={randomize}>🎲 Random robot</button><button className="fw-primary" onClick={save}>💾 Save robot</button></div><div className="fw-collection-row">{profile.robots.map(robot=><button key={robot.id} onClick={()=>setDraft({...robot})}>🤖 {robot.name}</button>)}</div></section></div>;
-}
-function AnimalForest({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) { const animals=mergeAnimalLibrary(profile.animals); const [habitat,setHabitat]=useState("All"); const [query,setQuery]=useState(""); const habitats=["All",...new Set(animals.map(a=>a.habitat))]; const shown=animals.filter(a=>(habitat==="All"||a.habitat===habitat)&&a.name.toLowerCase().includes(query.toLowerCase())); const toggle=(animalId:string,field:"discovered"|"favorite")=>{const animal=animals.find(i=>i.id===animalId);const updated=animals.map(i=>i.id===animalId?{...i,[field]:!i[field]}:i);update({...profile,animals:updated,stars:field==="discovered"&&animal&&!animal.discovered?profile.stars+1:profile.stars});}; return <><div className="field-guide-tools"><input placeholder="Search animals…" value={query} onChange={e=>setQuery(e.target.value)}/></div><div className="fw-filter-row">{habitats.map(item=><button className={item===habitat?"active":""} key={item} onClick={()=>setHabitat(item)}>{item}</button>)}</div><p className="photo-credit-note">Real wildlife photographs load from Wikipedia and Wikimedia Commons. Emoji remains as an offline fallback.</p><div className="fw-card-grid">{shown.map(animal=><article className={`fw-creature-card animal-card-v2 ${animal.discovered?"is-discovered":""}`} key={animal.id}><AnimalPhoto animal={animal}/><div className="animal-copy"><h3>{animal.name}</h3><div className="animal-meta"><span>{animal.habitat}</span><span>{animal.group}</span><span>{animal.region}</span></div><p>{animal.discovered?animal.fact:"Complete a field scan to reveal this fact."}</p>{animal.discovered&&<small><b>Adaptation:</b> {animal.adaptation}</small>}<div className="fw-action-row"><button onClick={()=>toggle(animal.id,"discovered")}>{animal.discovered?"✅ In guide":"🔭 Discover"}</button><button onClick={()=>toggle(animal.id,"favorite")}>{animal.favorite?"⭐":"☆"}</button></div></div></article>)}</div></>; }
-function MonsterLab({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) {
-  const blank=():MonsterRecord=>({id:id("monster"),name:"Glimmer",body:"Dragon",eyes:"Three eyes",horns:"Crystal horns",wings:"Star wings",color:"Aqua",pattern:"Galaxy",power:"Rainbow shield",personality:"Curious",friendship:1,habitat:"Crystal Cave",mouth:"Fang smile",arms:"Claw arms",legs:"Dinosaur legs",tail:"Dragon tail",texture:"Crystal",animation:"Bounce"}); const [draft,setDraft]=useState<MonsterRecord>(blank()); const motion=useMonsterMotion();
-  const options:Record<string,string[]>={body:["Blob","Dragon","Jungle Beast","Stone Golem","Spirit","Cosmic","Aquatic","Candy","Mecha","Royal","Volcano","Ice Beast","Alien","Dinosaur","Cloud"],eyes:["One eye","Two eyes","Three eyes","Four eyes","Star eyes","Sleepy eyes","Robot visor","Anime eyes","Fire eyes","Galaxy eyes"],mouth:["Friendly smile","Fang smile","Big grin","Tiny mouth","Beak","Robot speaker","Dragon snout"],horns:["No horns","Tiny horns","Crystal horns","Dragon horns","Antlers","Unicorn horn","Mecha antenna","Flame horns"],wings:["No wings","Bat wings","Dragon wings","Star wings","Butterfly wings","Mecha wings","Angel wings","Fire wings"],arms:["Tiny arms","Claw arms","Four arms","Tentacles","Giant hands","Robot arms","Wing arms"],legs:["Tiny feet","Dinosaur legs","Spider legs","Hover base","Spring legs","Robot treads","Mermaid tail"],tail:["No tail","Dragon tail","Lion tail","Scorpion tail","Fish tail","Flame tail","Robot cable"],color:["Aqua","Purple","Lime","Orange","Pink","Blue","Red","Gold","Midnight","Pearl","Emerald","Crimson"],pattern:["Solid","Spots","Stripes","Galaxy","Scales","Candy swirl","Lightning","Stars","Camouflage","Circuit lines"],texture:["Smooth","Furry","Crystal","Stone","Slime","Metal","Cloud","Lava"],power:["Rainbow shield","Bubble beam","Plant growth","Moonlight","Super jump","Friendly roar","Fire breath","Ice blast","Teleport","Healing sparkle","Thunder clap","Invisibility"],personality:["Curious","Silly","Brave","Shy","Helpful","Sleepy","Loyal","Mischievous","Wise","Playful"],habitat:["Crystal Cave","Cloud Nest","Jungle Hut","Ocean Dome","Candy Castle","Moon Base","Volcano Fort","Ice Palace","Mecha Garage","Star Garden"],animation:["Bounce","Spin","Roar","Fly","Dance","Sleep"]}; const save=()=>{const monster={...draft,id:draft.id||id("monster"),name:draft.name.trim()||"Monster"};const monsters=profile.monsters.some(i=>i.id===monster.id)?profile.monsters.map(i=>i.id===monster.id?monster:i):[...profile.monsters,monster];update({...profile,monsters,stars:profile.stars+2});motion.play("dance");};
-  return <div className="fw-builder-layout"><div><MonsterStage monster={draft} action={motion.action}/><div className="monster-action-row">{["bounce","spin","roar","fly","dance","sleep"].map(action=><button key={action} onClick={()=>motion.play(action)}>{action}</button>)}</div></div><section className="fw-panel"><label>Monster name<input value={draft.name} onChange={e=>setDraft({...draft,name:e.target.value})}/></label><div className="fw-form-grid">{Object.entries(options).map(([key,values])=><label key={key}>{key}<select value={String(draft[key as keyof MonsterRecord]||values[0])} onChange={e=>setDraft({...draft,[key]:e.target.value})}>{values.map(v=><option key={v}>{v}</option>)}</select></label>)}</div><button className="fw-primary" onClick={save}>👾 Save monster</button><div className="monster-collection">{profile.monsters.map(monster=><button key={monster.id} onClick={()=>setDraft({...monster})}>👾 {monster.name} · {monster.body}</button>)}</div></section></div>;
-}
-function MonsterHabitats({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) { const befriend=(monsterId:string)=>update({...profile,monsters:profile.monsters.map(m=>m.id===monsterId?{...m,friendship:Math.min(100,m.friendship+10)}:m),stars:profile.stars+1}); return profile.monsters.length?<div className="fw-card-grid">{profile.monsters.map(m=><article className="fw-creature-card" key={m.id}><MonsterStage monster={m}/><h3>{m.habitat}</h3><p>Friendship: {m.friendship}/100</p><button onClick={()=>befriend(m.id)}>🍎 Feed and play</button></article>)}</div>:<div className="fw-empty">Create a monster first.</div>; }
-function ArtStudio({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) { const [draft,setDraft]=useState<ArtworkRecord>({id:id("art"),title:"Adventure Poster",background:"Starry Space",subject:profile.robot.name,frame:"Gold Frame",caption:"Explore. Build. Imagine."}); const save=()=>update({...profile,artwork:[...profile.artwork,{...draft,id:id("art")}],stars:profile.stars+2}); return <div className="fw-builder-layout"><article className={`fw-poster fw-poster--${draft.background.toLowerCase().replaceAll(" ","-")}`}><div className="fw-poster__frame"><small>{draft.title}</small><div>🎨</div><h2>{draft.subject}</h2><p>{draft.caption}</p></div></article><section className="fw-panel">{(["title","background","subject","frame","caption"] as const).map(key=><label key={key}>{key}<input value={draft[key]} onChange={e=>setDraft({...draft,[key]:e.target.value})}/></label>)}<button className="fw-primary" onClick={save}>🖼️ Save artwork</button></section></div>; }
-function StoryCastle({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) { const heroes=[profile.robot.name,...profile.monsters.map(m=>m.name),...profile.pets.map(p=>p.name)]; const [draft,setDraft]=useState<StoryRecord>({id:id("story"),title:"The Bright Trail",hero:heroes[0]||"BoltBot",place:"Animal Forest",problem:"a mysterious light disappeared",ending:"everyone worked together and found it",language:profile.language}); const text=draft.language==="es-MX"?`${draft.hero} viajó a ${draft.place}. Allí, ${draft.problem}. Después de una gran aventura, ${draft.ending}.`:`${draft.hero} traveled to ${draft.place}. There, ${draft.problem}. After a great adventure, ${draft.ending}.`; const save=()=>update({...profile,stories:[...profile.stories,{...draft,id:id("story")}],stars:profile.stars+2}); const speak=()=>{speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(text));}; return <div className="fw-builder-layout"><article className="fw-story-page"><small>{draft.language==="es-MX"?"CUENTO":"STORY"}</small><h2>{draft.title}</h2><p>{text}</p><button onClick={speak}>🔊 Read aloud</button></article><section className="fw-panel"><label>Title<input value={draft.title} onChange={e=>setDraft({...draft,title:e.target.value})}/></label><label>Hero<select value={draft.hero} onChange={e=>setDraft({...draft,hero:e.target.value})}>{heroes.map(v=><option key={v}>{v}</option>)}</select></label><label>Place<input value={draft.place} onChange={e=>setDraft({...draft,place:e.target.value})}/></label><label>Problem<input value={draft.problem} onChange={e=>setDraft({...draft,problem:e.target.value})}/></label><label>Ending<input value={draft.ending} onChange={e=>setDraft({...draft,ending:e.target.value})}/></label><button className="fw-primary" onClick={save}>📚 Save story</button></section></div>; }
-function Arcade({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) {const games=["Animal Clue","Pattern Power","Robot Memory","Dino Dig","Monster Maze","Rocket Math"];return <div className="fw-card-grid">{games.map((g,i)=><article className="fw-game-card" key={g}><div>{["🐾","🧩","🤖","🦖","👾","🚀"][i]}</div><h3>{g}</h3><p>Best score: {profile.arcadeScores[g]??0}</p><button onClick={()=>{const score=Math.floor(Math.random()*51)+50;update({...profile,arcadeScores:{...profile.arcadeScores,[g]:Math.max(score,profile.arcadeScores[g]??0)},stars:profile.stars+1})}}>▶ Play</button></article>)}</div>;}
-function DinosaurValley({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) {return <div className="fw-card-grid">{profile.dinosaurs.map(d=><article className={`fw-dino-card ${d.discovered?"is-discovered":""}`} key={d.id}><div>{d.emoji}</div><h3>{d.name}</h3><span>{d.period}</span><p>{d.discovered?"Field guide unlocked and fossil recovered.":"Start an expedition to discover this dinosaur."}</p><button onClick={()=>update({...profile,dinosaurs:profile.dinosaurs.map(x=>x.id===d.id?{...x,discovered:true}:x),fossils:profile.fossils.includes(`${d.name} Fossil`)?profile.fossils:[...profile.fossils,`${d.name} Fossil`],stars:profile.stars+2})}>⛏️ Expedition</button></article>)}</div>;}
-function PetWorkshop({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) {const [draft,setDraft]=useState<PetRecord>({id:id("pet"),name:"Sparky",species:"Robot Dog",color:"Blue",accessory:"Explorer Scarf",personality:"Playful",bond:1,tricks:[]});const options={species:["Robot Dog","Robot Cat","Mini Dinosaur","Tiny Dragon","Penguin Bot","Fox Bot","Owl Scout","Space Orb"],color:["Blue","Red","Purple","Green","Gold","Pink"],accessory:["Explorer Scarf","Jetpack","Star Collar","Goggles","Tiny Crown","Tool Pack"],personality:["Playful","Brave","Gentle","Curious","Silly","Wise"]};return <div className="fw-builder-layout"><article className="fw-pet-stage"><div className="fw-pet">🐾</div><h2>{draft.name}</h2><p>{draft.species} · {draft.accessory}</p></article><section className="fw-panel"><label>Name<input value={draft.name} onChange={e=>setDraft({...draft,name:e.target.value})}/></label><div className="fw-form-grid">{Object.entries(options).map(([key,values])=><label key={key}>{key}<select value={String(draft[key as keyof PetRecord])} onChange={e=>setDraft({...draft,[key]:e.target.value})}>{values.map(v=><option key={v}>{v}</option>)}</select></label>)}</div><button className="fw-primary" onClick={()=>{const pet={...draft,id:id("pet")};update({...profile,pets:[...profile.pets,pet],activePetId:profile.activePetId??pet.id,stars:profile.stars+2})}}>🐾 Save pet</button></section></div>;}
-function RobotHome({profile,update}:{profile:LocalProfile;update:(p:LocalProfile)=>void}) {const activePet=profile.pets.find(p=>p.id===profile.activePetId)??profile.pets[0];const decor=["Charging Dock","Animal Photo Wall","Trophy Shelf","Mecha Banner","Monster Plush","Star Window","Dino Fossil Case","Art Gallery"];return <><article className="fw-room"><div className="fw-room__window">✨</div><div className="fw-room__robot"><RobotStage robot={profile.robot} statusLabel="HOME" levelLabel="LV"/></div><div className="fw-room__pet">{activePet?`🐾 ${activePet.name}`:""}</div><div className="fw-room__art">{profile.artwork.at(-1)?.title??""}</div><div className="fw-room__decor">{profile.decorations.map(item=><span key={item}>{item}</span>)}</div></article><div className="fw-filter-row">{decor.map(item=><button className={profile.decorations.includes(item)?"active":""} key={item} onClick={()=>update({...profile,decorations:profile.decorations.includes(item)?profile.decorations.filter(v=>v!==item):[...profile.decorations,item]})}>{item}</button>)}</div></>;}
-function Museum({profile}:{profile:LocalProfile}) {const groups:Array<[string,string,string[]]>=[["🤖","Robots",profile.robots.map(i=>i.name)],["🐾","Animals",mergeAnimalLibrary(profile.animals).filter(i=>i.discovered).map(i=>i.name)],["👾","Monsters",profile.monsters.map(i=>i.name)],["🐕","Pets",profile.pets.map(i=>i.name)],["🎨","Artwork",profile.artwork.map(i=>i.title)],["📚","Stories",profile.stories.map(i=>i.title)],["🦖","Dinosaurs",profile.dinosaurs.filter(i=>i.discovered).map(i=>i.name)],["🦴","Fossils",profile.fossils]];return <div className="fw-card-grid">{groups.map(([emoji,title,items])=><article className="fw-memory-card" key={title}><div>{emoji}</div><h3>{title}</h3><strong>{items.length}</strong><ul>{items.slice(-8).map(item=><li key={item}>{item}</li>)}</ul></article>)}</div>;}
-function Badges({profile}:{profile:LocalProfile}) {const badges:Array<[boolean,string,string]>=[[profile.stars>=5,"⭐","Star Starter"],[profile.robots.length>=2,"🤖","Robot Engineer"],[mergeAnimalLibrary(profile.animals).filter(i=>i.discovered).length>=5,"🐾","Wildlife Explorer"],[profile.monsters.length>=1,"👾","Monster Maker"],[profile.pets.length>=1,"🐕","Pet Partner"],[profile.artwork.length>=1,"🎨","Young Artist"],[profile.stories.length>=1,"📚","Story Builder"],[profile.fossils.length>=3,"🦴","Fossil Hunter"]];return <div className="fw-badge-grid">{badges.map(([earned,emoji,name])=><article className={earned?"earned":"locked"} key={name}><span>{earned?emoji:"🔒"}</span><h3>{name}</h3><p>{earned?"Unlocked":"Keep exploring"}</p></article>)}</div>;}
-function Settings({store,profile,setStore,update}:{store:LocalSaveStore;profile:LocalProfile;setStore:(s:LocalSaveStore)=>void;update:(p:LocalProfile)=>void}) {const [name,setName]=useState("");const fileInput=useRef<HTMLInputElement>(null);const download=()=>{const blob=new Blob([exportProfile(profile)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`nicos-world-${profile.playerName}.json`;a.click();URL.revokeObjectURL(url)};return <div className="fw-settings-grid"><article className="fw-panel"><h2>Language / Idioma</h2><select value={profile.language} onChange={e=>update({...profile,language:e.target.value as Language})}><option value="en">English</option><option value="es-MX">Español de México</option></select><h2>Profiles</h2><select value={profile.id} onChange={e=>setStore({...store,activeProfileId:e.target.value})}>{store.profiles.map(i=><option key={i.id} value={i.id}>{i.playerName}</option>)}</select><div className="fw-action-row"><input value={name} onChange={e=>setName(e.target.value)} placeholder="Friend's name"/><button onClick={()=>{if(!name.trim())return;const next=createProfile(name,profile.language);setStore({...store,activeProfileId:next.id,profiles:[...store.profiles,next].slice(-12)});setName("")}}>＋</button></div></article><article className="fw-panel"><h2>Private local save</h2><p>Progress is stored only in this browser.</p><button onClick={download}>⬇️ Backup</button><button onClick={()=>fileInput.current?.click()}>⬆️ Restore</button><input hidden ref={fileInput} type="file" accept=".json,application/json" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;const imported=importProfile(await file.text());setStore({...store,activeProfileId:imported.id,profiles:[...store.profiles,imported].slice(-12)})}}/></article></div>;}
-
-export default function FullApp() { const [store,setStore]=useState<LocalSaveStore>(()=>loadLocalStore()); const profile=useMemo(()=>store.profiles.find(i=>i.id===store.activeProfileId)??store.profiles[0],[store]); useEffect(()=>{saveLocalStore(store)},[store]); useEffect(()=>{document.documentElement.lang=profile.language;document.title=profile.language==="es-MX"?"El Mundo de Nico":"Nico's World"},[profile.language]); useEffect(()=>{navigator.serviceWorker?.register("/sw.js").catch(()=>undefined)},[]); const update=(next:LocalProfile)=>setStore(current=>({...current,profiles:current.profiles.map(item=>item.id===current.activeProfileId?touchProfile(next):item)})); const open=(sectionId:SectionId)=>update({...profile,selectedSection:sectionId,sectionVisits:{...profile.sectionVisits,[sectionId]:Number(profile.sectionVisits[sectionId]??0)+1}}); const page=(()=>{switch(profile.selectedSection){case"world-map":return <WorldMap profile={profile} open={open}/>;case"robo-lab":return <RoboLab profile={profile} update={update}/>;case"animal-forest":return <AnimalForest profile={profile} update={update}/>;case"monster-lab":return <MonsterLab profile={profile} update={update}/>;case"monster-habitats":return <MonsterHabitats profile={profile} update={update}/>;case"art-studio":return <ArtStudio profile={profile} update={update}/>;case"story-castle":return <StoryCastle profile={profile} update={update}/>;case"game-arcade":return <Arcade profile={profile} update={update}/>;case"dinosaur-valley":return <DinosaurValley profile={profile} update={update}/>;case"pet-workshop":return <PetWorkshop profile={profile} update={update}/>;case"robot-home":return <RobotHome profile={profile} update={update}/>;case"memory-book":return <Museum profile={profile}/>;case"badge-book":return <Badges profile={profile}/>;case"parent-settings":return <Settings store={store} profile={profile} setStore={setStore} update={update}/>;default:return <WorldMap profile={profile} open={open}/>}})(); const nav=["world-map","robo-lab","animal-forest","monster-lab","robot-home","parent-settings"] as SectionId[]; return <div className="fw-app"><Header profile={profile} open={open} update={update}/><main><PageTitle id={profile.selectedSection} language={profile.language}/>{page}</main><nav className="fw-bottom-nav">{nav.map(sectionId=>{const section=sections.find(i=>i.id===sectionId)!;return <button key={sectionId} className={profile.selectedSection===sectionId?"active":""} onClick={()=>open(sectionId)}><span>{section.emoji}</span><small>{t(section.name,profile.language)}</small></button>})}</nav></div>; }
