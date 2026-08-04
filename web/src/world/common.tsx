@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Language, LocalProfile, SectionId } from "../types";
-import { fieldLabel, tr, ui, type Localized } from "../i18n/core";
+import { fieldLabel, tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
 import { WORLD_SECTIONS } from "./catalogs";
 
@@ -13,12 +13,20 @@ export function AppHeader({
   profile,
   open,
   update,
+  announce,
 }: {
   profile: LocalProfile;
   open: (id: SectionId) => void;
   update: UpdateProfile;
+  announce: Announce;
 }) {
   const language = profile.language;
+  const switchLanguage = () => {
+    const nextLanguage: Language = language === "en" ? "es-MX" : "en";
+    update({ ...profile, language: nextLanguage });
+    announce(tr(ui.changedLanguage, nextLanguage));
+  };
+
   return (
     <header className="fw-topbar">
       <button type="button" className="fw-brand" onClick={() => open("world-map")} aria-label={tr(WORLD_SECTIONS[0].name, language)}>
@@ -32,7 +40,7 @@ export function AppHeader({
       <div className="fw-profile-pill" aria-label={`${profile.stars} ${tr(ui.stars, language)}`}>⭐ {profile.stars}</div>
       <button
         type="button"
-        onClick={() => update({ ...profile, language: language === "en" ? "es-MX" : "en" })}
+        onClick={switchLanguage}
         aria-label={language === "en" ? "Cambiar a español de México" : "Switch to English"}
       >
         {language === "en" ? "🇲🇽 Español" : "🇺🇸 English"}
@@ -116,8 +124,4 @@ export function EmptyState({ emoji, children }: { emoji: string; children: React
       <p>{children}</p>
     </div>
   );
-}
-
-export function SectionActions({ children, label }: { children: ReactNode; label: Localized }) {
-  return <div className="fw-action-row" role="group" aria-label={label.en}>{children}</div>;
 }
