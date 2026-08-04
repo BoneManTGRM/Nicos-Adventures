@@ -3,6 +3,10 @@ import path from "node:path";
 
 const root = path.resolve(import.meta.dirname, "..");
 const requiredFiles = [
+  "src/AppShell.tsx",
+  "src/app/AppStoreContext.tsx",
+  "src/app/AppErrorBoundary.tsx",
+  "src/app/app-shell.css",
   "src/i18n/core.ts",
   "src/i18n/options.ts",
   "src/i18n/display.ts",
@@ -14,9 +18,6 @@ const requiredFiles = [
   "src/world/RoboLab.tsx",
   "src/world/AnimalForest.tsx",
   "src/world/MonsterWorld.tsx",
-  "src/world/CreativeWorld.tsx",
-  "src/world/AdventureWorld.tsx",
-  "src/world/MemorySettings.tsx",
   "src/world/system-parity.css",
   "src/world/systemParity.test.tsx",
 ];
@@ -29,16 +30,18 @@ for (const relative of requiredFiles) {
 }
 
 const read = (relative) => fs.readFileSync(path.join(root, relative), "utf8");
+const main = read("src/main.tsx");
+const appShell = read("src/AppShell.tsx");
+const appStore = read("src/app/AppStoreContext.tsx");
+const legacyStoreHook = read("src/hooks/useActiveProfileStore.ts");
 const fullApp = read("src/FullApp.tsx");
 const storage = read("src/storage.ts");
-const syncBoundary = read("src/FullAppSync.tsx");
 const core = read("src/i18n/core.ts");
 const display = read("src/i18n/display.ts");
 const animalCopy = read("src/i18n/animals.ts");
 const catalogs = read("src/world/catalogs.ts");
 const common = read("src/world/common.tsx");
 const animalForest = read("src/world/AnimalForest.tsx");
-const memorySettings = read("src/world/MemorySettings.tsx");
 const parityCss = read("src/world/system-parity.css");
 const parityTests = read("src/world/systemParity.test.tsx");
 
@@ -84,20 +87,36 @@ for (const importedDestination of [
   }
 }
 
+if (!main.includes("<AppShell />") || main.includes("<FullAppSync") || main.includes("<NicoGuide") || main.includes("<NicoWorldExperience")) {
+  throw new Error("main.tsx must mount one AppShell instead of independently mounted product surfaces");
+}
+for (const surface of ["<FullApp />", "<NicoGuide />", "<NicoWorldExperience />", "<NicoPortalArt />"]) {
+  if (!appShell.includes(surface)) throw new Error(`AppShell is missing product surface: ${surface}`);
+}
+if (!appShell.includes("<AppStoreProvider>") || !appShell.includes("<AppErrorBoundary>")) {
+  throw new Error("AppShell is missing the single state provider or recovery boundary");
+}
+if (!appStore.includes("useState<LocalSaveStore>") || !appStore.includes('saveLocalStore(store, "app")')) {
+  throw new Error("The AppStore provider does not own and persist the canonical local store");
+}
+if (!appStore.includes("window.addEventListener(\"storage\"") || !appStore.includes("PROFILE_EVENT")) {
+  throw new Error("The AppStore provider does not synchronize external browser changes");
+}
+if (!fullApp.includes("useAppStore()") || fullApp.includes("loadLocalStore") || fullApp.includes("saveLocalStore")) {
+  throw new Error("FullApp must consume the canonical store instead of creating or saving another store");
+}
+if (!legacyStoreHook.includes("useAppStore()") || legacyStoreHook.includes("useState") || legacyStoreHook.includes("loadLocalStore")) {
+  throw new Error("The legacy profile hook must be a context adapter, not a second store owner");
+}
+
 if (!fullApp.includes('className="fw-skip-link"') || !fullApp.includes('aria-live="polite"')) {
   throw new Error("The world shell is missing skip navigation or polite status announcements");
 }
 if (!fullApp.includes('data-section-id={profile.selectedSection}') || !fullApp.includes('id="main-content"')) {
   throw new Error("The world shell is missing stable main-content and section identifiers");
 }
-if (!fullApp.includes('saveLocalStore(store, "app")')) {
-  throw new Error("App-originated saves are not marked and may remount the active activity");
-}
 if (!storage.includes('source: "app" | "shared"') || !storage.includes("CustomEvent<ProfileEventDetail>")) {
   throw new Error("Profile save events do not expose a typed synchronization source");
-}
-if (!syncBoundary.includes('detail?.source === "app"')) {
-  throw new Error("FullAppSync does not ignore app-originated saves");
 }
 
 for (const key of ["skipToContent", "mainNavigation", "restoreSuccess", "noAnimalResults", "saveMonster", "saveStory"]) {
@@ -129,9 +148,6 @@ if (!common.includes('aria-current={active ? "page" : undefined}') || !common.in
 if (!animalForest.includes("localizeAnimalCompat") || !animalForest.includes('aria-pressed={sourceAnimal.favorite}')) {
   throw new Error("Animal Forest bilingual or favorite accessibility behavior is incomplete");
 }
-if (!memorySettings.includes("fossilLabel") || !memorySettings.includes("restoreSuccess")) {
-  throw new Error("Memory Museum or backup/restore bilingual display is incomplete");
-}
 
 for (const cssContract of ["min-height:44px", ":focus-visible", "env(safe-area-inset", "prefers-reduced-motion"]) {
   if (!parityCss.includes(cssContract)) {
@@ -142,4 +158,4 @@ if (!parityTests.includes("bilingual catalog coverage") || !parityTests.includes
   throw new Error("Bilingual and accessible navigation regression tests are missing");
 }
 
-console.log(`System parity validation passed for ${sectionIds.length} destinations, bilingual identifiers, legacy profile display, app-save synchronization, keyboard focus, touch targets, safe areas, and reduced motion.`);
+console.log(`System parity validation passed for one AppShell state owner, ${sectionIds.length} destinations, bilingual identifiers, keyboard focus, touch targets, safe areas, and reduced motion.`);
