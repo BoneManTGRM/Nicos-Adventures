@@ -19,7 +19,13 @@ export function useWardrobeDrag(onDrop: (item: WardrobeItem) => void) {
   const begin = (event: ReactPointerEvent<HTMLButtonElement>, item: WardrobeItem) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
     suppressClick.current = false;
-    event.currentTarget.setPointerCapture(event.pointerId);
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Synthetic accessibility/browser-test pointer streams may not create a
+      // native capture target. Window-level coordinates and hit testing still
+      // provide the same deterministic equip behavior.
+    }
     setDrag({
       item,
       pointerId: event.pointerId,
