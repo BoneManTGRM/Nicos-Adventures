@@ -110,10 +110,36 @@ export type NicoProfessionId =
   | "detective"
   | "librarian";
 
+export type WardrobeSlot =
+  | "headwear"
+  | "eyewear"
+  | "top"
+  | "outerwear"
+  | "bottoms"
+  | "shoes"
+  | "backpack"
+  | "badge"
+  | "prop";
+
+export type NicoWardrobe = {
+  presetId: NicoProfessionId | null;
+  headwear: string | null;
+  eyewear: string | null;
+  top: string | null;
+  outerwear: string | null;
+  bottoms: string | null;
+  shoes: string | null;
+  backpack: string | null;
+  badge: string | null;
+  prop: string | null;
+  accentColor: string;
+};
+
 export type NicoPreferences = {
   profession: NicoProfessionId;
   accentColor: string;
   speechEnabled: boolean;
+  wardrobe: NicoWardrobe;
 };
 
 export type MovieCharacterKind = "nico" | "robot" | "monster" | "pet";
@@ -145,7 +171,7 @@ export type MovieProject = {
 };
 
 export type LocalProfile = {
-  schemaVersion: 3;
+  schemaVersion: 4;
   id: string;
   playerName: string;
   language: Language;
@@ -155,11 +181,13 @@ export type LocalProfile = {
   sectionVisits: Partial<Record<SectionId, number>>;
   robot: Robot;
   robots: Robot[];
+  activeRobotId: string;
   animals: AnimalRecord[];
   monsters: MonsterRecord[];
   pets: PetRecord[];
   activePetId: string | null;
   artwork: ArtworkRecord[];
+  displayedArtworkId: string | null;
   stories: StoryRecord[];
   dinosaurs: DinosaurRecord[];
   fossils: string[];
@@ -168,8 +196,9 @@ export type LocalProfile = {
   badges: string[];
   movieProjects: MovieProject[];
   nico: NicoPreferences;
+  lastBackupAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
-export type LocalSaveStore = { schemaVersion: 3; activeProfileId: string; profiles: LocalProfile[]; };
+export type LocalSaveStore = { schemaVersion: 4; activeProfileId: string; profiles: LocalProfile[]; };
