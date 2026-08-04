@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RobotStage } from "../RobotStage";
 import type { LocalProfile, PetRecord } from "../types";
 import { tr, ui } from "../i18n/core";
-import { optionLabel } from "../i18n/options";
+import { optionLabel } from "../i18n/display";
 import { ARCADE_GAMES, ARCADE_ICONS, PET_OPTIONS, ROOM_DECORATIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, LocalizedSelect, makeId } from "./common";
@@ -60,7 +60,7 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
         <article className={`fw-dino-card ${dinosaur.discovered ? "is-discovered" : ""}`} key={dinosaur.id}>
           <div aria-hidden="true">{dinosaur.emoji}</div>
           <h3>{dinosaur.name}</h3>
-          <span>{dinosaur.period}</span>
+          <span>{optionLabel(dinosaur.period, language)}</span>
           <p>{dinosaur.discovered ? tr(ui.fieldGuideUnlocked, language) : tr(ui.startExpedition, language)}</p>
           <button type="button" onClick={() => discover(dinosaur.id)} disabled={dinosaur.discovered}>
             {dinosaur.discovered ? `✅ ${language === "es-MX" ? "Descubierto" : "Discovered"}` : `⛏️ ${tr(ui.expedition, language)}`}
