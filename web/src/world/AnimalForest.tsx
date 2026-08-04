@@ -6,8 +6,18 @@ import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState } from "./common";
+import { completeOnce, fieldMissionId, hasCompleted } from "./progression";
 
 const photoCache = new Map<string, string>();
+
+type FieldMission = {
+  id: string;
+  emoji: string;
+  title: { en: string; "es-MX": string };
+  current: number;
+  target: number;
+  reward: number;
+};
 
 function WildlifePhoto({ animal, language }: { animal: AnimalRecord; language: Language }) {
   const cacheKey = animal.imageTitle || animal.name;
@@ -59,6 +69,41 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
   const [habitat, setHabitat] = useState("All");
   const [query, setQuery] = useState("");
   const habitats = useMemo(() => ["All", ...new Set(animals.map((animal) => animal.habitat))], [animals]);
+  const discoveredAnimals = useMemo(() => animals.filter((animal) => animal.discovered), [animals]);
+  const fieldMissions = useMemo<FieldMission[]>(() => [
+    {
+      id: "three-animals",
+      emoji: "🔭",
+      title: { en: "Discover 3 animals", "es-MX": "Descubre 3 animales" },
+      current: discoveredAnimals.length,
+      target: 3,
+      reward: 2,
+    },
+    {
+      id: "three-habitats",
+      emoji: "🗺️",
+      title: { en: "Explore 3 habitats", "es-MX": "Explora 3 hábitats" },
+      current: new Set(discoveredAnimals.map((animal) => animal.habitat)).size,
+      target: 3,
+      reward: 2,
+    },
+    {
+      id: "three-favorites",
+      emoji: "⭐",
+      title: { en: "Choose 3 favorites", "es-MX": "Elige 3 favoritos" },
+      current: animals.filter((animal) => animal.favorite).length,
+      target: 3,
+      reward: 1,
+    },
+    {
+      id: "ten-animals",
+      emoji: "🏅",
+      title: { en: "Build a 10-animal field guide", "es-MX": "Crea una guía de 10 animales" },
+      current: discoveredAnimals.length,
+      target: 10,
+      reward: 3,
+    },
+  ], [animals, discoveredAnimals]);
   const shown = useMemo(() => animals.filter((animal) => {
     const localized = localizeAnimalCompat(animal, language);
     const matchesHabitat = habitat === "All" || animal.habitat === habitat;
@@ -84,8 +129,51 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
     announce(`${localized.name}: ${animal.favorite ? tr(ui.removeFavorite, language) : tr(ui.favorite, language)}`);
   };
 
+  const claimMission = (mission: FieldMission) => {
+    const missionId = fieldMissionId(mission.id);
+    if (mission.current < mission.target || hasCompleted(profile, missionId)) return;
+    const completion = completeOnce(profile, missionId, mission.reward);
+    update(completion.profile);
+    announce(language === "es-MX"
+      ? `Misión completada: ${mission.title[language]}. Ganaste ${mission.reward} estrellas.`
+      : `Mission completed: ${mission.title[language]}. You earned ${mission.reward} stars.`);
+  };
+
   return (
     <>
+      <section className="field-mission-panel" aria-labelledby="field-missions-heading">
+        <header>
+          <div>
+            <small>{language === "es-MX" ? "Progreso de exploración" : "Exploration progress"}</small>
+            <h2 id="field-missions-heading">{language === "es-MX" ? "Misiones de campo" : "Field missions"}</h2>
+          </div>
+          <strong>{discoveredAnimals.length}/{animals.length}</strong>
+        </header>
+        <div className="field-mission-grid">
+          {fieldMissions.map((mission) => {
+            const completed = hasCompleted(profile, fieldMissionId(mission.id));
+            const ready = mission.current >= mission.target;
+            return (
+              <article className={`${completed ? "completed" : ready ? "ready" : ""}`.trim()} key={mission.id}>
+                <span aria-hidden="true">{mission.emoji}</span>
+                <div>
+                  <h3>{mission.title[language]}</h3>
+                  <progress max={mission.target} value={Math.min(mission.target, mission.current)}>{mission.current}/{mission.target}</progress>
+                  <small>{Math.min(mission.current, mission.target)}/{mission.target} · ⭐ {mission.reward}</small>
+                </div>
+                <button type="button" onClick={() => claimMission(mission)} disabled={!ready || completed}>
+                  {completed
+                    ? (language === "es-MX" ? "Completada" : "Completed")
+                    : ready
+                      ? (language === "es-MX" ? "Reclamar" : "Claim")
+                      : (language === "es-MX" ? "En progreso" : "In progress")}
+                </button>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
       <div className="field-guide-tools">
         <label className="sr-only" htmlFor="animal-search">{tr(ui.searchAnimals, language)}</label>
         <input
