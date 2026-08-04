@@ -17,16 +17,10 @@ type RoomGoal = {
   reward: number;
 };
 
-function moveToEnd<T extends { id: string }>(items: T[], id: string): T[] {
-  const selected = items.find((item) => item.id === id);
-  if (!selected) return items;
-  return [...items.filter((item) => item.id !== id), selected];
-}
-
 export function RobotHome({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
   const activePet = profile.pets.find((pet) => pet.id === profile.activePetId) ?? profile.pets[0];
-  const displayedArtwork = profile.artwork.at(-1) ?? null;
+  const displayedArtwork = profile.artwork.find((artwork) => artwork.id === profile.displayedArtworkId) ?? profile.artwork.at(-1) ?? null;
   const roomGoals = useMemo<RoomGoal[]>(() => [
     {
       id: "robot-team",
@@ -59,7 +53,7 @@ export function RobotHome({ profile, update, announce }: { profile: LocalProfile
   ], [activePet, displayedArtwork, profile.decorations.length, profile.robots.length]);
 
   const chooseRobot = (robot: Robot) => {
-    update({ ...profile, robot });
+    update({ ...profile, robot, activeRobotId: robot.id });
     announce(language === "es-MX" ? `${robot.name} está activo en la Casa Robot.` : `${robot.name} is active in Robot Home.`);
   };
 
@@ -69,7 +63,7 @@ export function RobotHome({ profile, update, announce }: { profile: LocalProfile
   };
 
   const displayArtwork = (artwork: ArtworkRecord) => {
-    update({ ...profile, artwork: moveToEnd(profile.artwork, artwork.id) });
+    update({ ...profile, displayedArtworkId: artwork.id });
     announce(language === "es-MX" ? `${artwork.title} está en exhibición.` : `${artwork.title} is on display.`);
   };
 
@@ -119,7 +113,7 @@ export function RobotHome({ profile, update, announce }: { profile: LocalProfile
             <h3>{language === "es-MX" ? "Robot activo" : "Active robot"}</h3>
             <div className="robot-home-choice-list">
               {profile.robots.map((robot) => (
-                <button type="button" className={profile.robot.id === robot.id ? "active" : ""} aria-pressed={profile.robot.id === robot.id} key={robot.id} onClick={() => chooseRobot(robot)}>🤖 {robot.name}</button>
+                <button type="button" className={profile.activeRobotId === robot.id ? "active" : ""} aria-pressed={profile.activeRobotId === robot.id} key={robot.id} onClick={() => chooseRobot(robot)}>🤖 {robot.name}</button>
               ))}
             </div>
           </article>
