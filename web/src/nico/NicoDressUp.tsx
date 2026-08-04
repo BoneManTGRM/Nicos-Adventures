@@ -5,6 +5,7 @@ import {
   NICO_PROFESSIONS,
   WardrobeStudio,
 } from "./wardrobe/WardrobeStudio";
+import { wardrobeForDisplay } from "./wardrobe/wardrobeCompatibility";
 
 export { applyNicoProfession, filterNicoProfessions, NICO_PROFESSIONS };
 
@@ -21,5 +22,9 @@ export function NicoDressUp({
   preferences: NicoPreferences;
   onSave: (preferences: NicoPreferences) => void;
 }) {
-  return <WardrobeStudio language={language} preferences={preferences} onSave={onSave} />;
+  const resolvedPreferences: NicoPreferences = {
+    ...preferences,
+    wardrobe: wardrobeForDisplay(preferences.wardrobe, preferences.profession),
+  };
+  return <WardrobeStudio language={language} preferences={resolvedPreferences} onSave={onSave} />;
 }
