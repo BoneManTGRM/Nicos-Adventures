@@ -9,6 +9,7 @@ import "./nico/nico-art-compat.css";
 import "./nico/nico-phase2.css";
 import "./nico/approved-nico-art.css";
 import "./nico/nico-drag-studio.css";
+import "./nico/nico-about.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
