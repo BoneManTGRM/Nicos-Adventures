@@ -99,7 +99,7 @@ export default function NicoGuide() {
     setIsOpen(false);
   };
 
-  const character = (className: string, alt: string) => (
+  const character = (alt: string) => (
     <NicoCostumeFigure
       profession={nico.profession}
       accentColor={nico.accentColor}
@@ -113,7 +113,7 @@ export default function NicoGuide() {
       {isOpen && (
         <section className="nico-guide__panel" id="nico-guide-panel" role="dialog" aria-modal="false" aria-labelledby="nico-guide-title">
           <button className="nico-guide__close" type="button" onClick={() => setIsOpen(false)} aria-label={text.closeLabel}>×</button>
-          <div className="nico-guide__portrait">{character("nico-guide__approved-portrait", text.artAlt)}</div>
+          <div className="nico-guide__portrait">{character(text.artAlt)}</div>
           <div className="nico-guide__copy">
             <small>{text.eyebrow}</small>
             <h2 id="nico-guide-title">{text.title}</h2>
@@ -136,7 +136,7 @@ export default function NicoGuide() {
         aria-controls="nico-guide-panel"
         aria-label={isOpen ? text.closeLabel : text.openLabel}
       >
-        {character("nico-guide__approved-launcher", "")}
+        {character("")}
         <span>{language === "es-MX" ? "¡Hola!" : "Hi!"}</span>
       </button>
     </aside>
