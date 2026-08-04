@@ -7,6 +7,7 @@ import { optionLabel } from "../i18n/display";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState } from "./common";
 import { completeOnce, fieldMissionId, hasCompleted } from "./progression";
+import { LocalWildlifeArt } from "./LocalWildlifeArt";
 
 const photoCache = new Map<string, string>();
 
@@ -19,22 +20,25 @@ type FieldMission = {
   reward: number;
 };
 
-function WildlifePhoto({ animal, language }: { animal: AnimalRecord; language: Language }) {
+function WildlifePhoto({ animal, displayName, language }: { animal: AnimalRecord; displayName: string; language: Language }) {
   const cacheKey = animal.imageTitle || animal.name;
   const [url, setUrl] = useState(() => photoCache.get(cacheKey) ?? "");
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (url || failed) return;
+    if (url || failed || (typeof navigator !== "undefined" && !navigator.onLine)) return;
     const title = encodeURIComponent(animal.imageTitle || animal.name);
     const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 4500);
     fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${title}`, {
       headers: { Accept: "application/json" },
       signal: controller.signal,
+      cache: "no-store",
     })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("Photo unavailable")))
       .then((data: { thumbnail?: { source?: string }; originalimage?: { source?: string } }) => {
-        const next = data.originalimage?.source || data.thumbnail?.source || "";
+        const next = data.thumbnail?.source || data.originalimage?.source || "";
         if (!next) throw new Error("Photo unavailable");
         photoCache.set(cacheKey, next);
         setUrl(next);
@@ -42,23 +46,38 @@ function WildlifePhoto({ animal, language }: { animal: AnimalRecord; language: L
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
         setFailed(true);
-      });
-    return () => controller.abort();
+      })
+      .finally(() => window.clearTimeout(timeout));
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, [animal.imageTitle, animal.name, cacheKey, failed, url]);
 
-  if (!url) {
-    return (
-      <div className="real-animal-photo real-animal-photo--fallback" role="img" aria-label={animal.name}>
-        <span aria-hidden="true">{animal.emoji}</span>
-        <small>{failed ? tr(ui.photoUnavailable, language) : tr(ui.photoLoading, language)}</small>
-      </div>
-    );
-  }
+  const credit = url && !failed
+    ? `${displayName} · Wikipedia/Wikimedia`
+    : `${displayName} · ${language === "es-MX" ? "ilustración local" : "local illustration"}`;
 
   return (
     <figure className="real-animal-photo">
-      <img src={url} alt={animal.name} loading="lazy" onError={() => setFailed(true)} />
-      <figcaption>{animal.name} · Wikipedia/Wikimedia</figcaption>
+      <LocalWildlifeArt animal={animal} displayName={displayName} language={language} />
+      {url && !failed && (
+        <img
+          className={loaded ? "is-loaded" : ""}
+          src={url}
+          alt={displayName}
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          data-asset-recovery="ignore"
+          onLoad={() => setLoaded(true)}
+          onError={() => {
+            setLoaded(false);
+            setFailed(true);
+          }}
+        />
+      )}
+      <figcaption>{credit}</figcaption>
     </figure>
   );
 }
@@ -197,14 +216,16 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
           </button>
         ))}
       </div>
-      <p className="photo-credit-note">{tr(ui.photoCredit, language)}</p>
+      <p className="photo-credit-note">{language === "es-MX"
+        ? "Cada tarjeta incluye una ilustración local. Cuando hay conexión, también puede aparecer una fotografía de Wikipedia o Wikimedia Commons."
+        : "Every card includes a local illustration. When online, a Wikipedia or Wikimedia Commons photograph may also appear."}</p>
       {!shown.length ? <EmptyState emoji="🔎">{tr(ui.noAnimalResults, language)}</EmptyState> : (
         <div className="fw-card-grid">
           {shown.map((sourceAnimal) => {
             const animal = localizeAnimalCompat(sourceAnimal, language);
             return (
               <article className={`fw-creature-card animal-card-v2 ${sourceAnimal.discovered ? "is-discovered" : ""}`} key={sourceAnimal.id}>
-                <WildlifePhoto animal={{ ...sourceAnimal, name: animal.name }} language={language} />
+                <WildlifePhoto animal={sourceAnimal} displayName={animal.name} language={language} />
                 <div className="animal-copy">
                   <h3>{animal.name}</h3>
                   <div className="animal-meta">
