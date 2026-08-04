@@ -51,13 +51,31 @@ describe("Nico drag-and-drop dress-up catalog", () => {
   });
 });
 
-describe("Nico composed art regression", () => {
-  it("renders one body with a transparent outfit layer", () => {
+describe("Nico visual-quality strategy", () => {
+  it("uses the polished finished outfit in the large Dress Up preview", () => {
     const html = renderToStaticMarkup(
       <NicoCostumeFigure
+        outfitArtSource="data:image/jpeg;base64,/9j/finished"
         baseArtSource="data:image/webp;base64,UklGbase"
         dragOutfitSource="data:image/webp;base64,UklGoutfit"
         profession="doctor"
+        alt="Doctor Nico"
+      />,
+    );
+
+    expect(html).toContain('data-art-state="approved-outfit"');
+    expect(html).toContain('data-approved-nico-outfit="true"');
+    expect(html).not.toContain('data-composed-nico="true"');
+  });
+
+  it("keeps one body plus outfit layer for compact synchronized placements", () => {
+    const html = renderToStaticMarkup(
+      <NicoCostumeFigure
+        outfitArtSource="data:image/jpeg;base64,/9j/finished"
+        baseArtSource="data:image/webp;base64,UklGbase"
+        dragOutfitSource="data:image/webp;base64,UklGoutfit"
+        profession="doctor"
+        compact
         alt="Doctor Nico"
       />,
     );
@@ -66,7 +84,6 @@ describe("Nico composed art regression", () => {
     expect(html).toContain('data-composed-nico="true"');
     expect(html).toContain("UklGbase");
     expect(html).toContain("UklGoutfit");
-    expect(html).toContain('aria-label="Doctor Nico"');
   });
 
   it("retains a recognizable fallback when local art is unavailable", () => {

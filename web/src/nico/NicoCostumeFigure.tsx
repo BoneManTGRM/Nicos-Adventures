@@ -65,11 +65,12 @@ export function NicoCostumeFigure({
   const resolvedOutfits = dragOutfitSource || localArt.outfitSource;
   const style = { "--nico-costume-accent": accentColor } as CSSProperties;
   const legacyOutfitStyle = approvedOutfitStyle(outfitArtSource, profession);
-  const composed = Boolean(resolvedBase && resolvedOutfits);
-  const artState = composed
-    ? "drag-composed"
-    : legacyOutfitStyle
-      ? "approved-outfit"
+  const showFinishedOutfit = Boolean(legacyOutfitStyle && !compact);
+  const composed = Boolean(resolvedBase && resolvedOutfits) && !showFinishedOutfit;
+  const artState = showFinishedOutfit
+    ? "approved-outfit"
+    : composed
+      ? "drag-composed"
       : artSource
         ? "approved-character"
         : "fallback";
@@ -82,13 +83,13 @@ export function NicoCostumeFigure({
       data-art-state={artState}
     >
       <div className="nico-costume__frame">
-        {composed ? (
+        {showFinishedOutfit ? (
+          <span className="nico-costume__approved" style={legacyOutfitStyle ?? undefined} role="img" aria-label={alt} data-approved-nico-outfit="true" />
+        ) : composed ? (
           <div className="nico-composed" role="img" aria-label={alt} data-composed-nico="true">
             <img src={resolvedBase} alt="" data-asset-recovery="ignore" decoding="async" draggable={false} />
             <span className="nico-composed__outfit" style={nicoOutfitSpriteStyle(resolvedOutfits, profession)} aria-hidden="true" />
           </div>
-        ) : legacyOutfitStyle ? (
-          <span className="nico-costume__approved" style={legacyOutfitStyle} role="img" aria-label={alt} data-approved-nico-outfit="true" />
         ) : artSource ? (
           <span className="nico-costume__approved" style={approvedCharacterStyle(artSource, compact ? "guide" : "full")} role="img" aria-label={alt} data-approved-nico-art="true" />
         ) : (
