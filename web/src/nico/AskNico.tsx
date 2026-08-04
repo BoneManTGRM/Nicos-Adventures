@@ -2,6 +2,7 @@ import { useMemo, useRef, useState, type FormEvent } from "react";
 import { answerNicoQuestion, suggestedQuestions, type NicoAnswer } from "./knowledge";
 import type { Language, NicoProfessionId } from "../types";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
+import { useNicoDragArt } from "./nicoDragArt";
 
 type Props = {
   language: Language;
@@ -29,6 +30,7 @@ const copy = {
     private: "Private and on-device",
     heroTitle: "Curious, smart, kind, and adventurous",
     heroBody: "Nico can explain the world, help with the app, and suggest a safe next adventure.",
+    artAlt: "Nico character guide",
   },
   "es-MX": {
     title: "Pregúntale a Nico",
@@ -40,6 +42,7 @@ const copy = {
     private: "Privado y en este dispositivo",
     heroTitle: "Curioso, inteligente, amable y aventurero",
     heroBody: "Nico puede explicar el mundo, ayudar con la aplicación y sugerir una aventura segura.",
+    artAlt: "Guía del personaje Nico",
   },
 } as const;
 
@@ -54,6 +57,7 @@ export function AskNico({
   accentColor = "#22c55e",
 }: Props) {
   const text = copy[language];
+  const art = useNicoDragArt();
   const [question, setQuestion] = useState("");
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -92,14 +96,18 @@ export function AskNico({
       </header>
 
       <div className="nico-ask-hero">
-        <NicoCostumeFigure
-          baseArtSource={baseArtSource}
-          dragOutfitSource={outfitArtSource}
-          profession={profession}
-          accentColor={accentColor}
-          compact
-          alt="Nico"
-        />
+        {art.aboutSource ? (
+          <img className="nico-ask-hero__art" src={art.aboutSource} alt={text.artAlt} data-asset-recovery="ignore" decoding="async" />
+        ) : (
+          <NicoCostumeFigure
+            baseArtSource={baseArtSource}
+            dragOutfitSource={outfitArtSource}
+            profession={profession}
+            accentColor={accentColor}
+            compact
+            alt="Nico"
+          />
+        )}
         <div>
           <h3>{text.heroTitle}</h3>
           <p>{text.heroBody}</p>
