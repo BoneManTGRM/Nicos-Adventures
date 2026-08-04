@@ -51,6 +51,7 @@ const requiredFiles = [
   "src/catalogs/nico-knowledge.json",
   "src/catalogs/nico-professions.json",
   "src/catalogs/showtime.json",
+  "../docs/PROFILE_SCHEMA_V4.md",
 ];
 for (const relative of requiredFiles) {
   const file = path.join(root, relative);
@@ -147,8 +148,8 @@ if (!costume.includes("data-composed-nico") || !costume.includes('data-art-state
 if (!dressUp.includes("onPointerDown") || !dressUp.includes("onPointerMove") || !dressUp.includes("data-nico-drop-zone")) {
   throw new Error("Touch drag-and-drop outfit behavior is incomplete");
 }
-if (!dressUp.includes("applyNicoProfession") || !dressUp.includes("useNicoDragArt")) {
-  throw new Error("Nico outfit persistence or local art loading is incomplete");
+if (!dressUp.includes("applyNicoProfession") || !dressUp.includes("wardrobe") || !dressUp.includes("presetId")) {
+  throw new Error("Nico profession presets are not synchronized with schema-v4 wardrobe state");
 }
 
 const characterPayload = [1, 2, 3]
@@ -171,11 +172,38 @@ if (!recovery.includes('dataset.recoverable !== "wildlife"')) {
 
 const types = read("src/types.ts");
 const storage = read("src/storage.ts");
-if (!types.includes("schemaVersion: 3")) throw new Error("This foundation slice must preserve profile schema v3");
-if (!types.includes("movieProjects: MovieProject[]")) throw new Error("Movie metadata is missing from the profile schema");
-if (!storage.includes('nicos-world-local-save-v3') || !storage.includes('"nicos-world-local-save-v2"')) {
-  throw new Error("Storage v3 or legacy migration support is missing");
+const schemaDocs = read("../docs/PROFILE_SCHEMA_V4.md");
+for (const contract of [
+  "schemaVersion: 4",
+  "activeRobotId: string",
+  "displayedArtworkId: string | null",
+  "lastBackupAt: string | null",
+  "wardrobe: NicoWardrobe",
+  "headwear: string | null",
+  "outerwear: string | null",
+  "prop: string | null",
+]) {
+  if (!types.includes(contract)) throw new Error(`Schema-v4 type contract is missing: ${contract}`);
 }
+for (const contract of [
+  "SCHEMA_VERSION = 4",
+  'nicos-world-local-save-v4',
+  'nicos-world-local-save-v3',
+  "normalizeWardrobe",
+  "completedMissions: uniqueNewest",
+  "activeRobotId",
+  "displayedArtworkId",
+  "nicos-world-local-profile-v4",
+]) {
+  if (!storage.includes(contract)) throw new Error(`Schema-v4 storage contract is missing: ${contract}`);
+}
+if (!storage.includes("1000, 140") || !storage.includes("sourceSchema >= 4")) {
+  throw new Error("Newest reward retention or legacy active-robot migration is incomplete");
+}
+if (!schemaDocs.includes("nicos-world-local-save-v4") || !schemaDocs.includes("Nico wardrobe foundation")) {
+  throw new Error("Schema-v4 documentation is incomplete");
+}
+if (!types.includes("movieProjects: MovieProject[]")) throw new Error("Movie metadata is missing from the profile schema");
 if (!storage.includes("professionData.map") || !storage.includes("PROFILE_EVENT")) {
   throw new Error("Catalog-driven normalization or profile synchronization is missing");
 }
@@ -235,4 +263,4 @@ for (const asset of [
   if (!sw.includes(asset)) throw new Error(`Nico asset is not cached: ${asset}`);
 }
 
-console.log(`Release validation passed for one AppShell, ${labels.length} wildlife species, ${professions.length} Nico outfit choices, accessible Clubhouse routing, local profiles, and outfit-aware Showtime recording.`);
+console.log(`Release validation passed for one AppShell, schema v4, ${labels.length} wildlife species, ${professions.length} Nico outfit choices, accessible Clubhouse routing, local profiles, and outfit-aware Showtime recording.`);
