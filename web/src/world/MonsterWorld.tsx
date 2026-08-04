@@ -6,6 +6,7 @@ import { optionLabel } from "../i18n/display";
 import { MONSTER_OPTIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, makeId } from "./common";
+import { completeOnce, hasCompleted, monsterFriendshipMission } from "./progression";
 
 function newMonster(): MonsterRecord {
   return {
@@ -119,18 +120,30 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
 
 export function MonsterHabitats({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
-  const befriend = (monsterId: string) => {
+
+  const care = (monsterId: string, amount: number, action: { en: string; "es-MX": string }) => {
     const monster = profile.monsters.find((item) => item.id === monsterId);
-    if (!monster) return;
-    const nextFriendship = Math.min(100, monster.friendship + 10);
-    update({
+    if (!monster || monster.friendship >= 100) return;
+    const nextFriendship = Math.min(100, monster.friendship + amount);
+    let nextProfile: LocalProfile = {
       ...profile,
       monsters: profile.monsters.map((item) => item.id === monsterId ? { ...item, friendship: nextFriendship } : item),
-      stars: profile.stars + (nextFriendship === 100 && monster.friendship < 100 ? 2 : 1),
-    });
-    announce(language === "es-MX"
-      ? `${monster.name} ahora tiene ${nextFriendship} de amistad.`
-      : `${monster.name} now has ${nextFriendship} friendship.`);
+    };
+    const earnedMilestones: number[] = [];
+    for (const threshold of [50, 100] as const) {
+      if (monster.friendship < threshold && nextFriendship >= threshold) {
+        const completion = completeOnce(nextProfile, monsterFriendshipMission(monsterId, threshold), threshold === 50 ? 2 : 3);
+        nextProfile = completion.profile;
+        if (completion.awarded) earnedMilestones.push(threshold);
+      }
+    }
+    update(nextProfile);
+    const milestoneText = earnedMilestones.length
+      ? (language === "es-MX"
+          ? ` Alcanzó el hito ${earnedMilestones.join(" y ")} y ganó estrellas.`
+          : ` Reached the ${earnedMilestones.join(" and ")} milestone and earned stars.`)
+      : "";
+    announce(`${monster.name}: ${action[language]}. ${tr(ui.friendship, language)} ${nextFriendship}/100.${milestoneText}`);
   };
 
   if (!profile.monsters.length) return <EmptyState emoji="🏕️">{tr(ui.createMonsterFirst, language)}</EmptyState>;
@@ -138,14 +151,23 @@ export function MonsterHabitats({ profile, update, announce }: { profile: LocalP
   return (
     <div className="fw-card-grid">
       {profile.monsters.map((monster) => (
-        <article className="fw-creature-card" key={monster.id}>
+        <article className="fw-creature-card monster-habitat-card" key={monster.id}>
           <MonsterStage monster={monster} />
-          <h3>{optionLabel(monster.habitat, language)}</h3>
+          <h3>{monster.name}</h3>
+          <p>{optionLabel(monster.habitat, language)} · {optionLabel(monster.personality, language)}</p>
           <label>
             {tr(ui.friendship, language)}: {monster.friendship}/100
             <progress max={100} value={monster.friendship}>{monster.friendship}%</progress>
           </label>
-          <button type="button" onClick={() => befriend(monster.id)} disabled={monster.friendship >= 100}>🍎 {tr(ui.feedPlay, language)}</button>
+          <div className="friendship-milestones" aria-label={language === "es-MX" ? "Hitos de amistad" : "Friendship milestones"}>
+            <span className={hasCompleted(profile, monsterFriendshipMission(monster.id, 50)) ? "earned" : ""}>⭐ 50</span>
+            <span className={hasCompleted(profile, monsterFriendshipMission(monster.id, 100)) ? "earned" : ""}>🏆 100</span>
+          </div>
+          <div className="fw-action-row" role="group" aria-label={language === "es-MX" ? `Cuidar a ${monster.name}` : `Care for ${monster.name}`}>
+            <button type="button" onClick={() => care(monster.id, 5, { en: "Fed", "es-MX": "Alimentado" })} disabled={monster.friendship >= 100}>🍎 {language === "es-MX" ? "Alimentar" : "Feed"}</button>
+            <button type="button" onClick={() => care(monster.id, 10, { en: "Played together", "es-MX": "Jugaron juntos" })} disabled={monster.friendship >= 100}>🎾 {language === "es-MX" ? "Jugar" : "Play"}</button>
+            <button type="button" onClick={() => care(monster.id, 5, { en: "Groomed", "es-MX": "Cepillado" })} disabled={monster.friendship >= 100}>🪮 {language === "es-MX" ? "Cepillar" : "Groom"}</button>
+          </div>
         </article>
       ))}
     </div>
