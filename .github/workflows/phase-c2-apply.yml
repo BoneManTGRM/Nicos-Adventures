@@ -1,0 +1,35 @@
+name: Apply Phase C2 integration
+
+on:
+  push:
+    branches:
+      - phase-c2/creative-home-memory
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-c2-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message, '[c2-sync]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: phase-c2/creative-home-memory
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Apply and verify C2 integration
+        run: |
+          if [[ -f .phase-c2/apply.sh ]]; then
+            bash .phase-c2/apply.sh
+          else
+            echo "Phase C2 integration already applied."
+          fi
