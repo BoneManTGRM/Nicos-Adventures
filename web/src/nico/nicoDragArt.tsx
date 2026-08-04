@@ -20,6 +20,19 @@ type OutfitCell = {
   row: number;
 };
 
+type LoadedNicoArt = Pick<NicoDragArtState, "baseSource" | "outfitSource" | "aboutSource">;
+
+const EMPTY_STATE: NicoDragArtState = {
+  baseSource: "",
+  outfitSource: "",
+  aboutSource: "",
+  loading: true,
+  error: null,
+};
+
+let cachedArt: LoadedNicoArt | null = null;
+let sharedLoad: Promise<LoadedNicoArt> | null = null;
+
 const CANONICAL_OUTFITS = [
   "explorer",
   "astronaut",
@@ -64,8 +77,8 @@ export const NICO_OUTFIT_ALIASES: Record<NicoProfessionId, (typeof CANONICAL_OUT
   librarian: "suit",
 };
 
-async function loadLocalWebp(path: string, signal: AbortSignal): Promise<string> {
-  const response = await fetch(path, { cache: "no-store", signal });
+async function loadLocalWebp(path: string): Promise<string> {
+  const response = await fetch(path, { cache: "force-cache" });
   if (!response.ok) throw new Error(`Nico art request failed: ${response.status}`);
   const encoded = (await response.text()).replace(/^\uFEFF/, "").trim();
   if (!encoded.startsWith("UklG") || encoded.length < 1000) {
@@ -74,27 +87,37 @@ async function loadLocalWebp(path: string, signal: AbortSignal): Promise<string>
   return `data:image/webp;base64,${encoded}`;
 }
 
+function loadNicoArtOnce(): Promise<LoadedNicoArt> {
+  if (cachedArt) return Promise.resolve(cachedArt);
+  if (!sharedLoad) {
+    sharedLoad = Promise.all([
+      loadLocalWebp(BASE_ART_PATH),
+      loadLocalWebp(OUTFIT_ART_PATH),
+      loadLocalWebp(ABOUT_ART_PATH),
+    ]).then(([baseSource, outfitSource, aboutSource]) => {
+      cachedArt = { baseSource, outfitSource, aboutSource };
+      return cachedArt;
+    }).catch((error: unknown) => {
+      sharedLoad = null;
+      throw error;
+    });
+  }
+  return sharedLoad;
+}
+
 export function useNicoDragArt(): NicoDragArtState {
-  const [state, setState] = useState<NicoDragArtState>({
-    baseSource: "",
-    outfitSource: "",
-    aboutSource: "",
-    loading: true,
-    error: null,
-  });
+  const [state, setState] = useState<NicoDragArtState>(() => cachedArt
+    ? { ...cachedArt, loading: false, error: null }
+    : EMPTY_STATE);
 
   useEffect(() => {
-    const controller = new AbortController();
-    void Promise.all([
-      loadLocalWebp(BASE_ART_PATH, controller.signal),
-      loadLocalWebp(OUTFIT_ART_PATH, controller.signal),
-      loadLocalWebp(ABOUT_ART_PATH, controller.signal),
-    ])
-      .then(([baseSource, outfitSource, aboutSource]) => {
-        setState({ baseSource, outfitSource, aboutSource, loading: false, error: null });
+    let active = true;
+    void loadNicoArtOnce()
+      .then((art) => {
+        if (active) setState({ ...art, loading: false, error: null });
       })
       .catch((error: unknown) => {
-        if (controller.signal.aborted) return;
+        if (!active) return;
         setState({
           baseSource: "",
           outfitSource: "",
@@ -103,7 +126,9 @@ export function useNicoDragArt(): NicoDragArtState {
           error: error instanceof Error ? error.message : "Nico art failed",
         });
       });
-    return () => controller.abort();
+    return () => {
+      active = false;
+    };
   }, []);
 
   return state;
