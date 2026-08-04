@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { MonsterStage, useMonsterMotion } from "../FeatureArt";
 import type { LocalProfile, MonsterRecord } from "../types";
 import { fieldLabel, tr, ui } from "../i18n/core";
-import { optionLabel } from "../i18n/options";
+import { optionLabel } from "../i18n/display";
 import { MONSTER_OPTIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, makeId } from "./common";
