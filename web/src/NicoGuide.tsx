@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useActiveProfileStore } from "./hooks/useActiveProfileStore";
+import { useAppStore } from "./app/AppStoreContext";
 import { NicoCostumeFigure } from "./nico/NicoCostumeFigure";
 import { openNicoWorld } from "./nico/NicoWorldExperience";
 import { useNicoDragArt } from "./nico/nicoDragArt";
@@ -46,7 +46,7 @@ const copy: Record<"en" | "es-MX", GuideCopy> = {
 };
 
 export default function NicoGuide() {
-  const { profile, commitProfile } = useActiveProfileStore();
+  const { profile, commitProfile } = useAppStore();
   const art = useNicoDragArt();
   const [isOpen, setIsOpen] = useState(false);
   const launcherRef = useRef<HTMLButtonElement>(null);
@@ -65,7 +65,7 @@ export default function NicoGuide() {
   }, [isOpen]);
 
   const openWorldMap = () => {
-    document.querySelector<HTMLButtonElement>(".fw-brand")?.click();
+    commitProfile((current) => ({ ...current, selectedSection: "world-map" }));
     window.scrollTo({ top: 0, behavior: "smooth" });
     setIsOpen(false);
   };
