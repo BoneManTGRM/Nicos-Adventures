@@ -3,11 +3,14 @@ import { loadLocalStore, saveLocalStore, touchProfile } from "./storage";
 import type { LocalProfile, LocalSaveStore, SectionId } from "./types";
 import { tr, ui } from "./i18n/core";
 import { AnimalForest } from "./world/AnimalForest";
-import { Arcade, DinosaurValley, PetWorkshop, RobotHome } from "./world/AdventureWorld";
+import { Arcade } from "./world/Arcade";
+import { RobotHome } from "./world/AdventureWorld";
 import { AppHeader, BottomNavigation, PageTitle } from "./world/common";
 import { ArtStudio, StoryCastle } from "./world/CreativeWorld";
+import { DinosaurValley } from "./world/DinosaurValley";
 import { Badges, Museum, Settings } from "./world/MemorySettings";
 import { MonsterHabitats, MonsterLab } from "./world/MonsterWorld";
+import { PetWorkshop } from "./world/PetWorkshop";
 import { RoboLab } from "./world/RoboLab";
 import { WorldMap } from "./world/WorldMap";
 import { WORLD_SECTIONS } from "./world/catalogs";
@@ -15,6 +18,7 @@ import "./styles.css";
 import "./full-world.css";
 import "./feature-parity.css";
 import "./world/system-parity.css";
+import "./world/progression.css";
 
 type Announcement = { id: number; message: string };
 
