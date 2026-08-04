@@ -73,6 +73,6 @@ describe("Nico shared layered renderer", () => {
     const html = renderToStaticMarkup(<NicoCostumeFigure profession="firefighter" alt="Firefighter Nico" />);
     expect(html).toContain('data-art-state="layered-wardrobe"');
     expect(html).toContain("data:image/svg+xml");
-    expect(html).toContain('aria-label="Firefighter Nico"');
+    expect(html).toContain('alt="Firefighter Nico"');
   });
 });
