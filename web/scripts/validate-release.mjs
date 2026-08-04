@@ -28,21 +28,25 @@ const requiredFiles = [
   "src/FeatureArt.tsx",
   "src/NicoGuide.tsx",
   "src/ServiceWorkerRefresh.tsx",
+  "src/hooks/useActiveProfileStore.ts",
+  "src/hooks/useDialogFocusTrap.ts",
   "src/nico-guide.css",
   "src/nico/approvedNicoArt.tsx",
   "src/nico/approved-nico-art.css",
   "src/nico/nicoDragArt.tsx",
   "src/nico/nico-drag-studio.css",
   "src/nico/nico-about.css",
+  "src/nico/system-stabilization.css",
+  "src/nico/nicoHubRoute.ts",
   "src/nico/NicoPortalArt.tsx",
   "src/nico/NicoWorldExperience.tsx",
   "src/nico/AskNico.tsx",
   "src/nico/NicoDressUp.tsx",
   "src/nico/NicoCostumeFigure.tsx",
   "src/nico/nico-phase2.css",
-  "src/nico/useLocalBase64Asset.ts",
   "src/nico/knowledge.ts",
   "src/showtime/ShowtimeStudio.tsx",
+  "src/showtime/composeNicoImage.ts",
   "src/showtime/recordMovie.ts",
   "src/showtime/movieRenderer.ts",
   "src/showtime/NicoMovieLibrary.tsx",
@@ -80,8 +84,8 @@ if (!main.includes("<NicoWorldExperience />")) throw new Error("Nico Clubhouse i
 if (!main.includes("<NicoPortalArt />")) throw new Error("World Map and Robot Home are not using the synchronized Nico character");
 if (!main.includes("<ServiceWorkerRefresh />")) throw new Error("Service worker refresh is not mounted");
 if (main.includes("NicoRestoreLauncher")) throw new Error("The duplicate Nico Clubhouse launcher must not be mounted or imported");
-if (!main.includes("approved-nico-art.css") || !main.includes("nico-drag-studio.css") || !main.includes("nico-about.css")) {
-  throw new Error("Nico art styles are not loaded");
+for (const stylesheet of ["approved-nico-art.css", "nico-drag-studio.css", "nico-about.css", "system-stabilization.css"]) {
+  if (!main.includes(stylesheet)) throw new Error(`Nico stylesheet is not loaded: ${stylesheet}`);
 }
 
 const guide = fs.readFileSync(path.join(root, "src/NicoGuide.tsx"), "utf8");
@@ -90,7 +94,17 @@ const dragArt = fs.readFileSync(path.join(root, "src/nico/nicoDragArt.tsx"), "ut
 const costume = fs.readFileSync(path.join(root, "src/nico/NicoCostumeFigure.tsx"), "utf8");
 const dressUp = fs.readFileSync(path.join(root, "src/nico/NicoDressUp.tsx"), "utf8");
 const portalArt = fs.readFileSync(path.join(root, "src/nico/NicoPortalArt.tsx"), "utf8");
-if (!guide.includes("NicoCostumeFigure") || !guide.includes("PROFILE_EVENT")) throw new Error("Nico guide is not using the synchronized composed character");
+const clubhouse = fs.readFileSync(path.join(root, "src/nico/NicoWorldExperience.tsx"), "utf8");
+const activeProfileHook = fs.readFileSync(path.join(root, "src/hooks/useActiveProfileStore.ts"), "utf8");
+const focusTrap = fs.readFileSync(path.join(root, "src/hooks/useDialogFocusTrap.ts"), "utf8");
+const hubRoute = fs.readFileSync(path.join(root, "src/nico/nicoHubRoute.ts"), "utf8");
+
+if (!guide.includes("useActiveProfileStore") || !guide.includes("useNicoDragArt") || !guide.includes("openNicoWorld")) {
+  throw new Error("Nico guide is not synchronized with the active profile and canonical art");
+}
+if (guide.includes("GUIDE_LANGUAGE_KEY") || guide.includes("detectLanguage")) {
+  throw new Error("Nico guide still maintains a conflicting independent language state");
+}
 if (!approvedArt.includes("APPROVED_OUTFIT_INDEX") || !approvedArt.includes("backgroundSize: \"600% 200%\"")) throw new Error("Legacy approved Nico art fallback is incomplete");
 if (!dragArt.includes("NICO_OUTFIT_ALIASES") || !dragArt.includes('backgroundSize: "400% 300%"') || !dragArt.includes("ABOUT_ART_PATH")) {
   throw new Error("Draggable Nico art mapping is incomplete");
@@ -98,8 +112,32 @@ if (!dragArt.includes("NICO_OUTFIT_ALIASES") || !dragArt.includes('backgroundSiz
 if (!costume.includes("data-composed-nico") || !costume.includes('data-art-state={artState}')) throw new Error("Nico is not rendered from one body plus an outfit layer");
 if (!dressUp.includes("onPointerDown") || !dressUp.includes("onPointerMove") || !dressUp.includes("data-nico-drop-zone")) throw new Error("Touch drag-and-drop outfit behavior is incomplete");
 if (!dressUp.includes("applyNicoProfession") || !dressUp.includes("useNicoDragArt")) throw new Error("Nico outfit persistence or local art loading is incomplete");
-if (!portalArt.includes("nico-world-destination") || !portalArt.includes("nico-room-entry") || !portalArt.includes("PROFILE_EVENT")) {
-  throw new Error("Nico world entry-point synchronization is incomplete");
+if (!portalArt.includes("useActiveProfileStore") || !portalArt.includes("openNicoWorld") || !portalArt.includes("profile.selectedSection")) {
+  throw new Error("Nico world entry points are not owned by the synchronized section-aware portal");
+}
+if (!portalArt.includes('className="fw-destination nico-world-destination"') || !portalArt.includes('className="nico-room-entry"')) {
+  throw new Error("Nico portal does not create both supported entry buttons");
+}
+if (clubhouse.includes("FULL_BODY_ASSET") || clubhouse.includes("useLocalBase64Asset")) {
+  throw new Error("Nico Clubhouse still depends on the stale full-body asset path");
+}
+if (clubhouse.includes("nico-world-destination") || clubhouse.includes("nico-room-entry")) {
+  throw new Error("Nico Clubhouse still duplicates World Map or Robot Home entry buttons");
+}
+if (!clubhouse.includes("useActiveProfileStore") || !clubhouse.includes("useDialogFocusTrap") || !clubhouse.includes('addEventListener("popstate"')) {
+  throw new Error("Nico Clubhouse profile, focus, or browser-history synchronization is incomplete");
+}
+if (!clubhouse.includes("onPointerDown") || !clubhouse.includes("parseNicoHubHash")) {
+  throw new Error("Nico Clubhouse dismissal or route handling is incomplete");
+}
+if (!activeProfileHook.includes("PROFILE_EVENT") || !activeProfileHook.includes("commitProfile")) {
+  throw new Error("Shared active-profile synchronization hook is incomplete");
+}
+if (!focusTrap.includes('event.key === "Tab"') || !focusTrap.includes('event.key === "Escape"')) {
+  throw new Error("Accessible dialog focus containment is incomplete");
+}
+if (!hubRoute.includes("nicosWorldHub") || !hubRoute.includes("parseNicoHubHash")) {
+  throw new Error("Nico Clubhouse history markers are incomplete");
 }
 
 const characterPayload = [1, 2, 3]
@@ -131,21 +169,28 @@ if (!storage.includes("professionData.map")) throw new Error("Profession normali
 if (!storage.includes("PROFILE_EVENT") || !syncBoundary.includes("PROFILE_EVENT")) throw new Error("Profile synchronization is incomplete");
 
 const professions = JSON.parse(fs.readFileSync(path.join(root, "src/catalogs/nico-professions.json"), "utf8"));
-if (!Array.isArray(professions) || professions.length < 26) throw new Error("Phase 2 must provide at least 26 Nico outfits");
+if (!Array.isArray(professions) || professions.length < 26) throw new Error("Nico must provide at least 26 bilingual outfit choices");
 for (const required of ["gardener", "teacher", "dentist", "police-officer", "soccer-player", "tennis-player", "detective", "librarian"]) {
   if (!professions.some((item) => item.id === required)) throw new Error(`Missing Nico outfit: ${required}`);
 }
 
 const askNico = fs.readFileSync(path.join(root, "src/nico/AskNico.tsx"), "utf8");
 if (!askNico.includes("nico-ask-hero__art") || !askNico.includes("aboutSource") || !askNico.includes("NicoCostumeFigure")) {
-  throw new Error("Ask Nico is not using the new character artwork with a composed fallback");
+  throw new Error("Ask Nico is not using the character artwork with a composed fallback");
 }
 
 const showtime = fs.readFileSync(path.join(root, "src/showtime/ShowtimeStudio.tsx"), "utf8");
+const compositor = fs.readFileSync(path.join(root, "src/showtime/composeNicoImage.ts"), "utf8");
 const recorder = fs.readFileSync(path.join(root, "src/showtime/recordMovie.ts"), "utf8");
 if (!recorder.includes("captureStream") || !recorder.includes("MediaRecorder")) throw new Error("Showtime client-side recording is incomplete");
 if (showtime.includes("localStorage") || recorder.includes("localStorage")) throw new Error("Showtime must not write video data to localStorage");
 if (!showtime.includes("parentConfirmed")) throw new Error("Showtime parental confirmation is missing");
+if (!showtime.includes("nicoBaseSource") || !showtime.includes("nicoOutfitSource") || !showtime.includes("composeNicoImage")) {
+  throw new Error("Showtime is not previewing and recording Nico's saved outfit");
+}
+if (!compositor.includes("getNicoOutfitCell") || !compositor.includes("context.drawImage")) {
+  throw new Error("Showtime Nico image composition is incomplete");
+}
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const packageLock = JSON.parse(fs.readFileSync(path.join(root, "package-lock.json"), "utf8"));
@@ -160,7 +205,7 @@ if (!packageJson.scripts?.test?.includes("vitest")) throw new Error("Vitest test
 
 const sw = fs.readFileSync(path.join(root, "public/sw.js"), "utf8");
 const swRefresh = fs.readFileSync(path.join(root, "src/ServiceWorkerRefresh.tsx"), "utf8");
-if (!sw.includes("nicos-world-static-v18") || !swRefresh.includes('"v18"')) throw new Error("Nico drag studio cache version is not v18");
+if (!sw.includes("nicos-world-static-v18") || !swRefresh.includes('"v18"')) throw new Error("Nico system cache version is not v18");
 for (const asset of [
   "character.part1.b64", "character.part2.b64", "character.part3.b64",
   "outfits.part1.b64", "outfits.part2.b64", "outfits.part3.b64", "outfits.part4.b64", "outfits.part5.b64",
@@ -169,4 +214,4 @@ for (const asset of [
   if (!sw.includes(asset)) throw new Error(`Nico asset is not cached: ${asset}`);
 }
 
-console.log(`Release validation passed for ${labels.length} wildlife species, ${professions.length} draggable Nico outfits, one synchronized Nico character, improved Ask Nico art, Clubhouse, World Map, Robot Home, and Showtime Studio.`);
+console.log(`Release validation passed for ${labels.length} wildlife species, ${professions.length} Nico outfit choices, one synchronized Nico profile/art path, accessible Clubhouse routing, World Map, Robot Home, Ask Nico, and outfit-aware Showtime recording.`);
