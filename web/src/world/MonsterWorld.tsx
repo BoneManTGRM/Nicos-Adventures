@@ -38,9 +38,8 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
   const motion = useMonsterMotion();
 
   useEffect(() => {
-    if (!profile.monsters.length) return;
-    if (!profile.monsters.some((monster) => monster.id === draft.id)) setDraft({ ...profile.monsters.at(-1)! });
-  }, [draft.id, profile.id, profile.monsters]);
+    setDraft(profile.monsters.at(-1) ? { ...profile.monsters.at(-1)! } : newMonster());
+  }, [profile.id]);
 
   const save = () => {
     const monster = { ...draft, id: draft.id || makeId("monster"), name: draft.name.trim() || (language === "es-MX" ? "Monstruo" : "Monster") };
