@@ -13,6 +13,7 @@ const APPROVED_NICO_ART = [
 const DRAG_NICO_ART = [
   "/assets/nico/drag/nico-base.webp.b64",
   "/assets/nico/drag/outfits.webp.b64",
+  "/assets/nico/drag/about.webp.b64",
 ];
 const SHELL = [
   "/",
