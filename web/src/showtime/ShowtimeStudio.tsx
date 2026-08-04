@@ -11,6 +11,7 @@ import type {
   MoviePose,
   MovieProject,
 } from "../types";
+import { composeNicoImage } from "./composeNicoImage";
 import { drawMovieFrame, resolvePoseIndex, type RenderableMovieCharacter } from "./movieRenderer";
 import { canRecordCanvasMovie, downloadMovieBlob, recordCanvasMovie } from "./recordMovie";
 
@@ -31,7 +32,8 @@ type PoseOption = {
 
 type Props = {
   profile: LocalProfile;
-  nicoArtSource: string;
+  nicoBaseSource: string;
+  nicoOutfitSource: string;
   initialProject?: MovieProject | null;
   onProjectSaved: (project: MovieProject) => void;
   onProjectDownloaded: (projectId: string, mimeType: string) => void;
@@ -112,7 +114,8 @@ const projectCharacterKey = (character: MovieCharacterRef) => `${character.kind}
 
 export function ShowtimeStudio({
   profile,
-  nicoArtSource,
+  nicoBaseSource,
+  nicoOutfitSource,
   initialProject,
   onProjectSaved,
   onProjectDownloaded,
@@ -168,18 +171,23 @@ export function ShowtimeStudio({
   }, [initialProject, initialSelected, profile.language, text.noCaption]);
 
   useEffect(() => {
-    if (!nicoArtSource) {
-      nicoImageRef.current = null;
-      return;
-    }
-    const image = new Image();
-    image.decoding = "async";
-    image.src = nicoArtSource;
-    image.addEventListener("load", () => {
-      nicoImageRef.current = image;
-      renderCanvasFrame(0);
-    }, { once: true });
-  }, [nicoArtSource]);
+    let cancelled = false;
+    nicoImageRef.current = null;
+    void composeNicoImage(nicoBaseSource, nicoOutfitSource, profile.nico.profession)
+      .then((image) => {
+        if (cancelled) return;
+        nicoImageRef.current = image;
+        renderCanvasFrame(0);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        nicoImageRef.current = null;
+        renderCanvasFrame(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [nicoBaseSource, nicoOutfitSource, profile.nico.profession]);
 
   useEffect(() => {
     if (!previewing || !sequence.length) return;
@@ -407,7 +415,18 @@ export function ShowtimeStudio({
               {selectedCharacters.map((character) => {
                 const pose = livePoseFor(character.kind);
                 if (character.kind === "nico") {
-                  return <div className={`showtime-character showtime-character--${pose}`} key={character.key}><NicoCostumeFigure artSource={nicoArtSource} profession={profile.nico.profession} accentColor={profile.nico.accentColor} compact alt="Nico" /></div>;
+                  return (
+                    <div className={`showtime-character showtime-character--${pose}`} key={character.key}>
+                      <NicoCostumeFigure
+                        baseArtSource={nicoBaseSource}
+                        dragOutfitSource={nicoOutfitSource}
+                        profession={profile.nico.profession}
+                        accentColor={profile.nico.accentColor}
+                        compact
+                        alt="Nico"
+                      />
+                    </div>
+                  );
                 }
                 if (character.kind === "robot" && character.robot) {
                   return <div className="showtime-character showtime-character--robot" key={character.key}><RobotStage robot={character.robot} pose={pose as never} statusLabel="SHOWTIME" levelLabel="LV" /></div>;
