@@ -7,6 +7,7 @@ import { optionLabel } from "../i18n/options";
 import { ROBOT_OPTIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { makeId } from "./common";
+import { completeOnce, hasCompleted, robotJobMission } from "./progression";
 
 export function RoboLab({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
@@ -33,6 +34,10 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
     window.setTimeout(() => setPose("idle"), 1600);
   };
   const pick = (values: string[]) => values[Math.floor(Math.random() * values.length)];
+  const selectedJob = draft.job || ROBOT_JOBS[0];
+  const selectedJobMission = robotJobMission(draft.id, selectedJob);
+  const selectedJobComplete = hasCompleted(profile, selectedJobMission);
+  const completedJobs = ROBOT_JOBS.filter((job) => hasCompleted(profile, robotJobMission(draft.id, job))).length;
 
   const randomize = () => {
     setDraft((current) => ({
@@ -71,15 +76,19 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
   };
 
   const doJob = () => {
+    if (selectedJobComplete) return;
     const xp = draft.xp + 20;
-    const robot = { ...draft, xp, level: Math.floor(xp / 50) + 1 };
+    const robot = { ...draft, job: selectedJob, xp, level: Math.floor(xp / 50) + 1 };
     const robots = profile.robots.some((item) => item.id === robot.id)
       ? profile.robots.map((item) => item.id === robot.id ? robot : item)
       : [...profile.robots, robot];
+    const completion = completeOnce({ ...profile, robot, robots }, selectedJobMission, 1);
     setDraft(robot);
-    update({ ...profile, robot, robots, stars: profile.stars + 1 });
+    update(completion.profile);
     play("scan");
-    announce(language === "es-MX" ? "Trabajo completado. Ganaste experiencia y una estrella." : "Job completed. You earned experience and one star.");
+    announce(language === "es-MX"
+      ? `Certificación completada: ${optionLabel(selectedJob, language)}. Ganaste 20 de experiencia y una estrella.`
+      : `Certification completed: ${selectedJob}. You earned 20 XP and one star.`);
   };
 
   return (
@@ -88,7 +97,7 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
         <RobotStage
           robot={draft}
           pose={pose as never}
-          statusLabel={optionLabel(draft.job || tr(ui.robotPreview, language), language)}
+          statusLabel={optionLabel(selectedJob, language)}
           levelLabel={tr(ui.levelShort, language)}
         />
         <div className="robot-action-grid" role="group" aria-label={language === "es-MX" ? "Movimientos del robot" : "Robot movements"}>
@@ -124,24 +133,36 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
 
         <fieldset className="monster-form-section">
           <legend><h2>{tr(ui.robotJobs, language)}</h2></legend>
+          <p className="fw-progress-summary">
+            {language === "es-MX" ? "Certificaciones" : "Certifications"}: {completedJobs}/{ROBOT_JOBS.length}
+          </p>
           <div className="job-grid">
-            {ROBOT_JOBS.map((job) => (
-              <button
-                type="button"
-                aria-pressed={draft.job === job}
-                className={draft.job === job ? "active" : ""}
-                key={job}
-                onClick={() => set("job", job)}
-              >
-                {optionLabel(job, language)}
-              </button>
-            ))}
+            {ROBOT_JOBS.map((job) => {
+              const certified = hasCompleted(profile, robotJobMission(draft.id, job));
+              return (
+                <button
+                  type="button"
+                  aria-pressed={selectedJob === job}
+                  className={`${selectedJob === job ? "active" : ""} ${certified ? "completed" : ""}`.trim()}
+                  key={job}
+                  onClick={() => set("job", job)}
+                >
+                  {certified ? "✅ " : ""}{optionLabel(job, language)}
+                </button>
+              );
+            })}
           </div>
           <div className="job-readout" role="status">
-            <b>{tr(ui.currentJob, language)}:</b> {optionLabel(draft.job, language)}<br />
-            <small>{tr(ui.jobHelp, language)}</small>
+            <b>{tr(ui.currentJob, language)}:</b> {optionLabel(selectedJob, language)}<br />
+            <small>{selectedJobComplete
+              ? (language === "es-MX" ? "Este robot ya obtuvo esta certificación." : "This robot already earned this certification.")
+              : tr(ui.jobHelp, language)}</small>
           </div>
-          <button type="button" onClick={doJob}>⚙️ {tr(ui.doJob, language)}</button>
+          <button type="button" onClick={doJob} disabled={selectedJobComplete}>
+            {selectedJobComplete ? "✅" : "⚙️"} {selectedJobComplete
+              ? (language === "es-MX" ? "Certificación completada" : "Certification complete")
+              : tr(ui.doJob, language)}
+          </button>
         </fieldset>
 
         <div className="fw-action-row">
