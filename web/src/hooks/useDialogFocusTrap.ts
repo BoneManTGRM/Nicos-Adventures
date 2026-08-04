@@ -45,7 +45,8 @@ export function useDialogFocusTrap({
         onClose();
         return;
       }
-      if (event.key !== "Tab") return;
+      const isTabKey = event.key === "Tab";
+      if (!isTabKey) return;
 
       const dialog = dialogRef.current;
       if (!dialog) return;
