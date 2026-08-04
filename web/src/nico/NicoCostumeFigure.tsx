@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import type { NicoProfessionId } from "../types";
 import { approvedCharacterStyle, approvedOutfitStyle } from "./approvedNicoArt";
-import { nicoOutfitSpriteStyle } from "./nicoDragArt";
+import { nicoOutfitSpriteStyle, useNicoDragArt } from "./nicoDragArt";
 
 type Props = {
   artSource?: string;
@@ -60,9 +60,12 @@ export function NicoCostumeFigure({
   alt = "Nico",
 }: Props) {
   const decoration = NICO_COSTUME_DECORATIONS[profession];
+  const localArt = useNicoDragArt();
+  const resolvedBase = baseArtSource || localArt.baseSource;
+  const resolvedOutfits = dragOutfitSource || localArt.outfitSource;
   const style = { "--nico-costume-accent": accentColor } as CSSProperties;
   const legacyOutfitStyle = approvedOutfitStyle(outfitArtSource, profession);
-  const composed = Boolean(baseArtSource && dragOutfitSource);
+  const composed = Boolean(resolvedBase && resolvedOutfits);
   const artState = composed
     ? "drag-composed"
     : legacyOutfitStyle
@@ -81,8 +84,8 @@ export function NicoCostumeFigure({
       <div className="nico-costume__frame">
         {composed ? (
           <div className="nico-composed" role="img" aria-label={alt} data-composed-nico="true">
-            <img src={baseArtSource} alt="" data-asset-recovery="ignore" decoding="async" draggable={false} />
-            <span className="nico-composed__outfit" style={nicoOutfitSpriteStyle(dragOutfitSource, profession)} aria-hidden="true" />
+            <img src={resolvedBase} alt="" data-asset-recovery="ignore" decoding="async" draggable={false} />
+            <span className="nico-composed__outfit" style={nicoOutfitSpriteStyle(resolvedOutfits, profession)} aria-hidden="true" />
           </div>
         ) : legacyOutfitStyle ? (
           <span className="nico-costume__approved" style={legacyOutfitStyle} role="img" aria-label={alt} data-approved-nico-outfit="true" />
