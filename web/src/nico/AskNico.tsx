@@ -7,6 +7,7 @@ import { useNicoDragArt } from "./nicoDragArt";
 type Props = {
   language: Language;
   speechEnabled: boolean;
+  aboutSource?: string;
   baseArtSource?: string;
   outfitArtSource?: string;
   profession?: NicoProfessionId;
@@ -51,13 +52,17 @@ const makeId = () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString
 export function AskNico({
   language,
   speechEnabled,
+  aboutSource = "",
   baseArtSource = "",
   outfitArtSource = "",
   profession = "explorer",
   accentColor = "#22c55e",
 }: Props) {
   const text = copy[language];
-  const art = useNicoDragArt();
+  const localArt = useNicoDragArt();
+  const resolvedAbout = aboutSource || localArt.aboutSource;
+  const resolvedBase = baseArtSource || localArt.baseSource;
+  const resolvedOutfits = outfitArtSource || localArt.outfitSource;
   const [question, setQuestion] = useState("");
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -96,12 +101,12 @@ export function AskNico({
       </header>
 
       <div className="nico-ask-hero">
-        {art.aboutSource ? (
-          <img className="nico-ask-hero__art" src={art.aboutSource} alt={text.artAlt} data-asset-recovery="ignore" decoding="async" />
+        {resolvedAbout ? (
+          <img className="nico-ask-hero__art" src={resolvedAbout} alt={text.artAlt} data-asset-recovery="ignore" decoding="async" />
         ) : (
           <NicoCostumeFigure
-            baseArtSource={baseArtSource}
-            dragOutfitSource={outfitArtSource}
+            baseArtSource={resolvedBase}
+            dragOutfitSource={resolvedOutfits}
             profession={profession}
             accentColor={accentColor}
             compact
