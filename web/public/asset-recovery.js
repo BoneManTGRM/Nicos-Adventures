@@ -6,9 +6,11 @@
   };
 
   const ignoresRecovery = (img) => img.dataset.assetRecovery === "ignore";
-  const eligible = (img) => img instanceof HTMLImageElement
-    && !ignoresRecovery(img)
-    && img.dataset.recoverable === "wildlife";
+  const eligible = (img) => {
+    if (!(img instanceof HTMLImageElement) || ignoresRecovery(img)) return false;
+    if (img.dataset.recoverable !== "wildlife") return false;
+    return true;
+  };
 
   const tune = (img) => {
     if (!eligible(img)) return;
