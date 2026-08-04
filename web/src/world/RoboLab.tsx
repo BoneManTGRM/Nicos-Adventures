@@ -69,7 +69,7 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
     const robots = exists
       ? profile.robots.map((item) => item.id === robot.id ? robot : item)
       : [...profile.robots, robot];
-    update({ ...profile, robot, robots, stars: profile.stars + (exists ? 0 : 2) });
+    update({ ...profile, robot, robots, activeRobotId: robot.id, stars: profile.stars + (exists ? 0 : 2) });
     setDraft(robot);
     play("celebrate");
     announce(`${robot.name}: ${tr(ui.saveSuccess, language)}`);
@@ -82,7 +82,7 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
     const robots = profile.robots.some((item) => item.id === robot.id)
       ? profile.robots.map((item) => item.id === robot.id ? robot : item)
       : [...profile.robots, robot];
-    const completion = completeOnce({ ...profile, robot, robots }, selectedJobMission, 1);
+    const completion = completeOnce({ ...profile, robot, robots, activeRobotId: robot.id }, selectedJobMission, 1);
     setDraft(robot);
     update(completion.profile);
     play("scan");
@@ -177,9 +177,11 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
               <button
                 type="button"
                 key={robot.id}
-                aria-pressed={draft.id === robot.id}
+                aria-pressed={profile.activeRobotId === robot.id}
+                className={profile.activeRobotId === robot.id ? "active" : ""}
                 onClick={() => {
                   setDraft({ ...robot });
+                  update({ ...profile, robot, activeRobotId: robot.id });
                   announce(`${robot.name}: ${tr(ui.selected, language)}`);
                 }}
               >
