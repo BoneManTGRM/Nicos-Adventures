@@ -22,18 +22,20 @@ The primary portable client lives in `web/` and is deployed as static assets.
 
 The React client mounts through one `AppShell` and one canonical local-profile provider. The world, Nico guide, Clubhouse, Showtime, and synchronized Nico surfaces consume the same store instead of creating independent browser-state owners.
 
-Browser profiles use schema v4. The profile includes explicit active robot, pet, and displayed-artwork IDs; strict bounded import normalization; newest-first reward-history retention; backup timestamps; and lightweight Nico wardrobe slots for the true layered clothing system tracked in issue #47.
+Browser profiles use schema v4. The profile includes explicit active robot, pet, and displayed-artwork IDs; strict bounded import normalization; newest-first reward-history retention; backup timestamps; and lightweight Nico wardrobe slots.
 
 See [`docs/PROFILE_SCHEMA_V4.md`](docs/PROFILE_SCHEMA_V4.md).
 
 ### Nico's Clubhouse
 
 - **Ask Nico:** a bounded bilingual answer library stored inside the app. Questions are not sent to an AI service.
-- **Profession Studio:** one reusable Nico character with 26 bilingual profession and adventure presets. The current preset selector writes lightweight wardrobe metadata; issue #47 replaces flattened outfit images with independent garment layers on one persistent body.
+- **Nico's Real Wardrobe:** one persistent Nico body with nine independent wearable slots: headwear, eyewear, top, outerwear, bottoms, shoes, backpack, badge, and handheld prop. A child drags the garment itself onto Nico, or taps/uses the keyboard. The wardrobe supports remove, replace, undo, redo, reset, randomize, and 26 editable profession presets.
 - **Showtime Studio:** select one to three owned characters, choose poses and a scene, add a caption, preview locally, and create a four- to eight-second WebM video with `canvas.captureStream()` and `MediaRecorder`.
 - **My Little Movies:** stores only project instructions so a movie can be recreated later. The full video remains in the browser session until downloaded.
 
-Nico's saved outfit is synchronized across the persistent guide, Clubhouse header, Ask Nico, World Map, Robot Home, live Showtime preview, and recorded video frames.
+The same saved layered Nico is rendered in the persistent guide, Clubhouse header, Ask Nico, World Map, Robot Home, live Showtime preview, and recorded video frames.
+
+See [`docs/NICO_LAYERED_WARDROBE.md`](docs/NICO_LAYERED_WARDROBE.md).
 
 ### Core destinations
 
@@ -119,7 +121,7 @@ npm test
 npm run build
 ```
 
-The web build runs Cloudflare routing validation, release-contract validation, TypeScript, and Vite before creating `web/dist`.
+The web build runs Cloudflare routing validation, release-contract validation, schema and layered-wardrobe validation, TypeScript, and Vite before creating `web/dist`.
 
 ## Production deployment
 
