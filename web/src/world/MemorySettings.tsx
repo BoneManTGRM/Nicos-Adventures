@@ -2,7 +2,9 @@ import { useRef, useState } from "react";
 import { mergeAnimalLibrary } from "../FeatureArt";
 import { createProfile, exportProfile, importProfile } from "../storage";
 import type { Language, LocalProfile, LocalSaveStore } from "../types";
+import { localizeAnimalCompat } from "../i18n/animalsCompat";
 import { tr, ui, type Localized } from "../i18n/core";
+import { fossilLabel } from "../i18n/display";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState } from "./common";
 
@@ -16,13 +18,13 @@ export function Museum({ profile }: { profile: LocalProfile }) {
   const language = profile.language;
   const groups: CollectionGroup[] = [
     { emoji: "🤖", title: ui.robots, items: profile.robots.map((item) => item.name) },
-    { emoji: "🐾", title: ui.animals, items: mergeAnimalLibrary(profile.animals).filter((item) => item.discovered).map((item) => item.name) },
+    { emoji: "🐾", title: ui.animals, items: mergeAnimalLibrary(profile.animals).filter((item) => item.discovered).map((item) => localizeAnimalCompat(item, language).name) },
     { emoji: "👾", title: ui.monsters, items: profile.monsters.map((item) => item.name) },
     { emoji: "🐕", title: ui.pets, items: profile.pets.map((item) => item.name) },
     { emoji: "🎨", title: ui.artwork, items: profile.artwork.map((item) => item.title) },
     { emoji: "📚", title: ui.stories, items: profile.stories.map((item) => item.title) },
     { emoji: "🦖", title: ui.dinosaurs, items: profile.dinosaurs.filter((item) => item.discovered).map((item) => item.name) },
-    { emoji: "🦴", title: ui.fossils, items: profile.fossils },
+    { emoji: "🦴", title: ui.fossils, items: profile.fossils.map((item) => fossilLabel(item, language)) },
   ];
   const total = groups.reduce((sum, group) => sum + group.items.length, 0);
 
