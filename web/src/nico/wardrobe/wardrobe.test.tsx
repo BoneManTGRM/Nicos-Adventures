@@ -75,11 +75,9 @@ describe("supplied Nico photo body", () => {
     expect(PHOTO_NICO_VIEWBOX).toBe("0 0 510 1467");
     const foreground = buildPhotoWardrobeForegroundSvg(wardrobeForPreset("doctor"));
     expect(foreground).toContain('viewBox="0 0 510 1467"');
-    expect(foreground).toContain('data-photo-fit="headwear"');
-    expect(foreground).toContain('data-photo-fit="top"');
-    expect(foreground).toContain('data-photo-fit="outerwear"');
-    expect(foreground).toContain('data-photo-fit="bottoms"');
-    expect(foreground).toContain('data-photo-fit="shoes"');
+    for (const slot of ["headwear", "top", "outerwear", "bottoms", "shoes"]) {
+      expect(foreground).toContain(`data-photo-fit="${slot}"`);
+    }
   });
 
   it("does not redraw clothing that already exists on the supplied base image", () => {
@@ -92,17 +90,13 @@ describe("supplied Nico photo body", () => {
 
   it("keeps backpacks behind the supplied body and all other clothing in front", () => {
     const astronaut = wardrobeForPreset("astronaut");
-    expect(buildPhotoWardrobeBackgroundSvg(astronaut)).toContain('data-item="space-pack"');
-    expect(buildPhotoWardrobeForegroundSvg(astronaut)).not.toContain('data-item="space-pack"');
+    expect(buildPhotoWardrobeBackgroundSvg(astronaut)).toContain('data-item="life-support-pack"');
+    expect(buildPhotoWardrobeForegroundSvg(astronaut)).not.toContain('data-item="life-support-pack"');
   });
 
   it("renders the supplied image between transparent clothing layers", () => {
     const html = renderToStaticMarkup(
-      <NicoLayeredCharacter
-        wardrobe={wardrobeForPreset("tennis-player")}
-        alt="Tennis Nico"
-        photoBodySource="data:image/webp;base64,photo-body"
-      />,
+      <NicoLayeredCharacter wardrobe={wardrobeForPreset("tennis-player")} alt="Tennis Nico" photoBodySource="data:image/webp;base64,photo-body" />,
     );
     expect(html).toContain('data-photo-nico-body="true"');
     expect(html).toContain("nico-photo-layer--back");
@@ -112,9 +106,7 @@ describe("supplied Nico photo body", () => {
   });
 
   it("retains the vector renderer as a local offline fallback", () => {
-    const html = renderToStaticMarkup(
-      <NicoLayeredCharacter wardrobe={wardrobeForPreset("astronaut")} alt="Astronaut Nico" />,
-    );
+    const html = renderToStaticMarkup(<NicoLayeredCharacter wardrobe={wardrobeForPreset("astronaut")} alt="Astronaut Nico" />);
     expect(html).toContain('data-layered-nico="true"');
     expect(html).toContain("nico-vector-fallback");
     expect(html).toContain("data:image/svg+xml");
