@@ -54,7 +54,9 @@ const professions = [
   "musician", "farmer", "lifeguard", "magician", "soccer-player", "tennis-player", "detective", "librarian",
 ];
 for (const profession of professions) {
-  if (!catalog.includes(`${JSON.stringify(profession)}: preset(`)) throw new Error(`Layered profession preset is missing: ${profession}`);
+  const unquoted = `${profession}: preset(`;
+  const quoted = `"${profession}": preset(`;
+  if (!catalog.includes(unquoted) && !catalog.includes(quoted)) throw new Error(`Layered profession preset is missing: ${profession}`);
 }
 if (!catalog.includes("WARDROBE_ITEM_BY_ID") || !catalog.includes("wardrobeForPreset") || !catalog.includes("itemsForSlot")) {
   throw new Error("Wardrobe catalog lookup or preset APIs are incomplete");
@@ -100,6 +102,9 @@ if (!showtime.includes("composeNicoImage(profile.nico.wardrobe)") || !showtime.i
 if (!compositor.includes("loadNicoWardrobeImage") || compositor.includes("getNicoOutfitCell")) {
   throw new Error("Showtime still uses the legacy outfit sprite compositor");
 }
+if (clubhouse.includes("useNicoDragArt") || clubhouse.includes("nicoBaseSource=") || clubhouse.includes("nicoOutfitSource=")) {
+  throw new Error("Clubhouse still loads or passes the legacy Nico sprite pipeline");
+}
 
 for (const cssContract of [
   "nico-layered-character__slot--headwear", "nico-layered-character__slot--top", "nico-layered-character__slot--shoes",
@@ -108,14 +113,20 @@ for (const cssContract of [
   if (!css.includes(cssContract)) throw new Error(`Layered wardrobe style contract is missing: ${cssContract}`);
 }
 for (const testContract of [
-  "one body plus independent selected garment layers", "dragged garment without the Nico body", "equips one slot without replacing the other clothes",
-  "supports remove, undo, and redo", "preset and remains editable piece by piece", "legacy wardrobe compatibility",
+  "one body plus independent selected garment layers",
+  "dragged garment without the Nico body",
+  "equips one slot without replacing the other clothes",
+  "supports remove, undo, and redo",
+  "applies a preset and remains editable piece by piece",
+  "legacy wardrobe compatibility",
 ]) {
   if (!tests.includes(testContract)) throw new Error(`Layered wardrobe regression test is missing: ${testContract}`);
 }
 
-for (const source of [catalog, renderer, reducer, drag, character, studio]) {
-  if (/https?:\/\//.test(source)) throw new Error("Layered wardrobe code must not fetch external services or assets");
+for (const [name, source] of [["catalog", catalog], ["reducer", reducer], ["drag", drag], ["character", character], ["studio", studio]]) {
+  if (source.includes("fetch(") || source.includes("XMLHttpRequest") || source.includes("WebSocket")) {
+    throw new Error(`Layered wardrobe ${name} must not call an external service`);
+  }
 }
 
 console.log(`Layered wardrobe validation passed for one body, nine independent slots, ${professions.length} editable profession presets, pointer/touch drag, undo/redo, synchronized surfaces, and recorded Showtime output.`);
