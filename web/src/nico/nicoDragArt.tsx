@@ -3,10 +3,12 @@ import type { NicoProfessionId } from "../types";
 
 const BASE_ART_PATH = "/assets/nico/drag/nico-base.webp.b64?v=1";
 const OUTFIT_ART_PATH = "/assets/nico/drag/outfits.webp.b64?v=1";
+const ABOUT_ART_PATH = "/assets/nico/drag/about.webp.b64?v=1";
 
 export type NicoDragArtState = {
   baseSource: string;
   outfitSource: string;
+  aboutSource: string;
   loading: boolean;
   error: string | null;
 };
@@ -76,6 +78,7 @@ export function useNicoDragArt(): NicoDragArtState {
   const [state, setState] = useState<NicoDragArtState>({
     baseSource: "",
     outfitSource: "",
+    aboutSource: "",
     loading: true,
     error: null,
   });
@@ -85,15 +88,17 @@ export function useNicoDragArt(): NicoDragArtState {
     void Promise.all([
       loadLocalWebp(BASE_ART_PATH, controller.signal),
       loadLocalWebp(OUTFIT_ART_PATH, controller.signal),
+      loadLocalWebp(ABOUT_ART_PATH, controller.signal),
     ])
-      .then(([baseSource, outfitSource]) => {
-        setState({ baseSource, outfitSource, loading: false, error: null });
+      .then(([baseSource, outfitSource, aboutSource]) => {
+        setState({ baseSource, outfitSource, aboutSource, loading: false, error: null });
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
         setState({
           baseSource: "",
           outfitSource: "",
+          aboutSource: "",
           loading: false,
           error: error instanceof Error ? error.message : "Nico art failed",
         });
