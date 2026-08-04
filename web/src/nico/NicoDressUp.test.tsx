@@ -45,9 +45,7 @@ describe("Nico drag-and-drop dress-up catalog", () => {
   });
 
   it("keeps fallback decorations defined for every profession", () => {
-    for (const profession of NICO_PROFESSIONS) {
-      expect(NICO_COSTUME_DECORATIONS[profession.id]).toBeDefined();
-    }
+    for (const profession of NICO_PROFESSIONS) expect(NICO_COSTUME_DECORATIONS[profession.id]).toBeDefined();
   });
 });
 
@@ -68,7 +66,7 @@ describe("Nico visual-quality strategy", () => {
     expect(html).not.toContain('data-composed-nico="true"');
   });
 
-  it("keeps one body plus outfit layer for compact synchronized placements", () => {
+  it("keeps approved finished art sharp in compact synchronized placements", () => {
     const html = renderToStaticMarkup(
       <NicoCostumeFigure
         outfitArtSource="data:image/jpeg;base64,/9j/finished"
@@ -80,6 +78,22 @@ describe("Nico visual-quality strategy", () => {
       />,
     );
 
+    expect(html).toContain('data-art-state="approved-outfit"');
+    expect(html).toContain('data-approved-nico-outfit="true"');
+    expect(html).not.toContain('data-composed-nico="true"');
+  });
+
+  it("keeps one body plus outfit layer as a local fallback when approved art is unavailable", () => {
+    const html = renderToStaticMarkup(
+      <NicoCostumeFigure
+        baseArtSource="data:image/webp;base64,UklGbase"
+        dragOutfitSource="data:image/webp;base64,UklGoutfit"
+        profession="librarian"
+        compact
+        alt="Librarian Nico"
+      />,
+    );
+
     expect(html).toContain('data-art-state="drag-composed"');
     expect(html).toContain('data-composed-nico="true"');
     expect(html).toContain("UklGbase");
@@ -87,10 +101,7 @@ describe("Nico visual-quality strategy", () => {
   });
 
   it("retains a recognizable fallback when local art is unavailable", () => {
-    const html = renderToStaticMarkup(
-      <NicoCostumeFigure artSource="" profession="doctor" alt="Doctor Nico" />,
-    );
-
+    const html = renderToStaticMarkup(<NicoCostumeFigure artSource="" profession="doctor" alt="Doctor Nico" />);
     expect(html).toContain('data-art-state="fallback"');
     expect(html).toContain("nico-costume__fallback-face");
     expect(html).toContain('aria-label="Doctor Nico"');
