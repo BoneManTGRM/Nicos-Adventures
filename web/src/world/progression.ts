@@ -40,3 +40,7 @@ export function fieldMissionId(id: string): string {
 export function arcadeMissionId(game: string, questionId: string): string {
   return `arcade:${game}:${questionId}`;
 }
+
+export function dinosaurDiscoveryMission(dinosaurId: string): string {
+  return `dinosaur-discovery:${dinosaurId}`;
+}
