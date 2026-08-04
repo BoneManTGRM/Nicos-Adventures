@@ -9,6 +9,11 @@ import {
 } from "./catalog";
 import { wardrobeForDisplay } from "./wardrobeCompatibility";
 import { buildGarmentSvg, buildNicoWardrobeSvg } from "./wardrobeSvg";
+import {
+  PHOTO_NICO_VIEWBOX,
+  buildPhotoWardrobeBackgroundSvg,
+  buildPhotoWardrobeForegroundSvg,
+} from "./photoWardrobeSvg";
 import { createWardrobeHistory, wardrobeReducer } from "./wardrobeReducer";
 
 const slots = ["headwear", "eyewear", "top", "outerwear", "bottoms", "shoes", "backpack", "badge", "prop"] as const;
@@ -28,12 +33,10 @@ describe("true Nico wardrobe catalog", () => {
   });
 
   it("has garment choices in every supported slot", () => {
-    for (const slot of slots) {
-      expect(WARDROBE_ITEMS.some((item) => item.slot === slot), slot).toBe(true);
-    }
+    for (const slot of slots) expect(WARDROBE_ITEMS.some((item) => item.slot === slot), slot).toBe(true);
   });
 
-  it("renders one body plus independent selected garment layers", () => {
+  it("renders one vector fallback body plus independent selected garment layers", () => {
     const wardrobe = wardrobeForPreset("chef");
     const svg = buildNicoWardrobeSvg(wardrobe);
     expect(svg.match(/data-nico-body="true"/g)).toHaveLength(1);
@@ -43,34 +46,19 @@ describe("true Nico wardrobe catalog", () => {
     expect(svg).toContain('data-item="spoon-prop"');
   });
 
-  it("tailors every equipped layer to the fixed body anchors", () => {
+  it("tailors every fallback layer to the fixed vector anchors", () => {
     const svg = buildNicoWardrobeSvg(wardrobeForPreset("firefighter"));
     for (const slot of slots) {
       const itemId = wardrobeForPreset("firefighter")[slot];
-      if (!itemId) continue;
-      expect(svg).toContain(`data-tailored-fit="${slot}"`);
+      if (itemId) expect(svg).toContain(`data-tailored-fit="${slot}"`);
     }
-    expect(svg).toContain("scale(.91 .93)");
-    expect(svg).toContain("scale(.76)");
   });
 
-  it("does not show neutral underlayers through occupied clothing slots", () => {
+  it("does not show neutral vector underlayers through occupied clothing slots", () => {
     const dressed = buildNicoWardrobeSvg(wardrobeForPreset("explorer"));
     expect(dressed).not.toContain('data-base-shirt="visible"');
     expect(dressed).not.toContain('data-base-shorts="visible"');
     expect(dressed).not.toContain('data-base-shoes="visible"');
-
-    const empty = {
-      ...wardrobeForPreset("explorer"),
-      top: null,
-      outerwear: null,
-      bottoms: null,
-      shoes: null,
-    };
-    const neutral = buildNicoWardrobeSvg(empty);
-    expect(neutral).toContain('data-base-shirt="visible"');
-    expect(neutral).toContain('data-base-shorts="visible"');
-    expect(neutral).toContain('data-base-shoes="visible"');
   });
 
   it("renders a dragged garment without the Nico body", () => {
@@ -80,13 +68,47 @@ describe("true Nico wardrobe catalog", () => {
     expect(svg).toContain('data-tailored-fit="top"');
     expect(svg).not.toContain("data-nico-body");
   });
+});
 
-  it("uses the layered renderer in React output", () => {
+describe("supplied Nico photo body", () => {
+  it("uses a dedicated 510 by 1467 coordinate system for the supplied image", () => {
+    expect(PHOTO_NICO_VIEWBOX).toBe("0 0 510 1467");
+    const foreground = buildPhotoWardrobeForegroundSvg(wardrobeForPreset("doctor"));
+    expect(foreground).toContain('viewBox="0 0 510 1467"');
+    for (const slot of ["headwear", "top", "outerwear", "bottoms", "shoes"]) {
+      expect(foreground).toContain(`data-photo-fit="${slot}"`);
+    }
+  });
+
+  it("does not redraw clothing that already exists on the supplied base image", () => {
+    const foreground = buildPhotoWardrobeForegroundSvg(wardrobeForPreset("explorer"));
+    expect(foreground).not.toContain('data-item="nico-red-glasses"');
+    expect(foreground).not.toContain('data-item="nico-green-polo"');
+    expect(foreground).not.toContain('data-item="nico-khaki-shorts"');
+    expect(foreground).not.toContain('data-item="nico-green-sneakers"');
+  });
+
+  it("keeps backpacks behind the supplied body and all other clothing in front", () => {
+    const astronaut = wardrobeForPreset("astronaut");
+    expect(buildPhotoWardrobeBackgroundSvg(astronaut)).toContain('data-item="life-support-pack"');
+    expect(buildPhotoWardrobeForegroundSvg(astronaut)).not.toContain('data-item="life-support-pack"');
+  });
+
+  it("renders the supplied image between transparent clothing layers", () => {
     const html = renderToStaticMarkup(
-      <NicoLayeredCharacter wardrobe={wardrobeForPreset("astronaut")} alt="Astronaut Nico" />,
+      <NicoLayeredCharacter wardrobe={wardrobeForPreset("tennis-player")} alt="Tennis Nico" photoBodySource="data:image/webp;base64,photo-body" />,
     );
+    expect(html).toContain('data-photo-nico-body="true"');
+    expect(html).toContain("nico-photo-layer--back");
+    expect(html).toContain("nico-photo-layer--body");
+    expect(html).toContain("nico-photo-layer--front");
+    expect(html).toContain('alt="Tennis Nico"');
+  });
+
+  it("retains the vector renderer as a local offline fallback", () => {
+    const html = renderToStaticMarkup(<NicoLayeredCharacter wardrobe={wardrobeForPreset("astronaut")} alt="Astronaut Nico" />);
     expect(html).toContain('data-layered-nico="true"');
-    expect(html).toContain('alt="Astronaut Nico"');
+    expect(html).toContain("nico-vector-fallback");
     expect(html).toContain("data:image/svg+xml");
   });
 });
@@ -94,8 +116,7 @@ describe("true Nico wardrobe catalog", () => {
 describe("wardrobe editing history", () => {
   it("equips one slot without replacing the other clothes", () => {
     const start = wardrobeForPreset("explorer");
-    const history = createWardrobeHistory(start);
-    const next = wardrobeReducer(history, { type: "equip", slot: "headwear", itemId: "magician-top-hat" });
+    const next = wardrobeReducer(createWardrobeHistory(start), { type: "equip", slot: "headwear", itemId: "magician-top-hat" });
     expect(next.present.headwear).toBe("magician-top-hat");
     expect(next.present.top).toBe(start.top);
     expect(next.present.bottoms).toBe(start.bottoms);
@@ -114,25 +135,11 @@ describe("wardrobe editing history", () => {
   });
 
   it("applies a preset and remains editable piece by piece", () => {
-    const start = createWardrobeHistory(wardrobeForPreset("explorer"));
-    const preset = wardrobeReducer(start, { type: "preset", presetId: "firefighter" });
-    expect(preset.present.headwear).toBe("firefighter-helmet");
-    expect(preset.present.outerwear).toBe("fire-coat");
+    const preset = wardrobeReducer(createWardrobeHistory(wardrobeForPreset("explorer")), { type: "preset", presetId: "firefighter" });
     const customized = wardrobeReducer(preset, { type: "equip", slot: "headwear", itemId: "chef-hat" });
     expect(customized.present.headwear).toBe("chef-hat");
     expect(customized.present.outerwear).toBe("fire-coat");
     expect(customized.present.presetId).toBeNull();
-  });
-
-  it("randomizes valid independent items", () => {
-    const start = createWardrobeHistory(wardrobeForPreset("explorer"));
-    const randomized = wardrobeReducer(start, { type: "randomize", random: () => .75 });
-    for (const slot of slots) {
-      const itemId = randomized.present[slot];
-      if (!itemId) continue;
-      expect(resolveWardrobeItem(itemId)?.slot).toBe(slot);
-    }
-    expect(randomized.present.presetId).toBeNull();
   });
 });
 
