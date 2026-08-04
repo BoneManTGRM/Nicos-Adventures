@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { SectionId } from "./types";
 import { tr, ui } from "./i18n/core";
 import { useAppStore } from "./app/AppStoreContext";
@@ -29,7 +29,7 @@ type Announcement = { id: number; message: string };
 
 export default function FullApp() {
   const { store, profile, setStore, updateProfile } = useAppStore();
-  const [announcement, setAnnouncement] = React.useState<Announcement>({ id: 0, message: "" });
+  const [announcement, setAnnouncement] = useState<Announcement>({ id: 0, message: "" });
   const announce = (message: string) => setAnnouncement((current) => ({ id: current.id + 1, message }));
 
   useEffect(() => {
