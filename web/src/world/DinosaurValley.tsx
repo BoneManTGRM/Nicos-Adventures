@@ -4,6 +4,7 @@ import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
 import type { Announce, UpdateProfile } from "./common";
 import { completeOnce, dinosaurDiscoveryMission } from "./progression";
+import { DinosaurArt } from "./DinosaurArt";
 
 const periods = ["Triassic", "Jurassic", "Cretaceous"] as const;
 
@@ -53,8 +54,8 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
     setAnswer(period);
     if (period !== active.period) {
       const message = language === "es-MX"
-        ? `Todavía no. Busca pistas en la tarjeta del periodo y vuelve a intentarlo con otra expedición.`
-        : `Not yet. Look for period clues and try again on another expedition.`;
+        ? "Todavía no. Observa la forma del dinosaurio y las pistas del periodo, luego inténtalo otra vez."
+        : "Not yet. Study the dinosaur shape and period clues, then try again.";
       setFeedback(message);
       announce(message);
       return;
@@ -87,8 +88,8 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
     <>
       <section className="dino-progress-panel" aria-label={language === "es-MX" ? "Progreso de dinosaurios" : "Dinosaur progress"}>
         <div>
-          <small>{language === "es-MX" ? "Guía de campo" : "Field guide"}</small>
-          <h2>{language === "es-MX" ? "Descubrimientos" : "Discoveries"}</h2>
+          <small>{language === "es-MX" ? "Guía de campo local" : "Local field guide"}</small>
+          <h2>{language === "es-MX" ? "Descubrimientos ilustrados" : "Illustrated discoveries"}</h2>
         </div>
         <progress max={profile.dinosaurs.length} value={discoveredCount}>{discoveredCount}/{profile.dinosaurs.length}</progress>
         <strong>{discoveredCount}/{profile.dinosaurs.length}</strong>
@@ -97,7 +98,7 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
       {active && (
         <section className="dino-expedition-panel" aria-labelledby="dino-expedition-heading">
           <button type="button" className="dino-expedition-close" onClick={() => setActiveId(null)} aria-label={language === "es-MX" ? "Cerrar expedición" : "Close expedition"}>×</button>
-          <span aria-hidden="true">{active.emoji}</span>
+          <DinosaurArt dinosaur={active} language={language} discovered={active.discovered} />
           <div>
             <small>{active.discovered ? tr(ui.fieldGuideUnlocked, language) : tr(ui.expedition, language)}</small>
             <h2 id="dino-expedition-heading">{active.name}</h2>
@@ -146,9 +147,7 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
       <div className="fw-card-grid">
         {profile.dinosaurs.map((dinosaur) => (
           <article className={`fw-dino-card ${dinosaur.discovered ? "is-discovered" : ""}`} key={dinosaur.id}>
-            <div aria-hidden="true">{dinosaur.emoji}</div>
-            <h3>{dinosaur.name}</h3>
-            <span>{dinosaur.discovered ? optionLabel(dinosaur.period, language) : "???"}</span>
+            <DinosaurArt dinosaur={dinosaur} language={language} discovered={dinosaur.discovered} />
             <p>{dinosaur.discovered ? facts[dinosaur.id]?.[language] ?? tr(ui.fieldGuideUnlocked, language) : tr(ui.startExpedition, language)}</p>
             <button type="button" onClick={() => openExpedition(dinosaur)}>
               {dinosaur.discovered
