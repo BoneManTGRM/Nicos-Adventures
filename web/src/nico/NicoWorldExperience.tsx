@@ -15,7 +15,6 @@ import {
   parseNicoHubHash,
   type NicoHubTab,
 } from "./nicoHubRoute";
-import { useNicoDragArt } from "./nicoDragArt";
 import "./nico-world-experience.css";
 import "../showtime/showtime.css";
 
@@ -32,7 +31,7 @@ const copy = {
   en: {
     clubhouse: "Nico’s Clubhouse",
     ask: "Ask Nico",
-    dress: "Dress Up",
+    dress: "Wardrobe",
     showtime: "Showtime",
     movies: "Movies",
     close: "Close Nico’s Clubhouse",
@@ -42,12 +41,11 @@ const copy = {
     openShowtime: "Open Showtime Studio",
     firstBadge: "First Movie Director badge earned!",
     deleteConfirm: "Delete this movie project? Downloaded video files are not stored in the app.",
-    artWarning: "Nico’s artwork could not load. The activities remain available with a simple fallback.",
   },
   "es-MX": {
     clubhouse: "Casa Club de Nico",
     ask: "Pregúntale",
-    dress: "Disfraces",
+    dress: "Guardarropa",
     showtime: "Showtime",
     movies: "Películas",
     close: "Cerrar la Casa Club de Nico",
@@ -57,7 +55,6 @@ const copy = {
     openShowtime: "Abrir Estudio Showtime",
     firstBadge: "¡Ganaste la insignia de Director de Primera Película!",
     deleteConfirm: "¿Eliminar este proyecto? Los videos descargados no se guardan en la aplicación.",
-    artWarning: "El arte de Nico no pudo cargarse. Las actividades siguen disponibles con una imagen sencilla.",
   },
 } as const;
 
@@ -99,7 +96,6 @@ function MemoryMovieShelf({
 
 export default function NicoWorldExperience() {
   const { profile, commitProfile } = useActiveProfileStore();
-  const art = useNicoDragArt();
   const initialTab = parseNicoHubHash(window.location.hash);
   const [open, setOpen] = useState(initialTab !== null);
   const [tab, setTab] = useState<NicoHubTab>(initialTab ?? "ask");
@@ -267,9 +263,8 @@ export default function NicoWorldExperience() {
             <header className="nico-hub__header">
               <div className="nico-hub__brand">
                 <NicoCostumeFigure
-                  baseArtSource={art.baseSource}
-                  dragOutfitSource={art.outfitSource}
                   profession={profile.nico.profession}
+                  wardrobe={profile.nico.wardrobe}
                   accentColor={profile.nico.accentColor}
                   compact
                   alt="Nico"
@@ -285,7 +280,7 @@ export default function NicoWorldExperience() {
             <nav className="nico-hub__tabs" aria-label={text.clubhouse}>
               {([
                 ["ask", "💬", text.ask],
-                ["dress", "🧰", text.dress],
+                ["dress", "🧵", text.dress],
                 ["showtime", "🎬", text.showtime],
                 ["movies", "🎞️", text.movies],
               ] as Array<[NicoHubTab, string, string]>).map(([item, emoji, label]) => (
@@ -302,25 +297,20 @@ export default function NicoWorldExperience() {
             </nav>
 
             {notice && <p className="nico-hub__notice" role="status">🏆 {notice}</p>}
-            {art.error && <p className="nico-hub__warning" role="status">{text.artWarning}</p>}
 
             <div className="nico-hub__content">
               {tab === "ask" && (
                 <AskNico
                   language={profile.language}
                   speechEnabled={profile.nico.speechEnabled}
-                  aboutSource={art.aboutSource}
-                  baseArtSource={art.baseSource}
-                  outfitArtSource={art.outfitSource}
                   profession={profile.nico.profession}
+                  wardrobe={profile.nico.wardrobe}
                   accentColor={profile.nico.accentColor}
                 />
               )}
               {tab === "dress" && (
                 <NicoDressUp
                   language={profile.language}
-                  baseArtSource={art.baseSource}
-                  dragOutfitSource={art.outfitSource}
                   preferences={profile.nico}
                   onSave={saveNicoPreferences}
                 />
@@ -328,8 +318,6 @@ export default function NicoWorldExperience() {
               {tab === "showtime" && (
                 <ShowtimeStudio
                   profile={profile}
-                  nicoBaseSource={art.baseSource}
-                  nicoOutfitSource={art.outfitSource}
                   initialProject={editingProject}
                   onProjectSaved={saveMovieProject}
                   onProjectDownloaded={markDownloaded}

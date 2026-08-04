@@ -4,7 +4,6 @@ import { useActiveProfileStore } from "../hooks/useActiveProfileStore";
 import type { SectionId } from "../types";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
 import { openNicoWorld } from "./NicoWorldExperience";
-import { useNicoDragArt } from "./nicoDragArt";
 
 type Targets = {
   worldGrid: Element | null;
@@ -16,12 +15,12 @@ const emptyTargets: Targets = { worldGrid: null, room: null };
 const copy = {
   en: {
     clubhouse: "Nico’s Clubhouse",
-    clubhouseDescription: "Ask Nico, dress him up, and make little movies.",
+    clubhouseDescription: "Ask Nico, build his wardrobe, and make little movies.",
     robotHome: "Visit Nico’s Clubhouse",
   },
   "es-MX": {
     clubhouse: "Casa Club de Nico",
-    clubhouseDescription: "Pregúntale a Nico, vístelo y crea pequeñas películas.",
+    clubhouseDescription: "Pregúntale a Nico, arma su guardarropa y crea pequeñas películas.",
     robotHome: "Visitar la Casa Club de Nico",
   },
 } as const;
@@ -39,7 +38,6 @@ function equalTargets(left: Targets, right: Targets) {
 
 export default function NicoPortalArt() {
   const { profile } = useActiveProfileStore();
-  const art = useNicoDragArt();
   const [targets, setTargets] = useState<Targets>(emptyTargets);
   const text = copy[profile.language];
 
@@ -63,9 +61,8 @@ export default function NicoPortalArt() {
 
   const character = (alt: string) => (
     <NicoCostumeFigure
-      baseArtSource={art.baseSource}
-      dragOutfitSource={art.outfitSource}
       profession={profile.nico.profession}
+      wardrobe={profile.nico.wardrobe}
       accentColor={profile.nico.accentColor}
       compact
       alt={alt}

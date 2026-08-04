@@ -12,6 +12,8 @@ const requiredFiles = [
   "src/nico/NicoCostumeFigure.tsx",
   "src/nico/NicoDressUp.tsx",
   "src/nico/AskNico.tsx",
+  "src/nico/wardrobe/wardrobeSvg.ts",
+  "src/nico/wardrobe/wardrobe.css",
 ];
 
 for (const relative of requiredFiles) {
@@ -28,6 +30,8 @@ const dinosaurArt = read("src/world/DinosaurArt.tsx");
 const nicoFigure = read("src/nico/NicoCostumeFigure.tsx");
 const dressUp = read("src/nico/NicoDressUp.tsx");
 const askNico = read("src/nico/AskNico.tsx");
+const wardrobeSvg = read("src/nico/wardrobe/wardrobeSvg.ts");
+const wardrobeCss = read("src/nico/wardrobe/wardrobe.css");
 const recovery = read("public/asset-recovery.js");
 const css = read("src/world/local-media-art.css");
 const tests = read("src/world/localMediaArt.test.tsx");
@@ -54,24 +58,30 @@ for (const dinosaurId of ["trex", "triceratops", "stegosaurus", "brachiosaurus",
   if (!dinosaurArt.includes(`case "${dinosaurId}"`)) throw new Error(`Local dinosaur silhouette is missing: ${dinosaurId}`);
 }
 
-if (!nicoFigure.includes("useApprovedNicoArt") || !nicoFigure.includes("showFinishedOutfit") || !nicoFigure.includes("showApprovedCharacter")) {
-  throw new Error("Nico does not prioritize approved high-resolution artwork");
+if (!nicoFigure.includes("NicoLayeredCharacter") || !nicoFigure.includes('data-art-state="layered-wardrobe"')) {
+  throw new Error("Nico is not using the local resolution-independent layered renderer");
 }
-if (!dressUp.includes("approvedOutfitStyle") || !dressUp.includes("nico-outfit-thumbnail--approved") || !dressUp.includes("nico-drag-ghost__approved")) {
-  throw new Error("Dress Up thumbnails or drag previews still depend only on the blurry sprite");
+if (!dressUp.includes("WardrobeStudio") || dressUp.includes("approvedOutfitStyle") || dressUp.includes("nicoOutfitSpriteStyle")) {
+  throw new Error("Dress Up still uses flattened full-character art or legacy sprites");
 }
-if (!askNico.includes("NicoCostumeFigure") || !askNico.includes("baseArtSource") || !askNico.includes("outfitArtSource")) {
-  throw new Error("Ask Nico does not use the shared saved-outfit renderer");
+if (!askNico.includes("NicoCostumeFigure") || !askNico.includes("wardrobe")) {
+  throw new Error("Ask Nico does not use the shared saved wardrobe renderer");
+}
+if (!wardrobeSvg.includes("buildNicoWardrobeSvg") || !wardrobeSvg.includes("buildGarmentSvg") || !wardrobeSvg.includes('data-nico-body="true"')) {
+  throw new Error("Layered Nico or garment-only SVG generation is incomplete");
 }
 if (!recovery.includes('img.dataset.recoverable !== "wildlife"') || !recovery.includes('img.dataset.assetRecovery === "ignore"')) {
   throw new Error("Global image recovery is not safely scoped to explicit wildlife images");
 }
 
-for (const contract of ["local-wildlife-art", "dinosaur-art", "nico-outfit-thumbnail--approved", "nico-drag-ghost__approved"]) {
+for (const contract of ["local-wildlife-art", "dinosaur-art"]) {
   if (!css.includes(`.${contract}`)) throw new Error(`Local media style contract missing: ${contract}`);
+}
+for (const contract of ["nico-layered-character", "wardrobe-garment-thumbnail", "wardrobe-drag-ghost"]) {
+  if (!wardrobeCss.includes(`.${contract}`)) throw new Error(`Layered Nico media style contract missing: ${contract}`);
 }
 if (!tests.includes("without a network response") || !tests.includes("distinct sharp SVG silhouettes")) {
   throw new Error("Local media regression coverage is incomplete");
 }
 
-console.log("Local media validation passed for sharp Nico art, offline wildlife illustrations, distinct dinosaur SVGs, scoped recovery, and completed world-module integration.");
+console.log("Local media validation passed for layered Nico SVG art, offline wildlife illustrations, distinct dinosaur SVGs, scoped recovery, and completed world-module integration.");

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, type FormEvent } from "react";
 import { answerNicoQuestion, suggestedQuestions, type NicoAnswer } from "./knowledge";
-import type { Language, NicoProfessionId } from "../types";
+import type { Language, NicoProfessionId, NicoWardrobe } from "../types";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
 
 type Props = {
@@ -10,6 +10,7 @@ type Props = {
   baseArtSource?: string;
   outfitArtSource?: string;
   profession?: NicoProfessionId;
+  wardrobe?: NicoWardrobe;
   accentColor?: string;
 };
 
@@ -30,7 +31,7 @@ const copy = {
     private: "Private and on-device",
     heroTitle: "Curious, smart, kind, and adventurous",
     heroBody: "Nico can explain the world, help with the app, and suggest a safe next adventure.",
-    artAlt: "Nico wearing his saved outfit",
+    artAlt: "Nico wearing his saved layered wardrobe",
   },
   "es-MX": {
     title: "Pregúntale a Nico",
@@ -42,7 +43,7 @@ const copy = {
     private: "Privado y en este dispositivo",
     heroTitle: "Curioso, inteligente, amable y aventurero",
     heroBody: "Nico puede explicar el mundo, ayudar con la aplicación y sugerir una aventura segura.",
-    artAlt: "Nico con su traje guardado",
+    artAlt: "Nico con su guardarropa en capas guardado",
   },
 } as const;
 
@@ -51,9 +52,8 @@ const makeId = () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString
 export function AskNico({
   language,
   speechEnabled,
-  baseArtSource = "",
-  outfitArtSource = "",
   profession = "explorer",
+  wardrobe,
   accentColor = "#22c55e",
 }: Props) {
   const text = copy[language];
@@ -97,9 +97,8 @@ export function AskNico({
       <div className="nico-ask-hero">
         <div className="nico-ask-hero__art">
           <NicoCostumeFigure
-            baseArtSource={baseArtSource}
-            dragOutfitSource={outfitArtSource}
             profession={profession}
+            wardrobe={wardrobe}
             accentColor={accentColor}
             compact
             alt={text.artAlt}
