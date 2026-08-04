@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const SERVICE_WORKER_VERSION = "v17";
+const SERVICE_WORKER_VERSION = "v18";
 const RELOAD_KEY = `nicos-world-${SERVICE_WORKER_VERSION}-reloaded`;
 
 export default function ServiceWorkerRefresh() {
@@ -14,10 +14,7 @@ export default function ServiceWorkerRefresh() {
       window.location.reload();
     };
 
-    navigator.serviceWorker.addEventListener(
-      "controllerchange",
-      onControllerChange,
-    );
+    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
 
     void navigator.serviceWorker
       .register(`/sw.js?release=${SERVICE_WORKER_VERSION}`, {
@@ -29,10 +26,7 @@ export default function ServiceWorkerRefresh() {
 
     return () => {
       disposed = true;
-      navigator.serviceWorker.removeEventListener(
-        "controllerchange",
-        onControllerChange,
-      );
+      navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
     };
   }, []);
 
