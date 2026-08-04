@@ -83,7 +83,7 @@ export default function FullApp() {
   return (
     <div className="fw-app" data-active-section={profile.selectedSection}>
       <a className="fw-skip-link" href="#main-content">{tr(ui.skipToContent, profile.language)}</a>
-      <AppHeader profile={profile} open={open} update={update} />
+      <AppHeader profile={profile} open={open} update={update} announce={announce} />
       <div className="sr-only" aria-live="polite" aria-atomic="true" key={announcement.id}>{announcement.message}</div>
       <main id="main-content" data-section-id={profile.selectedSection}>
         <PageTitle sectionId={profile.selectedSection} language={profile.language} />
