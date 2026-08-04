@@ -43,6 +43,9 @@ if (fullApp.includes("Arcade, DinosaurValley, PetWorkshop, RobotHome")) {
 for (const helper of ["completeOnce", "robotJobMission", "monsterFriendshipMission", "petTrickMission", "fieldMissionId", "arcadeMissionId", "dinosaurDiscoveryMission"]) {
   if (!progression.includes(`function ${helper}`)) throw new Error(`Progression helper is missing: ${helper}`);
 }
+if (!progression.includes("COMPLETED_MISSION_LIMIT = 1000") || !progression.includes("slice(-COMPLETED_MISSION_LIMIT)")) {
+  throw new Error("One-time reward history is not retaining the newest 1000 identifiers");
+}
 
 if (!robot.includes("selectedJobComplete") || !robot.includes("robotJobMission") || !robot.includes("completeOnce")) {
   throw new Error("Robo Lab jobs are not finite per-robot certifications");
@@ -69,8 +72,8 @@ if (!pets.includes("TRICKS") || !pets.includes("petTrickMission") || !pets.inclu
 for (const styleContract of ["field-mission-grid", "arcade-challenge-layout", "dino-expedition-panel", "pet-trick-grid", "friendship-milestones"]) {
   if (!css.includes(`.${styleContract}`)) throw new Error(`Interactive progression style is missing: ${styleContract}`);
 }
-if (!progressionTests.includes("awards a mission exactly once") || !arcadeTests.includes("three valid bilingual questions")) {
+if (!progressionTests.includes("awards a mission exactly once") || !progressionTests.includes("newest bounded mission history") || !arcadeTests.includes("three valid bilingual questions")) {
   throw new Error("Interactive progression regression tests are incomplete");
 }
 
-console.log("Interactive progression validation passed for robot certifications, animal field missions, monster care milestones, six Arcade challenge banks, dinosaur expeditions, and pet trick training.");
+console.log("Interactive progression validation passed for a 1000-entry reward ledger, robot certifications, animal field missions, monster care milestones, six Arcade challenge banks, dinosaur expeditions, and pet trick training.");
