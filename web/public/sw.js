@@ -1,7 +1,14 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v19";
 const CACHE = "nicos-world-static-v20";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
-const PHOTO_NICO_BODY = "/assets/nico/photo/nico-photo-body.webp.b64";
+const PHOTO_NICO_BODY = [
+  "/assets/nico/photo/nico-photo-body.part1.b64",
+  "/assets/nico/photo/nico-photo-body.part2.b64",
+  "/assets/nico/photo/nico-photo-body.part3.b64",
+  "/assets/nico/photo/nico-photo-body.part4.b64",
+  "/assets/nico/photo/nico-photo-body.part5.b64",
+  "/assets/nico/photo/nico-photo-body.part6.b64",
+];
 const APPROVED_NICO_ART = [
   "/assets/nico/approved/character.part1.b64",
   "/assets/nico/approved/character.part2.b64",
@@ -25,7 +32,7 @@ const SHELL = [
   "/asset-recovery.js",
   "/dinosaur-art.js",
   NICO_ART,
-  PHOTO_NICO_BODY,
+  ...PHOTO_NICO_BODY,
   ...APPROVED_NICO_ART,
   ...DRAG_NICO_ART,
 ];
