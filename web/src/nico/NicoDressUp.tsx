@@ -83,7 +83,16 @@ export function applyNicoProfession(
   preferences: NicoPreferences,
   profession: Pick<ProfessionOption, "id" | "accent">,
 ): NicoPreferences {
-  return { ...preferences, profession: profession.id, accentColor: profession.accent };
+  return {
+    ...preferences,
+    profession: profession.id,
+    accentColor: profession.accent,
+    wardrobe: {
+      ...preferences.wardrobe,
+      presetId: profession.id,
+      accentColor: profession.accent,
+    },
+  };
 }
 
 export function NicoDressUp({
