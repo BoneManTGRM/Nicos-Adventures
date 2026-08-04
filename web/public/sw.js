@@ -1,4 +1,4 @@
-const CACHE = "nicos-world-static-v17";
+const CACHE = "nicos-world-static-v18";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
   "/assets/nico/approved/character.part1.b64",
@@ -10,6 +10,10 @@ const APPROVED_NICO_ART = [
   "/assets/nico/approved/outfits.part4.b64",
   "/assets/nico/approved/outfits.part5.b64",
 ];
+const DRAG_NICO_ART = [
+  "/assets/nico/drag/nico-base.webp.b64",
+  "/assets/nico/drag/outfits.webp.b64",
+];
 const SHELL = [
   "/",
   "/index.html",
@@ -19,6 +23,7 @@ const SHELL = [
   "/dinosaur-art.js",
   NICO_ART,
   ...APPROVED_NICO_ART,
+  ...DRAG_NICO_ART,
 ];
 
 self.addEventListener("install", (event) => {
