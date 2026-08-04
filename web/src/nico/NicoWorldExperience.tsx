@@ -15,7 +15,6 @@ import {
   parseNicoHubHash,
   type NicoHubTab,
 } from "./nicoHubRoute";
-import { useNicoDragArt } from "./nicoDragArt";
 import "./nico-world-experience.css";
 import "../showtime/showtime.css";
 
@@ -42,7 +41,6 @@ const copy = {
     openShowtime: "Open Showtime Studio",
     firstBadge: "First Movie Director badge earned!",
     deleteConfirm: "Delete this movie project? Downloaded video files are not stored in the app.",
-    artWarning: "Legacy Nico artwork could not load. The new layered wardrobe remains available.",
   },
   "es-MX": {
     clubhouse: "Casa Club de Nico",
@@ -57,7 +55,6 @@ const copy = {
     openShowtime: "Abrir Estudio Showtime",
     firstBadge: "¡Ganaste la insignia de Director de Primera Película!",
     deleteConfirm: "¿Eliminar este proyecto? Los videos descargados no se guardan en la aplicación.",
-    artWarning: "El arte anterior de Nico no pudo cargar. El nuevo guardarropa en capas sigue disponible.",
   },
 } as const;
 
@@ -99,7 +96,6 @@ function MemoryMovieShelf({
 
 export default function NicoWorldExperience() {
   const { profile, commitProfile } = useActiveProfileStore();
-  const art = useNicoDragArt();
   const initialTab = parseNicoHubHash(window.location.hash);
   const [open, setOpen] = useState(initialTab !== null);
   const [tab, setTab] = useState<NicoHubTab>(initialTab ?? "ask");
@@ -301,7 +297,6 @@ export default function NicoWorldExperience() {
             </nav>
 
             {notice && <p className="nico-hub__notice" role="status">🏆 {notice}</p>}
-            {art.error && <p className="nico-hub__warning" role="status">{text.artWarning}</p>}
 
             <div className="nico-hub__content">
               {tab === "ask" && (
@@ -323,8 +318,6 @@ export default function NicoWorldExperience() {
               {tab === "showtime" && (
                 <ShowtimeStudio
                   profile={profile}
-                  nicoBaseSource={art.baseSource}
-                  nicoOutfitSource={art.outfitSource}
                   initialProject={editingProject}
                   onProjectSaved={saveMovieProject}
                   onProjectDownloaded={markDownloaded}
