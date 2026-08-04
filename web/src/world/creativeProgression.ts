@@ -1,4 +1,5 @@
 import type { LocalProfile } from "../types";
+// Phase C2 deliberately reuses the finite one-time reward contract introduced by Phase C1.
 import { completeOnce, type CompletionResult } from "./progression";
 
 export type CreativeKind = "artwork" | "story";
