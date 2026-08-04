@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Language, LocalProfile, SectionId } from "../types";
 import { fieldLabel, tr, ui, type Localized } from "../i18n/core";
-import { optionLabel } from "../i18n/options";
+import { optionLabel } from "../i18n/display";
 import { WORLD_SECTIONS } from "./catalogs";
 
 export type UpdateProfile = (profile: LocalProfile) => void;
