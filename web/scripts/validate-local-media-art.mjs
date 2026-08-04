@@ -60,10 +60,10 @@ if (!nicoFigure.includes("useApprovedNicoArt") || !nicoFigure.includes("showFini
 if (!dressUp.includes("approvedOutfitStyle") || !dressUp.includes("nico-outfit-thumbnail--approved") || !dressUp.includes("nico-drag-ghost__approved")) {
   throw new Error("Dress Up thumbnails or drag previews still depend only on the blurry sprite");
 }
-if (!askNico.includes("NicoCostumeFigure") || !askNico.includes("nico-ask-hero__art")) {
-  throw new Error("Ask Nico does not use the shared sharp saved-outfit renderer");
+if (!askNico.includes("NicoCostumeFigure") || !askNico.includes("baseArtSource") || !askNico.includes("outfitArtSource")) {
+  throw new Error("Ask Nico does not use the shared saved-outfit renderer");
 }
-if (!recovery.includes('img.dataset.recoverable === "wildlife"') || !recovery.includes('img.dataset.assetRecovery === "ignore"')) {
+if (!recovery.includes('img.dataset.recoverable !== "wildlife"') || !recovery.includes('img.dataset.assetRecovery === "ignore"')) {
   throw new Error("Global image recovery is not safely scoped to explicit wildlife images");
 }
 
