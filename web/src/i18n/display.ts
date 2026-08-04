@@ -9,6 +9,7 @@ const legacySpanish: Record<string, string> = {
   "Star eyes": "Ojos de estrella",
   "Anime eyes": "Ojos anime",
   "Giant hands": "Manos gigantes",
+  "Spider legs": "Patas de araña",
   "Spring legs": "Piernas de resorte",
   "Rainbow shield": "Escudo arcoíris",
   "Cretaceous": "Cretácico",
