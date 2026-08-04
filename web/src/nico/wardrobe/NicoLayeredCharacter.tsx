@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import type { NicoWardrobe, WardrobeSlot } from "../../types";
 import { garmentSvgDataUrl, wardrobeSvgDataUrl } from "./wardrobeSvg";
 import { resolveWardrobeItem, type WardrobeItem } from "./catalog";
+import { usePhotoNicoBody } from "./photoNicoBody";
+import { photoWardrobeBackgroundDataUrl, photoWardrobeForegroundDataUrl } from "./photoWardrobeSvg";
 import "./wardrobe.css";
 
 export function NicoLayeredCharacter({
@@ -10,21 +12,37 @@ export function NicoLayeredCharacter({
   compact = false,
   className = "",
   highlightedSlot = null,
+  photoBodySource,
 }: {
   wardrobe: NicoWardrobe;
   alt: string;
   compact?: boolean;
   className?: string;
   highlightedSlot?: WardrobeSlot | null;
+  photoBodySource?: string;
 }) {
-  const source = useMemo(() => wardrobeSvgDataUrl(wardrobe), [wardrobe]);
+  const photo = usePhotoNicoBody(photoBodySource);
+  const fallbackSource = useMemo(() => wardrobeSvgDataUrl(wardrobe), [wardrobe]);
+  const backgroundSource = useMemo(() => photoWardrobeBackgroundDataUrl(wardrobe), [wardrobe]);
+  const foregroundSource = useMemo(() => photoWardrobeForegroundDataUrl(wardrobe), [wardrobe]);
+  const usePhoto = Boolean(photo.source && !photo.error);
+
   return (
     <figure
       className={`nico-layered-character ${compact ? "nico-layered-character--compact" : ""} ${className}`.trim()}
       data-layered-nico="true"
+      data-photo-nico-body={usePhoto ? "true" : undefined}
       data-highlighted-slot={highlightedSlot ?? undefined}
     >
-      <img src={source} alt={alt} draggable={false} decoding="async" data-asset-recovery="ignore" />
+      {usePhoto ? (
+        <>
+          <img className="nico-photo-layer nico-photo-layer--back" src={backgroundSource} alt="" aria-hidden="true" draggable={false} decoding="async" data-asset-recovery="ignore" />
+          <img className="nico-photo-layer nico-photo-layer--body" src={photo.source} alt={alt} draggable={false} decoding="async" data-asset-recovery="ignore" />
+          <img className="nico-photo-layer nico-photo-layer--front" src={foregroundSource} alt="" aria-hidden="true" draggable={false} decoding="async" data-asset-recovery="ignore" />
+        </>
+      ) : (
+        <img className="nico-vector-fallback" src={fallbackSource} alt={alt} draggable={false} decoding="async" data-asset-recovery="ignore" />
+      )}
       {highlightedSlot && <span className={`nico-layered-character__slot nico-layered-character__slot--${highlightedSlot}`} aria-hidden="true" />}
     </figure>
   );
