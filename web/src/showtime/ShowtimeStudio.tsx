@@ -32,8 +32,8 @@ type PoseOption = {
 
 type Props = {
   profile: LocalProfile;
-  nicoBaseSource: string;
-  nicoOutfitSource: string;
+  nicoBaseSource?: string;
+  nicoOutfitSource?: string;
   initialProject?: MovieProject | null;
   onProjectSaved: (project: MovieProject) => void;
   onProjectDownloaded: (projectId: string, mimeType: string) => void;
@@ -52,7 +52,7 @@ const catalog = showtimeData as {
 const copy = {
   en: {
     title: "Showtime Studio",
-    intro: "Make a short movie entirely on this device. The video is never uploaded and only project instructions are saved.",
+    intro: "Make a short movie entirely on this device. Nico wears the exact layered wardrobe you saved. The video is never uploaded and only project instructions are saved.",
     characters: "1. Choose 1–3 characters",
     poses: "2. Build the pose sequence",
     scene: "3. Choose the stage",
@@ -75,7 +75,7 @@ const copy = {
   },
   "es-MX": {
     title: "Estudio Showtime",
-    intro: "Crea una película corta completamente en este dispositivo. El video nunca se sube y solo se guardan las instrucciones del proyecto.",
+    intro: "Crea una película corta completamente en este dispositivo. Nico usa exactamente el guardarropa en capas que guardaste. El video nunca se sube y solo se guardan las instrucciones del proyecto.",
     characters: "1. Elige de 1 a 3 personajes",
     poses: "2. Crea la secuencia de poses",
     scene: "3. Elige el escenario",
@@ -114,8 +114,6 @@ const projectCharacterKey = (character: MovieCharacterRef) => `${character.kind}
 
 export function ShowtimeStudio({
   profile,
-  nicoBaseSource,
-  nicoOutfitSource,
   initialProject,
   onProjectSaved,
   onProjectDownloaded,
@@ -173,7 +171,7 @@ export function ShowtimeStudio({
   useEffect(() => {
     let cancelled = false;
     nicoImageRef.current = null;
-    void composeNicoImage(nicoBaseSource, nicoOutfitSource, profile.nico.profession)
+    void composeNicoImage(profile.nico.wardrobe)
       .then((image) => {
         if (cancelled) return;
         nicoImageRef.current = image;
@@ -187,7 +185,7 @@ export function ShowtimeStudio({
     return () => {
       cancelled = true;
     };
-  }, [nicoBaseSource, nicoOutfitSource, profile.nico.profession]);
+  }, [profile.nico.wardrobe]);
 
   useEffect(() => {
     if (!previewing || !sequence.length) return;
@@ -198,7 +196,7 @@ export function ShowtimeStudio({
 
   useEffect(() => {
     renderCanvasFrame(0);
-  }, [caption, durationMs, profile.nico.accentColor, profile.nico.profession, sceneId, selectedCharacters, sequence, title]);
+  }, [caption, durationMs, profile.nico.accentColor, profile.nico.profession, profile.nico.wardrobe, sceneId, selectedCharacters, sequence, title]);
 
   useEffect(() => () => {
     abortRef.current?.abort();
@@ -418,9 +416,8 @@ export function ShowtimeStudio({
                   return (
                     <div className={`showtime-character showtime-character--${pose}`} key={character.key}>
                       <NicoCostumeFigure
-                        baseArtSource={nicoBaseSource}
-                        dragOutfitSource={nicoOutfitSource}
                         profession={profile.nico.profession}
+                        wardrobe={profile.nico.wardrobe}
                         accentColor={profile.nico.accentColor}
                         compact
                         alt="Nico"
