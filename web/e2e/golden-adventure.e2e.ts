@@ -240,6 +240,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.canopy) }));
   await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.herdPath) }));
   await expect(page.getByText(text.dinosaurFound, { exact: true })).toBeVisible();
+  await expect(page.locator(".dino-overlook__reveal")).toBeFocused();
+  await expect(page.locator(".fw-skip-link")).toHaveCSS("opacity", "0");
   await assertLayout(page, `${testInfo.project.name} dinosaur overlook`);
   await testInfo.attach("dinosaur-overlook", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
