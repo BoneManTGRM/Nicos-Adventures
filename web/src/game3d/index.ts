@@ -1,6 +1,8 @@
 export { AccessibilityBridge, type GameCanvasLabels } from "./AccessibilityBridge";
 export { AdventureAudio } from "./audio/AdventureAudio";
 export { ADVENTURE_ASSETS, assetUrl, preloadAdventureModel, useAdventureModel, type AdventureAssetManifest } from "./assets";
+export { BoltBot, type BoltBotAnimation } from "./boltbot/BoltBot";
+export { boltBotAppearanceFromRobot } from "./boltbot/appearance";
 export { CameraRig } from "./CameraRig";
 export { GameCanvas } from "./GameCanvas";
 export { DEFAULT_KEY_BINDINGS, keyboardAction, movementInput, type InputAction } from "./input/actions";
