@@ -6,6 +6,8 @@ import { optionLabel } from "../i18n/display";
 import { MONSTER_OPTIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, makeId } from "./common";
+import { MonsterCreatureStudio } from "./MonsterCreatureStudio";
+import type { MonsterTraitKey } from "./monsterCreatureStudio";
 import { completeOnce, hasCompleted, monsterFriendshipMission } from "./progression";
 
 function newMonster(): MonsterRecord {
@@ -36,6 +38,7 @@ const motions = ["bounce", "spin", "roar", "fly", "dance", "sleep"] as const;
 export function MonsterLab({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
   const [draft, setDraft] = useState<MonsterRecord>(newMonster);
+  const [activeTrait, setActiveTrait] = useState<MonsterTraitKey>("body");
   const motion = useMonsterMotion();
 
   useEffect(() => {
@@ -56,7 +59,7 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
 
   return (
     <div className="fw-builder-layout">
-      <section aria-label={language === "es-MX" ? "Vista previa del monstruo" : "Monster preview"}>
+      <section className="monster-lab-preview" aria-label={language === "es-MX" ? "Vista previa del monstruo" : "Monster preview"}>
         <MonsterStage monster={draft} action={motion.action} />
         <div className="monster-action-row" role="group" aria-label={language === "es-MX" ? "Movimientos del monstruo" : "Monster movements"}>
           {motions.map((action) => (
@@ -66,26 +69,36 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
       </section>
 
       <section className="fw-panel" aria-label={tr(ui.formControls, language)}>
-        <label>
+        <label className="monster-lab-name">
           {tr(ui.monsterName, language)}
           <input value={draft.name} maxLength={32} onChange={(event) => setDraft({ ...draft, name: event.target.value })} />
         </label>
-        <fieldset className="fw-fieldset-reset">
-          <legend>{tr(ui.formControls, language)}</legend>
-          <div className="fw-form-grid">
-            {Object.entries(MONSTER_OPTIONS).map(([key, values]) => (
-              <label key={key}>
-                {fieldLabel(key, language)}
-                <select
-                  value={String(draft[key as keyof MonsterRecord] || values[0])}
-                  onChange={(event) => setDraft({ ...draft, [key]: event.target.value })}
-                >
-                  {values.map((value) => <option value={value} key={value}>{optionLabel(value, language)}</option>)}
-                </select>
-              </label>
-            ))}
-          </div>
-        </fieldset>
+        <MonsterCreatureStudio
+          monster={draft}
+          language={language}
+          activeTrait={activeTrait}
+          selectTrait={setActiveTrait}
+          sculpt={(trait, option) => setDraft({ ...draft, [trait]: option })}
+        />
+        <details className="monster-precision">
+          <summary>{language === "es-MX" ? "Controles precisos de rasgos" : "Precision trait controls"}</summary>
+          <fieldset className="fw-fieldset-reset">
+            <legend>{tr(ui.formControls, language)}</legend>
+            <div className="fw-form-grid">
+              {Object.entries(MONSTER_OPTIONS).map(([key, values]) => (
+                <label key={key}>
+                  {fieldLabel(key, language)}
+                  <select
+                    value={String(draft[key as keyof MonsterRecord] || values[0])}
+                    onChange={(event) => setDraft({ ...draft, [key]: event.target.value })}
+                  >
+                    {values.map((value) => <option value={value} key={value}>{optionLabel(value, language)}</option>)}
+                  </select>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </details>
         <div className="fw-action-row">
           <button type="button" onClick={() => {
             setDraft(newMonster());

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import type { AnimalRecord, MonsterRecord } from "./types";
+import { monsterColorSwatch } from "./world/monsterCreatureStudio";
 
 export type RobotPose = "idle" | "wave" | "launch" | "celebrate" | "dance" | "spin" | "blink" | "scan" | "charge" | "hover" | "stomp" | "salute" | "repair" | "shield" | "lights";
 
@@ -66,9 +67,8 @@ const rawAnimals: Array<[string,string,string,string,string,string,string,string
 
 export const ANIMAL_LIBRARY: AnimalRecord[] = rawAnimals.map(([id,name,habitat,emoji,fact,group,region,adaptation]) => ({ id,name,habitat,emoji,fact,group,region,adaptation,discovered:false,favorite:false,imageTitle:name }));
 
-const palette: Record<string,string> = { Aqua:"#22d3ee", Purple:"#8b5cf6", Lime:"#84cc16", Orange:"#fb923c", Pink:"#f472b6", Blue:"#3b82f6", Red:"#ef4444", Gold:"#facc15", Midnight:"#172554", Pearl:"#e2e8f0", Emerald:"#10b981", Crimson:"#be123c" };
 export function MonsterStage({ monster, action = "idle" }: { monster: MonsterRecord; action?: string }) {
-  const color = palette[monster.color] || monster.color || "#22d3ee";
+  const color = monsterColorSwatch(monster.color);
   const family = monster.body.toLowerCase().replace(/\s+/g,"-");
   const eyes = monster.eyes.includes("Three") ? 3 : monster.eyes.includes("One") || monster.eyes.includes("Cyclops") ? 1 : monster.eyes.includes("Four") ? 4 : 2;
   const hasWings = !monster.wings.toLowerCase().includes("no ");
