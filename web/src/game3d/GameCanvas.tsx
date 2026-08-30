@@ -44,18 +44,20 @@ export function GameCanvas({
   controls,
   labels,
   quality: qualityOverride,
+  unavailableFallback,
 }: {
   children: ReactNode;
   controls: ReactNode;
   labels: GameCanvasLabels;
   quality?: QualityProfile;
+  unavailableFallback?: ReactNode;
 }) {
   const quality = useMemo(() => qualityOverride ?? readQualityProfile(), [qualityOverride]);
   const [webglAvailable] = useState(() => canUseWebGL());
   const [status, setStatus] = useState<"loading" | "unavailable" | RendererStatus>(webglAvailable ? "loading" : "unavailable");
   const onRendererStatus = useCallback((next: RendererStatus) => setStatus(next), []);
   const onRendererError = useCallback(() => setStatus("unavailable"), []);
-  const unavailable = <div className="game-canvas__fallback" role="alert">{labels.unavailable}</div>;
+  const unavailable = unavailableFallback ?? <div className="game-canvas__fallback" role="alert">{labels.unavailable}</div>;
 
   return (
     <section

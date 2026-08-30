@@ -196,6 +196,143 @@ function BridgeRoute({ available }: { available: boolean }) {
   );
 }
 
+export function IllustratedWorldFallback({
+  language,
+  dinosaurValleyAvailable,
+}: {
+  language: Language;
+  dinosaurValleyAvailable: boolean;
+}) {
+  return (
+    <div className="world-atlas-fallback" role="alert" data-valley-status={dinosaurValleyAvailable ? "open" : "locked"}>
+      <svg viewBox="0 0 1000 560" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="atlas-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#6ec5d7" />
+            <stop offset=".42" stopColor="#31698a" />
+            <stop offset="1" stopColor="#102944" />
+          </linearGradient>
+          <radialGradient id="atlas-sun" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stopColor="#fffbd2" stopOpacity=".98" />
+            <stop offset=".34" stopColor="#fde68a" stopOpacity=".72" />
+            <stop offset="1" stopColor="#fde68a" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="atlas-water" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#49b6c2" />
+            <stop offset=".5" stopColor="#227b91" />
+            <stop offset="1" stopColor="#123e62" />
+          </linearGradient>
+          <linearGradient id="atlas-land" x1=".12" y1="0" x2=".8" y2="1">
+            <stop offset="0" stopColor="#a8c979" />
+            <stop offset=".48" stopColor="#658c55" />
+            <stop offset="1" stopColor="#385844" />
+          </linearGradient>
+          <linearGradient id="atlas-cliff" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#c9b58a" />
+            <stop offset="1" stopColor="#6e5a48" />
+          </linearGradient>
+          <linearGradient id="atlas-glass" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#d9fbff" />
+            <stop offset=".35" stopColor="#50d5df" />
+            <stop offset="1" stopColor="#176079" />
+          </linearGradient>
+          <linearGradient id="atlas-crystal" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#f5d0fe" />
+            <stop offset=".42" stopColor="#a855f7" />
+            <stop offset="1" stopColor="#4c1d95" />
+          </linearGradient>
+          <linearGradient id="atlas-gold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#fff7bc" />
+            <stop offset=".42" stopColor="#facc15" />
+            <stop offset="1" stopColor="#a16207" />
+          </linearGradient>
+          <filter id="atlas-soft-shadow" x="-30%" y="-30%" width="170%" height="190%">
+            <feDropShadow dx="0" dy="12" stdDeviation="10" floodColor="#02101c" floodOpacity=".55" />
+          </filter>
+          <filter id="atlas-glow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="7" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+
+        <rect width="1000" height="560" fill="url(#atlas-sky)" />
+        <circle cx="818" cy="97" r="108" fill="url(#atlas-sun)" />
+        <path d="M0 248Q100 168 198 236T393 210T575 234T760 192T1000 234V362H0Z" fill="#244c5c" opacity=".72" />
+        <path d="M0 281Q104 210 221 271T442 250T655 263T856 223T1000 255V363H0Z" fill="#173d4f" opacity=".9" />
+        <g className="world-atlas-fallback__clouds" fill="#f0fbff" opacity=".72">
+          <path d="M82 105c20-29 60-24 72 7 25-17 62 0 62 31H52c0-22 13-36 30-38Z" />
+          <path d="M662 142c17-24 50-21 61 5 20-13 51 2 51 27H638c0-17 10-29 24-32Z" />
+        </g>
+
+        <path d="M0 332Q156 274 318 310T625 298T1000 326V560H0Z" fill="url(#atlas-water)" />
+        <path d="M90 378Q151 277 283 246Q433 194 578 232Q745 258 899 367Q839 495 680 520Q503 545 327 514Q170 493 90 378Z" fill="url(#atlas-cliff)" opacity=".94" filter="url(#atlas-soft-shadow)" />
+        <path d="M100 354Q165 259 289 231Q439 183 578 221Q741 244 888 346Q824 454 679 480Q506 511 341 484Q187 467 100 354Z" fill="url(#atlas-land)" stroke="#d9e3b2" strokeOpacity=".36" strokeWidth="4" />
+        <path d="M128 361Q225 398 338 366Q453 329 564 354Q682 381 844 338" fill="none" stroke="#d9efe7" strokeOpacity=".52" strokeWidth="18" strokeLinecap="round" />
+        <path d="M128 361Q225 398 338 366Q453 329 564 354Q682 381 844 338" fill="none" stroke="#50b8c9" strokeWidth="12" strokeLinecap="round" />
+        <path d="M184 312Q318 262 449 303Q592 345 770 288" fill="none" stroke="#fff1b8" strokeOpacity=".82" strokeWidth="8" strokeDasharray="4 13" strokeLinecap="round" />
+
+        <g className="world-atlas-fallback__landmark world-atlas-fallback__robo-lab" filter="url(#atlas-soft-shadow)" transform="translate(166 255)">
+          <ellipse cx="0" cy="74" rx="66" ry="18" fill="#112b34" opacity=".38" />
+          <path d="M-42 63V9Q0-25 42 9v54Z" fill="#14687b" stroke="#e0fbff" strokeOpacity=".34" strokeWidth="3" />
+          <path d="M-37 10Q0-25 37 10Z" fill="url(#atlas-glass)" />
+          <path d="M0-22v-30" stroke="#dff8ff" strokeWidth="6" strokeLinecap="round" />
+          <path d="m0-61 10 15H-10Z" fill="url(#atlas-gold)" filter="url(#atlas-glow)" />
+          <rect x="-16" y="37" width="32" height="28" rx="9" fill="#062b3b" />
+          <circle cx="-27" cy="23" r="5" fill="#a5f3fc" /><circle cx="27" cy="23" r="5" fill="#a5f3fc" />
+        </g>
+
+        <g className="world-atlas-fallback__landmark world-atlas-fallback__forest" filter="url(#atlas-soft-shadow)" transform="translate(302 376)">
+          <ellipse cx="0" cy="51" rx="79" ry="19" fill="#183426" opacity=".46" />
+          {[-45, -15, 18, 49].map((x, index) => <g key={x} transform={`translate(${x} ${index % 2 ? 4 : 13})`}><path d="M0 43V5" stroke="#684a31" strokeWidth="9" strokeLinecap="round" /><path d="M0-35-29 15h17l-25 34h74L12 15h17Z" fill={index % 2 ? "#3f7a48" : "#579554"} stroke="#c1dfa2" strokeOpacity=".23" strokeWidth="3" /></g>)}
+          <circle cx="-64" cy="39" r="8" fill="#f8d477" /><circle cx="62" cy="32" r="6" fill="#f3a8bc" />
+        </g>
+
+        <g className="world-atlas-fallback__landmark world-atlas-fallback__monster-lab" filter="url(#atlas-soft-shadow)" transform="translate(458 333)">
+          <ellipse cx="0" cy="57" rx="59" ry="16" fill="#24133b" opacity=".46" />
+          <path d="M0-54 49 0 27 56h-54L-49 0Z" fill="url(#atlas-crystal)" stroke="#f5d0fe" strokeOpacity=".52" strokeWidth="4" />
+          <path d="M0-42V44M-38 0l38-42L38 0 0 44Z" fill="none" stroke="#fff" strokeOpacity=".31" strokeWidth="4" />
+          <circle cx="0" cy="17" r="13" fill="#e9d5ff" filter="url(#atlas-glow)" />
+        </g>
+
+        <g className="world-atlas-fallback__landmark world-atlas-fallback__castle" filter="url(#atlas-soft-shadow)" transform="translate(490 209)">
+          <ellipse cx="0" cy="76" rx="78" ry="17" fill="#35243a" opacity=".33" />
+          <rect x="-50" y="12" width="100" height="64" rx="8" fill="#f1b5b1" />
+          {[-54, 54].map((x) => <g key={x}><rect x={x-18} y="-5" width="36" height="81" rx="8" fill="#f9d5cb" /><path d={`M${x-25}-5 ${x} -43 ${x+25}-5Z`} fill="#7041a3" /><circle cx={x} cy="27" r="8" fill="#54306f" /></g>)}
+          <path d="M-11 76V45Q0 32 11 45v31Z" fill="#643d6c" />
+          <path d="M0-5v-27l24 9-24 9" fill="#facc15" />
+        </g>
+
+        <g className="world-atlas-fallback__landmark world-atlas-fallback__museum" filter="url(#atlas-soft-shadow)" transform="translate(685 270)">
+          <ellipse cx="0" cy="61" rx="68" ry="17" fill="#16303b" opacity=".4" />
+          <path d="M-56 16Q0-28 56 16v43H-56Z" fill="url(#atlas-glass)" stroke="#dff8ff" strokeOpacity=".42" strokeWidth="4" />
+          <path d="M-67 16 0-22l67 38Z" fill="#d8edf0" />
+          {[-38, -13, 13, 38].map((x) => <path key={x} d={`M${x} 22v35`} stroke="#edf8f6" strokeWidth="8" />)}
+          <path d="M-66 59H66" stroke="#abc8c7" strokeWidth="10" strokeLinecap="round" />
+        </g>
+
+        <g className="world-atlas-fallback__landmark world-atlas-fallback__dinosaur-gate" filter="url(#atlas-soft-shadow)" transform="translate(816 377)">
+          <ellipse cx="0" cy="54" rx="66" ry="18" fill="#233124" opacity=".48" />
+          <path d="M-48 51V-5M48 51V-5" stroke="#dbc9a5" strokeWidth="17" strokeLinecap="round" />
+          <path d="M-48-3Q0-59 48-3" fill="none" stroke="#dbc9a5" strokeWidth="17" strokeLinecap="round" />
+          <path d="M-38-4Q0-42 38-4" fill="none" stroke={dinosaurValleyAvailable ? "#f9d75e" : "#7a8890"} strokeWidth="7" />
+          <path d="m0 0 15 22L0 38l-15-16Z" fill={dinosaurValleyAvailable ? "url(#atlas-gold)" : "#8b6672"} filter="url(#atlas-glow)" />
+        </g>
+
+        <g className={`world-atlas-fallback__bridge ${dinosaurValleyAvailable ? "is-open" : "is-locked"}`} filter="url(#atlas-soft-shadow)">
+          <path d="M565 385Q655 420 748 380" fill="none" stroke="#453826" strokeWidth="13" strokeLinecap="round" opacity=".72" />
+          {(dinosaurValleyAvailable ? [0, 1, 2, 3, 4, 5] : [0, 1, 4, 5]).map((index) => <rect key={index} x={570 + index * 30} y={382 + Math.abs(2.5-index) * 7} width="25" height="12" rx="4" fill={dinosaurValleyAvailable ? "url(#atlas-gold)" : "#87919a"} transform={`rotate(${index < 3 ? 9 : -9} ${582 + index * 30} ${389 + Math.abs(2.5-index) * 7})`} />)}
+        </g>
+
+        <g className="world-atlas-fallback__foreground" opacity=".92">
+          <path d="M0 560V432q40 18 67 128Zm1000 0V418q-47 22-79 142Z" fill="#112f32" />
+          <path d="M0 533q38-52 72 27m928-42q-47-38-84 42" fill="none" stroke="#3a6d4e" strokeWidth="22" strokeLinecap="round" />
+        </g>
+      </svg>
+      <p>{tr(copy.unavailable, language)}</p>
+    </div>
+  );
+}
+
 function LivingWorldScene({ dinosaurValleyAvailable, reducedMotion }: { dinosaurValleyAvailable: boolean; reducedMotion: boolean }) {
   const world = useRef<Group>(null);
   const clouds = useRef<Group>(null);
@@ -307,6 +444,7 @@ export function LivingWorldAtlas({
       </header>
       <GameCanvas
         quality={quality}
+        unavailableFallback={<IllustratedWorldFallback language={language} dinosaurValleyAvailable={dinosaurValleyAvailable} />}
         labels={{
           scene: tr(copy.scene, language),
           loading: tr(copy.loading, language),

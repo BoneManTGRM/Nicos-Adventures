@@ -189,6 +189,14 @@ test("Living destinations keep their navigation without WebGL", async ({ page },
   const atlas = page.locator(".world-atlas");
   await expect(atlas.locator(".game-canvas")).toHaveAttribute("data-renderer-status", "unavailable");
   await expect(atlas.getByRole("alert")).toHaveText(text.atlasUnavailable);
+  await expect(atlas.locator(".world-atlas-fallback svg")).toBeVisible();
+  await expect(atlas.locator(".world-atlas-fallback__robo-lab")).toHaveCount(1);
+  await expect(atlas.locator(".world-atlas-fallback__forest")).toHaveCount(1);
+  await expect(atlas.locator(".world-atlas-fallback__monster-lab")).toHaveCount(1);
+  await expect(atlas.locator(".world-atlas-fallback__castle")).toHaveCount(1);
+  await expect(atlas.locator(".world-atlas-fallback__museum")).toHaveCount(1);
+  await expect(atlas.locator(".world-atlas-fallback__dinosaur-gate")).toHaveCount(1);
+  await expect(atlas.locator(".world-atlas-fallback__bridge")).toHaveClass(/is-locked/);
   await expect(atlas.locator("canvas")).toHaveCount(0);
   await expect(atlas.locator(".world-atlas__motion-control")).toBeHidden();
   await expect(atlas.locator(".world-atlas__landmark")).toHaveCount(6);
