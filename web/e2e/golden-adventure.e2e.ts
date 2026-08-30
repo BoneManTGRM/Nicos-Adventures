@@ -251,7 +251,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await context.setOffline(true);
   const offlineAssets = await page.evaluate(async (urls) => Promise.all(urls.map(async (url) => ({
     url,
-    ok: Boolean(await caches.match(url, { ignoreSearch: true })),
+    ok: Boolean(await caches.match(url, { ignoreSearch: true, ignoreVary: true })),
   }))), goldenAssetUrls);
   expect(offlineAssets.filter((asset) => !asset.ok), "Golden Adventure assets unavailable offline").toEqual([]);
   await expect(achievementEntry).toHaveCount(1);

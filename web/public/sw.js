@@ -1,5 +1,5 @@
-const LEGACY_CACHE_MARKER = "nicos-world-static-v20";
-const CACHE = "nicos-world-static-v21";
+const LEGACY_CACHE_MARKER = "nicos-world-static-v21";
+const CACHE = "nicos-world-static-v22";
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
@@ -97,7 +97,7 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       })
-      .catch(async () => (await caches.match(event.request, { ignoreSearch: true })) || Response.error())
+      .catch(async () => (await caches.match(event.request, { ignoreSearch: true, ignoreVary: true })) || Response.error())
   );
 });
 

@@ -230,14 +230,14 @@ if (!recovery.includes('dataset.recoverable !== "wildlife"')) throw new Error("A
 
 const sw = read("public/sw.js");
 const swRefresh = read("src/ServiceWorkerRefresh.tsx");
-if (!sw.includes("nicos-world-static-v21") || !swRefresh.includes('"v21"')) throw new Error("Nico system cache version is not v21");
+if (!sw.includes("nicos-world-static-v22") || !swRefresh.includes('"v22"')) throw new Error("Nico system cache version is not v22");
 if (!sw.includes('await cache.put("/index.html", copy)') || !sw.includes("await cache.put(event.request, copy)")) {
   throw new Error("Service-worker cache writes must remain attached to the fetch lifecycle");
 }
 if (!sw.includes("OFFLINE_ASSET_MANIFEST") || !sw.includes("await cache.addAll")) {
   throw new Error("The generated Golden Adventure asset manifest is not precached");
 }
-if (!sw.includes("caches.match(event.request, { ignoreSearch: true })")) {
+if (!sw.includes("caches.match(event.request, { ignoreSearch: true, ignoreVary: true })")) {
   throw new Error("Offline requests must fall back to the generated Golden Adventure cache");
 }
 
