@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import type { AnimalRecord, MonsterRecord } from "./types";
 
@@ -65,25 +65,6 @@ const rawAnimals: Array<[string,string,string,string,string,string,string,string
 ];
 
 export const ANIMAL_LIBRARY: AnimalRecord[] = rawAnimals.map(([id,name,habitat,emoji,fact,group,region,adaptation]) => ({ id,name,habitat,emoji,fact,group,region,adaptation,discovered:false,favorite:false,imageTitle:name }));
-
-const photoCache = new Map<string,string>();
-export function AnimalPhoto({ animal }: { animal: AnimalRecord }) {
-  const [url,setUrl] = useState(() => photoCache.get(animal.name) ?? "");
-  const [failed,setFailed] = useState(false);
-  useEffect(() => {
-    if (url || failed) return;
-    const title = encodeURIComponent(animal.imageTitle || animal.name);
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${title}`, { headers: { Accept: "application/json" } })
-      .then((response) => response.ok ? response.json() : Promise.reject())
-      .then((data: { thumbnail?: { source?: string }; originalimage?: { source?: string } }) => {
-        const next = data.originalimage?.source || data.thumbnail?.source || "";
-        if (!next) throw new Error("No photo");
-        photoCache.set(animal.name,next); setUrl(next);
-      }).catch(() => setFailed(true));
-  }, [animal.imageTitle, animal.name, failed, url]);
-  if (!url) return <div className="real-animal-photo real-animal-photo--fallback"><span>{animal.emoji}</span><small>{failed ? "Photo unavailable" : "Loading wildlife photo…"}</small></div>;
-  return <figure className="real-animal-photo"><img src={url} alt={animal.name} loading="lazy" onError={() => setFailed(true)} /><figcaption>{animal.name} · Wikipedia/Wikimedia</figcaption></figure>;
-}
 
 const palette: Record<string,string> = { Aqua:"#22d3ee", Purple:"#8b5cf6", Lime:"#84cc16", Orange:"#fb923c", Pink:"#f472b6", Blue:"#3b82f6", Red:"#ef4444", Gold:"#facc15", Midnight:"#172554", Pearl:"#e2e8f0", Emerald:"#10b981", Crimson:"#be123c" };
 export function MonsterStage({ monster, action = "idle" }: { monster: MonsterRecord; action?: string }) {

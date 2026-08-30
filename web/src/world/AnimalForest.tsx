@@ -1,15 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { mergeAnimalLibrary } from "../FeatureArt";
 import type { AnimalRecord, Language, LocalProfile } from "../types";
 import { localizeAnimalCompat } from "../i18n/animalsCompat";
 import { tr, ui } from "../i18n/core";
-import { optionLabel } from "../i18n/display";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState } from "./common";
 import { completeOnce, fieldMissionId, hasCompleted } from "./progression";
 import { LocalWildlifeArt } from "./LocalWildlifeArt";
 
-const photoCache = new Map<string, string>();
+const AnimalForestTrail = lazy(() => import("./AnimalForestTrail").then((module) => ({
+  default: module.AnimalForestTrail,
+})));
 
 type FieldMission = {
   id: string;
@@ -20,64 +21,11 @@ type FieldMission = {
   reward: number;
 };
 
-function WildlifePhoto({ animal, displayName, language }: { animal: AnimalRecord; displayName: string; language: Language }) {
-  const cacheKey = animal.imageTitle || animal.name;
-  const [url, setUrl] = useState(() => photoCache.get(cacheKey) ?? "");
-  const [failed, setFailed] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    if (url || failed || (typeof navigator !== "undefined" && !navigator.onLine)) return;
-    const title = encodeURIComponent(animal.imageTitle || animal.name);
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 4500);
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${title}`, {
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-      cache: "no-store",
-    })
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Photo unavailable")))
-      .then((data: { thumbnail?: { source?: string }; originalimage?: { source?: string } }) => {
-        const next = data.thumbnail?.source || data.originalimage?.source || "";
-        if (!next) throw new Error("Photo unavailable");
-        photoCache.set(cacheKey, next);
-        setUrl(next);
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setFailed(true);
-      })
-      .finally(() => window.clearTimeout(timeout));
-    return () => {
-      window.clearTimeout(timeout);
-      controller.abort();
-    };
-  }, [animal.imageTitle, animal.name, cacheKey, failed, url]);
-
-  const credit = url && !failed
-    ? `${displayName} · Wikipedia/Wikimedia`
-    : `${displayName} · ${language === "es-MX" ? "ilustración local" : "local illustration"}`;
-
+function WildlifePortrait({ animal, displayName, language }: { animal: AnimalRecord; displayName: string; language: Language }) {
   return (
     <figure className="real-animal-photo">
       <LocalWildlifeArt animal={animal} displayName={displayName} language={language} />
-      {url && !failed && (
-        <img
-          className={loaded ? "is-loaded" : ""}
-          src={url}
-          alt={displayName}
-          loading="lazy"
-          decoding="async"
-          referrerPolicy="no-referrer"
-          data-asset-recovery="ignore"
-          onLoad={() => setLoaded(true)}
-          onError={() => {
-            setLoaded(false);
-            setFailed(true);
-          }}
-        />
-      )}
-      <figcaption>{credit}</figcaption>
+      <figcaption>{displayName} · {language === "es-MX" ? "ilustración privada local" : "private local illustration"}</figcaption>
     </figure>
   );
 }
@@ -160,6 +108,16 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
 
   return (
     <>
+      <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Haciendo crecer el Bosque animal…" : "Growing the Animal Forest…"}</div>}>
+        <AnimalForestTrail
+          language={language}
+          habitat={habitat}
+          habitats={habitats}
+          discovered={discoveredAnimals.length}
+          total={animals.length}
+          select={setHabitat}
+        />
+      </Suspense>
       <section className="field-mission-panel" aria-labelledby="field-missions-heading">
         <header>
           <div>
@@ -203,29 +161,16 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
           onChange={(event) => setQuery(event.target.value)}
         />
       </div>
-      <div className="fw-filter-row" role="group" aria-label={language === "es-MX" ? "Filtrar por hábitat" : "Filter by habitat"}>
-        {habitats.map((item) => (
-          <button
-            type="button"
-            className={item === habitat ? "active" : ""}
-            aria-pressed={item === habitat}
-            key={item}
-            onClick={() => setHabitat(item)}
-          >
-            {item === "All" ? tr(ui.allHabitats, language) : optionLabel(item, language)}
-          </button>
-        ))}
-      </div>
       <p className="photo-credit-note">{language === "es-MX"
-        ? "Cada tarjeta incluye una ilustración local. Cuando hay conexión, también puede aparecer una fotografía de Wikipedia o Wikimedia Commons."
-        : "Every card includes a local illustration. When online, a Wikipedia or Wikimedia Commons photograph may also appear."}</p>
+        ? "Todas las ilustraciones de animales son locales y privadas. No se solicita contenido a servicios externos."
+        : "Every animal illustration is private and local. No content is requested from external services."}</p>
       {!shown.length ? <EmptyState emoji="🔎">{tr(ui.noAnimalResults, language)}</EmptyState> : (
         <div className="fw-card-grid">
           {shown.map((sourceAnimal) => {
             const animal = localizeAnimalCompat(sourceAnimal, language);
             return (
               <article className={`fw-creature-card animal-card-v2 ${sourceAnimal.discovered ? "is-discovered" : ""}`} key={sourceAnimal.id}>
-                <WildlifePhoto animal={sourceAnimal} displayName={animal.name} language={language} />
+                <WildlifePortrait animal={sourceAnimal} displayName={animal.name} language={language} />
                 <div className="animal-copy">
                   <h3>{animal.name}</h3>
                   <div className="animal-meta">

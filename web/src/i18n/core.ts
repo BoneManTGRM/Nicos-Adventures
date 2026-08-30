@@ -24,12 +24,6 @@ export const ui = {
   robotPreview: { en: "Robot preview", "es-MX": "Vista previa del robot" },
   searchAnimals: { en: "Search animals", "es-MX": "Buscar animales" },
   allHabitats: { en: "All habitats", "es-MX": "Todos los hábitats" },
-  photoCredit: {
-    en: "Wildlife photographs load from Wikipedia and Wikimedia Commons. Emoji remains available as an offline fallback.",
-    "es-MX": "Las fotografías de fauna se cargan desde Wikipedia y Wikimedia Commons. Los emoji siguen disponibles sin conexión.",
-  },
-  photoUnavailable: { en: "Photo unavailable", "es-MX": "Foto no disponible" },
-  photoLoading: { en: "Loading wildlife photo", "es-MX": "Cargando foto de fauna" },
   discover: { en: "Discover", "es-MX": "Descubrir" },
   inGuide: { en: "In field guide", "es-MX": "En la guía de campo" },
   favorite: { en: "Mark as favorite", "es-MX": "Marcar como favorito" },

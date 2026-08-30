@@ -1,5 +1,5 @@
-const LEGACY_CACHE_MARKER = "nicos-world-static-v21";
-const CACHE = "nicos-world-static-v22";
+const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
+const CACHE = "nicos-world-static-v23";
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
@@ -21,7 +21,6 @@ const SHELL = [
   "/",
   "/index.html",
   "/manifest.webmanifest",
-  "/wildlife-director.js",
   "/asset-recovery.js",
   "/dinosaur-art.js",
   NICO_ART,
