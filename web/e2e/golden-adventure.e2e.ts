@@ -16,6 +16,9 @@ const copy = {
     resumeAtlas: "Resume world motion",
     reducedAtlas: "World motion is reduced",
     atlasUnavailable: "The illustrated world is unavailable. Choose any landmark below.",
+    animalForest: "Animal Forest",
+    animalTrail: "Choose a living habitat trail",
+    animalUnavailable: "The illustrated forest is unavailable. Choose a habitat below.",
     roboLab: "Robo Lab",
     configure: "Build a bridge-ready BoltBot",
     begin: "Begin the adventure",
@@ -70,6 +73,9 @@ const copy = {
     resumeAtlas: "Reanudar movimiento del mundo",
     reducedAtlas: "El movimiento del mundo está reducido",
     atlasUnavailable: "El mundo ilustrado no está disponible. Elige cualquier lugar abajo.",
+    animalForest: "Bosque animal",
+    animalTrail: "Elige un sendero de hábitat viviente",
+    animalUnavailable: "El bosque ilustrado no está disponible. Elige un hábitat abajo.",
     roboLab: "Laboratorio robot",
     configure: "Construye un BoltBot listo para el puente",
     begin: "Comenzar la aventura",
@@ -160,7 +166,7 @@ async function waitForServiceWorkerControl(page: Page) {
   await page.waitForLoadState("networkidle");
 }
 
-test("Living World Atlas keeps its navigation without WebGL", async ({ page }, testInfo) => {
+test("Living destinations keep their navigation without WebGL", async ({ page }, testInfo) => {
   const language = testInfo.project.metadata.language as Language;
   const text = copy[language];
   await page.addInitScript(() => {
@@ -185,6 +191,21 @@ test("Living World Atlas keeps its navigation without WebGL", async ({ page }, t
   await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.roboLab })).toBeEnabled();
   await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.dinosaur })).toBeDisabled();
   await assertLayout(page, `${testInfo.project.name} no-WebGL atlas fallback`);
+
+  await openDestination(page, text.animalForest);
+  await expect(page.getByRole("heading", { name: text.animalTrail, exact: true })).toBeVisible();
+  const forest = page.locator(".animal-forest-trail");
+  await expect(forest.locator(".game-canvas")).toHaveAttribute("data-renderer-status", "unavailable");
+  await expect(forest.getByRole("alert")).toHaveText(text.animalUnavailable);
+  await expect(forest.locator("canvas")).toHaveCount(0);
+  await expect(forest.locator(".animal-forest-trail__habitat")).toHaveCount(10);
+  const ocean = forest.locator('.animal-forest-trail__habitat[data-habitat="Ocean"]');
+  await activateWithKeyboard(page, ocean);
+  await expect(ocean).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".fw-creature-card")).toHaveCount(4);
+  await expect(page.locator(".fw-creature-card .local-wildlife-art")).toHaveCount(4);
+  await expect(page.locator(".fw-creature-card img")).toHaveCount(0);
+  await assertLayout(page, `${testInfo.project.name} no-WebGL Animal Forest fallback`);
 });
 
 test("Golden Adventure passes the production browser matrix", async ({ page, context }, testInfo) => {
@@ -252,6 +273,27 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
     contentType: "image/png",
   });
+
+  await openDestination(page, text.animalForest);
+  await expect(page.getByRole("heading", { name: text.animalForest, exact: true })).toBeFocused();
+  await expect(page.getByRole("heading", { name: text.animalTrail, exact: true })).toBeVisible();
+  await assertRendererReady(page, expectsReducedMotion);
+  const habitatButtons = page.locator(".animal-forest-trail__habitat");
+  await expect(habitatButtons).toHaveCount(10);
+  const ocean = page.locator('.animal-forest-trail__habitat[data-habitat="Ocean"]');
+  await expect(ocean).toHaveCount(1);
+  await activateWithKeyboard(page, ocean);
+  await expect(ocean).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".fw-creature-card")).toHaveCount(4);
+  await expect(page.locator(".fw-creature-card .local-wildlife-art")).toHaveCount(4);
+  await expect(page.locator(".fw-creature-card img")).toHaveCount(0);
+  await assertLayout(page, `${testInfo.project.name} Animal Forest`);
+  await testInfo.attach("private-animal-forest", {
+    body: await page.screenshot({ fullPage: true, animations: "disabled" }),
+    contentType: "image/png",
+  });
+  await activateWithKeyboard(page, page.locator(".fw-brand"));
+  await expect(page.getByRole("heading", { name: text.world, exact: true })).toBeVisible();
 
   await activateWithKeyboard(page, page.getByRole("button", { name: text.begin, exact: true }));
   await expect(page.getByRole("heading", { name: text.roboLab, exact: true })).toBeFocused();

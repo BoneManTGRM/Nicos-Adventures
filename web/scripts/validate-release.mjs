@@ -9,7 +9,6 @@ const requiredFiles = [
   "package.json",
   "package-lock.json",
   "public/_redirects",
-  "public/wildlife-director.js",
   "public/asset-recovery.js",
   "public/dinosaur-art.js",
   "public/sw.js",
@@ -53,17 +52,23 @@ for (const relative of requiredFiles) {
   if (!fs.existsSync(file) || fs.statSync(file).size === 0) throw new Error(`Missing release file: ${relative}`);
 }
 
-const director = read("public/wildlife-director.js");
 const labels = [
   "Jaguar","Toucan","Sloth","Poison Dart Frog","Blue Whale","Giant Pacific Octopus","Sea Turtle","Manta Ray",
   "Lion","African Elephant","Giraffe","Meerkat","Polar Bear","Arctic Fox","Emperor Penguin","Walrus",
   "Fennec Fox","Camel","Roadrunner","Gila Monster","Red Panda","Flying Squirrel","Great Horned Owl","Beaver",
   "Axolotl","Capybara","Flamingo","Platypus","Snow Leopard","Mountain Goat","Andean Condor","Yak",
 ];
-for (const label of labels) if (!director.includes(`"${label}"`)) throw new Error(`Wildlife mapping missing: ${label}`);
+const featureArt = read("src/FeatureArt.tsx");
+for (const label of labels) if (!featureArt.includes(`"${label}"`)) throw new Error(`Wildlife catalog entry missing: ${label}`);
 
 const index = read("index.html");
 if (!index.includes("/src/main.tsx")) throw new Error("React entrypoint is missing");
+if (index.includes("wildlife-director")) throw new Error("External wildlife fetch interceptor must not ship");
+const animalForest = read("src/world/AnimalForest.tsx");
+if (animalForest.includes("wikipedia.org") || animalForest.includes("Wikimedia")) {
+  throw new Error("Animal Forest must not request third-party wildlife content");
+}
+if (!animalForest.includes("private local illustration")) throw new Error("Animal Forest local-art contract is missing");
 
 const main = read("src/main.tsx");
 const appShell = read("src/AppShell.tsx");

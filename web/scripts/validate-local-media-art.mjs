@@ -45,8 +45,8 @@ for (const stalePath of ["./world/CreativeWorld", "./world/MemorySettings", "./w
 if (!fullApp.includes('import "./world/local-media-art.css"')) throw new Error("Local media art styles are not loaded");
 if (!fullApp.includes('import "./world/creative-memory.css"')) throw new Error("Completed creative/memory styles are not loaded");
 
-if (!animals.includes("LocalWildlifeArt") || !animals.includes('data-asset-recovery="ignore"') || !animals.includes("navigator.onLine")) {
-  throw new Error("Animal Forest is not local-first with an optional protected online photograph");
+if (!animals.includes("LocalWildlifeArt") || !animals.includes("private local illustration") || /wikipedia|wikimedia|navigator\.onLine|fetch\(/i.test(animals)) {
+  throw new Error("Animal Forest is not using its private local wildlife-art contract");
 }
 if (!wildlifeArt.includes("local-wildlife-art__animal") || !wildlifeArt.includes("habitatPalette")) {
   throw new Error("Local wildlife illustration system is incomplete");
@@ -84,4 +84,4 @@ if (!tests.includes("without a network response") || !tests.includes("distinct s
   throw new Error("Local media regression coverage is incomplete");
 }
 
-console.log("Local media validation passed for layered Nico SVG art, offline wildlife illustrations, distinct dinosaur SVGs, scoped recovery, and completed world-module integration.");
+console.log("Local media validation passed for layered Nico SVG art, private offline wildlife illustrations, distinct dinosaur SVGs, scoped recovery, and completed world-module integration.");
