@@ -1,0 +1,49 @@
+.boltbot-mission {
+  margin-bottom: 22px;
+  padding: 22px;
+  border: 1px solid rgba(103, 232, 249, .4);
+  border-radius: 26px;
+  background: radial-gradient(circle at 85% 0, rgba(34, 211, 238, .14), transparent 30%), linear-gradient(145deg, rgba(12, 42, 82, .96), rgba(3, 12, 34, .98));
+  box-shadow: 0 22px 70px rgba(0, 0, 0, .3);
+}
+
+.boltbot-mission > header small { color: #67e8f9; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+.boltbot-mission > header h2 { margin: 7px 0; font-size: clamp(24px, 4vw, 38px); }
+.boltbot-mission > header p { max-width: 780px; color: #c0cdec; line-height: 1.55; }
+.boltbot-readiness { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 0; list-style: none; }
+.boltbot-readiness li { display: flex; align-items: center; gap: 9px; min-height: 54px; padding: 10px 12px; border: 1px solid rgba(148, 163, 184, .3); border-radius: 14px; background: rgba(2, 8, 23, .55); font-weight: 750; }
+.boltbot-readiness li span { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(148, 163, 184, .18); }
+.boltbot-readiness li.is-ready { border-color: rgba(74, 222, 128, .55); }
+.boltbot-readiness li.is-ready span { background: #166534; }
+.boltbot-readiness li.is-missing { border-color: rgba(251, 191, 36, .55); }
+
+.boltbot-chamber-layout { display: grid; grid-template-columns: minmax(420px, 1.25fr) minmax(280px, .75fr); gap: 18px; align-items: stretch; margin-top: 18px; }
+.boltbot-test-controls { display: grid; align-content: center; gap: 14px; min-width: 0; padding: 18px; border: 1px solid rgba(103, 232, 249, .25); border-radius: 20px; background: rgba(2, 8, 23, .62); }
+.boltbot-choice-grid, .boltbot-scan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.boltbot-choice-grid button, .boltbot-scan-grid button, .boltbot-test-controls > button { border: 1px solid rgba(103, 232, 249, .38); border-radius: 13px; background: linear-gradient(145deg, rgba(14, 116, 144, .72), rgba(29, 78, 216, .65)); color: #fff; padding: 11px; font-weight: 800; }
+.boltbot-choice-grid button[aria-pressed="true"], .boltbot-scan-grid button[aria-pressed="true"] { border-color: #fde68a; box-shadow: inset 0 0 0 1px #facc15; }
+.boltbot-scan-grid button { display: grid; gap: 4px; text-align: left; }
+.boltbot-scan-grid button span, .boltbot-scan-grid button small { color: #d7e5ff; }
+.boltbot-command-route { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.boltbot-command-route span { display: grid; place-items: center; min-height: 52px; border: 1px dashed rgba(250, 204, 21, .55); border-radius: 12px; background: rgba(120, 53, 15, .18); color: #fef3c7; font-weight: 850; text-align: center; }
+.boltbot-logic-sequence { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
+.boltbot-logic-sequence span { display: grid; place-items: center; width: 50px; height: 50px; border: 1px solid rgba(103, 232, 249, .4); border-radius: 14px; background: rgba(15, 23, 42, .85); color: #fde68a; font-size: 26px; }
+.test-feedback { margin: 0; padding: 11px 13px; border-radius: 13px; font-weight: 750; }
+.test-feedback.is-correct { border: 1px solid rgba(74, 222, 128, .55); background: rgba(20, 83, 45, .45); }
+.test-feedback.is-wrong { border: 1px solid rgba(251, 113, 133, .48); background: rgba(127, 29, 29, .38); }
+
+@media (max-width: 900px) {
+  .boltbot-readiness { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .boltbot-chamber-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .boltbot-mission { padding: 15px; }
+  .boltbot-readiness, .boltbot-choice-grid, .boltbot-scan-grid { grid-template-columns: 1fr; }
+  .boltbot-test-controls { padding: 13px; }
+  .boltbot-mission .game-canvas, .boltbot-mission .game-canvas__viewport, .boltbot-mission .game-canvas__viewport canvas { min-height: 300px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boltbot-mission *, .boltbot-mission *::before, .boltbot-mission *::after { animation: none !important; transition: none !important; }
+}

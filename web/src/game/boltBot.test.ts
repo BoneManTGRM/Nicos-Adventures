@@ -5,6 +5,8 @@ import {
   BOLT_BOT_LOGIC_ANSWER,
   BOLT_BOT_MOVEMENT_SEQUENCE,
   BOLT_BOT_SCAN_TARGETS,
+  boltBotChamberStage,
+  boltBotRoutePose,
   evaluateBoltBotReadiness,
   passesLogicTest,
   passesMovementTest,
@@ -29,6 +31,20 @@ describe("BoltBot golden-adventure contract", () => {
     expect(passesMovementTest(BOLT_BOT_MOVEMENT_SEQUENCE)).toBe(true);
     expect(passesMovementTest(["forward", "forward", "right"])).toBe(false);
     expect(passesMovementTest(["forward", "right"])).toBe(false);
+    const pose = boltBotRoutePose(BOLT_BOT_MOVEMENT_SEQUENCE);
+    expect(pose.x).toBeCloseTo(0.05);
+    expect(pose.z).toBeCloseTo(0.1);
+    expect(pose.heading).toBeCloseTo(Math.PI / 2);
+  });
+
+  it("derives the chamber UI only from persisted adventure steps", () => {
+    expect(boltBotChamberStage("briefing")).toBe("inactive");
+    expect(boltBotChamberStage("map_revealed")).toBe("configuration");
+    expect(boltBotChamberStage("robot_configured")).toBe("movement");
+    expect(boltBotChamberStage("movement_passed")).toBe("scanner");
+    expect(boltBotChamberStage("scanner_passed")).toBe("logic");
+    expect(boltBotChamberStage("logic_passed")).toBe("complete");
+    expect(boltBotChamberStage("bridge_inspected")).toBe("inactive");
   });
 
   it("requires the unique strongest scanner signal", () => {

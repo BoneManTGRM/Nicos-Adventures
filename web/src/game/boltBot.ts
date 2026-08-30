@@ -1,4 +1,5 @@
 import type { Robot } from "../types";
+import type { StarBridgeStep } from "./goldenAdventure";
 
 export type BoltBotCapability = "movement" | "scanner" | "repair" | "star-power";
 export type MovementCommand = "forward" | "left" | "right";
@@ -6,6 +7,14 @@ export type MovementCommand = "forward" | "left" | "right";
 export type BoltBotReadiness = {
   ready: boolean;
   missing: BoltBotCapability[];
+};
+
+export type BoltBotChamberStage = "inactive" | "configuration" | "movement" | "scanner" | "logic" | "complete";
+
+export type BoltBotRoutePose = {
+  x: number;
+  z: number;
+  heading: number;
 };
 
 const SCANNER_EYES = new Set([
@@ -58,6 +67,35 @@ export const BOLT_BOT_SCAN_TARGETS = [
 
 export const BOLT_BOT_LOGIC_SEQUENCE = ["star", "bolt", "star", "bolt"] as const;
 export const BOLT_BOT_LOGIC_ANSWER = "star";
+
+const chamberStageByStep: Record<StarBridgeStep, BoltBotChamberStage> = {
+  briefing: "inactive",
+  map_revealed: "configuration",
+  robot_configured: "movement",
+  movement_passed: "scanner",
+  scanner_passed: "logic",
+  logic_passed: "complete",
+  bridge_inspected: "inactive",
+  star_core_installed: "inactive",
+  complete: "inactive",
+};
+
+export function boltBotChamberStage(step: StarBridgeStep): BoltBotChamberStage {
+  return chamberStageByStep[step];
+}
+
+export function boltBotRoutePose(commands: readonly MovementCommand[]): BoltBotRoutePose {
+  const pose: BoltBotRoutePose = { x: -0.8, z: -0.75, heading: 0 };
+  for (const command of commands) {
+    if (command === "left") pose.heading -= Math.PI / 2;
+    if (command === "right") pose.heading += Math.PI / 2;
+    if (command === "forward") {
+      pose.x += Math.sin(pose.heading) * 0.85;
+      pose.z += Math.cos(pose.heading) * 0.85;
+    }
+  }
+  return pose;
+}
 
 export function evaluateBoltBotReadiness(robot: Robot): BoltBotReadiness {
   const missing: BoltBotCapability[] = [];

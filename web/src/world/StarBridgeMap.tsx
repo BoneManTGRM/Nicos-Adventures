@@ -33,7 +33,7 @@ const phaseByStep: Record<StarBridgeStep, MissionPhase> = {
   robot_configured: "prepare",
   movement_passed: "prepare",
   scanner_passed: "prepare",
-  logic_passed: "prepare",
+  logic_passed: "repair",
   bridge_inspected: "repair",
   star_core_installed: "repair",
   complete: "complete",
