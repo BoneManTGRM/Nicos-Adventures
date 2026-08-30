@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { SectionId } from "./types";
 import { tr, ui } from "./i18n/core";
 import { useAppStore } from "./app/AppStoreContext";
+import { applyStarBridgeEvent } from "./game/goldenAdventureProfile";
 import { AnimalForest } from "./world/AnimalForest";
 import { Arcade } from "./world/Arcade";
 import { ArtStudio } from "./world/ArtStudio";
@@ -24,11 +25,12 @@ import "./world/system-parity.css";
 import "./world/progression.css";
 import "./world/creative-memory.css";
 import "./world/local-media-art.css";
+import "./world/star-bridge-map.css";
 
 type Announcement = { id: number; message: string };
 
 export default function FullApp() {
-  const { store, profile, setStore, updateProfile } = useAppStore();
+  const { store, profile, setStore, updateProfile, commitProfile } = useAppStore();
   const [announcement, setAnnouncement] = useState<Announcement>({ id: 0, message: "" });
   const announce = (message: string) => setAnnouncement((current) => ({ id: current.id + 1, message }));
 
@@ -52,10 +54,29 @@ export default function FullApp() {
     window.requestAnimationFrame(() => document.getElementById("page-title")?.focus());
   };
 
+  const beginStarBridge = () => {
+    const sectionId: SectionId = "robo-lab";
+    commitProfile((current) => {
+      const next = applyStarBridgeEvent(current, { type: "REVEAL_BRIDGE" });
+      return {
+        ...next,
+        selectedSection: sectionId,
+        sectionVisits: {
+          ...next.sectionVisits,
+          [sectionId]: Number(next.sectionVisits[sectionId] ?? 0) + 1,
+        },
+      };
+    });
+    announce(profile.language === "es-MX"
+      ? "Aventura iniciada: prepara a BoltBot en el Laboratorio de Robots"
+      : "Adventure started: prepare BoltBot in Robo Lab");
+    window.requestAnimationFrame(() => document.getElementById("page-title")?.focus());
+  };
+
   const page = (() => {
     const props = { profile, update: updateProfile, announce };
     switch (profile.selectedSection) {
-      case "world-map": return <WorldMap profile={profile} open={open} />;
+      case "world-map": return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} />;
       case "robo-lab": return <RoboLab {...props} />;
       case "animal-forest": return <AnimalForest {...props} />;
       case "monster-lab": return <MonsterLab {...props} />;
@@ -69,7 +90,7 @@ export default function FullApp() {
       case "memory-book": return <Museum profile={profile} />;
       case "badge-book": return <Badges profile={profile} />;
       case "parent-settings": return <Settings store={store} profile={profile} setStore={setStore} update={updateProfile} announce={announce} />;
-      default: return <WorldMap profile={profile} open={open} />;
+      default: return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} />;
     }
   })();
 
