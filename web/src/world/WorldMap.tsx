@@ -3,12 +3,28 @@ import { RobotStage } from "../RobotStage";
 import type { LocalProfile, SectionId } from "../types";
 import { tr, ui } from "../i18n/core";
 import { WORLD_SECTIONS } from "./catalogs";
+import { StarBridgeMap } from "./StarBridgeMap";
 
-export function WorldMap({ profile, open }: { profile: LocalProfile; open: (id: SectionId) => void }) {
+export function WorldMap({
+  profile,
+  open,
+  beginStarBridge,
+}: {
+  profile: LocalProfile;
+  open: (id: SectionId) => void;
+  beginStarBridge: () => void;
+}) {
   const language = profile.language;
   const discovered = mergeAnimalLibrary(profile.animals).filter((animal) => animal.discovered).length;
   return (
     <div className="fw-grid fw-grid--map">
+      <StarBridgeMap
+        state={profile.adventures.starBridge}
+        language={language}
+        begin={beginStarBridge}
+        openRoboLab={() => open("robo-lab")}
+        openDinosaurValley={() => open("dinosaur-valley")}
+      />
       <article className="fw-hero-card" aria-label={language === "es-MX" ? "Equipo de aventura" : "Adventure team"}>
         <RobotStage
           robot={profile.robot}
