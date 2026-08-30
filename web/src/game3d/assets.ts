@@ -3,6 +3,7 @@ import { useGLTF } from "@react-three/drei";
 export type AdventureAssetManifest = Record<string, string>;
 
 export const ADVENTURE_ASSETS = {
+  "character.boltbot": "/assets/3d/boltbot/canonical-boltbot.glb?v=1",
   "character.nico": "/assets/3d/nico/canonical-nico.glb?v=1",
 } as const satisfies AdventureAssetManifest;
 

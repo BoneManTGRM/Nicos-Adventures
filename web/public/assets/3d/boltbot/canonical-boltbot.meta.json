@@ -1,0 +1,90 @@
+{
+  "assetId": "character.boltbot.canonical",
+  "version": 1,
+  "artStatus": "canonical-foundation",
+  "format": "glTF 2.0 binary",
+  "sourceOfTruth": "Nico's World BoltBot visual identity and existing profile configuration",
+  "provenance": "Project-owned procedural model; no private family media used",
+  "license": "Project-owned original asset",
+  "privateFamilyPhotoUsed": false,
+  "units": "metres",
+  "upAxis": "+Y",
+  "forwardAxis": "+Z",
+  "groundOrigin": true,
+  "boundsMeters": {
+    "min": [
+      -0.5857529187031041,
+      -0.009999997615814243,
+      -0.38999999821186065
+    ],
+    "max": [
+      0.5857529187031041,
+      2.034999997615814,
+      0.4477499981969595
+    ],
+    "dimensions": [
+      1.1715058374062082,
+      2.044999995231628,
+      0.8377499964088202
+    ]
+  },
+  "pivot": {
+    "node": "BoltBotRoot",
+    "position": [
+      0,
+      0,
+      0
+    ]
+  },
+  "anchors": {
+    "scanner": "ScannerDish",
+    "starCore": "StarCore",
+    "leftGripper": "GripperLeft",
+    "rightGripper": "GripperRight",
+    "driveBase": "DriveBase"
+  },
+  "rigType": "hierarchical articulated transform rig",
+  "animationClips": [
+    "Idle",
+    "Drive",
+    "Scan",
+    "Think",
+    "Repair",
+    "Celebrate"
+  ],
+  "animationDurationsSeconds": {
+    "Idle": 2.8,
+    "Drive": 1,
+    "Scan": 2,
+    "Think": 1.8,
+    "Repair": 1.6,
+    "Celebrate": 1.8
+  },
+  "nodeContract": [
+    "BoltBotRoot",
+    "DriveBase",
+    "WheelAxleLeft",
+    "WheelAxleRight",
+    "Torso",
+    "StarCore",
+    "Head",
+    "ScannerDish",
+    "ArmLeft",
+    "ElbowLeft",
+    "GripperLeft",
+    "ArmRight",
+    "ElbowRight",
+    "GripperRight"
+  ],
+  "materials": [
+    "BoltBot_Primary",
+    "BoltBot_Primary_Dark",
+    "BoltBot_Accent",
+    "BoltBot_Pearl",
+    "BoltBot_Dark",
+    "BoltBot_Joint",
+    "BoltBot_Glow"
+  ],
+  "byteLength": 265984,
+  "sha256": "d18d42bf32dbcfc67f98fda814515fa9e70e009965314f9f03e89015febc123e"
+}
