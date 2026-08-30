@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { CatmullRomCurve3, MathUtils, Vector3, type Group, type Mesh } from "three";
 import { CameraRig, GameCanvas, readQualityProfile } from "../game3d";
 import { tr, type Localized } from "../i18n/core";
@@ -22,6 +22,9 @@ const copy = {
   restored: { en: "The illustrated world is moving again.", "es-MX": "El mundo ilustrado está en movimiento otra vez." },
   unavailable: { en: "The illustrated world is unavailable. Choose any landmark below.", "es-MX": "El mundo ilustrado no está disponible. Elige cualquier lugar abajo." },
   instructions: { en: "Choose a landmark below. No dragging or time limit.", "es-MX": "Elige un lugar abajo. No necesitas arrastrar ni tienes límite de tiempo." },
+  pauseMotion: { en: "Pause world motion", "es-MX": "Pausar movimiento del mundo" },
+  resumeMotion: { en: "Resume world motion", "es-MX": "Reanudar movimiento del mundo" },
+  reducedMotion: { en: "World motion is reduced", "es-MX": "El movimiento del mundo está reducido" },
   landmarks: { en: "Featured world landmarks", "es-MX": "Lugares destacados del mundo" },
   openRoute: { en: "Star Bridge route open", "es-MX": "Ruta del Puente Estelar abierta" },
   lockedRoute: { en: "Repair the Star Bridge to open this route", "es-MX": "Repara el Puente Estelar para abrir esta ruta" },
@@ -284,8 +287,15 @@ export function LivingWorldAtlas({
   open: (id: SectionId) => void;
 }) {
   const quality = useMemo(() => readQualityProfile(), []);
+  const [motionPaused, setMotionPaused] = useState(false);
+  const motionReduced = quality.reducedMotion || motionPaused;
   return (
-    <section className="world-atlas" data-valley-status={dinosaurValleyAvailable ? "open" : "locked"} aria-labelledby="world-atlas-title">
+    <section
+      className="world-atlas"
+      data-valley-status={dinosaurValleyAvailable ? "open" : "locked"}
+      data-world-motion={quality.reducedMotion ? "reduced" : motionPaused ? "paused" : "ambient"}
+      aria-labelledby="world-atlas-title"
+    >
       <header className="world-atlas__intro">
         <small>{tr(copy.eyebrow, language)}</small>
         <h2 id="world-atlas-title">{tr(copy.title, language)}</h2>
@@ -306,9 +316,20 @@ export function LivingWorldAtlas({
           unavailable: tr(copy.unavailable, language),
           instructions: tr(copy.instructions, language),
         }}
-        controls={<span className="world-atlas__canvas-key"><span aria-hidden="true">✦</span> {tr(copy.instructions, language)}</span>}
+        controls={(
+          <button
+            type="button"
+            className="world-atlas__motion-control"
+            aria-pressed={motionReduced}
+            disabled={quality.reducedMotion}
+            onClick={() => setMotionPaused((paused) => !paused)}
+          >
+            <span aria-hidden="true">{motionReduced ? "▶" : "Ⅱ"}</span>
+            {tr(quality.reducedMotion ? copy.reducedMotion : motionPaused ? copy.resumeMotion : copy.pauseMotion, language)}
+          </button>
+        )}
       >
-        <LivingWorldScene dinosaurValleyAvailable={dinosaurValleyAvailable} reducedMotion={quality.reducedMotion} />
+        <LivingWorldScene dinosaurValleyAvailable={dinosaurValleyAvailable} reducedMotion={motionReduced} />
       </GameCanvas>
       <nav className="world-atlas__landmarks" aria-label={tr(copy.landmarks, language)}>
         {WORLD_ATLAS_LANDMARKS.map((landmark) => {

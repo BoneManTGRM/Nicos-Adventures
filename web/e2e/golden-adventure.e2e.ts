@@ -12,6 +12,9 @@ const copy = {
   en: {
     world: "World Map",
     atlas: "A whole world is waking up",
+    pauseAtlas: "Pause world motion",
+    resumeAtlas: "Resume world motion",
+    reducedAtlas: "World motion is reduced",
     roboLab: "Robo Lab",
     configure: "Build a bridge-ready BoltBot",
     begin: "Begin the adventure",
@@ -62,6 +65,9 @@ const copy = {
   "es-MX": {
     world: "Mapa del mundo",
     atlas: "Todo un mundo está despertando",
+    pauseAtlas: "Pausar movimiento del mundo",
+    resumeAtlas: "Reanudar movimiento del mundo",
+    reducedAtlas: "El movimiento del mundo está reducido",
     roboLab: "Laboratorio robot",
     configure: "Construye un BoltBot listo para el puente",
     begin: "Comenzar la aventura",
@@ -195,6 +201,16 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(page.locator("html")).toHaveAttribute("lang", language);
   await expect(page.getByRole("heading", { name: text.atlas, exact: true })).toBeVisible();
   await assertRendererReady(page, expectsReducedMotion);
+  if (expectsReducedMotion) {
+    await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-motion", "reduced");
+    await expect(page.getByRole("button", { name: text.reducedAtlas, exact: true })).toBeDisabled();
+  } else {
+    const pauseAtlas = page.getByRole("button", { name: text.pauseAtlas, exact: true });
+    await activateWithKeyboard(page, pauseAtlas);
+    await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-motion", "paused");
+    await activateWithKeyboard(page, page.getByRole("button", { name: text.resumeAtlas, exact: true }));
+    await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-motion", "ambient");
+  }
   await expect(page.locator(".world-atlas__landmark")).toHaveCount(6);
   const lockedAtlasValley = page.locator(".world-atlas__landmark.is-locked").filter({ hasText: text.dinosaur });
   await expect(lockedAtlasValley).toBeDisabled();
