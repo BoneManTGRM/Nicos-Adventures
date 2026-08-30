@@ -10,5 +10,8 @@
 /sw.js
   Cache-Control: no-cache
 
+/release.json
+  Cache-Control: no-store
+
 /manifest.webmanifest
   Cache-Control: public, max-age=3600
