@@ -17,6 +17,10 @@ export type BoltBotRoutePose = {
   heading: number;
 };
 
+export type BoltBotRouteWaypoint = BoltBotRoutePose & {
+  command: MovementCommand;
+};
+
 const SCANNER_EYES = new Set([
   "Photon Visor",
   "Scanner Array",
@@ -85,7 +89,12 @@ export function boltBotChamberStage(step: StarBridgeStep): BoltBotChamberStage {
 }
 
 export function boltBotRoutePose(commands: readonly MovementCommand[]): BoltBotRoutePose {
+  return boltBotRouteWaypoints(commands).at(-1) ?? { x: -0.8, z: -0.75, heading: 0 };
+}
+
+export function boltBotRouteWaypoints(commands: readonly MovementCommand[]): BoltBotRouteWaypoint[] {
   const pose: BoltBotRoutePose = { x: -0.8, z: -0.75, heading: 0 };
+  const waypoints: BoltBotRouteWaypoint[] = [];
   for (const command of commands) {
     if (command === "left") pose.heading -= Math.PI / 2;
     if (command === "right") pose.heading += Math.PI / 2;
@@ -93,8 +102,9 @@ export function boltBotRoutePose(commands: readonly MovementCommand[]): BoltBotR
       pose.x += Math.sin(pose.heading) * 0.85;
       pose.z += Math.cos(pose.heading) * 0.85;
     }
+    waypoints.push({ ...pose, command });
   }
-  return pose;
+  return waypoints;
 }
 
 export function evaluateBoltBotReadiness(robot: Robot): BoltBotReadiness {

@@ -36,6 +36,8 @@ The canonical Nico foundation supplies `Idle`, `Walk`, `Run`, and `Celebrate` cl
 
 These foundation clips establish a safe motion contract. They do not replace the final in-scene locomotion pass, where controller velocity drives playback speed and blend weights, foot placement is reviewed against ground contact, and start/stop/turn transitions are added as the playable bridge slice demands them.
 
+BoltBot's test-chamber route is a discrete locomotion reference: command input produces ordered waypoints, not a final-pose shortcut. The route controller brakes at each pad, turns in place before a new heading, accelerates into each forward segment, and selects `Drive` from measured linear or angular speed. Resetting a route returns BoltBot to the start under the same controller rather than teleporting it. Reduced motion may show the stable final pose because the accessible DOM controls remain the authoritative gameplay path.
+
 ## Interaction
 
 Use authored animation plus IK where exact contact materially improves the result, including tools, robot parts, switches, books, fossils, doors, petting, placement, and pointing.
