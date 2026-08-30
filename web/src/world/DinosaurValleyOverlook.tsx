@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MathUtils, type Group, type Mesh } from "three";
-import { CanonicalNico, GameCanvas, readQualityProfile } from "../game3d";
+import { CatmullRomCurve3, MathUtils, Vector3, type Group, type Mesh } from "three";
+import { CameraRig, CanonicalNico, GameCanvas, readQualityProfile } from "../game3d";
 import { tr, type Localized } from "../i18n/core";
 import type { Language } from "../types";
 import type { Announce } from "./common";
@@ -85,6 +85,12 @@ function Brachiosaurus({ stage, reducedMotion }: { stage: number; reducedMotion:
   const gait = useRef(0);
   const velocity = useRef(0);
   const targetX = [-3.2, -2.35, -1.35, -.15][stage] ?? -.15;
+  const neckCurve = useMemo(() => new CatmullRomCurve3([
+    new Vector3(0, 0, 0),
+    new Vector3(-.28, .58, 0),
+    new Vector3(-.48, 1.26, 0),
+    new Vector3(-.68, 1.9, 0),
+  ]), []);
 
   useFrame(({ clock }, delta) => {
     if (!root.current || !body.current || !neck.current || !tail.current) return;
@@ -149,28 +155,28 @@ function Brachiosaurus({ stage, reducedMotion }: { stage: number; reducedMotion:
         </group>
       ))}
       <group ref={neck} position={[-.88, 1.46, 0]} rotation={[0, 0, -.08]}>
-        {[0, 1, 2, 3].map((index) => (
-          <mesh key={index} castShadow position={[-.18 - index * .13, .34 + index * .44, 0]} rotation={[0, 0, -.24]}>
-            <capsuleGeometry args={[.22 - index * .018, .38, 6, 10]} />
-            <meshStandardMaterial color={index % 2 ? "#91aa69" : "#8aa363"} roughness={.86} />
-          </mesh>
-        ))}
-        <mesh castShadow position={[-.78, 2.14, 0]} scale={[.56, .34, .38]} rotation={[0, 0, -.08]}>
-          <sphereGeometry args={[.45, 14, 10]} />
-          <meshStandardMaterial color="#9bb471" roughness={.84} />
+        <mesh castShadow>
+          <tubeGeometry args={[neckCurve, 28, .22, 12, false]} />
+          <meshStandardMaterial color="#789451" roughness={.84} />
         </mesh>
-        <mesh position={[-.94, 2.23, .16]}>
+        <mesh castShadow position={[-.78, 2.06, 0]} scale={[.56, .34, .38]} rotation={[0, 0, -.08]}>
+          <sphereGeometry args={[.45, 14, 10]} />
+          <meshStandardMaterial color="#86a45a" roughness={.84} />
+        </mesh>
+        <mesh position={[-.94, 2.15, .16]}>
           <sphereGeometry args={[.035, 8, 8]} />
           <meshStandardMaterial color="#18230e" roughness={.4} />
         </mesh>
       </group>
       <group ref={tail} position={[1.02, 1.35, 0]} rotation={[0, 0, .08]}>
-        {[0, 1, 2, 3].map((index) => (
-          <mesh key={index} castShadow position={[.3 + index * .42, -.03 - index * .09, 0]} rotation={[0, 0, 1.76]}>
-            <coneGeometry args={[.27 - index * .05, .62, 9]} />
-            <meshStandardMaterial color={index % 2 ? "#839c61" : "#8faa68"} roughness={.9} />
-          </mesh>
-        ))}
+        <mesh castShadow position={[.55, -.05, 0]} scale={[1.2, .34, .34]}>
+          <sphereGeometry args={[.52, 14, 10]} />
+          <meshStandardMaterial color="#76904f" roughness={.9} />
+        </mesh>
+        <mesh castShadow position={[1.36, -.1, 0]} rotation={[0, 0, -Math.PI / 2]}>
+          <coneGeometry args={[.16, .86, 10]} />
+          <meshStandardMaterial color="#6c8449" roughness={.92} />
+        </mesh>
       </group>
     </group>
   );
@@ -186,8 +192,8 @@ function ValleyScene({ stage, reducedMotion }: { stage: number; reducedMotion: b
     <>
       <color attach="background" args={["#7cc6cc"]} />
       <fog attach="fog" args={["#8ac7c5", 9, 28]} />
-      <hemisphereLight args={["#fff4c4", "#314c2a", 2.2]} />
-      <directionalLight castShadow color="#fff0bc" intensity={3.4} position={[-4, 7, 5]} />
+      <CameraRig position={[0, 2.45, 6.35]} target={[-.35, 1.38, 0]} damping={6} />
+      <directionalLight castShadow color="#ffd58a" intensity={1.05} position={[-4, 7, 5]} />
       <mesh ref={sun} position={[-4.5, 4.5, -8]}>
         <circleGeometry args={[.75, 32]} />
         <meshBasicMaterial color="#fff0a6" />
@@ -229,9 +235,11 @@ export function DinosaurValleyOverlook({ language, announce }: { language: Langu
   const next = nextDinosaurValleyObservation(state);
   const complete = isDinosaurValleyObservationComplete(state);
   const buttons = useRef<Partial<Record<DinosaurValleyObservation, HTMLButtonElement | null>>>({});
+  const reveal = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (next && state.completed.length > 0) buttons.current[next]?.focus();
+    if (!next && state.completed.length === DINOSAUR_VALLEY_OBSERVATIONS.length) reveal.current?.focus();
   }, [next, state.completed.length]);
 
   const observe = (observation: DinosaurValleyObservation) => {
@@ -303,7 +311,7 @@ export function DinosaurValleyOverlook({ language, announce }: { language: Langu
             })}
           </ol>
           {complete ? (
-            <div className="dino-overlook__reveal" role="status">
+            <div className="dino-overlook__reveal" role="status" ref={reveal} tabIndex={-1}>
               <span aria-hidden="true">🦕</span>
               <div>
                 <strong>{tr(copy.completeTitle, language)}</strong>
