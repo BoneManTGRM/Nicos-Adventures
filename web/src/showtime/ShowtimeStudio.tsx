@@ -429,7 +429,7 @@ export function ShowtimeStudio({
                   return <div className="showtime-character showtime-character--robot" key={character.key}><RobotStage robot={character.robot} pose={pose as never} statusLabel="SHOWTIME" levelLabel="LV" /></div>;
                 }
                 if (character.kind === "monster" && character.monster) {
-                  return <div className="showtime-character showtime-character--monster" key={character.key}><MonsterStage monster={character.monster} action={pose} /></div>;
+                  return <div className="showtime-character showtime-character--monster" key={character.key}><MonsterStage monster={character.monster} action={pose} language={profile.language} /></div>;
                 }
                 return <div className={`showtime-character showtime-character--pet showtime-character--${pose}`} key={character.key}><span>{character.emoji}</span><strong>{character.name}</strong></div>;
               })}

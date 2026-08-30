@@ -19,6 +19,8 @@ const copy = {
     animalForest: "Animal Forest",
     animalTrail: "Choose a living habitat trail",
     animalUnavailable: "The illustrated forest is unavailable. Choose a habitat below.",
+    monsterLab: "Monster Lab",
+    monsterStudio: "Sculpt a creature you can see",
     roboLab: "Robo Lab",
     configure: "Build a bridge-ready BoltBot",
     begin: "Begin the adventure",
@@ -76,6 +78,8 @@ const copy = {
     animalForest: "Bosque animal",
     animalTrail: "Elige un sendero de hábitat viviente",
     animalUnavailable: "El bosque ilustrado no está disponible. Elige un hábitat abajo.",
+    monsterLab: "Laboratorio de monstruos",
+    monsterStudio: "Esculpe una criatura que puedas ver",
     roboLab: "Laboratorio robot",
     configure: "Construye un BoltBot listo para el puente",
     begin: "Comenzar la aventura",
@@ -289,6 +293,30 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(page.locator(".fw-creature-card img")).toHaveCount(0);
   await assertLayout(page, `${testInfo.project.name} Animal Forest`);
   await testInfo.attach("private-animal-forest", {
+    body: await page.screenshot({ fullPage: true, animations: "disabled" }),
+    contentType: "image/png",
+  });
+  await activateWithKeyboard(page, page.locator(".fw-brand"));
+  await expect(page.getByRole("heading", { name: text.world, exact: true })).toBeVisible();
+
+  await openDestination(page, text.monsterLab);
+  await expect(page.getByRole("heading", { name: text.monsterLab, exact: true })).toBeFocused();
+  await expect(page.getByRole("heading", { name: text.monsterStudio, exact: true })).toBeVisible();
+  await expect(page.locator(".monster-studio__trait")).toHaveCount(15);
+  const colorTrait = page.locator('.monster-studio__trait[data-trait="color"]');
+  await activateWithKeyboard(page, colorTrait);
+  const crimson = page.locator('.monster-studio__choice[data-option="Crimson"]');
+  await activateWithKeyboard(page, crimson);
+  await expect(crimson).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(() => page.locator(".monster-stage").evaluate((element) => getComputedStyle(element).getPropertyValue("--monster-main").trim()))
+    .toBe("#be123c");
+  await activateWithKeyboard(page, page.locator('.monster-studio__trait[data-trait="body"]'));
+  const cosmic = page.locator('.monster-studio__choice[data-option="Cosmic"]');
+  await activateWithKeyboard(page, cosmic);
+  await expect(cosmic).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".monster-v2")).toHaveClass(/monster-family--cosmic/);
+  await assertLayout(page, `${testInfo.project.name} Monster Lab`);
+  await testInfo.attach("visual-monster-lab", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
     contentType: "image/png",
   });
