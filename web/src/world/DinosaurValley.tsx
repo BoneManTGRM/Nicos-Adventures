@@ -1,10 +1,14 @@
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import type { DinosaurRecord, LocalProfile } from "../types";
 import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
 import type { Announce, UpdateProfile } from "./common";
 import { completeOnce, dinosaurDiscoveryMission } from "./progression";
 import { DinosaurArt } from "./DinosaurArt";
+
+const DinosaurValleyOverlook = lazy(() => import("./DinosaurValleyOverlook").then((module) => ({
+  default: module.DinosaurValleyOverlook,
+})));
 
 const periods = ["Triassic", "Jurassic", "Cretaceous"] as const;
 
@@ -86,6 +90,9 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
 
   return (
     <>
+      <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando el mirador del valle…" : "Preparing the valley overlook…"}</div>}>
+        <DinosaurValleyOverlook language={language} announce={announce} />
+      </Suspense>
       <section className="dino-progress-panel" aria-label={language === "es-MX" ? "Progreso de dinosaurios" : "Dinosaur progress"}>
         <div>
           <small>{language === "es-MX" ? "Guía de campo local" : "Local field guide"}</small>
