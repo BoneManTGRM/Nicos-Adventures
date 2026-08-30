@@ -55,3 +55,7 @@
   .fw-star-bridge__fault,
   .fw-star-bridge.is-restored .fw-star-bridge__core { animation: none; }
 }
+
+.fw-destination.is-locked { cursor: not-allowed; opacity: .68; border-style: dashed; }
+.fw-destination.is-locked:hover { transform: none; border-color: var(--fw-line); }
+.fw-destination.is-locked small { color: #fde68a; }

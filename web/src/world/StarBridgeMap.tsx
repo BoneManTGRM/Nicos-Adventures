@@ -22,6 +22,8 @@ const copy = {
   statusComplete: { en: "Bridge restored · Valley unlocked", "es-MX": "Puente restaurado · Valle desbloqueado" },
   begin: { en: "Begin the adventure", "es-MX": "Comenzar la aventura" },
   continue: { en: "Continue in Robo Lab", "es-MX": "Continuar en el Laboratorio de Robots" },
+  travelBridge: { en: "Travel to the Star Bridge", "es-MX": "Viajar al Puente Estelar" },
+  continueRepair: { en: "Continue the bridge repair", "es-MX": "Continuar la reparación del puente" },
   visitValley: { en: "Visit Dinosaur Valley", "es-MX": "Visitar el Valle de Dinosaurios" },
   bridgeBroken: { en: "Star Bridge broken", "es-MX": "Puente Estelar roto" },
   bridgeRestored: { en: "Star Bridge restored", "es-MX": "Puente Estelar restaurado" },
@@ -48,12 +50,14 @@ export function StarBridgeMap({
   language,
   begin,
   openRoboLab,
+  openBridge,
   openDinosaurValley,
 }: {
   state: StarBridgeState;
   language: Language;
   begin: () => void;
   openRoboLab: () => void;
+  openBridge: () => void;
   openDinosaurValley: () => void;
 }) {
   const phase = starBridgeMissionPhase(state);
@@ -62,9 +66,9 @@ export function StarBridgeMap({
     ? { label: copy.begin, onClick: begin }
     : phase === "prepare"
       ? { label: copy.continue, onClick: openRoboLab }
-      : complete
-        ? { label: copy.visitValley, onClick: openDinosaurValley }
-        : null;
+      : phase === "repair"
+        ? { label: state.step === "logic_passed" ? copy.travelBridge : copy.continueRepair, onClick: openBridge }
+        : { label: copy.visitValley, onClick: openDinosaurValley };
   const status = phase === "discover"
     ? copy.statusDiscover
     : phase === "prepare"

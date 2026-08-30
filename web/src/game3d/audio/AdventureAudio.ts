@@ -27,6 +27,31 @@ export class AdventureAudio {
     this.master.gain.setTargetAtTime(volume, this.context.currentTime, 0.02);
   }
 
+  async playCue(cue: "inspect" | "install" | "activate"): Promise<boolean> {
+    if (!(await this.unlock()) || !this.context || !this.master) return false;
+    const notes = cue === "inspect"
+      ? [330, 440]
+      : cue === "install"
+        ? [392, 523, 659]
+        : [523, 659, 784, 1047];
+    const start = this.context.currentTime;
+    notes.forEach((frequency, index) => {
+      const oscillator = this.context!.createOscillator();
+      const gain = this.context!.createGain();
+      const noteStart = start + index * .11;
+      oscillator.type = cue === "activate" ? "triangle" : "sine";
+      oscillator.frequency.setValueAtTime(frequency, noteStart);
+      gain.gain.setValueAtTime(.0001, noteStart);
+      gain.gain.exponentialRampToValueAtTime(.12, noteStart + .018);
+      gain.gain.exponentialRampToValueAtTime(.0001, noteStart + .16);
+      oscillator.connect(gain);
+      gain.connect(this.master!);
+      oscillator.start(noteStart);
+      oscillator.stop(noteStart + .18);
+    });
+    return true;
+  }
+
   async suspend(): Promise<void> {
     if (this.context?.state === "running") await this.context.suspend();
   }

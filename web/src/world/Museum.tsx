@@ -2,11 +2,12 @@ import { useMemo, useState } from "react";
 import { mergeAnimalLibrary } from "../FeatureArt";
 import { localizeAnimalCompat } from "../i18n/animalsCompat";
 import { fossilLabel, optionLabel } from "../i18n/display";
+import { STAR_BRIDGE_ENGINEER } from "../game/goldenAdventure";
 import type { LocalProfile } from "../types";
 import { openNicoWorld } from "../nico/NicoWorldExperience";
 import { EmptyState } from "./common";
 
-export type MemoryCategory = "all" | "robot" | "animal" | "monster" | "pet" | "artwork" | "story" | "dinosaur" | "fossil" | "movie";
+export type MemoryCategory = "all" | "achievement" | "robot" | "animal" | "monster" | "pet" | "artwork" | "story" | "dinosaur" | "fossil" | "movie";
 
 type MemoryEntry = {
   id: string;
@@ -20,6 +21,7 @@ type MemoryEntry = {
 
 const categoryCopy: Record<MemoryCategory, { en: string; "es-MX": string; emoji: string }> = {
   all: { en: "All memories", "es-MX": "Todos los recuerdos", emoji: "✨" },
+  achievement: { en: "Achievements", "es-MX": "Logros", emoji: "🏅" },
   robot: { en: "Robots", "es-MX": "Robots", emoji: "🤖" },
   animal: { en: "Animals", "es-MX": "Animales", emoji: "🐾" },
   monster: { en: "Monsters", "es-MX": "Monstruos", emoji: "👾" },
@@ -34,6 +36,18 @@ const categoryCopy: Record<MemoryCategory, { en: string; "es-MX": string; emoji:
 export function buildMemoryEntries(profile: LocalProfile): MemoryEntry[] {
   const language = profile.language;
   const entries: MemoryEntry[] = [];
+  if (profile.adventures.starBridge.museumAchievements.includes(STAR_BRIDGE_ENGINEER)) {
+    entries.push({
+      id: `achievement:${STAR_BRIDGE_ENGINEER}`,
+      category: "achievement",
+      emoji: "🌉",
+      title: language === "es-MX" ? "Ingeniero del Puente Estelar" : "Star Bridge Engineer",
+      subtitle: language === "es-MX" ? "Aventura dorada completada" : "Golden Adventure complete",
+      details: language === "es-MX"
+        ? "Nico y BoltBot restauraron el Núcleo Estelar y reabrieron la ruta al Valle de Dinosaurios."
+        : "Nico and BoltBot restored the Star Core and reopened the route to Dinosaur Valley.",
+    });
+  }
   for (const robot of profile.robots) entries.push({ id: `robot:${robot.id}`, category: "robot", emoji: "🤖", title: robot.name, subtitle: `${optionLabel(robot.personality, language)} · ${language === "es-MX" ? "Nivel" : "Level"} ${robot.level}`, details: `${optionLabel(robot.head, language)}, ${optionLabel(robot.body, language)}, ${optionLabel(robot.power, language)}` });
   for (const animal of mergeAnimalLibrary(profile.animals).filter((item) => item.discovered)) {
     const localized = localizeAnimalCompat(animal, language);

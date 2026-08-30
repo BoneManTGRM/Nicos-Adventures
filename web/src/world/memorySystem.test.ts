@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createProfile } from "../storage";
+import { reduceStarBridge } from "../game/goldenAdventure";
 import type { LocalProfile } from "../types";
 import { buildBadges } from "./Badges";
 import { buildMemoryEntries } from "./Museum";
@@ -27,6 +28,26 @@ describe("Memory Museum indexing", () => {
     }
     expect(entries.find((entry) => entry.category === "fossil")?.title).toContain("Fósil");
     expect(entries.find((entry) => entry.category === "movie")?.movieProjectId).toBe("movie1");
+  });
+
+  it("adds Star Bridge Engineer exactly once after valid adventure completion", () => {
+    const base = createProfile("Nico", "en");
+    let starBridge = base.adventures.starBridge;
+    for (const type of [
+      "REVEAL_BRIDGE",
+      "CONFIGURE_ROBOT",
+      "PASS_MOVEMENT_TEST",
+      "PASS_SCANNER_TEST",
+      "PASS_LOGIC_TEST",
+      "INSPECT_BRIDGE",
+      "INSTALL_STAR_CORE",
+      "COMPLETE_ADVENTURE",
+    ] as const) starBridge = reduceStarBridge(starBridge, { type }, () => "2026-08-30T17:00:00.000Z");
+    const profile = { ...base, adventures: { ...base.adventures, starBridge } };
+    const achievements = buildMemoryEntries(profile).filter((entry) => entry.id === "achievement:star-bridge-engineer");
+
+    expect(achievements).toHaveLength(1);
+    expect(achievements[0].title).toBe("Star Bridge Engineer");
   });
 });
 
