@@ -9,6 +9,9 @@ import { DinosaurArt } from "./DinosaurArt";
 const DinosaurValleyOverlook = lazy(() => import("./DinosaurValleyOverlook").then((module) => ({
   default: module.DinosaurValleyOverlook,
 })));
+const BrachiosaurusFossilExpedition = lazy(() => import("./BrachiosaurusFossilExpedition").then((module) => ({
+  default: module.BrachiosaurusFossilExpedition,
+})));
 
 const periods = ["Triassic", "Jurassic", "Cretaceous"] as const;
 
@@ -102,7 +105,19 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
         <strong>{discoveredCount}/{profile.dinosaurs.length}</strong>
       </section>
 
-      {active && (
+      {active?.id === "brachiosaurus" ? (
+        <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la excavación fósil…" : "Preparing the fossil excavation…"}</div>}>
+          <BrachiosaurusFossilExpedition
+            dinosaur={active}
+            language={language}
+            discovered={active.discovered}
+            announce={announce}
+            completeDiscovery={() => submit(active.period)}
+            close={() => setActiveId(null)}
+            nextDinosaur={nextUndiscovered}
+          />
+        </Suspense>
+      ) : active ? (
         <section className="dino-expedition-panel" aria-labelledby="dino-expedition-heading">
           <button type="button" className="dino-expedition-close" onClick={() => setActiveId(null)} aria-label={language === "es-MX" ? "Cerrar expedición" : "Close expedition"}>×</button>
           <DinosaurArt dinosaur={active} language={language} discovered={active.discovered} />
@@ -149,11 +164,11 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
             )}
           </div>
         </section>
-      )}
+      ) : null}
 
       <div className="fw-card-grid">
         {profile.dinosaurs.map((dinosaur) => (
-          <article className={`fw-dino-card ${dinosaur.discovered ? "is-discovered" : ""}`} key={dinosaur.id}>
+          <article className={`fw-dino-card ${dinosaur.discovered ? "is-discovered" : ""}`} data-dinosaur-id={dinosaur.id} key={dinosaur.id}>
             <DinosaurArt dinosaur={dinosaur} language={language} discovered={dinosaur.discovered} />
             <p>{dinosaur.discovered ? facts[dinosaur.id]?.[language] ?? tr(ui.fieldGuideUnlocked, language) : tr(ui.startExpedition, language)}</p>
             <button type="button" onClick={() => openExpedition(dinosaur)}>
