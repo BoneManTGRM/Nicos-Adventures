@@ -159,3 +159,9 @@ export class RouteMotor {
     return this.state;
   }
 }
+
+export function routePlaybackRate(snapshot: Pick<RouteMotorSnapshot, "speed" | "angularSpeed">, config: Pick<RouteMotorConfig, "maxSpeed" | "maxTurnSpeed">): number {
+  const travelEffort = Math.abs(snapshot.speed) / Math.max(config.maxSpeed, 0.001);
+  const turnEffort = Math.abs(snapshot.angularSpeed) / Math.max(config.maxTurnSpeed, 0.001);
+  return 0.55 + clamp(Math.max(travelEffort, turnEffort), 0, 1) * 0.75;
+}

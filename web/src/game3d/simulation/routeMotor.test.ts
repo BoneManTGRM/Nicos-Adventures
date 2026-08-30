@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { RouteMotor, type RouteWaypoint } from "./routeMotor";
+import { RouteMotor, routePlaybackRate, type RouteWaypoint } from "./routeMotor";
 
 const start: RouteWaypoint = { x: -0.8, z: -0.75, heading: 0 };
 const route: RouteWaypoint[] = [
@@ -56,5 +56,12 @@ describe("route motor", () => {
     expect(afterReset.z).not.toBe(start.z);
     expect(Math.hypot(afterReset.x - beforeReset.x, afterReset.z - beforeReset.z)).toBeLessThan(0.03);
     expect(final).toMatchObject({ ...start, settled: true });
+  });
+
+  it("scales authored playback from measured travel or turning effort", () => {
+    const motor = new RouteMotor(start);
+    expect(routePlaybackRate({ speed: 0, angularSpeed: 0 }, motor.config)).toBeCloseTo(0.55);
+    expect(routePlaybackRate({ speed: motor.config.maxSpeed, angularSpeed: 0 }, motor.config)).toBeCloseTo(1.3);
+    expect(routePlaybackRate({ speed: 0, angularSpeed: motor.config.maxTurnSpeed / 2 }, motor.config)).toBeCloseTo(0.925);
   });
 });

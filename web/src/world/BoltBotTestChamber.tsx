@@ -16,7 +16,7 @@ import {
 } from "../game/boltBot";
 import type { StarBridgeEvent, StarBridgeState } from "../game/goldenAdventure";
 import { BoltBot, GameCanvas, readQualityProfile, type BoltBotAnimation } from "../game3d";
-import { RouteMotor } from "../game3d/simulation/routeMotor";
+import { RouteMotor, routePlaybackRate } from "../game3d/simulation/routeMotor";
 import { tr, type Localized } from "../i18n/core";
 import type { Language, Robot } from "../types";
 import "./boltbot-test-chamber.css";
@@ -96,6 +96,7 @@ function NaturalBoltBot({
   const root = useRef<Group>(null);
   const motor = useRef(new RouteMotor(start));
   const driving = useRef(false);
+  const playbackRate = useRef(1);
   const reportedMotion = useRef<"programmed" | "moving" | "settled" | "reduced" | null>(null);
   const [motionAnimation, setMotionAnimation] = useState<BoltBotAnimation>("Idle");
 
@@ -117,10 +118,12 @@ function NaturalBoltBot({
     if (reducedMotion) {
       root.current.position.set(desired.x, 0, desired.z);
       root.current.rotation.y = desired.heading;
+      playbackRate.current = 1;
       report("reduced");
       return;
     }
     const snapshot = motor.current.step(delta);
+    playbackRate.current = routePlaybackRate(snapshot, motor.current.config);
     root.current.position.set(snapshot.x, 0, snapshot.z);
     root.current.rotation.y = snapshot.heading;
     const isDriving = snapshot.speed > .02 || Math.abs(snapshot.angularSpeed) > .06;
@@ -133,7 +136,7 @@ function NaturalBoltBot({
 
   return (
     <group ref={root} position={[start.x, 0, start.z]} rotation={[0, start.heading, 0]}>
-      <BoltBot robot={robot} animation={reducedMotion ? "Idle" : animation === "Idle" ? motionAnimation : animation} scale={.82} />
+      <BoltBot robot={robot} animation={reducedMotion ? "Idle" : animation === "Idle" ? motionAnimation : animation} playbackRate={playbackRate} scale={.82} />
     </group>
   );
 }
