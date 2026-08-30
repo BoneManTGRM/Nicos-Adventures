@@ -15,6 +15,7 @@ const copy = {
     pauseAtlas: "Pause world motion",
     resumeAtlas: "Resume world motion",
     reducedAtlas: "World motion is reduced",
+    atlasUnavailable: "The illustrated world is unavailable. Choose any landmark below.",
     roboLab: "Robo Lab",
     configure: "Build a bridge-ready BoltBot",
     begin: "Begin the adventure",
@@ -68,6 +69,7 @@ const copy = {
     pauseAtlas: "Pausar movimiento del mundo",
     resumeAtlas: "Reanudar movimiento del mundo",
     reducedAtlas: "El movimiento del mundo está reducido",
+    atlasUnavailable: "El mundo ilustrado no está disponible. Elige cualquier lugar abajo.",
     roboLab: "Laboratorio robot",
     configure: "Construye un BoltBot listo para el puente",
     begin: "Comenzar la aventura",
@@ -159,6 +161,31 @@ async function waitForServiceWorkerControl(page: Page) {
   ).toBe(true);
   await page.waitForLoadState("networkidle");
 }
+
+test("Living World Atlas keeps its navigation without WebGL", async ({ page }, testInfo) => {
+  const language = testInfo.project.metadata.language as Language;
+  const text = copy[language];
+  await page.addInitScript(() => {
+    const originalGetContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function getContext(this: HTMLCanvasElement, contextId: string, options?: unknown) {
+      if (contextId === "webgl" || contextId === "webgl2" || contextId === "experimental-webgl") return null;
+      return originalGetContext.call(this, contextId as "2d", options as CanvasRenderingContext2DSettings);
+    } as typeof HTMLCanvasElement.prototype.getContext;
+  });
+
+  await page.goto("/");
+  if (language === "es-MX") {
+    await activateWithKeyboard(page, page.getByRole("button", { name: "Cambiar a español de México" }));
+  }
+  const atlas = page.locator(".world-atlas");
+  await expect(atlas.locator(".game-canvas")).toHaveAttribute("data-renderer-status", "unavailable");
+  await expect(atlas.getByRole("alert")).toHaveText(text.atlasUnavailable);
+  await expect(atlas.locator("canvas")).toHaveCount(0);
+  await expect(atlas.locator(".world-atlas__landmark")).toHaveCount(6);
+  await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.roboLab })).toBeEnabled();
+  await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.dinosaur })).toBeDisabled();
+  await assertLayout(page, `${testInfo.project.name} no-WebGL atlas fallback`);
+});
 
 test("Golden Adventure passes the production browser matrix", async ({ page, context }, testInfo) => {
   const language = testInfo.project.metadata.language as Language;
