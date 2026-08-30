@@ -11,6 +11,11 @@ const expectedCommit = execFileSync("git", ["rev-parse", "HEAD"], {
 const copy = {
   en: {
     world: "World Map",
+    atlas: "A whole world is waking up",
+    pauseAtlas: "Pause world motion",
+    resumeAtlas: "Resume world motion",
+    reducedAtlas: "World motion is reduced",
+    atlasUnavailable: "The illustrated world is unavailable. Choose any landmark below.",
     roboLab: "Robo Lab",
     configure: "Build a bridge-ready BoltBot",
     begin: "Begin the adventure",
@@ -60,6 +65,11 @@ const copy = {
   },
   "es-MX": {
     world: "Mapa del mundo",
+    atlas: "Todo un mundo está despertando",
+    pauseAtlas: "Pausar movimiento del mundo",
+    resumeAtlas: "Reanudar movimiento del mundo",
+    reducedAtlas: "El movimiento del mundo está reducido",
+    atlasUnavailable: "El mundo ilustrado no está disponible. Elige cualquier lugar abajo.",
     roboLab: "Laboratorio robot",
     configure: "Construye un BoltBot listo para el puente",
     begin: "Comenzar la aventura",
@@ -110,10 +120,8 @@ const copy = {
 } as const;
 
 async function activateWithKeyboard(page: Page, locator: Locator) {
-  await page.evaluate(() => new Promise<void>((resolve) => {
-    window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
-  }));
   await expect(locator).toBeVisible();
+  await locator.scrollIntoViewIfNeeded();
   await locator.press("Enter");
 }
 
@@ -152,7 +160,35 @@ async function waitForServiceWorkerControl(page: Page) {
   await page.waitForLoadState("networkidle");
 }
 
+test("Living World Atlas keeps its navigation without WebGL", async ({ page }, testInfo) => {
+  const language = testInfo.project.metadata.language as Language;
+  const text = copy[language];
+  await page.addInitScript(() => {
+    const originalGetContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function getContext(this: HTMLCanvasElement, contextId: string, options?: unknown) {
+      if (contextId === "webgl" || contextId === "webgl2" || contextId === "experimental-webgl") return null;
+      return originalGetContext.call(this, contextId as "2d", options as CanvasRenderingContext2DSettings);
+    } as typeof HTMLCanvasElement.prototype.getContext;
+  });
+
+  await page.goto("/");
+  await waitForServiceWorkerControl(page);
+  if (language === "es-MX") {
+    await activateWithKeyboard(page, page.getByRole("button", { name: "Cambiar a español de México" }));
+  }
+  const atlas = page.locator(".world-atlas");
+  await expect(atlas.locator(".game-canvas")).toHaveAttribute("data-renderer-status", "unavailable");
+  await expect(atlas.getByRole("alert")).toHaveText(text.atlasUnavailable);
+  await expect(atlas.locator("canvas")).toHaveCount(0);
+  await expect(atlas.locator(".world-atlas__motion-control")).toBeHidden();
+  await expect(atlas.locator(".world-atlas__landmark")).toHaveCount(6);
+  await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.roboLab })).toBeEnabled();
+  await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.dinosaur })).toBeDisabled();
+  await assertLayout(page, `${testInfo.project.name} no-WebGL atlas fallback`);
+});
+
 test("Golden Adventure passes the production browser matrix", async ({ page, context }, testInfo) => {
+  test.setTimeout(180_000);
   const language = testInfo.project.metadata.language as Language;
   const text = copy[language];
   const expectsReducedMotion = testInfo.project.name === "webkit-iphone-es";
@@ -191,12 +227,31 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     await expect(page.getByRole("heading", { name: text.world, exact: true })).toBeVisible();
   }
   await expect(page.locator("html")).toHaveAttribute("lang", language);
+  await expect(page.getByRole("heading", { name: text.atlas, exact: true })).toBeVisible();
+  await assertRendererReady(page, expectsReducedMotion);
+  if (expectsReducedMotion) {
+    await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-motion", "reduced");
+    await expect(page.getByRole("button", { name: text.reducedAtlas, exact: true })).toBeDisabled();
+  } else {
+    const pauseAtlas = page.getByRole("button", { name: text.pauseAtlas, exact: true });
+    await activateWithKeyboard(page, pauseAtlas);
+    await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-motion", "paused");
+    await activateWithKeyboard(page, page.getByRole("button", { name: text.resumeAtlas, exact: true }));
+    await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-motion", "ambient");
+  }
+  await expect(page.locator(".world-atlas__landmark")).toHaveCount(6);
+  const lockedAtlasValley = page.locator(".world-atlas__landmark.is-locked").filter({ hasText: text.dinosaur });
+  await expect(lockedAtlasValley).toBeDisabled();
   await expect(page.locator(".fw-destination-grid .fw-destination")).toHaveCount(14);
   await expect(page.locator(".fw-destination-grid .fw-destination:not(.nico-world-destination)")).toHaveCount(13);
   await expect(page.locator(".nico-world-destination")).toHaveCount(1);
   const lockedValley = page.locator(".fw-destination.is-locked").filter({ hasText: text.dinosaur });
   await expect(lockedValley).toBeDisabled();
   await assertLayout(page, `${testInfo.project.name} initial map`);
+  await testInfo.attach("living-world-atlas-locked", {
+    body: await page.screenshot({ fullPage: true, animations: "disabled" }),
+    contentType: "image/png",
+  });
 
   await activateWithKeyboard(page, page.getByRole("button", { name: text.begin, exact: true }));
   await expect(page.getByRole("heading", { name: text.roboLab, exact: true })).toBeFocused();
@@ -250,6 +305,9 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   });
   await activateWithKeyboard(page, page.getByRole("button", { name: text.bridgeReturn, exact: true }).last());
   await expect(page.getByText(text.restoredStatus, { exact: true })).toBeVisible();
+  const unlockedAtlasValley = page.locator(".world-atlas__landmark").filter({ hasText: text.dinosaur });
+  await expect(unlockedAtlasValley).toBeEnabled();
+  await expect(page.locator(".world-atlas")).toHaveAttribute("data-valley-status", "open");
   const unlockedValley = page.locator(".fw-destination").filter({ hasText: text.dinosaur });
   await expect(unlockedValley).toBeEnabled();
   await activateWithKeyboard(page, unlockedValley);

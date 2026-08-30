@@ -11,6 +11,9 @@ import { StarBridgeMap } from "./StarBridgeMap";
 const BrokenStarBridge = lazy(() => import("./BrokenStarBridge").then((module) => ({
   default: module.BrokenStarBridge,
 })));
+const LivingWorldAtlas = lazy(() => import("./LivingWorldAtlas").then((module) => ({
+  default: module.LivingWorldAtlas,
+})));
 
 export function WorldMap({
   profile,
@@ -42,6 +45,9 @@ export function WorldMap({
   }
   return (
     <div className="fw-grid fw-grid--map">
+      <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Despertando el Mundo de Nico…" : "Waking up Nico's World…"}</div>}>
+        <LivingWorldAtlas language={language} dinosaurValleyAvailable={dinosaurValleyAvailable} open={open} />
+      </Suspense>
       <StarBridgeMap
         state={profile.adventures.starBridge}
         language={language}

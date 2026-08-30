@@ -23,6 +23,7 @@ const measured = {
   mainJavaScript: enforce(findOne(/^index-[^.]+\.js$/, "main JavaScript"), 175_000, "Main JavaScript"),
   mainStyles: enforce(findOne(/^index-[^.]+\.css$/, "main stylesheet"), 30_000, "Main stylesheet"),
   shared3d: enforce(findOne(/^game3d-[^.]+\.js$/, "shared 3D"), 300_000, "Shared lazy 3D runtime"),
+  livingWorldAtlas: enforce(findOne(/^LivingWorldAtlas-[^.]+\.js$/, "Living World Atlas"), 24_000, "Living World Atlas"),
   testChamber: enforce(findOne(/^BoltBotTestChamber-[^.]+\.js$/, "BoltBot test chamber"), 20_000, "BoltBot test chamber"),
   starBridge: enforce(findOne(/^BrokenStarBridge-[^.]+\.js$/, "Broken Star Bridge"), 20_000, "Broken Star Bridge"),
   dinosaurValley: enforce(findOne(/^DinosaurValleyOverlook-[^.]+\.js$/, "Dinosaur Valley overlook"), 20_000, "Dinosaur Valley overlook"),
