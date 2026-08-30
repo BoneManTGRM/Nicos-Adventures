@@ -1,8 +1,13 @@
+from pathlib import Path
+
 from streamlit.testing.v1 import AppTest
 
 
+APP_ENTRYPOINT = Path(__file__).resolve().parents[1] / "app.py"
+
+
 def test_every_activity_renders_without_exception() -> None:
-    app = AppTest.from_file("app.py", default_timeout=30).run()
+    app = AppTest.from_file(APP_ENTRYPOINT, default_timeout=30).run()
     assert not app.exception
 
     pages = (
