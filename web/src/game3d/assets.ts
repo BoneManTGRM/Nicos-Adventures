@@ -2,6 +2,10 @@ import { useGLTF } from "@react-three/drei";
 
 export type AdventureAssetManifest = Record<string, string>;
 
+export const ADVENTURE_ASSETS = {
+  "character.nico": "/assets/3d/nico/canonical-nico.glb?v=1",
+} as const satisfies AdventureAssetManifest;
+
 export function assetUrl(manifest: AdventureAssetManifest, key: string): string {
   const url = manifest[key];
   if (!url) throw new Error(`Missing 3D asset manifest key: ${key}`);

@@ -1,0 +1,42 @@
+{
+  "assetId": "character.nico.canonical",
+  "version": 1,
+  "format": "glTF 2.0 binary",
+  "sourceOfTruth": "Approved illustrated Nico production references",
+  "privateFamilyPhotoUsed": false,
+  "units": "metres",
+  "upAxis": "+Y",
+  "forwardAxis": "+Z",
+  "groundOrigin": true,
+  "animationClips": [
+    "Idle",
+    "Walk",
+    "Run",
+    "Celebrate"
+  ],
+  "nodeContract": [
+    "NicoRoot",
+    "Torso",
+    "Hips",
+    "Head",
+    "ArmLeft",
+    "ArmRight",
+    "LegLeft",
+    "LegRight"
+  ],
+  "materials": [
+    "Nico_Skin",
+    "Nico_Skin_Highlight",
+    "Nico_Hair",
+    "Nico_Red_Glasses",
+    "Nico_Eyes",
+    "Nico_Eye_Highlight",
+    "Nico_Cream_Shirt",
+    "Nico_Explorer_Green",
+    "Nico_Explorer_Green_Dark",
+    "Nico_Khaki",
+    "Nico_Shoe_Sole"
+  ],
+  "byteLength": 309036,
+  "sha256": "ad7c0da91489d781143350850b00f297bdf11f53ee1b78bec59d631c8a5029c3"
+}

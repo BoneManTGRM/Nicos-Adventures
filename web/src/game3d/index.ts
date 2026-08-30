@@ -1,10 +1,11 @@
 export { AccessibilityBridge, type GameCanvasLabels } from "./AccessibilityBridge";
 export { AdventureAudio } from "./audio/AdventureAudio";
-export { assetUrl, preloadAdventureModel, useAdventureModel, type AdventureAssetManifest } from "./assets";
+export { ADVENTURE_ASSETS, assetUrl, preloadAdventureModel, useAdventureModel, type AdventureAssetManifest } from "./assets";
 export { CameraRig } from "./CameraRig";
 export { GameCanvas } from "./GameCanvas";
 export { DEFAULT_KEY_BINDINGS, keyboardAction, movementInput, type InputAction } from "./input/actions";
 export { LightingRig } from "./LightingRig";
+export { CanonicalNico, type NicoAnimation } from "./nico/CanonicalNico";
 export { SceneRoot, type RendererStatus } from "./SceneRoot";
 export { locomotionBlendWeights, resolveLocomotionState, type LocomotionState, type LocomotionWeights } from "./animation/locomotion";
 export { readQualityProfile, selectQualityProfile, type QualityCapabilities, type QualityProfile, type QualityTier } from "./quality";
