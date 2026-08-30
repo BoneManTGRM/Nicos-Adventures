@@ -4,6 +4,7 @@ import { assetUrl } from "./assets";
 import { keyboardAction, movementInput, type InputAction } from "./input/actions";
 import { selectQualityProfile } from "./quality";
 import { CharacterMotor } from "./simulation/characterMotor";
+import { AdventureAudio } from "./audio/AdventureAudio";
 
 describe("minimal 3D runtime foundation", () => {
   it("accelerates, turns with a bounded rate, and settles without snapping", () => {
@@ -70,5 +71,11 @@ describe("minimal 3D runtime foundation", () => {
     expect(Math.hypot(movement.x, movement.z)).toBeCloseTo(1);
     expect(movement.x).toBeGreaterThan(0);
     expect(movement.z).toBeGreaterThan(0);
+  });
+
+  it("keeps audio optional when Web Audio is unavailable", () => {
+    const audio = new AdventureAudio();
+    expect(audio.isAvailable).toBe(false);
+    expect(audio.isUnlocked).toBe(false);
   });
 });

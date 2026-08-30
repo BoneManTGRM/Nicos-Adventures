@@ -9,16 +9,18 @@ import { WorldMap } from "./WorldMap";
 const handlers = {
   begin: vi.fn(),
   openRoboLab: vi.fn(),
+  openBridge: vi.fn(),
   openDinosaurValley: vi.fn(),
 };
 
 describe("Star Bridge living map", () => {
   it("preserves every existing destination alongside the mission landmark", () => {
     const markup = renderToStaticMarkup(
-      <WorldMap profile={createProfile("Nico")} open={vi.fn()} beginStarBridge={vi.fn()} />,
+      <WorldMap profile={createProfile("Nico")} open={vi.fn()} beginStarBridge={vi.fn()} advanceStarBridge={vi.fn()} />,
     );
-    expect(markup.match(/class="fw-destination"/g)).toHaveLength(WORLD_SECTIONS.length - 1);
+    expect(markup.match(/class="fw-destination(?: |")/g)).toHaveLength(WORLD_SECTIONS.length - 1);
     expect(markup).toContain("class=\"fw-star-bridge is-broken\"");
+    expect(markup).toContain("Complete The Broken Star Bridge to unlock");
   });
 
   it("shows the broken bridge and bilingual mission entry", () => {

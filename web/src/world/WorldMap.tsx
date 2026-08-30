@@ -1,21 +1,45 @@
+import { lazy, Suspense, useState } from "react";
 import { mergeAnimalLibrary } from "../FeatureArt";
+import type { StarBridgeEvent } from "../game/goldenAdventure";
+import { hasDinosaurValleyAccess } from "../game/starBridgeRepair";
 import { RobotStage } from "../RobotStage";
 import type { LocalProfile, SectionId } from "../types";
 import { tr, ui } from "../i18n/core";
 import { WORLD_SECTIONS } from "./catalogs";
 import { StarBridgeMap } from "./StarBridgeMap";
 
+const BrokenStarBridge = lazy(() => import("./BrokenStarBridge").then((module) => ({
+  default: module.BrokenStarBridge,
+})));
+
 export function WorldMap({
   profile,
   open,
   beginStarBridge,
+  advanceStarBridge,
 }: {
   profile: LocalProfile;
   open: (id: SectionId) => void;
   beginStarBridge: () => void;
+  advanceStarBridge: (event: StarBridgeEvent) => void;
 }) {
   const language = profile.language;
+  const [bridgeOpen, setBridgeOpen] = useState(false);
   const discovered = mergeAnimalLibrary(profile.animals).filter((animal) => animal.discovered).length;
+  const dinosaurValleyAvailable = hasDinosaurValleyAccess(profile);
+  if (bridgeOpen) {
+    return (
+      <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando el Puente Estelar…" : "Preparing the Star Bridge…"}</div>}>
+        <BrokenStarBridge
+          state={profile.adventures.starBridge}
+          robot={profile.robot}
+          language={language}
+          advance={advanceStarBridge}
+          close={() => setBridgeOpen(false)}
+        />
+      </Suspense>
+    );
+  }
   return (
     <div className="fw-grid fw-grid--map">
       <StarBridgeMap
@@ -23,6 +47,7 @@ export function WorldMap({
         language={language}
         begin={beginStarBridge}
         openRoboLab={() => open("robo-lab")}
+        openBridge={() => setBridgeOpen(true)}
         openDinosaurValley={() => open("dinosaur-valley")}
       />
       <article className="fw-hero-card" aria-label={language === "es-MX" ? "Equipo de aventura" : "Adventure team"}>
@@ -39,19 +64,24 @@ export function WorldMap({
         </div>
       </article>
       <section className="fw-destination-grid" aria-label={tr(ui.mainNavigation, language)}>
-        {WORLD_SECTIONS.filter((section) => section.id !== "world-map").map((section) => (
-          <button
-            type="button"
-            className="fw-destination"
-            key={section.id}
-            onClick={() => open(section.id)}
-            aria-label={`${tr(section.name, language)}. ${tr(section.description, language)}`}
-          >
-            <span aria-hidden="true">{section.emoji}</span>
-            <strong>{tr(section.name, language)}</strong>
-            <small>{tr(section.description, language)}</small>
-          </button>
-        ))}
+        {WORLD_SECTIONS.filter((section) => section.id !== "world-map").map((section) => {
+          const locked = section.id === "dinosaur-valley" && !dinosaurValleyAvailable;
+          const lockCopy = language === "es-MX" ? "Completa El Puente Estelar Roto para desbloquearlo" : "Complete The Broken Star Bridge to unlock";
+          return (
+            <button
+              type="button"
+              className={`fw-destination${locked ? " is-locked" : ""}`}
+              key={section.id}
+              disabled={locked}
+              onClick={() => open(section.id)}
+              aria-label={`${tr(section.name, language)}. ${locked ? lockCopy : tr(section.description, language)}`}
+            >
+              <span aria-hidden="true">{locked ? "🔒" : section.emoji}</span>
+              <strong>{tr(section.name, language)}</strong>
+              <small>{locked ? lockCopy : tr(section.description, language)}</small>
+            </button>
+          );
+        })}
       </section>
     </div>
   );

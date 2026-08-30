@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import type { SectionId } from "./types";
+import type { StarBridgeEvent } from "./game/goldenAdventure";
 import { tr, ui } from "./i18n/core";
 import { useAppStore } from "./app/AppStoreContext";
 import { applyStarBridgeEvent } from "./game/goldenAdventureProfile";
+import { hasDinosaurValleyAccess } from "./game/starBridgeRepair";
 import { AnimalForest } from "./world/AnimalForest";
 import { Arcade } from "./world/Arcade";
 import { ArtStudio } from "./world/ArtStudio";
@@ -41,6 +43,12 @@ export default function FullApp() {
   }, [profile.language, profile.selectedSection]);
 
   const open = (sectionId: SectionId) => {
+    if (sectionId === "dinosaur-valley" && !hasDinosaurValleyAccess(profile)) {
+      announce(profile.language === "es-MX"
+        ? "Completa El Puente Estelar Roto para desbloquear el Valle de Dinosaurios."
+        : "Complete The Broken Star Bridge to unlock Dinosaur Valley.");
+      return;
+    }
     const section = WORLD_SECTIONS.find((item) => item.id === sectionId) ?? WORLD_SECTIONS[0];
     updateProfile({
       ...profile,
@@ -73,10 +81,21 @@ export default function FullApp() {
     window.requestAnimationFrame(() => document.getElementById("page-title")?.focus());
   };
 
+  const advanceStarBridge = (event: StarBridgeEvent) => {
+    commitProfile((current) => applyStarBridgeEvent(current, event));
+    const messages: Partial<Record<StarBridgeEvent["type"], { en: string; "es-MX": string }>> = {
+      INSPECT_BRIDGE: { en: "Bridge fault inspected.", "es-MX": "Falla del puente inspeccionada." },
+      INSTALL_STAR_CORE: { en: "Star Core installed.", "es-MX": "Núcleo Estelar instalado." },
+      COMPLETE_ADVENTURE: { en: "Star Bridge restored! Dinosaur Valley unlocked.", "es-MX": "¡Puente Estelar restaurado! Valle de Dinosaurios desbloqueado." },
+    };
+    const message = messages[event.type];
+    if (message) announce(message[profile.language]);
+  };
+
   const page = (() => {
     const props = { profile, update: updateProfile, announce };
     switch (profile.selectedSection) {
-      case "world-map": return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} />;
+      case "world-map": return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} advanceStarBridge={advanceStarBridge} />;
       case "robo-lab": return <RoboLab {...props} open={open} />;
       case "animal-forest": return <AnimalForest {...props} />;
       case "monster-lab": return <MonsterLab {...props} />;
@@ -90,7 +109,7 @@ export default function FullApp() {
       case "memory-book": return <Museum profile={profile} />;
       case "badge-book": return <Badges profile={profile} />;
       case "parent-settings": return <Settings store={store} profile={profile} setStore={setStore} update={updateProfile} announce={announce} />;
-      default: return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} />;
+      default: return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} advanceStarBridge={advanceStarBridge} />;
     }
   })();
 
