@@ -1,15 +1,33 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ROBOT_ACTIONS, ROBOT_JOBS, type RobotPose } from "../FeatureArt";
 import { RobotStage } from "../RobotStage";
-import type { LocalProfile, Robot } from "../types";
+import type { LocalProfile, Robot, SectionId } from "../types";
 import { fieldLabel, tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/options";
+import { boltBotChamberStage, evaluateBoltBotReadiness } from "../game/boltBot";
+import type { StarBridgeEvent } from "../game/goldenAdventure";
+import { applyStarBridgeEvent } from "../game/goldenAdventureProfile";
 import { ROBOT_OPTIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { makeId } from "./common";
+import { BoltBotConfigurationGate } from "./BoltBotConfigurationGate";
 import { completeOnce, hasCompleted, robotJobMission } from "./progression";
 
-export function RoboLab({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
+const BoltBotTestChamber = lazy(() => import("./BoltBotTestChamber").then((module) => ({
+  default: module.BoltBotTestChamber,
+})));
+
+export function RoboLab({
+  profile,
+  update,
+  announce,
+  open,
+}: {
+  profile: LocalProfile;
+  update: UpdateProfile;
+  announce: Announce;
+  open: (id: SectionId) => void;
+}) {
   const language = profile.language;
   const [draft, setDraft] = useState<Robot>({
     ...profile.robot,
@@ -38,6 +56,7 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
   const selectedJobMission = robotJobMission(draft.id, selectedJob);
   const selectedJobComplete = hasCompleted(profile, selectedJobMission);
   const completedJobs = ROBOT_JOBS.filter((job) => hasCompleted(profile, robotJobMission(draft.id, job))).length;
+  const chamberStage = boltBotChamberStage(profile.adventures.starBridge.step);
 
   const randomize = () => {
     setDraft((current) => ({
@@ -75,6 +94,37 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
     announce(`${robot.name}: ${tr(ui.saveSuccess, language)}`);
   };
 
+  const configureForAdventure = () => {
+    if (!evaluateBoltBotReadiness(draft).ready) return;
+    const robot = { ...draft, id: draft.id || makeId("robot"), name: draft.name.trim() || "BoltBot" };
+    const robots = profile.robots.some((item) => item.id === robot.id)
+      ? profile.robots.map((item) => item.id === robot.id ? robot : item)
+      : [...profile.robots, robot];
+    const configured = applyStarBridgeEvent(
+      { ...profile, robot, robots, activeRobotId: robot.id },
+      { type: "CONFIGURE_ROBOT" },
+    );
+    setDraft(robot);
+    update(configured);
+    play("celebrate");
+    announce(language === "es-MX"
+      ? `${robot.name} está listo para la cámara de pruebas.`
+      : `${robot.name} is ready for the test chamber.`);
+  };
+
+  const advanceAdventure = (event: StarBridgeEvent) => {
+    const next = applyStarBridgeEvent(profile, event);
+    if (next === profile) return;
+    update(next);
+    const messages: Partial<Record<StarBridgeEvent["type"], { en: string; "es-MX": string }>> = {
+      PASS_MOVEMENT_TEST: { en: "Movement test passed.", "es-MX": "Prueba de movimiento aprobada." },
+      PASS_SCANNER_TEST: { en: "Scanner test passed.", "es-MX": "Prueba del escáner aprobada." },
+      PASS_LOGIC_TEST: { en: "BoltBot passed the test chamber!", "es-MX": "¡BoltBot aprobó la cámara de pruebas!" },
+    };
+    const message = messages[event.type];
+    if (message) announce(message[language]);
+  };
+
   const doJob = () => {
     if (selectedJobComplete) return;
     const xp = draft.xp + 20;
@@ -92,7 +142,22 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
   };
 
   return (
-    <div className="fw-builder-layout">
+    <>
+      {chamberStage === "configuration" ? (
+        <BoltBotConfigurationGate robot={draft} language={language} configure={configureForAdventure} />
+      ) : null}
+      {chamberStage !== "inactive" && chamberStage !== "configuration" ? (
+        <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la cámara de pruebas…" : "Preparing the test chamber…"}</div>}>
+          <BoltBotTestChamber
+            state={profile.adventures.starBridge}
+            robot={profile.robot}
+            language={language}
+            advance={advanceAdventure}
+            returnToMap={() => open("world-map")}
+          />
+        </Suspense>
+      ) : null}
+      <div className="fw-builder-layout">
       <section aria-label={tr(ui.robotPreview, language)}>
         <RobotStage
           robot={draft}
@@ -191,6 +256,7 @@ export function RoboLab({ profile, update, announce }: { profile: LocalProfile; 
           </div>
         </section>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

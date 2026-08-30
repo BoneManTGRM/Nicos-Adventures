@@ -77,7 +77,7 @@ export default function FullApp() {
     const props = { profile, update: updateProfile, announce };
     switch (profile.selectedSection) {
       case "world-map": return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} />;
-      case "robo-lab": return <RoboLab {...props} />;
+      case "robo-lab": return <RoboLab {...props} open={open} />;
       case "animal-forest": return <AnimalForest {...props} />;
       case "monster-lab": return <MonsterLab {...props} />;
       case "monster-habitats": return <MonsterHabitats {...props} />;

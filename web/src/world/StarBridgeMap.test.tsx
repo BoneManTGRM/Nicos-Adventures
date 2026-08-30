@@ -37,6 +37,7 @@ describe("Star Bridge living map", () => {
   it("maps persisted progress to stable mission phases", () => {
     expect(starBridgeMissionPhase(initialStarBridgeState())).toBe("discover");
     expect(starBridgeMissionPhase({ ...initialStarBridgeState(), step: "scanner_passed" })).toBe("prepare");
+    expect(starBridgeMissionPhase({ ...initialStarBridgeState(), step: "logic_passed" })).toBe("repair");
     expect(starBridgeMissionPhase({ ...initialStarBridgeState(), step: "bridge_inspected" })).toBe("repair");
   });
 
