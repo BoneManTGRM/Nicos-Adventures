@@ -11,8 +11,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
+    "generate:nico-3d": "node scripts/generate-canonical-nico.mjs",
+    "validate:nico-3d": "node scripts/validate-canonical-nico.mjs",
     "validate:cloudflare": "node scripts/validate-cloudflare-routing.mjs",
-    "validate:release": "node scripts/validate-release.mjs && node scripts/validate-system-parity.mjs && node scripts/validate-interactive-progression.mjs && node scripts/validate-creative-memory.mjs && node scripts/validate-local-media-art.mjs && node scripts/validate-layered-wardrobe.mjs",
+    "validate:release": "node scripts/validate-release.mjs && node scripts/validate-system-parity.mjs && node scripts/validate-interactive-progression.mjs && node scripts/validate-creative-memory.mjs && node scripts/validate-local-media-art.mjs && node scripts/validate-layered-wardrobe.mjs && npm run validate:nico-3d",
     "build": "npm run validate:cloudflare && npm run validate:release && npm run typecheck && vite build"
   },
   "dependencies": {

@@ -32,6 +32,10 @@ Representative sequences:
 
 Transitions must blend without visible pose resets.
 
+The canonical Nico foundation supplies `Idle`, `Walk`, `Run`, and `Celebrate` clips on a hierarchical transform rig. Locomotion clips must articulate shoulders, elbows, hips, knees, and feet; full-vector translation and scale tracks are required so animation binding cannot collapse character geometry. Runtime changes cross-fade clips and must not restart the active clip on unrelated React renders.
+
+These foundation clips establish a safe motion contract. They do not replace the final in-scene locomotion pass, where controller velocity drives playback speed and blend weights, foot placement is reviewed against ground contact, and start/stop/turn transitions are added as the playable bridge slice demands them.
+
 ## Interaction
 
 Use authored animation plus IK where exact contact materially improves the result, including tools, robot parts, switches, books, fossils, doors, petting, placement, and pointing.

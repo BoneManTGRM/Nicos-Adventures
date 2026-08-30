@@ -1,0 +1,95 @@
+{
+  "assetId": "character.nico.canonical",
+  "version": 1,
+  "artStatus": "canonical-foundation",
+  "format": "glTF 2.0 binary",
+  "sourceOfTruth": "Approved illustrated Nico production references",
+  "provenance": "Project-owned procedural model derived only from approved illustrated Nico production references",
+  "license": "Project-owned original asset",
+  "privateFamilyPhotoUsed": false,
+  "units": "metres",
+  "upAxis": "+Y",
+  "forwardAxis": "+Z",
+  "groundOrigin": true,
+  "boundsMeters": {
+    "min": [
+      -0.5615999794006348,
+      0.0015000069141387629,
+      -0.5279999828338623
+    ],
+    "max": [
+      0.5615999794006348,
+      2.9315855372873005,
+      0.5766295820474625
+    ],
+    "dimensions": [
+      1.1231999588012695,
+      2.930085530373162,
+      1.104629564881325
+    ]
+  },
+  "pivot": {
+    "node": "NicoRoot",
+    "position": [
+      0,
+      0,
+      0
+    ]
+  },
+  "anchors": {
+    "head": "Head",
+    "leftHand": "LeftHand",
+    "rightHand": "RightHand",
+    "leftFoot": "FootLeft",
+    "rightFoot": "FootRight"
+  },
+  "rigType": "hierarchical articulated transform rig",
+  "animationClips": [
+    "Idle",
+    "Walk",
+    "Run",
+    "Celebrate"
+  ],
+  "animationDurationsSeconds": {
+    "Idle": 3.2,
+    "Walk": 1.2,
+    "Run": 0.72,
+    "Celebrate": 1.8
+  },
+  "reviewedViews": [
+    "front",
+    "three-quarter",
+    "side"
+  ],
+  "nodeContract": [
+    "NicoRoot",
+    "Torso",
+    "Hips",
+    "Head",
+    "ArmLeft",
+    "ElbowLeft",
+    "ArmRight",
+    "ElbowRight",
+    "LegLeft",
+    "KneeLeft",
+    "FootLeft",
+    "LegRight",
+    "KneeRight",
+    "FootRight"
+  ],
+  "materials": [
+    "Nico_Skin",
+    "Nico_Skin_Highlight",
+    "Nico_Hair",
+    "Nico_Red_Glasses",
+    "Nico_Eyes",
+    "Nico_Eye_Highlight",
+    "Nico_Cream_Shirt",
+    "Nico_Explorer_Green",
+    "Nico_Explorer_Green_Dark",
+    "Nico_Khaki",
+    "Nico_Shoe_Sole"
+  ],
+  "byteLength": 403724,
+  "sha256": "1181e8dc00136d12f881e026ccab45379d484b2db60241a1eb2abf5ca3f4d1e7"
+}
