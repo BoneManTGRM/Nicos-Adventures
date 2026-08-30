@@ -45,6 +45,11 @@ const copy = {
     restore: "Restore backup",
     restoreSuccess: "Profile restored successfully.",
     restoredStatus: "Bridge restored · Valley unlocked",
+    overlook: "Follow the gentle giant",
+    footprints: "Read the footprints",
+    canopy: "Inspect the canopy",
+    herdPath: "Watch the herd path",
+    dinosaurFound: "Brachiosaurus found!",
   },
   "es-MX": {
     world: "Mapa del mundo",
@@ -82,6 +87,11 @@ const copy = {
     restore: "Restaurar respaldo",
     restoreSuccess: "Perfil restaurado correctamente.",
     restoredStatus: "Puente restaurado · Valle desbloqueado",
+    overlook: "Sigue al gigante tranquilo",
+    footprints: "Lee las huellas",
+    canopy: "Inspecciona las copas",
+    herdPath: "Observa el sendero de la manada",
+    dinosaurFound: "¡Brachiosaurus encontrado!",
   },
 } as const;
 
@@ -218,6 +228,25 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
     contentType: "image/png",
   });
+  await activateWithKeyboard(page, page.getByRole("button", { name: text.bridgeReturn, exact: true }).last());
+  await expect(page.getByText(text.restoredStatus, { exact: true })).toBeVisible();
+  const unlockedValley = page.locator(".fw-destination").filter({ hasText: text.dinosaur });
+  await expect(unlockedValley).toBeEnabled();
+  await activateWithKeyboard(page, unlockedValley);
+  await expect(page.getByRole("heading", { name: text.dinosaur, exact: true })).toBeFocused();
+  await expect(page.getByRole("heading", { name: text.overlook, exact: true })).toBeVisible();
+  await assertRendererReady(page, expectsReducedMotion);
+  await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.footprints) }));
+  await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.canopy) }));
+  await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.herdPath) }));
+  await expect(page.getByText(text.dinosaurFound, { exact: true })).toBeVisible();
+  await expect(page.locator(".dino-overlook__reveal")).toBeFocused();
+  await expect(page.locator(".fw-skip-link")).toHaveCSS("opacity", "0");
+  await assertLayout(page, `${testInfo.project.name} dinosaur overlook`);
+  await testInfo.attach("dinosaur-overlook", {
+    body: await page.screenshot({ fullPage: true, animations: "disabled" }),
+    contentType: "image/png",
+  });
   const goldenAssetUrls = await page.evaluate(() => [...new Set([
     "/",
     ...performance.getEntriesByType("resource")
@@ -225,13 +254,6 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
       .filter((url) => url.origin === window.location.origin && url.pathname !== "/sw.js")
       .map((url) => `${url.pathname}${url.search}`),
   ])]);
-
-  await activateWithKeyboard(page, page.getByRole("button", { name: text.bridgeReturn, exact: true }).last());
-  await expect(page.getByText(text.restoredStatus, { exact: true })).toBeVisible();
-  const unlockedValley = page.locator(".fw-destination").filter({ hasText: text.dinosaur });
-  await expect(unlockedValley).toBeEnabled();
-  await activateWithKeyboard(page, unlockedValley);
-  await expect(page.getByRole("heading", { name: text.dinosaur, exact: true })).toBeFocused();
 
   await activateWithKeyboard(page, page.locator(".fw-brand"));
   await openDestination(page, text.museum);

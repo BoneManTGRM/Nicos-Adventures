@@ -25,6 +25,7 @@ const measured = {
   shared3d: enforce(findOne(/^game3d-[^.]+\.js$/, "shared 3D"), 300_000, "Shared lazy 3D runtime"),
   testChamber: enforce(findOne(/^BoltBotTestChamber-[^.]+\.js$/, "BoltBot test chamber"), 20_000, "BoltBot test chamber"),
   starBridge: enforce(findOne(/^BrokenStarBridge-[^.]+\.js$/, "Broken Star Bridge"), 20_000, "Broken Star Bridge"),
+  dinosaurValley: enforce(findOne(/^DinosaurValleyOverlook-[^.]+\.js$/, "Dinosaur Valley overlook"), 20_000, "Dinosaur Valley overlook"),
 };
 
 console.log(`Performance budgets passed: ${Object.entries(measured).map(([name, bytes]) => `${name}=${bytes}B gzip`).join(", ")}.`);

@@ -44,6 +44,8 @@ Use authored animation plus IK where exact contact materially improves the resul
 
 Allowed restrained behaviors include blinking, breathing, weight shifts, gaze tracking, head tracking, stance adjustment, BoltBot antenna/sensor reactions, and species-appropriate animal idle behavior. Never use random jitter.
 
+Large creatures must derive gait phase from measured travel speed, ease into and out of movement, turn through damped headings, carry weight through the torso, and let the neck and tail settle after the body. A quadruped may use diagonal leg pairs for a readable slow walk, but limb swing must fade to a planted stance as velocity reaches zero. Reduced motion uses stable authored poses while preserving every observation and control.
+
 ## Acceptance gate
 
 Major motion must have:

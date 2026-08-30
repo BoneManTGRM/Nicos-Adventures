@@ -47,3 +47,7 @@ The canonical Nico foundation lives at `web/public/assets/3d/nico/canonical-nico
 ## Performance
 
 Visual fidelity may scale by device quality tier, but character identity, gameplay readability, and interaction semantics must not change.
+
+## Dinosaur Valley
+
+The Sunrise Overlook establishes the destination's environment language: warm early light, cool atmospheric depth, layered rock and plant silhouettes, readable river reflections, and restrained storybook color. Dinosaurs use believable species silhouettes and grounded contact shadows without chasing photorealism. Procedural geometry is an arrival foundation; future authored GLB creatures must preserve the same scale, framing, accessibility, and mobile performance contract.
