@@ -29,6 +29,10 @@ describe("Monster Lab localized preview", () => {
     const html = renderToStaticMarkup(<MonsterStage monster={monster} language="es-MX" />);
     expect(html).toContain("Dragón · Galaxia · Escudo arcoíris");
     expect(html).toContain("Glimmer, Dragón monstruo");
+    expect(html).toContain("monster-stage__environment");
+    expect(html).toContain("monster-ground-shadow");
+    expect(html).toContain("monster-surface-pattern");
+    expect(html).toContain("monster-texture--crystal");
     expect(monster).toMatchObject({ body: "Dragon", pattern: "Galaxy", power: "Rainbow shield" });
   });
 });
