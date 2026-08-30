@@ -116,6 +116,14 @@ async function assertRendererReady(page: Page, reducedMotion: boolean) {
   await expect(canvas.locator("canvas")).toHaveCount(1);
 }
 
+async function waitForServiceWorkerControl(page: Page) {
+  await expect.poll(
+    () => page.evaluate(() => Boolean(navigator.serviceWorker.controller)).catch(() => false),
+    { timeout: 20_000 },
+  ).toBe(true);
+  await page.waitForLoadState("networkidle");
+}
+
 test("Golden Adventure passes the production browser matrix", async ({ page, context }, testInfo) => {
   const language = testInfo.project.metadata.language as Language;
   const text = copy[language];
@@ -134,8 +142,9 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "World Map", exact: true })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)), { timeout: 20_000 }).toBe(true);
-  await page.waitForLoadState("networkidle");
+  await waitForServiceWorkerControl(page);
+  await expect(page.getByRole("heading", { name: "World Map", exact: true })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
 
   const releaseResponse = await page.request.get("/release.json");
   expect(releaseResponse.ok()).toBe(true);
@@ -151,7 +160,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     await expect(page.getByRole("heading", { name: text.world, exact: true })).toBeVisible();
   }
   await expect(page.locator("html")).toHaveAttribute("lang", language);
-  await expect(page.locator(".fw-destination-grid .fw-destination")).toHaveCount(13);
+  await expect(page.locator(".fw-destination-grid .fw-destination")).toHaveCount(14);
+  await expect(page.locator(".fw-destination-grid .fw-destination:not(.nico-world-destination)")).toHaveCount(13);
   await expect(page.locator(".nico-world-destination")).toHaveCount(1);
   const lockedValley = page.locator(".fw-destination.is-locked").filter({ hasText: text.dinosaur });
   await expect(lockedValley).toBeDisabled();
@@ -160,7 +170,9 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await activateWithKeyboard(page, page.getByRole("button", { name: text.begin, exact: true }));
   await expect(page.getByRole("heading", { name: text.roboLab, exact: true })).toBeFocused();
   await expect(page.getByRole("heading", { name: text.configure, exact: true })).toBeVisible();
-  await page.getByLabel(text.arms, { exact: true }).selectOption("Tool Arms");
+  const repairArms = page.locator("select").filter({ has: page.locator('option[value="Tool Arms"]') });
+  await expect(repairArms).toHaveCount(1);
+  await repairArms.selectOption("Tool Arms");
   await activateWithKeyboard(page, page.getByRole("button", { name: text.useRobot, exact: true }));
   await expect(page.getByRole("heading", { name: text.movement, exact: true })).toBeFocused();
   await assertRendererReady(page, expectsReducedMotion);
