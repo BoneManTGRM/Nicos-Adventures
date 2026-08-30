@@ -41,6 +41,10 @@ const requiredFiles = [
   "src/catalogs/showtime.json",
   "scripts/validate-layered-wardrobe.mjs",
   "scripts/generate-release-manifest.mjs",
+  "scripts/validate-performance-budget.mjs",
+  "playwright.config.ts",
+  "tsconfig.e2e.json",
+  "e2e/golden-adventure.e2e.ts",
   "../docs/PROFILE_SCHEMA_V4.md",
 ];
 for (const relative of requiredFiles) {
@@ -182,6 +186,18 @@ if (!packageJson.scripts?.["validate:release"]?.includes("validate-layered-wardr
 }
 if (!packageJson.scripts?.build?.includes("generate-release-manifest.mjs --verify")) {
   throw new Error("Exact release identity generation and verification are not part of the production build");
+}
+if (!packageJson.scripts?.build?.includes("validate-performance-budget.mjs")) {
+  throw new Error("Golden Adventure production performance budgets are not part of the build");
+}
+if (!packageJson.scripts?.build?.includes("vite build --emptyOutDir")) {
+  throw new Error("Production output must be cleared before release hashes and performance budgets are measured");
+}
+if (packageJson.devDependencies?.["@playwright/test"] !== "1.62.1" ||
+    packageJson.devDependencies?.["@types/node"] !== "22.20.1" ||
+    packageJson.scripts?.["test:e2e"] !== "playwright test" ||
+    packageJson.scripts?.["typecheck:e2e"] !== "tsc --noEmit -p tsconfig.e2e.json") {
+  throw new Error("The pinned Golden Adventure browser gate is missing");
 }
 
 const releaseGenerator = read("scripts/generate-release-manifest.mjs");
