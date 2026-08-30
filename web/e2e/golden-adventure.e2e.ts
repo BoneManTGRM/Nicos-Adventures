@@ -86,6 +86,9 @@ const copy = {
 } as const;
 
 async function activateWithKeyboard(page: Page, locator: Locator) {
+  await page.evaluate(() => new Promise<void>((resolve) => {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
+  }));
   await expect(locator).toBeVisible();
   await locator.press("Enter");
 }
@@ -142,7 +145,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
 
   await page.emulateMedia({ reducedMotion: expectsReducedMotion ? "reduce" : "no-preference" });
   await page.goto("/");
-  await expect.poll(() => page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches))
+  await expect.poll(() => page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches).catch(() => false))
     .toBe(expectsReducedMotion);
   await expect(page.getByRole("heading", { name: "World Map", exact: true })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
@@ -215,6 +218,13 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
     contentType: "image/png",
   });
+  const goldenAssetUrls = await page.evaluate(() => [...new Set([
+    "/",
+    ...performance.getEntriesByType("resource")
+      .map((entry) => new URL(entry.name))
+      .filter((url) => url.origin === window.location.origin)
+      .map((url) => `${url.pathname}${url.search}`),
+  ])]);
 
   await activateWithKeyboard(page, page.getByRole("button", { name: text.bridgeReturn, exact: true }).last());
   await expect(page.getByText(text.restoredStatus, { exact: true })).toBeVisible();
@@ -239,13 +249,22 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
 
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)), { timeout: 20_000 }).toBe(true);
   await context.setOffline(true);
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const offlineAssets = await page.evaluate(async (urls) => Promise.all(urls.map(async (url) => {
+    try {
+      const response = await fetch(url);
+      return { url, ok: response.ok };
+    } catch {
+      return { url, ok: false };
+    }
+  })), goldenAssetUrls);
+  expect(offlineAssets.filter((asset) => !asset.ok), "Golden Adventure assets unavailable offline").toEqual([]);
   await expect(achievementEntry).toHaveCount(1);
   await context.setOffline(false);
 
   if (testInfo.project.name === "chromium-desktop-en") {
     await activateWithKeyboard(page, page.locator(".fw-brand"));
     await activateWithKeyboard(page, page.getByRole("button", { name: /Open destination: Parent & Settings/ }));
+    await expect(page.getByRole("heading", { name: text.settings, exact: true })).toBeFocused();
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: text.backup, exact: true }).click();
     const download = await downloadPromise;

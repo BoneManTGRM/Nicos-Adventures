@@ -26,6 +26,11 @@ button:disabled { cursor: not-allowed; }
 /* Keep the Museum's horizontally scrollable category rail inside its mobile grid track. */
 .memory-browser { min-width: 0; }
 
+@media (max-width: 700px) {
+  .fw-app .memory-browser > header { display: grid; align-items: stretch; }
+  .fw-app .memory-search { width: 100%; min-width: 0; }
+}
+
 .app-shell {
   min-height: 100vh;
   padding: 24px clamp(16px, 4vw, 52px) 116px;
