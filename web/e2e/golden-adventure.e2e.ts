@@ -262,7 +262,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     await activateWithKeyboard(page, page.getByRole("button", { name: /Open destination: Parent & Settings/ }));
     await expect(page.getByRole("heading", { name: text.settings, exact: true })).toBeFocused();
     const downloadPromise = page.waitForEvent("download");
-    await page.getByRole("button", { name: text.backup, exact: true }).click();
+    await page.getByRole("button", { name: new RegExp(`${text.backup}$`) }).click();
     const download = await downloadPromise;
     const backupPath = await download.path();
     expect(backupPath).toBeTruthy();
