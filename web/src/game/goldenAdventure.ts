@@ -28,6 +28,10 @@ export type StarBridgeState = {
   completedAt?: string;
 };
 
+export type GoldenAdventureProgress = {
+  starBridge: StarBridgeState;
+};
+
 export const STAR_BRIDGE_ENGINEER = "star-bridge-engineer";
 
 export const initialStarBridgeState = (): StarBridgeState => ({
@@ -36,6 +40,68 @@ export const initialStarBridgeState = (): StarBridgeState => ({
   dinosaurValleyUnlocked: false,
   museumAchievements: [],
 });
+
+export const initialGoldenAdventureProgress = (): GoldenAdventureProgress => ({
+  starBridge: initialStarBridgeState(),
+});
+
+const starBridgeSteps: StarBridgeStep[] = [
+  "briefing",
+  "map_revealed",
+  "robot_configured",
+  "movement_passed",
+  "scanner_passed",
+  "logic_passed",
+  "bridge_inspected",
+  "star_core_installed",
+  "complete",
+];
+
+const asRecord = (value: unknown): Record<string, unknown> | null =>
+  value !== null && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : null;
+
+export function normalizeStarBridgeState(candidate: unknown): StarBridgeState {
+  const value = asRecord(candidate);
+  if (!value || !starBridgeSteps.includes(value.step as StarBridgeStep)) {
+    return initialStarBridgeState();
+  }
+
+  const step = value.step as StarBridgeStep;
+  if (step !== "complete") return { ...initialStarBridgeState(), step };
+
+  const completedAt = typeof value.completedAt === "string"
+    ? value.completedAt.trim().slice(0, 50)
+    : "";
+  const achievements = Array.isArray(value.museumAchievements)
+    ? value.museumAchievements
+    : [];
+  const validCompletion = value.bridgeRepaired === true &&
+    value.dinosaurValleyUnlocked === true &&
+    achievements.includes(STAR_BRIDGE_ENGINEER) &&
+    completedAt.length > 0 &&
+    Number.isFinite(Date.parse(completedAt));
+
+  if (!validCompletion) {
+    return initialStarBridgeState();
+  }
+
+  return {
+    step: "complete",
+    bridgeRepaired: true,
+    dinosaurValleyUnlocked: true,
+    museumAchievements: [STAR_BRIDGE_ENGINEER],
+    completedAt,
+  };
+}
+
+export function normalizeGoldenAdventureProgress(candidate: unknown): GoldenAdventureProgress {
+  const value = asRecord(candidate);
+  return {
+    starBridge: normalizeStarBridgeState(value?.starBridge),
+  };
+}
 
 const transition: Record<Exclude<StarBridgeEvent["type"], "RESET_ADVENTURE" | "COMPLETE_ADVENTURE">, [StarBridgeStep, StarBridgeStep]> = {
   REVEAL_BRIDGE: ["briefing", "map_revealed"],

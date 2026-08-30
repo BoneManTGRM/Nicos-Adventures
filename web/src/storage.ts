@@ -1,4 +1,8 @@
 import professionData from "./catalogs/nico-professions.json";
+import {
+  initialGoldenAdventureProgress,
+  normalizeGoldenAdventureProgress,
+} from "./game/goldenAdventure";
 import type {
   AnimalRecord,
   ArtworkRecord,
@@ -169,6 +173,7 @@ export const createProfile = (playerName: string, language: Language = "en"): Lo
     decorations: ["Charging Dock"],
     badges: [],
     movieProjects: [],
+    adventures: initialGoldenAdventureProgress(),
     nico: defaultNicoPreferences(),
     lastBackupAt: null,
     createdAt: timestamp,
@@ -493,6 +498,7 @@ function normalizeProfile(candidate: unknown): LocalProfile | null {
     decorations: uniqueNewest(Array.isArray(value.decorations) ? value.decorations : fresh.decorations, 100, 80),
     badges: uniqueNewest(Array.isArray(value.badges) ? value.badges : [], 200, 100),
     movieProjects,
+    adventures: normalizeGoldenAdventureProgress(value.adventures),
     nico: normalizeNico(value.nico),
     lastBackupAt: nullableText(value.lastBackupAt, 50),
     createdAt: clampText(value.createdAt, 50, fresh.createdAt),

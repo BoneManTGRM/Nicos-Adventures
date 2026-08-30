@@ -1,3 +1,5 @@
+import type { GoldenAdventureProgress } from "./game/goldenAdventure";
+
 export type Language = "en" | "es-MX";
 
 export type Robot = {
@@ -195,6 +197,7 @@ export type LocalProfile = {
   decorations: string[];
   badges: string[];
   movieProjects: MovieProject[];
+  adventures: GoldenAdventureProgress;
   nico: NicoPreferences;
   lastBackupAt: string | null;
   createdAt: string;
