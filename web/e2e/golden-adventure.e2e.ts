@@ -50,6 +50,13 @@ const copy = {
     canopy: "Inspect the canopy",
     herdPath: "Watch the herd path",
     dinosaurFound: "Brachiosaurus found!",
+    fossilExpedition: "Survey the fossil layer",
+    fossilLayer: "Fern-imprint shale",
+    brushEdge: "Brush outer ridge",
+    brushVertebra: "Brush vertebra",
+    brushLeg: "Brush leg bone",
+    jurassic: "Jurassic",
+    fossilComplete: "Brachiosaurus discovered!",
   },
   "es-MX": {
     world: "Mapa del mundo",
@@ -92,6 +99,13 @@ const copy = {
     canopy: "Inspecciona las copas",
     herdPath: "Observa el sendero de la manada",
     dinosaurFound: "¡Brachiosaurus encontrado!",
+    fossilExpedition: "Examina la capa fósil",
+    fossilLayer: "Lutita con impresiones de helechos",
+    brushEdge: "Cepillar el borde",
+    brushVertebra: "Cepillar la vértebra",
+    brushLeg: "Cepillar el hueso de la pata",
+    jurassic: "Jurásico",
+    fossilComplete: "¡Brachiosaurus descubierto!",
   },
 } as const;
 
@@ -247,6 +261,21 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
     contentType: "image/png",
   });
+  const brachiosaurusCard = page.locator('.fw-dino-card[data-dinosaur-id="brachiosaurus"]');
+  await activateWithKeyboard(page, brachiosaurusCard.getByRole("button"));
+  await expect(page.getByRole("heading", { name: text.fossilExpedition, exact: true })).toBeFocused();
+  await assertRendererReady(page, expectsReducedMotion);
+  await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.fossilLayer) }));
+  await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.brushEdge) }));
+  await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.brushVertebra) }));
+  await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.brushLeg) }));
+  await activateWithKeyboard(page, page.getByRole("button", { name: text.jurassic, exact: true }));
+  await expect(page.getByRole("heading", { name: text.fossilComplete, exact: true })).toBeFocused();
+  await assertLayout(page, `${testInfo.project.name} Brachiosaurus fossil expedition`);
+  await testInfo.attach("brachiosaurus-fossil-expedition", {
+    body: await page.screenshot({ fullPage: true, animations: "disabled" }),
+    contentType: "image/png",
+  });
   const goldenAssetUrls = await page.evaluate(() => [...new Set([
     "/",
     ...performance.getEntriesByType("resource")
@@ -258,9 +287,12 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await activateWithKeyboard(page, page.locator(".fw-brand"));
   await openDestination(page, text.museum);
   const achievementEntry = page.locator(".memory-entry-grid button").filter({ hasText: text.achievement });
+  const brachiosaurusMemories = page.locator(".memory-entry-grid button").filter({ hasText: "Brachiosaurus" });
   await expect(achievementEntry).toHaveCount(1);
+  await expect(brachiosaurusMemories).toHaveCount(2);
   await page.reload();
   await expect(achievementEntry).toHaveCount(1);
+  await expect(brachiosaurusMemories).toHaveCount(2);
   await expect(page.locator("html")).toHaveAttribute("lang", language);
 
   const background = await context.newPage();
@@ -295,6 +327,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     await expect(page.locator(".settings-status")).toHaveText(text.restoreSuccess);
     await activateWithKeyboard(page, page.locator(".fw-brand"));
     await expect(page.getByText(text.restoredStatus, { exact: true })).toBeVisible();
+    await openDestination(page, text.museum);
+    await expect(brachiosaurusMemories).toHaveCount(2);
   }
 
   await assertLayout(page, `${testInfo.project.name} final state`);
