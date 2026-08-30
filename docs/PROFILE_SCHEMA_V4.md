@@ -60,6 +60,22 @@ lastBackupAt: string | null
 
 This is set only after the browser starts a local JSON backup download.
 
+### Golden Adventure progress
+
+```ts
+adventures: {
+  starBridge: {
+    step: StarBridgeStep
+    bridgeRepaired: boolean
+    dinosaurValleyUnlocked: boolean
+    museumAchievements: string[]
+    completedAt?: string
+  }
+}
+```
+
+The Star Bridge reducer is the only supported progression path. Completion, the Dinosaur Valley unlock, and the `star-bridge-engineer` achievement are applied together after the ordered sequence. Loading and importing rebuild this object from a strict whitelist; inconsistent completion data fails closed without granting the unlock or achievement.
+
 ## Normalization and limits
 
 Every imported or loaded profile is rebuilt from an explicit whitelist. Unknown fields are discarded.
@@ -89,6 +105,7 @@ Invalid section IDs return to the World Map. Invalid active IDs fall back to a v
 - The most recently stored artwork becomes `displayedArtworkId` when the field is absent.
 - Existing Nico profession and accent values initialize the wardrobe preset and accent.
 - Existing creations, discoveries, stars, badges, fossils, movies, and bilingual settings are retained within the documented limits.
+- Existing profiles receive clean initial Golden Adventure progress without changing their prior content.
 - Movie blobs or unknown imported properties are discarded.
 
 ## Backup format
