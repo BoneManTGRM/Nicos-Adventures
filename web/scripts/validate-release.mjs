@@ -226,6 +226,9 @@ if (!recovery.includes('dataset.recoverable !== "wildlife"')) throw new Error("A
 
 const sw = read("public/sw.js");
 const swRefresh = read("src/ServiceWorkerRefresh.tsx");
-if (!sw.includes("nicos-world-static-v19") || !swRefresh.includes('"v19"')) throw new Error("Nico system cache version is not v19");
+if (!sw.includes("nicos-world-static-v20") || !swRefresh.includes('"v20"')) throw new Error("Nico system cache version is not v20");
+if (!sw.includes('await cache.put("/index.html", copy)') || !sw.includes("await cache.put(event.request, copy)")) {
+  throw new Error("Service-worker cache writes must remain attached to the fetch lifecycle");
+}
 
 console.log(`Release validation passed for one AppShell, schema v4, one-body layered Nico wardrobe, ${labels.length} wildlife species, ${professions.length} profession presets, accessible Clubhouse routing, and wardrobe-aware Showtime recording.`);

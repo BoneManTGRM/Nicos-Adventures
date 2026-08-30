@@ -1,5 +1,5 @@
-const LEGACY_CACHE_MARKER = "nicos-world-static-v18";
-const CACHE = "nicos-world-static-v19";
+const LEGACY_CACHE_MARKER = "nicos-world-static-v19";
+const CACHE = "nicos-world-static-v20";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
   "/assets/nico/approved/character.part1.b64",
@@ -64,10 +64,11 @@ self.addEventListener("fetch", (event) => {
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request, { cache: "no-store" })
-        .then((response) => {
+        .then(async (response) => {
           if (response.ok) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put("/index.html", copy));
+            const cache = await caches.open(CACHE);
+            await cache.put("/index.html", copy);
           }
           return response;
         })
@@ -80,10 +81,11 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(
     fetch(event.request, { cache: "no-store" })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok && response.type === "basic") {
           const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+          const cache = await caches.open(CACHE);
+          await cache.put(event.request, copy);
         }
         return response;
       })
