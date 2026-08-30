@@ -40,6 +40,7 @@ const requiredFiles = [
   "src/catalogs/nico-professions.json",
   "src/catalogs/showtime.json",
   "scripts/validate-layered-wardrobe.mjs",
+  "scripts/generate-release-manifest.mjs",
   "../docs/PROFILE_SCHEMA_V4.md",
 ];
 for (const relative of requiredFiles) {
@@ -178,6 +179,30 @@ if (!packageJson.scripts?.validate?.includes?.("")) {
 }
 if (!packageJson.scripts?.["validate:release"]?.includes("validate-layered-wardrobe.mjs")) {
   throw new Error("Layered wardrobe validation is not part of the production build");
+}
+if (!packageJson.scripts?.build?.includes("generate-release-manifest.mjs --verify")) {
+  throw new Error("Exact release identity generation and verification are not part of the production build");
+}
+
+const releaseGenerator = read("scripts/generate-release-manifest.mjs");
+for (const field of [
+  "appVersion",
+  "profileSchema",
+  "commitSha",
+  "buildTimestamp",
+  "assetManifestHash",
+  "serviceWorkerHash",
+  "buildHash",
+]) {
+  if (!releaseGenerator.includes(field)) throw new Error(`release.json contract is missing: ${field}`);
+}
+if (!releaseGenerator.includes('execFileSync("git", ["rev-parse", "HEAD"]') ||
+    !releaseGenerator.includes("release.commitSha !== resolveCommitSha()")) {
+  throw new Error("release.json does not prove its checked-out deployment commit");
+}
+const headers = read("public/_headers");
+if (!headers.includes("/release.json\n  Cache-Control: no-store")) {
+  throw new Error("release.json must not be served through a stale HTTP cache");
 }
 
 const recovery = read("public/asset-recovery.js");
