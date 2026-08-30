@@ -11,6 +11,8 @@ const expectedCommit = execFileSync("git", ["rev-parse", "HEAD"], {
 const copy = {
   en: {
     world: "World Map",
+    roboLab: "Robo Lab",
+    configure: "Build a bridge-ready BoltBot",
     begin: "Begin the adventure",
     arms: "Arms",
     useRobot: "Use this BoltBot",
@@ -45,6 +47,8 @@ const copy = {
   },
   "es-MX": {
     world: "Mapa del mundo",
+    roboLab: "Laboratorio robot",
+    configure: "Construye un BoltBot listo para el puente",
     begin: "Comenzar la aventura",
     arms: "Brazos",
     useRobot: "Usar este BoltBot",
@@ -130,6 +134,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "World Map", exact: true })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)), { timeout: 20_000 }).toBe(true);
+  await page.waitForLoadState("networkidle");
 
   const releaseResponse = await page.request.get("/release.json");
   expect(releaseResponse.ok()).toBe(true);
@@ -145,13 +151,15 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     await expect(page.getByRole("heading", { name: text.world, exact: true })).toBeVisible();
   }
   await expect(page.locator("html")).toHaveAttribute("lang", language);
-  await expect(page.locator(".fw-destination")).toHaveCount(13);
+  await expect(page.locator(".fw-destination-grid .fw-destination")).toHaveCount(13);
+  await expect(page.locator(".nico-world-destination")).toHaveCount(1);
   const lockedValley = page.locator(".fw-destination.is-locked").filter({ hasText: text.dinosaur });
   await expect(lockedValley).toBeDisabled();
   await assertLayout(page, `${testInfo.project.name} initial map`);
 
   await activateWithKeyboard(page, page.getByRole("button", { name: text.begin, exact: true }));
-  await page.getByRole("heading", { name: text.arms, exact: true }).waitFor({ state: "hidden" }).catch(() => undefined);
+  await expect(page.getByRole("heading", { name: text.roboLab, exact: true })).toBeFocused();
+  await expect(page.getByRole("heading", { name: text.configure, exact: true })).toBeVisible();
   await page.getByLabel(text.arms, { exact: true }).selectOption("Tool Arms");
   await activateWithKeyboard(page, page.getByRole("button", { name: text.useRobot, exact: true }));
   await expect(page.getByRole("heading", { name: text.movement, exact: true })).toBeFocused();
