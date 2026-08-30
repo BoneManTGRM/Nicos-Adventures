@@ -237,5 +237,8 @@ if (!sw.includes('await cache.put("/index.html", copy)') || !sw.includes("await 
 if (!sw.includes("OFFLINE_ASSET_MANIFEST") || !sw.includes("await cache.addAll")) {
   throw new Error("The generated Golden Adventure asset manifest is not precached");
 }
+if (!sw.includes("caches.match(event.request, { ignoreSearch: true })")) {
+  throw new Error("Offline requests must fall back to the generated Golden Adventure cache");
+}
 
 console.log(`Release validation passed for one AppShell, schema v4, one-body layered Nico wardrobe, ${labels.length} wildlife species, ${professions.length} profession presets, accessible Clubhouse routing, and wardrobe-aware Showtime recording.`);

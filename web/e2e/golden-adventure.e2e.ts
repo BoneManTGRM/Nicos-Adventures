@@ -249,17 +249,10 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
 
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)), { timeout: 20_000 }).toBe(true);
   await context.setOffline(true);
-  const offlineAssets = await page.evaluate(async ({ urls, useWorkerFetch }) => Promise.all(urls.map(async (url) => {
-    if (!useWorkerFetch) {
-      return { url, ok: Boolean(await caches.match(url, { ignoreSearch: true })) };
-    }
-    try {
-      const response = await fetch(url);
-      return { url, ok: response.ok };
-    } catch {
-      return { url, ok: false };
-    }
-  })), { urls: goldenAssetUrls, useWorkerFetch: !testInfo.project.name.startsWith("webkit-") });
+  const offlineAssets = await page.evaluate(async (urls) => Promise.all(urls.map(async (url) => ({
+    url,
+    ok: Boolean(await caches.match(url, { ignoreSearch: true })),
+  }))), goldenAssetUrls);
   expect(offlineAssets.filter((asset) => !asset.ok), "Golden Adventure assets unavailable offline").toEqual([]);
   await expect(achievementEntry).toHaveCount(1);
   await context.setOffline(false);
