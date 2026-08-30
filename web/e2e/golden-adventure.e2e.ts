@@ -270,7 +270,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     await page.reload();
     await activateWithKeyboard(page, page.getByRole("button", { name: /Open destination: Parent & Settings/ }));
     await page.locator('input[type="file"]').setInputFiles(backupPath!);
-    await expect(page.getByText(text.restoreSuccess, { exact: true })).toBeVisible();
+    await expect(page.locator(".settings-status")).toHaveText(text.restoreSuccess);
     await activateWithKeyboard(page, page.locator(".fw-brand"));
     await expect(page.getByText(text.restoredStatus, { exact: true })).toBeVisible();
   }
