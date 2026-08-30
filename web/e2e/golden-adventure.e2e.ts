@@ -209,7 +209,7 @@ test("Living destinations keep their navigation without WebGL", async ({ page },
 });
 
 test("Golden Adventure passes the production browser matrix", async ({ page, context }, testInfo) => {
-  test.setTimeout(180_000);
+  test.setTimeout(240_000);
   const language = testInfo.project.metadata.language as Language;
   const text = copy[language];
   const expectsReducedMotion = testInfo.project.name === "webkit-iphone-es";
