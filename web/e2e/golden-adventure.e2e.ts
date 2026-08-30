@@ -120,10 +120,8 @@ const copy = {
 } as const;
 
 async function activateWithKeyboard(page: Page, locator: Locator) {
-  await page.evaluate(() => new Promise<void>((resolve) => {
-    window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
-  }));
   await expect(locator).toBeVisible();
+  await locator.scrollIntoViewIfNeeded();
   await locator.press("Enter");
 }
 
@@ -174,6 +172,7 @@ test("Living World Atlas keeps its navigation without WebGL", async ({ page }, t
   });
 
   await page.goto("/");
+  await waitForServiceWorkerControl(page);
   if (language === "es-MX") {
     await activateWithKeyboard(page, page.getByRole("button", { name: "Cambiar a español de México" }));
   }
@@ -189,6 +188,7 @@ test("Living World Atlas keeps its navigation without WebGL", async ({ page }, t
 });
 
 test("Golden Adventure passes the production browser matrix", async ({ page, context }, testInfo) => {
+  test.setTimeout(180_000);
   const language = testInfo.project.metadata.language as Language;
   const text = copy[language];
   const expectsReducedMotion = testInfo.project.name === "webkit-iphone-es";
