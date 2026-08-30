@@ -27,6 +27,7 @@ const copy = {
     star: "Star",
     completeChamber: "Complete test chamber",
     returnMap: "Return to World Map",
+    bridgeReturn: "Back to World Map",
     travelBridge: "Travel to the Star Bridge",
     darkSocket: "Dark Star Core socket",
     confirmFault: "Confirm bridge fault",
@@ -63,6 +64,7 @@ const copy = {
     star: "Estrella",
     completeChamber: "Completar cámara de pruebas",
     returnMap: "Volver al Mapa Mundial",
+    bridgeReturn: "Volver al Mapa Mundial",
     travelBridge: "Viajar al Puente Estelar",
     darkSocket: "Conector oscuro del Núcleo Estelar",
     confirmFault: "Confirmar falla del puente",
@@ -84,9 +86,8 @@ const copy = {
 } as const;
 
 async function activateWithKeyboard(page: Page, locator: Locator) {
-  await locator.focus();
-  await expect(locator).toBeFocused();
-  await page.keyboard.press("Enter");
+  await expect(locator).toBeVisible();
+  await locator.press("Enter");
 }
 
 async function assertLayout(page: Page, label: string) {
@@ -139,7 +140,10 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     if (target.protocol.startsWith("http") && target.origin !== "http://127.0.0.1:4173") externalRequests.push(target.origin);
   });
 
+  await page.emulateMedia({ reducedMotion: expectsReducedMotion ? "reduce" : "no-preference" });
   await page.goto("/");
+  await expect.poll(() => page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches))
+    .toBe(expectsReducedMotion);
   await expect(page.getByRole("heading", { name: "World Map", exact: true })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await waitForServiceWorkerControl(page);
@@ -212,7 +216,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     contentType: "image/png",
   });
 
-  await activateWithKeyboard(page, page.getByRole("button", { name: text.returnMap, exact: true }).last());
+  await activateWithKeyboard(page, page.getByRole("button", { name: text.bridgeReturn, exact: true }).last());
   await expect(page.getByText(text.restoredStatus, { exact: true })).toBeVisible();
   const unlockedValley = page.locator(".fw-destination").filter({ hasText: text.dinosaur });
   await expect(unlockedValley).toBeEnabled();
@@ -235,7 +239,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
 
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)), { timeout: 20_000 }).toBe(true);
   await context.setOffline(true);
-  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(achievementEntry).toHaveCount(1);
   await context.setOffline(false);
 

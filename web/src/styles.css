@@ -23,6 +23,9 @@ button, input, select { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 
+/* Keep the Museum's horizontally scrollable category rail inside its mobile grid track. */
+.memory-browser { min-width: 0; }
+
 .app-shell {
   min-height: 100vh;
   padding: 24px clamp(16px, 4vw, 52px) 116px;
