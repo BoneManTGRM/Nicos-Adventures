@@ -1,4 +1,5 @@
 export type AnimalHabitat =
+  | "Jungle"
   | "Rainforest"
   | "Ocean"
   | "Savanna"
@@ -14,6 +15,7 @@ export const ANIMAL_HABITAT_TRAILS: ReadonlyArray<{
   color: string;
   sky: string;
 }> = [
+  { id: "Jungle", icon: "🌴", color: "#4ade80", sky: "#164e63" },
   { id: "Rainforest", icon: "🌿", color: "#22c55e", sky: "#155e75" },
   { id: "Ocean", icon: "🌊", color: "#38bdf8", sky: "#075985" },
   { id: "Savanna", icon: "🌾", color: "#facc15", sky: "#9a3412" },
