@@ -11,6 +11,7 @@ const expectedCommit = execFileSync("git", ["rev-parse", "HEAD"], {
 const copy = {
   en: {
     world: "World Map",
+    atlas: "A whole world is waking up",
     roboLab: "Robo Lab",
     configure: "Build a bridge-ready BoltBot",
     begin: "Begin the adventure",
@@ -60,6 +61,7 @@ const copy = {
   },
   "es-MX": {
     world: "Mapa del mundo",
+    atlas: "Todo un mundo está despertando",
     roboLab: "Laboratorio robot",
     configure: "Construye un BoltBot listo para el puente",
     begin: "Comenzar la aventura",
@@ -191,12 +193,21 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
     await expect(page.getByRole("heading", { name: text.world, exact: true })).toBeVisible();
   }
   await expect(page.locator("html")).toHaveAttribute("lang", language);
+  await expect(page.getByRole("heading", { name: text.atlas, exact: true })).toBeVisible();
+  await assertRendererReady(page, expectsReducedMotion);
+  await expect(page.locator(".world-atlas__landmark")).toHaveCount(6);
+  const lockedAtlasValley = page.locator(".world-atlas__landmark.is-locked").filter({ hasText: text.dinosaur });
+  await expect(lockedAtlasValley).toBeDisabled();
   await expect(page.locator(".fw-destination-grid .fw-destination")).toHaveCount(14);
   await expect(page.locator(".fw-destination-grid .fw-destination:not(.nico-world-destination)")).toHaveCount(13);
   await expect(page.locator(".nico-world-destination")).toHaveCount(1);
   const lockedValley = page.locator(".fw-destination.is-locked").filter({ hasText: text.dinosaur });
   await expect(lockedValley).toBeDisabled();
   await assertLayout(page, `${testInfo.project.name} initial map`);
+  await testInfo.attach("living-world-atlas-locked", {
+    body: await page.screenshot({ fullPage: true, animations: "disabled" }),
+    contentType: "image/png",
+  });
 
   await activateWithKeyboard(page, page.getByRole("button", { name: text.begin, exact: true }));
   await expect(page.getByRole("heading", { name: text.roboLab, exact: true })).toBeFocused();
@@ -250,6 +261,9 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   });
   await activateWithKeyboard(page, page.getByRole("button", { name: text.bridgeReturn, exact: true }).last());
   await expect(page.getByText(text.restoredStatus, { exact: true })).toBeVisible();
+  const unlockedAtlasValley = page.locator(".world-atlas__landmark").filter({ hasText: text.dinosaur });
+  await expect(unlockedAtlasValley).toBeEnabled();
+  await expect(page.locator(".world-atlas")).toHaveAttribute("data-valley-status", "open");
   const unlockedValley = page.locator(".fw-destination").filter({ hasText: text.dinosaur });
   await expect(unlockedValley).toBeEnabled();
   await activateWithKeyboard(page, unlockedValley);
