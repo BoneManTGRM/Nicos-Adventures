@@ -106,6 +106,7 @@
 .world-atlas__motion-control > span { color: #fde047; }
 .world-atlas__motion-control:focus-visible { outline: 3px solid #fef08a; outline-offset: 3px; }
 .world-atlas__motion-control:disabled { cursor: default; opacity: .8; }
+.world-atlas .game-canvas[data-renderer-status="unavailable"] .world-atlas__motion-control { display: none; }
 
 .world-atlas__landmarks {
   position: relative;

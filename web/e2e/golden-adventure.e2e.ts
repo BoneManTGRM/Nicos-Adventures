@@ -181,6 +181,7 @@ test("Living World Atlas keeps its navigation without WebGL", async ({ page }, t
   await expect(atlas.locator(".game-canvas")).toHaveAttribute("data-renderer-status", "unavailable");
   await expect(atlas.getByRole("alert")).toHaveText(text.atlasUnavailable);
   await expect(atlas.locator("canvas")).toHaveCount(0);
+  await expect(atlas.locator(".world-atlas__motion-control")).toBeHidden();
   await expect(atlas.locator(".world-atlas__landmark")).toHaveCount(6);
   await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.roboLab })).toBeEnabled();
   await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.dinosaur })).toBeDisabled();
