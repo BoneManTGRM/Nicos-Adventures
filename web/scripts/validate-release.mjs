@@ -40,7 +40,12 @@ const requiredFiles = [
   "src/catalogs/nico-professions.json",
   "src/catalogs/showtime.json",
   "scripts/validate-layered-wardrobe.mjs",
+  "scripts/generate-offline-manifest.mjs",
   "scripts/generate-release-manifest.mjs",
+  "scripts/validate-performance-budget.mjs",
+  "playwright.config.ts",
+  "tsconfig.e2e.json",
+  "e2e/golden-adventure.e2e.ts",
   "../docs/PROFILE_SCHEMA_V4.md",
 ];
 for (const relative of requiredFiles) {
@@ -183,6 +188,21 @@ if (!packageJson.scripts?.["validate:release"]?.includes("validate-layered-wardr
 if (!packageJson.scripts?.build?.includes("generate-release-manifest.mjs --verify")) {
   throw new Error("Exact release identity generation and verification are not part of the production build");
 }
+if (!packageJson.scripts?.build?.includes("validate-performance-budget.mjs")) {
+  throw new Error("Golden Adventure production performance budgets are not part of the build");
+}
+if (!packageJson.scripts?.build?.includes("generate-offline-manifest.mjs")) {
+  throw new Error("The generated Golden Adventure offline asset manifest is not part of the build");
+}
+if (!packageJson.scripts?.build?.includes("vite build --emptyOutDir")) {
+  throw new Error("Production output must be cleared before release hashes and performance budgets are measured");
+}
+if (packageJson.devDependencies?.["@playwright/test"] !== "1.62.1" ||
+    packageJson.devDependencies?.["@types/node"] !== "22.20.1" ||
+    packageJson.scripts?.["test:e2e"] !== "playwright test" ||
+    packageJson.scripts?.["typecheck:e2e"] !== "tsc --noEmit -p tsconfig.e2e.json") {
+  throw new Error("The pinned Golden Adventure browser gate is missing");
+}
 
 const releaseGenerator = read("scripts/generate-release-manifest.mjs");
 for (const field of [
@@ -210,6 +230,15 @@ if (!recovery.includes('dataset.recoverable !== "wildlife"')) throw new Error("A
 
 const sw = read("public/sw.js");
 const swRefresh = read("src/ServiceWorkerRefresh.tsx");
-if (!sw.includes("nicos-world-static-v19") || !swRefresh.includes('"v19"')) throw new Error("Nico system cache version is not v19");
+if (!sw.includes("nicos-world-static-v22") || !swRefresh.includes('"v22"')) throw new Error("Nico system cache version is not v22");
+if (!sw.includes('await cache.put("/index.html", copy)') || !sw.includes("await cache.put(event.request, copy)")) {
+  throw new Error("Service-worker cache writes must remain attached to the fetch lifecycle");
+}
+if (!sw.includes("OFFLINE_ASSET_MANIFEST") || !sw.includes("await cache.addAll")) {
+  throw new Error("The generated Golden Adventure asset manifest is not precached");
+}
+if (!sw.includes("caches.match(event.request, { ignoreSearch: true, ignoreVary: true })")) {
+  throw new Error("Offline requests must fall back to the generated Golden Adventure cache");
+}
 
 console.log(`Release validation passed for one AppShell, schema v4, one-body layered Nico wardrobe, ${labels.length} wildlife species, ${professions.length} profession presets, accessible Clubhouse routing, and wardrobe-aware Showtime recording.`);

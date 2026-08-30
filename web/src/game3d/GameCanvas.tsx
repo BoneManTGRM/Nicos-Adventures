@@ -43,7 +43,13 @@ export function GameCanvas({
   const unavailable = <div className="game-canvas__fallback" role="alert">{labels.unavailable}</div>;
 
   return (
-    <section className="game-canvas" aria-label={labels.scene} data-quality-tier={quality.tier}>
+    <section
+      className="game-canvas"
+      aria-label={labels.scene}
+      data-quality-tier={quality.tier}
+      data-reduced-motion={quality.reducedMotion}
+      data-renderer-status={status}
+    >
       <CanvasErrorBoundary fallback={unavailable} onError={onRendererError}>
         <div className="game-canvas__viewport" aria-hidden="true">
           <Canvas

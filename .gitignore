@@ -16,3 +16,7 @@ venv/
 .DS_Store
 .vscode/
 .idea/
+
+# Browser quality evidence
+web/playwright-report/
+web/test-results/

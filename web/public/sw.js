@@ -1,5 +1,6 @@
-const LEGACY_CACHE_MARKER = "nicos-world-static-v18";
-const CACHE = "nicos-world-static-v19";
+const LEGACY_CACHE_MARKER = "nicos-world-static-v21";
+const CACHE = "nicos-world-static-v22";
+const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
   "/assets/nico/approved/character.part1.b64",
@@ -29,7 +30,14 @@ const SHELL = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
+  event.waitUntil((async () => {
+    const response = await fetch(OFFLINE_ASSET_MANIFEST, { cache: "no-store" });
+    if (!response.ok) throw new Error("Golden Adventure offline manifest unavailable");
+    const manifest = await response.json();
+    if (!Array.isArray(manifest.assets)) throw new Error("Golden Adventure offline manifest is invalid");
+    const cache = await caches.open(CACHE);
+    await cache.addAll([...new Set([...SHELL, OFFLINE_ASSET_MANIFEST, ...manifest.assets])]);
+  })());
   self.skipWaiting();
 });
 
@@ -64,10 +72,11 @@ self.addEventListener("fetch", (event) => {
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request, { cache: "no-store" })
-        .then((response) => {
+        .then(async (response) => {
           if (response.ok) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put("/index.html", copy));
+            const cache = await caches.open(CACHE);
+            await cache.put("/index.html", copy);
           }
           return response;
         })
@@ -80,14 +89,15 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(
     fetch(event.request, { cache: "no-store" })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok && response.type === "basic") {
           const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+          const cache = await caches.open(CACHE);
+          await cache.put(event.request, copy);
         }
         return response;
       })
-      .catch(async () => (await caches.match(event.request)) || Response.error())
+      .catch(async () => (await caches.match(event.request, { ignoreSearch: true, ignoreVary: true })) || Response.error())
   );
 });
 
