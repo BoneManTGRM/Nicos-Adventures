@@ -1,5 +1,6 @@
-const LEGACY_CACHE_MARKER = "nicos-world-static-v19";
-const CACHE = "nicos-world-static-v20";
+const LEGACY_CACHE_MARKER = "nicos-world-static-v20";
+const CACHE = "nicos-world-static-v21";
+const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
   "/assets/nico/approved/character.part1.b64",
@@ -29,7 +30,14 @@ const SHELL = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
+  event.waitUntil((async () => {
+    const response = await fetch(OFFLINE_ASSET_MANIFEST, { cache: "no-store" });
+    if (!response.ok) throw new Error("Golden Adventure offline manifest unavailable");
+    const manifest = await response.json();
+    if (!Array.isArray(manifest.assets)) throw new Error("Golden Adventure offline manifest is invalid");
+    const cache = await caches.open(CACHE);
+    await cache.addAll([...new Set([...SHELL, OFFLINE_ASSET_MANIFEST, ...manifest.assets])]);
+  })());
   self.skipWaiting();
 });
 
@@ -89,7 +97,7 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       })
-      .catch(async () => (await caches.match(event.request)) || Response.error())
+      .catch(async () => (await caches.match(event.request, { ignoreSearch: true })) || Response.error())
   );
 });
 
