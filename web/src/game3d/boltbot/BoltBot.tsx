@@ -1,6 +1,7 @@
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { useEffect, useMemo } from "react";
-import { Color, type Group, type Material, type Mesh, type Vector3Tuple } from "three";
+import { useFrame } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
+import { Color, MathUtils, type Group, type Material, type Mesh, type Vector3Tuple } from "three";
 import { SkeletonUtils } from "three/examples/jsm/Addons.js";
 import type { Robot } from "../../types";
 import { ADVENTURE_ASSETS } from "../assets";
@@ -23,12 +24,14 @@ export function BoltBot({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
   scale = 1,
+  playbackRate,
 }: {
   animation?: BoltBotAnimation;
   robot?: Pick<Robot, "color" | "secondary_color">;
   position?: Vector3Tuple;
   rotation?: Vector3Tuple;
   scale?: number;
+  playbackRate?: RefObject<number>;
 }) {
   const { scene, animations } = useGLTF(ADVENTURE_ASSETS["character.boltbot"]);
   const appearance = boltBotAppearanceFromRobot(robot);
@@ -46,6 +49,15 @@ export function BoltBot({
     return instance;
   }, [appearance.accent, appearance.primary, scene]);
   const { actions } = useAnimations(animations, clone);
+  const currentPlaybackRate = useRef(1);
+
+  useFrame((_, delta) => {
+    const action = actions[animation];
+    if (!action) return;
+    const target = MathUtils.clamp(playbackRate?.current ?? 1, 0.25, 2);
+    currentPlaybackRate.current = MathUtils.damp(currentPlaybackRate.current, target, 8, Math.min(delta, 0.05));
+    action.timeScale = currentPlaybackRate.current;
+  });
 
   useEffect(() => {
     const action = actions[animation];

@@ -1,6 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MathUtils, type Group } from "three";
+import type { Group } from "three";
 import {
   BOLT_BOT_LOGIC_ANSWER,
   BOLT_BOT_LOGIC_SEQUENCE,
@@ -8,6 +8,7 @@ import {
   BOLT_BOT_SCAN_TARGETS,
   boltBotChamberStage,
   boltBotRoutePose,
+  boltBotRouteWaypoints,
   passesLogicTest,
   passesMovementTest,
   passesScannerTest,
@@ -15,6 +16,7 @@ import {
 } from "../game/boltBot";
 import type { StarBridgeEvent, StarBridgeState } from "../game/goldenAdventure";
 import { BoltBot, GameCanvas, readQualityProfile, type BoltBotAnimation } from "../game3d";
+import { RouteMotor, routePlaybackRate } from "../game3d/simulation/routeMotor";
 import { tr, type Localized } from "../i18n/core";
 import type { Language, Robot } from "../types";
 import "./boltbot-test-chamber.css";
@@ -77,35 +79,64 @@ function NaturalBoltBot({
   commands,
   animation,
   reducedMotion,
+  reportMotion,
 }: {
   robot: Robot;
   commands: readonly MovementCommand[];
   animation: BoltBotAnimation;
   reducedMotion: boolean;
+  reportMotion: (motion: "programmed" | "moving" | "settled" | "reduced") => void;
 }) {
-  const start = boltBotRoutePose([]);
+  const start = useMemo(() => boltBotRoutePose([]), []);
   const desired = boltBotRoutePose(commands);
+  const route = useMemo(() => {
+    const programmed = boltBotRouteWaypoints(commands);
+    return programmed.length ? programmed : [start];
+  }, [commands, start]);
   const root = useRef<Group>(null);
+  const motor = useRef(new RouteMotor(start));
+  const driving = useRef(false);
+  const playbackRate = useRef(1);
+  const reportedMotion = useRef<"programmed" | "moving" | "settled" | "reduced" | null>(null);
+  const [motionAnimation, setMotionAnimation] = useState<BoltBotAnimation>("Idle");
+
+  const report = (motion: "programmed" | "moving" | "settled" | "reduced") => {
+    if (reportedMotion.current === motion) return;
+    reportedMotion.current = motion;
+    reportMotion(motion);
+  };
+
+  useEffect(() => {
+    motor.current.setRoute(route);
+    driving.current = false;
+    setMotionAnimation("Idle");
+    report(reducedMotion ? "reduced" : "programmed");
+  }, [reducedMotion, route]);
 
   useFrame((_, delta) => {
     if (!root.current) return;
     if (reducedMotion) {
       root.current.position.set(desired.x, 0, desired.z);
       root.current.rotation.y = desired.heading;
+      playbackRate.current = 1;
+      report("reduced");
       return;
     }
-    root.current.position.x = MathUtils.damp(root.current.position.x, desired.x, 5.2, delta);
-    root.current.position.z = MathUtils.damp(root.current.position.z, desired.z, 5.2, delta);
-    const turn = Math.atan2(
-      Math.sin(desired.heading - root.current.rotation.y),
-      Math.cos(desired.heading - root.current.rotation.y),
-    );
-    root.current.rotation.y += turn * (1 - Math.exp(-7 * Math.min(delta, .05)));
+    const snapshot = motor.current.step(delta);
+    playbackRate.current = routePlaybackRate(snapshot, motor.current.config);
+    root.current.position.set(snapshot.x, 0, snapshot.z);
+    root.current.rotation.y = snapshot.heading;
+    const isDriving = snapshot.speed > .02 || Math.abs(snapshot.angularSpeed) > .06;
+    if (driving.current !== isDriving) {
+      driving.current = isDriving;
+      setMotionAnimation(isDriving ? "Drive" : "Idle");
+    }
+    report(snapshot.settled ? "settled" : isDriving ? "moving" : "programmed");
   });
 
   return (
     <group ref={root} position={[start.x, 0, start.z]} rotation={[0, start.heading, 0]}>
-      <BoltBot robot={robot} animation={reducedMotion ? "Idle" : animation} scale={.82} />
+      <BoltBot robot={robot} animation={reducedMotion ? "Idle" : animation === "Idle" ? motionAnimation : animation} playbackRate={playbackRate} scale={.82} />
     </group>
   );
 }
@@ -116,12 +147,14 @@ function ChamberScene({
   animation,
   selectedScan,
   reducedMotion,
+  reportMotion,
 }: {
   robot: Robot;
   commands: readonly MovementCommand[];
   animation: BoltBotAnimation;
   selectedScan: string | null;
   reducedMotion: boolean;
+  reportMotion: (motion: "programmed" | "moving" | "settled" | "reduced") => void;
 }) {
   return (
     <>
@@ -148,7 +181,7 @@ function ChamberScene({
           />
         </mesh>
       ))}
-      <NaturalBoltBot robot={robot} commands={commands} animation={animation} reducedMotion={reducedMotion} />
+      <NaturalBoltBot robot={robot} commands={commands} animation={animation} reducedMotion={reducedMotion} reportMotion={reportMotion} />
     </>
   );
 }
@@ -171,6 +204,7 @@ export function BoltBotTestChamber({
   const [selectedScan, setSelectedScan] = useState<string | null>(null);
   const [logicAnswer, setLogicAnswer] = useState<string | null>(null);
   const [animation, setAnimation] = useState<BoltBotAnimation>("Idle");
+  const [routeMotion, setRouteMotion] = useState<"programmed" | "moving" | "settled" | "reduced">("settled");
   const timer = useRef<number | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const quality = useMemo(() => readQualityProfile(), []);
@@ -220,11 +254,10 @@ export function BoltBotTestChamber({
   const selectMovement = (command: MovementCommand) => {
     if (routeComplete) return;
     setCommands((current) => [...current, command]);
-    play("Drive", 720);
   };
 
   return (
-    <section className="boltbot-mission" aria-labelledby="boltbot-mission-title">
+    <section className="boltbot-mission" data-route-motion={routeMotion} aria-labelledby="boltbot-mission-title">
       <header>
         <small>{tr(copy.eyebrow, language)}</small>
         <h2 id="boltbot-mission-title" ref={heading} tabIndex={-1}>{tr(title, language)}</h2>
@@ -232,7 +265,7 @@ export function BoltBotTestChamber({
       </header>
       <div className="boltbot-chamber-layout">
         <GameCanvas labels={labels} controls={<span>{tr(title, language)}</span>} quality={quality}>
-          <ChamberScene robot={robot} commands={visualCommands} animation={animation} selectedScan={selectedScan} reducedMotion={quality.reducedMotion} />
+          <ChamberScene robot={robot} commands={visualCommands} animation={animation} selectedScan={selectedScan} reducedMotion={quality.reducedMotion} reportMotion={setRouteMotion} />
         </GameCanvas>
         <div className="boltbot-test-controls">
           {stage === "movement" ? (

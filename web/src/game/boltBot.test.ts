@@ -7,6 +7,7 @@ import {
   BOLT_BOT_SCAN_TARGETS,
   boltBotChamberStage,
   boltBotRoutePose,
+  boltBotRouteWaypoints,
   evaluateBoltBotReadiness,
   passesLogicTest,
   passesMovementTest,
@@ -35,6 +36,13 @@ describe("BoltBot golden-adventure contract", () => {
     expect(pose.x).toBeCloseTo(0.05);
     expect(pose.z).toBeCloseTo(0.1);
     expect(pose.heading).toBeCloseTo(Math.PI / 2);
+    const waypoints = boltBotRouteWaypoints(BOLT_BOT_MOVEMENT_SEQUENCE);
+    expect(waypoints.map(({ command }) => command)).toEqual(["forward", "right", "forward"]);
+    expect(waypoints[0]).toMatchObject({ x: -0.8, heading: 0 });
+    expect(waypoints[0].z).toBeCloseTo(0.1);
+    expect(waypoints[1].heading).toBeCloseTo(Math.PI / 2);
+    expect(waypoints[2].x).toBeCloseTo(0.05);
+    expect(waypoints[2].z).toBeCloseTo(0.1);
   });
 
   it("derives the chamber UI only from persisted adventure steps", () => {
