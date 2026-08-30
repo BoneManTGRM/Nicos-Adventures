@@ -256,9 +256,10 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await activateWithKeyboard(page, page.getByRole("button", { name: text.begin, exact: true }));
   await expect(page.getByRole("heading", { name: text.roboLab, exact: true })).toBeFocused();
   await expect(page.getByRole("heading", { name: text.configure, exact: true })).toBeVisible();
-  const repairArms = page.locator("select").filter({ has: page.locator('option[value="Tool Arms"]') });
+  const repairArms = page.locator('.robot-assembly__choice[data-option="Tool Arms"]');
   await expect(repairArms).toHaveCount(1);
-  await repairArms.selectOption("Tool Arms");
+  await repairArms.click();
+  await expect(repairArms).toHaveAttribute("aria-pressed", "true");
   await activateWithKeyboard(page, page.getByRole("button", { name: text.useRobot, exact: true }));
   await expect(page.getByRole("heading", { name: text.movement, exact: true })).toBeFocused();
   await assertRendererReady(page, expectsReducedMotion);

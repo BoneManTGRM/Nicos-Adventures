@@ -28,9 +28,14 @@ const accentColors: Record<string, string> = {
   "Ice Blue": "#bae6fd",
 };
 
+export function boltBotColorSwatch(value: string, channel: "primary" | "accent") {
+  const palette = channel === "primary" ? primaryColors : accentColors;
+  return palette[value] ?? (channel === "primary" ? primaryColors["Electric Blue"] : accentColors["Sunny Yellow"]);
+}
+
 export function boltBotAppearanceFromRobot(robot?: Pick<Robot, "color" | "secondary_color">) {
   return {
-    primary: primaryColors[robot?.color ?? ""] ?? primaryColors["Electric Blue"],
-    accent: accentColors[robot?.secondary_color ?? ""] ?? accentColors["Sunny Yellow"],
+    primary: boltBotColorSwatch(robot?.color ?? "", "primary"),
+    accent: boltBotColorSwatch(robot?.secondary_color ?? "", "accent"),
   };
 }

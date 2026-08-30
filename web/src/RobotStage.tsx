@@ -1,4 +1,5 @@
 import type { Robot } from "./types";
+import { boltBotAppearanceFromRobot } from "./game3d/boltbot/appearance";
 
 type Pose = "idle" | "launch" | "celebrate" | "wave";
 
@@ -17,8 +18,7 @@ export function RobotStage({
   levelLabel = "LV",
   ariaLabel,
 }: Props) {
-  const primary = robot.color === "Electric Blue" ? "#38bdf8" : "#8b5cf6";
-  const secondary = robot.secondary_color === "Sunny Yellow" ? "#facc15" : "#fb7185";
+  const { primary, accent: secondary } = boltBotAppearanceFromRobot(robot);
   const poseClass = `mecha mecha--${pose}`;
 
   return (

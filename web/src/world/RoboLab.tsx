@@ -11,7 +11,10 @@ import { ROBOT_OPTIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { makeId } from "./common";
 import { BoltBotConfigurationGate } from "./BoltBotConfigurationGate";
+import { RobotAssemblyBay } from "./RobotAssemblyBay";
+import type { RobotAssemblyField } from "./robotAssemblyBay";
 import { completeOnce, hasCompleted, robotJobMission } from "./progression";
+import "./robo-lab.css";
 
 const BoltBotTestChamber = lazy(() => import("./BoltBotTestChamber").then((module) => ({
   default: module.BoltBotTestChamber,
@@ -36,6 +39,7 @@ export function RoboLab({
     voice: profile.robot.voice || "Classic Beep",
   });
   const [pose, setPose] = useState<RobotPose>("idle");
+  const [activeField, setActiveField] = useState<RobotAssemblyField>("arms");
 
   useEffect(() => {
     setDraft({
@@ -157,105 +161,123 @@ export function RoboLab({
           />
         </Suspense>
       ) : null}
-      <div className="fw-builder-layout">
-      <section aria-label={tr(ui.robotPreview, language)}>
-        <RobotStage
-          robot={draft}
-          pose={pose as never}
-          statusLabel={optionLabel(selectedJob, language)}
-          levelLabel={tr(ui.levelShort, language)}
-        />
-        <div className="robot-action-grid" role="group" aria-label={language === "es-MX" ? "Movimientos del robot" : "Robot movements"}>
-          {ROBOT_ACTIONS.map((action) => (
-            <button type="button" key={action.pose} onClick={() => play(action.pose)}>
-              <span aria-hidden="true">{action.icon}</span> {language === "es-MX" ? action.es : action.en}
-            </button>
-          ))}
-        </div>
-      </section>
+      <div className="fw-builder-layout robo-lab-workbench">
+        <section className="robo-lab-stage" aria-label={tr(ui.robotPreview, language)}>
+          <RobotStage
+            robot={draft}
+            pose={pose as never}
+            statusLabel={optionLabel(selectedJob, language)}
+            levelLabel={tr(ui.levelShort, language)}
+          />
+          <details className="robo-lab-disclosure robo-lab-motion">
+            <summary>{language === "es-MX" ? "Probar movimientos" : "Test robot movement"}</summary>
+            <div className="robot-action-grid" role="group" aria-label={language === "es-MX" ? "Movimientos del robot" : "Robot movements"}>
+              {ROBOT_ACTIONS.map((action) => (
+                <button type="button" key={action.pose} onClick={() => play(action.pose)}>
+                  <span aria-hidden="true">{action.icon}</span> {language === "es-MX" ? action.es : action.en}
+                </button>
+              ))}
+            </div>
+          </details>
+        </section>
 
-      <section className="fw-panel" aria-label={tr(ui.formControls, language)}>
-        <label>
-          {tr(ui.robotName, language)}
-          <input value={draft.name} maxLength={32} onChange={(event) => set("name", event.target.value)} />
-        </label>
-        <fieldset className="fw-fieldset-reset">
-          <legend>{tr(ui.formControls, language)}</legend>
-          <div className="fw-form-grid">
-            {Object.entries(ROBOT_OPTIONS).map(([key, values]) => (
-              <label key={key}>
-                {fieldLabel(key, language)}
-                <select
-                  value={String(draft[key as keyof Robot] || values[0])}
-                  onChange={(event) => set(key as keyof Robot, event.target.value)}
-                >
-                  {values.map((value) => <option value={value} key={value}>{optionLabel(value, language)}</option>)}
-                </select>
-              </label>
-            ))}
+        <section className="robo-lab-controls" aria-label={tr(ui.formControls, language)}>
+          <div className="robo-lab-identity">
+            <label>
+              {tr(ui.robotName, language)}
+              <input value={draft.name} maxLength={32} onChange={(event) => set("name", event.target.value)} />
+            </label>
+            <div className="fw-action-row">
+              <button type="button" onClick={randomize}>🎲 {tr(ui.randomRobot, language)}</button>
+              <button type="button" className="fw-primary" onClick={save}>💾 {tr(ui.saveRobot, language)}</button>
+            </div>
           </div>
-        </fieldset>
 
-        <fieldset className="monster-form-section">
-          <legend><h2>{tr(ui.robotJobs, language)}</h2></legend>
-          <p className="fw-progress-summary">
-            {language === "es-MX" ? "Certificaciones" : "Certifications"}: {completedJobs}/{ROBOT_JOBS.length}
-          </p>
-          <div className="job-grid">
-            {ROBOT_JOBS.map((job) => {
-              const certified = hasCompleted(profile, robotJobMission(draft.id, job));
-              return (
+          <RobotAssemblyBay
+            robot={draft}
+            language={language}
+            activeField={activeField}
+            selectField={setActiveField}
+            install={(field, option) => set(field, option)}
+          />
+
+          <details className="robo-lab-disclosure robo-lab-precise-controls">
+            <summary>{language === "es-MX" ? "Controles de precisión" : "Precision controls"}</summary>
+            <fieldset className="fw-fieldset-reset">
+              <legend>{tr(ui.formControls, language)}</legend>
+              <div className="fw-form-grid">
+                {Object.entries(ROBOT_OPTIONS).map(([key, values]) => (
+                  <label key={key}>
+                    {fieldLabel(key, language)}
+                    <select
+                      value={String(draft[key as keyof Robot] || values[0])}
+                      onChange={(event) => set(key as keyof Robot, event.target.value)}
+                    >
+                      {values.map((value) => <option value={value} key={value}>{optionLabel(value, language)}</option>)}
+                    </select>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </details>
+
+          <details className="robo-lab-disclosure robo-lab-certifications">
+            <summary>
+              {tr(ui.robotJobs, language)} · {language === "es-MX" ? "Certificaciones" : "Certifications"} {completedJobs}/{ROBOT_JOBS.length}
+            </summary>
+            <fieldset className="monster-form-section">
+              <legend><h2>{tr(ui.robotJobs, language)}</h2></legend>
+              <div className="job-grid">
+                {ROBOT_JOBS.map((job) => {
+                  const certified = hasCompleted(profile, robotJobMission(draft.id, job));
+                  return (
+                    <button
+                      type="button"
+                      aria-pressed={selectedJob === job}
+                      className={`${selectedJob === job ? "active" : ""} ${certified ? "completed" : ""}`.trim()}
+                      key={job}
+                      onClick={() => set("job", job)}
+                    >
+                      {certified ? "✅ " : ""}{optionLabel(job, language)}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="job-readout" role="status">
+                <b>{tr(ui.currentJob, language)}:</b> {optionLabel(selectedJob, language)}<br />
+                <small>{selectedJobComplete
+                  ? (language === "es-MX" ? "Este robot ya obtuvo esta certificación." : "This robot already earned this certification.")
+                  : tr(ui.jobHelp, language)}</small>
+              </div>
+              <button type="button" onClick={doJob} disabled={selectedJobComplete}>
+                {selectedJobComplete ? "✅" : "⚙️"} {selectedJobComplete
+                  ? (language === "es-MX" ? "Certificación completada" : "Certification complete")
+                  : tr(ui.doJob, language)}
+              </button>
+            </fieldset>
+          </details>
+
+          <section className="robo-lab-saved" aria-labelledby="saved-robots-heading">
+            <h2 id="saved-robots-heading" className="fw-subheading">{tr(ui.savedRobots, language)}</h2>
+            <div className="fw-collection-row">
+              {profile.robots.map((robot) => (
                 <button
                   type="button"
-                  aria-pressed={selectedJob === job}
-                  className={`${selectedJob === job ? "active" : ""} ${certified ? "completed" : ""}`.trim()}
-                  key={job}
-                  onClick={() => set("job", job)}
+                  key={robot.id}
+                  aria-pressed={profile.activeRobotId === robot.id}
+                  className={profile.activeRobotId === robot.id ? "active" : ""}
+                  onClick={() => {
+                    setDraft({ ...robot });
+                    update({ ...profile, robot, activeRobotId: robot.id });
+                    announce(`${robot.name}: ${tr(ui.selected, language)}`);
+                  }}
                 >
-                  {certified ? "✅ " : ""}{optionLabel(job, language)}
+                  🤖 {robot.name}
                 </button>
-              );
-            })}
-          </div>
-          <div className="job-readout" role="status">
-            <b>{tr(ui.currentJob, language)}:</b> {optionLabel(selectedJob, language)}<br />
-            <small>{selectedJobComplete
-              ? (language === "es-MX" ? "Este robot ya obtuvo esta certificación." : "This robot already earned this certification.")
-              : tr(ui.jobHelp, language)}</small>
-          </div>
-          <button type="button" onClick={doJob} disabled={selectedJobComplete}>
-            {selectedJobComplete ? "✅" : "⚙️"} {selectedJobComplete
-              ? (language === "es-MX" ? "Certificación completada" : "Certification complete")
-              : tr(ui.doJob, language)}
-          </button>
-        </fieldset>
-
-        <div className="fw-action-row">
-          <button type="button" onClick={randomize}>🎲 {tr(ui.randomRobot, language)}</button>
-          <button type="button" className="fw-primary" onClick={save}>💾 {tr(ui.saveRobot, language)}</button>
-        </div>
-
-        <section aria-labelledby="saved-robots-heading">
-          <h2 id="saved-robots-heading" className="fw-subheading">{tr(ui.savedRobots, language)}</h2>
-          <div className="fw-collection-row">
-            {profile.robots.map((robot) => (
-              <button
-                type="button"
-                key={robot.id}
-                aria-pressed={profile.activeRobotId === robot.id}
-                className={profile.activeRobotId === robot.id ? "active" : ""}
-                onClick={() => {
-                  setDraft({ ...robot });
-                  update({ ...profile, robot, activeRobotId: robot.id });
-                  announce(`${robot.name}: ${tr(ui.selected, language)}`);
-                }}
-              >
-                🤖 {robot.name}
-              </button>
-            ))}
-          </div>
+              ))}
+            </div>
+          </section>
         </section>
-      </section>
       </div>
     </>
   );
