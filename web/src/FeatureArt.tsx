@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import type { AnimalRecord, MonsterRecord } from "./types";
+import { optionLabel } from "./i18n/display";
+import type { AnimalRecord, Language, MonsterRecord } from "./types";
 import { monsterColorSwatch } from "./world/monsterCreatureStudio";
 
 export type RobotPose = "idle" | "wave" | "launch" | "celebrate" | "dance" | "spin" | "blink" | "scan" | "charge" | "hover" | "stomp" | "salute" | "repair" | "shield" | "lights";
@@ -67,7 +68,7 @@ const rawAnimals: Array<[string,string,string,string,string,string,string,string
 
 export const ANIMAL_LIBRARY: AnimalRecord[] = rawAnimals.map(([id,name,habitat,emoji,fact,group,region,adaptation]) => ({ id,name,habitat,emoji,fact,group,region,adaptation,discovered:false,favorite:false,imageTitle:name }));
 
-export function MonsterStage({ monster, action = "idle" }: { monster: MonsterRecord; action?: string }) {
+export function MonsterStage({ monster, action = "idle", language = "en" }: { monster: MonsterRecord; action?: string; language?: Language }) {
   const color = monsterColorSwatch(monster.color);
   const family = monster.body.toLowerCase().replace(/\s+/g,"-");
   const eyes = monster.eyes.includes("Three") ? 3 : monster.eyes.includes("One") || monster.eyes.includes("Cyclops") ? 1 : monster.eyes.includes("Four") ? 4 : 2;
@@ -75,7 +76,7 @@ export function MonsterStage({ monster, action = "idle" }: { monster: MonsterRec
   const hasHorns = !monster.horns.toLowerCase().includes("no ");
   return <article className={`monster-stage monster-stage--${action}`} style={{ "--monster-main": color } as CSSProperties}>
     <div className="monster-atmosphere"><i/><i/><i/><i/><i/></div>
-    <svg className={`monster-v2 monster-family--${family}`} viewBox="0 0 520 520" role="img" aria-label={`${monster.name}, ${monster.body} monster`}>
+    <svg className={`monster-v2 monster-family--${family}`} viewBox="0 0 520 520" role="img" aria-label={`${monster.name}, ${optionLabel(monster.body, language)} ${language === "es-MX" ? "monstruo" : "monster"}`}>
       <defs>
         <radialGradient id={`skin-${monster.id}`} cx="35%" cy="25%"><stop offset="0" stopColor="#fff" stopOpacity=".7"/><stop offset=".22" stopColor={color}/><stop offset="1" stopColor="#07142d"/></radialGradient>
         <linearGradient id={`belly-${monster.id}`} x1="0" y1="0" x2="1" y2="1"><stop stopColor={color}/><stop offset="1" stopColor="#020617"/></linearGradient>
@@ -94,7 +95,7 @@ export function MonsterStage({ monster, action = "idle" }: { monster: MonsterRec
       <g className="monster-face">{Array.from({length:eyes}).map((_,index) => { const positions = eyes===1?[260]:eyes===2?[215,305]:eyes===3?[185,260,335]:[185,235,285,335]; return <g key={index}><circle cx={positions[index]} cy={230} r="29" fill="#f8fafc" stroke="#020617" strokeWidth="9"/><circle cx={positions[index]} cy={234} r="12" fill="#07142d"/><circle cx={positions[index]-4} cy={229} r="4" fill="#67e8f9"/></g>;})}<path d={monster.mouth?.includes("Fang") ? "M205 300Q260 348 315 300L292 350 260 322 228 350Z" : monster.mouth?.includes("Grin") ? "M197 302Q260 366 323 302" : "M215 310Q260 345 305 310"} fill={monster.mouth?.includes("Fang") ? "#f8fafc" : "none"} stroke="#f8fafc" strokeWidth="10" strokeLinecap="round"/></g>
       <circle cx="260" cy="374" r="30" fill="#22d3ee" stroke="#fff" strokeWidth="10" filter={`url(#monster-glow-${monster.id})`}/>
     </svg>
-    <div className="monster-nameplate"><strong>{monster.name}</strong><span>{monster.body} · {monster.pattern} · {monster.power}</span></div>
+    <div className="monster-nameplate"><strong>{monster.name}</strong><span>{optionLabel(monster.body, language)} · {optionLabel(monster.pattern, language)} · {optionLabel(monster.power, language)}</span></div>
   </article>;
 }
 

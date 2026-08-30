@@ -60,7 +60,7 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
   return (
     <div className="fw-builder-layout">
       <section className="monster-lab-preview" aria-label={language === "es-MX" ? "Vista previa del monstruo" : "Monster preview"}>
-        <MonsterStage monster={draft} action={motion.action} />
+        <MonsterStage monster={draft} action={motion.action} language={language} />
         <div className="monster-action-row" role="group" aria-label={language === "es-MX" ? "Movimientos del monstruo" : "Monster movements"}>
           {motions.map((action) => (
             <button type="button" key={action} onClick={() => motion.play(action)}>{optionLabel(action[0].toUpperCase() + action.slice(1), language)}</button>
@@ -165,7 +165,7 @@ export function MonsterHabitats({ profile, update, announce }: { profile: LocalP
     <div className="fw-card-grid">
       {profile.monsters.map((monster) => (
         <article className="fw-creature-card monster-habitat-card" key={monster.id}>
-          <MonsterStage monster={monster} />
+          <MonsterStage monster={monster} language={language} />
           <h3>{monster.name}</h3>
           <p>{optionLabel(monster.habitat, language)} · {optionLabel(monster.personality, language)}</p>
           <label>
