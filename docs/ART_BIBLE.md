@@ -40,6 +40,10 @@ Characters must look present in the environment, not pasted over it.
 
 Runtime 3D assets ship as GLB/glTF 2.0. Source DCC formats are not runtime contracts. Asset metadata should include identity, version, hash, dimensions, scale, pivots, anchors, skeleton/animations where applicable, texture data, provenance, and license.
 
+The canonical Nico foundation lives at `web/public/assets/3d/nico/canonical-nico.glb`. Its generated metadata is the machine-readable contract for scale, bounds, anchors, articulated nodes, animation clips, provenance, and privacy. The repository-owned generator must produce the same hash from the same source revision.
+
+`canonical-foundation` is an implementation status, not a claim that visual acceptance is complete. Nico becomes production-approved only after representative desktop and iPhone/WebKit scene reviews confirm the front, three-quarter, and side silhouettes, materials, lighting response, motion, and environment integration. Refinement may change geometry and materials without breaking the named node and anchor contract.
+
 ## Performance
 
 Visual fidelity may scale by device quality tier, but character identity, gameplay readability, and interaction semantics must not change.

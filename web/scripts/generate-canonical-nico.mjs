@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   AnimationClip,
+  Box3,
   BoxGeometry,
   CapsuleGeometry,
   ConeGeometry,
@@ -12,12 +13,13 @@ import {
   Group,
   Mesh,
   MeshStandardMaterial,
-  NumberKeyframeTrack,
   Quaternion,
   QuaternionKeyframeTrack,
   Scene,
   SphereGeometry,
   TorusGeometry,
+  Vector3,
+  VectorKeyframeTrack,
 } from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 
@@ -100,6 +102,8 @@ hips.position.set(0, 1.02, 0);
 nico.add(hips);
 addMesh(hips, "Shorts", new CapsuleGeometry(0.34, 0.18, 4, 14), khaki, [0, 0.08, 0], [1.08, 0.9, 0.86]);
 addMesh(hips, "Belt", new TorusGeometry(0.33, 0.035, 8, 24), greenDark, [0, 0.18, 0], [1, 0.78, 1], [Math.PI / 2, 0, 0]);
+addMesh(hips, "LeftPocket", new BoxGeometry(0.13, 0.12, 0.025), khaki, [-0.2, 0.02, 0.31], [1, 1, 1], [0, 0, -0.08]);
+addMesh(hips, "RightPocket", new BoxGeometry(0.13, 0.12, 0.025), khaki, [0.2, 0.02, 0.31], [1, 1, 1], [0, 0, 0.08]);
 
 const head = new Group();
 head.name = "Head";
@@ -120,6 +124,16 @@ for (const [index, x, angle] of [
   addMesh(head, `HairTuft${index}`, new ConeGeometry(0.1, 0.28, 8), hair, [x, 0.5 - Math.abs(x) * 0.2, 0.02], [1, 1, 0.75], [0.15, 0, angle]);
 }
 
+for (const [index, x, y, angle] of [
+  [0, -0.3, 0.3, -0.28],
+  [1, -0.16, 0.34, -0.14],
+  [2, 0, 0.35, 0],
+  [3, 0.16, 0.34, 0.14],
+  [4, 0.3, 0.3, 0.28],
+]) {
+  addMesh(head, `HairFringe${index}`, new SphereGeometry(0.12, 14, 10), hair, [x, y, 0.44], [1.15, 0.48, 0.38], [0, 0, angle]);
+}
+
 for (const [side, x] of [["Left", -0.19], ["Right", 0.19]]) {
   addMesh(head, `${side}Eye`, new SphereGeometry(0.105, 18, 12), eye, [x, 0.04, 0.48], [1, 1.1, 0.48]);
   addMesh(head, `${side}EyeHighlight`, new SphereGeometry(0.022, 10, 8), eyeLight, [x - 0.025, 0.085, 0.535]);
@@ -136,8 +150,13 @@ const createArm = (side, sign) => {
   arm.position.set(sign * 0.42, 1.75, 0);
   nico.add(arm);
   addMesh(arm, `${side}Sleeve`, new CapsuleGeometry(0.12, 0.16, 4, 12), green, [0, -0.11, 0]);
-  addMesh(arm, `${side}Forearm`, new CapsuleGeometry(0.09, 0.34, 4, 12), skin, [0, -0.42, 0.015]);
-  addMesh(arm, `${side}Hand`, new SphereGeometry(0.105, 14, 10), skin, [0, -0.69, 0.025], [0.9, 1.1, 0.85]);
+  addMesh(arm, `${side}UpperArm`, new CapsuleGeometry(0.085, 0.18, 4, 12), skin, [0, -0.31, 0.01]);
+  const elbow = new Group();
+  elbow.name = `Elbow${side}`;
+  elbow.position.set(0, -0.44, 0.01);
+  arm.add(elbow);
+  addMesh(elbow, `${side}Forearm`, new CapsuleGeometry(0.082, 0.24, 4, 12), skin, [0, -0.16, 0.025]);
+  addMesh(elbow, `${side}Hand`, new SphereGeometry(0.105, 14, 10), skin, [0, -0.36, 0.045], [0.9, 1.1, 0.85]);
   arm.rotation.z = sign * -0.08;
   return arm;
 };
@@ -148,10 +167,20 @@ const createLeg = (side, sign) => {
   leg.position.set(sign * 0.2, 1.03, 0);
   nico.add(leg);
   addMesh(leg, `${side}ShortLeg`, new CapsuleGeometry(0.15, 0.13, 4, 12), khaki, [0, -0.14, 0]);
-  addMesh(leg, `${side}LowerLeg`, new CapsuleGeometry(0.105, 0.4, 4, 12), skin, [0, -0.49, 0]);
-  addMesh(leg, `${side}Sock`, new CylinderGeometry(0.11, 0.12, 0.12, 12), cream, [0, -0.75, 0]);
-  addMesh(leg, `${side}Shoe`, new CapsuleGeometry(0.13, 0.16, 4, 12), green, [0, -0.87, 0.1], [1.05, 0.72, 1.45], [Math.PI / 2, 0, 0]);
-  addMesh(leg, `${side}Sole`, new BoxGeometry(0.25, 0.045, 0.36), sole, [0, -0.94, 0.12]);
+  addMesh(leg, `${side}UpperLeg`, new CapsuleGeometry(0.1, 0.22, 4, 12), skin, [0, -0.36, 0]);
+  const knee = new Group();
+  knee.name = `Knee${side}`;
+  knee.position.set(0, -0.5, 0);
+  leg.add(knee);
+  addMesh(knee, `${side}LowerLeg`, new CapsuleGeometry(0.095, 0.24, 4, 12), skin, [0, -0.18, 0]);
+  addMesh(knee, `${side}Sock`, new CylinderGeometry(0.105, 0.115, 0.12, 12), cream, [0, -0.39, 0]);
+  const foot = new Group();
+  foot.name = `Foot${side}`;
+  foot.position.set(0, -0.34, 0.05);
+  knee.add(foot);
+  addMesh(foot, `${side}Shoe`, new CapsuleGeometry(0.13, 0.16, 4, 12), green, [0, 0, 0.08], [1.05, 0.72, 1.45], [Math.PI / 2, 0, 0]);
+  addMesh(foot, `${side}ToeCap`, new SphereGeometry(0.105, 12, 8), sole, [0, 0.015, 0.22], [1.08, 0.52, 0.72]);
+  addMesh(foot, `${side}Sole`, new BoxGeometry(0.25, 0.045, 0.36), sole, [0, -0.07, 0.1]);
   return leg;
 };
 
@@ -162,7 +191,7 @@ createLeg("Right", 1);
 
 addMesh(nico, "Neck", new CylinderGeometry(0.13, 0.15, 0.18, 14), skin, [0, 1.92, 0]);
 
-const scalar = (target, times, values) => new NumberKeyframeTrack(target, times, values);
+const vector = (target, times, values) => new VectorKeyframeTrack(target, times, values.flat());
 const rotation = (target, axis, times, values, base = [0, 0, 0]) => {
   const samples = values.flatMap((value) => {
     const euler = new Euler(...base);
@@ -174,31 +203,55 @@ const rotation = (target, axis, times, values, base = [0, 0, 0]) => {
 };
 const animations = [
   new AnimationClip("Idle", 3.2, [
-    scalar("Torso.scale[y]", [0, 1.6, 3.2], [1, 1.025, 1]),
+    vector("Torso.scale", [0, 1.6, 3.2], [[1, 1, 1], [1, 1.025, 1], [1, 1, 1]]),
     rotation("Head", "y", [0, 0.8, 1.6, 2.4, 3.2], [0, 0.035, 0, -0.035, 0]),
-    scalar("NicoRoot.position[y]", [0, 1.6, 3.2], [0, 0.012, 0]),
+    rotation("Hips", "z", [0, 0.8, 1.6, 2.4, 3.2], [0, -0.018, 0, 0.018, 0]),
+    rotation("ArmLeft", "z", [0, 1.6, 3.2], [0.08, 0.095, 0.08]),
+    rotation("ArmRight", "z", [0, 1.6, 3.2], [-0.08, -0.095, -0.08]),
+    vector("NicoRoot.position", [0, 1.6, 3.2], [[0, 0, 0], [0, 0.012, 0], [0, 0, 0]]),
   ]),
   new AnimationClip("Walk", 1.2, [
     rotation("ArmLeft", "x", [0, 0.3, 0.6, 0.9, 1.2], [0.38, 0, -0.38, 0, 0.38], [0, 0, 0.08]),
     rotation("ArmRight", "x", [0, 0.3, 0.6, 0.9, 1.2], [-0.38, 0, 0.38, 0, -0.38], [0, 0, -0.08]),
+    rotation("ElbowLeft", "x", [0, 0.3, 0.6, 0.9, 1.2], [0.2, 0.12, 0.08, 0.14, 0.2]),
+    rotation("ElbowRight", "x", [0, 0.3, 0.6, 0.9, 1.2], [0.08, 0.14, 0.2, 0.12, 0.08]),
     rotation("LegLeft", "x", [0, 0.3, 0.6, 0.9, 1.2], [-0.42, 0, 0.42, 0, -0.42]),
     rotation("LegRight", "x", [0, 0.3, 0.6, 0.9, 1.2], [0.42, 0, -0.42, 0, 0.42]),
-    scalar("NicoRoot.position[y]", [0, 0.3, 0.6, 0.9, 1.2], [0, 0.025, 0, 0.025, 0]),
+    rotation("KneeLeft", "x", [0, 0.3, 0.6, 0.9, 1.2], [0.32, 0.16, 0.08, 0.18, 0.32]),
+    rotation("KneeRight", "x", [0, 0.3, 0.6, 0.9, 1.2], [0.08, 0.18, 0.32, 0.16, 0.08]),
+    rotation("FootLeft", "x", [0, 0.3, 0.6, 0.9, 1.2], [-0.08, 0.04, 0.12, 0.02, -0.08]),
+    rotation("FootRight", "x", [0, 0.3, 0.6, 0.9, 1.2], [0.12, 0.02, -0.08, 0.04, 0.12]),
+    vector("NicoRoot.position", [0, 0.3, 0.6, 0.9, 1.2], [[0, 0, 0], [0, 0.025, 0], [0, 0, 0], [0, 0.025, 0], [0, 0, 0]]),
     rotation("Torso", "y", [0, 0.3, 0.6, 0.9, 1.2], [0.04, 0, -0.04, 0, 0.04]),
+    rotation("Hips", "z", [0, 0.3, 0.6, 0.9, 1.2], [0.035, 0, -0.035, 0, 0.035]),
+    rotation("Head", "z", [0, 0.3, 0.6, 0.9, 1.2], [-0.012, 0, 0.012, 0, -0.012]),
   ]),
   new AnimationClip("Run", 0.72, [
     rotation("ArmLeft", "x", [0, 0.18, 0.36, 0.54, 0.72], [0.72, 0, -0.72, 0, 0.72], [0, 0, 0.08]),
     rotation("ArmRight", "x", [0, 0.18, 0.36, 0.54, 0.72], [-0.72, 0, 0.72, 0, -0.72], [0, 0, -0.08]),
+    rotation("ElbowLeft", "x", [0, 0.18, 0.36, 0.54, 0.72], [0.58, 0.42, 0.32, 0.46, 0.58]),
+    rotation("ElbowRight", "x", [0, 0.18, 0.36, 0.54, 0.72], [0.32, 0.46, 0.58, 0.42, 0.32]),
     rotation("LegLeft", "x", [0, 0.18, 0.36, 0.54, 0.72], [-0.68, 0, 0.68, 0, -0.68]),
     rotation("LegRight", "x", [0, 0.18, 0.36, 0.54, 0.72], [0.68, 0, -0.68, 0, 0.68]),
-    scalar("NicoRoot.position[y]", [0, 0.18, 0.36, 0.54, 0.72], [0, 0.055, 0, 0.055, 0]),
+    rotation("KneeLeft", "x", [0, 0.18, 0.36, 0.54, 0.72], [0.68, 0.34, 0.12, 0.42, 0.68]),
+    rotation("KneeRight", "x", [0, 0.18, 0.36, 0.54, 0.72], [0.12, 0.42, 0.68, 0.34, 0.12]),
+    rotation("FootLeft", "x", [0, 0.18, 0.36, 0.54, 0.72], [-0.16, 0.06, 0.18, 0.02, -0.16]),
+    rotation("FootRight", "x", [0, 0.18, 0.36, 0.54, 0.72], [0.18, 0.02, -0.16, 0.06, 0.18]),
+    vector("NicoRoot.position", [0, 0.18, 0.36, 0.54, 0.72], [[0, 0, 0], [0, 0.055, 0], [0, 0, 0], [0, 0.055, 0], [0, 0, 0]]),
     rotation("Torso", "x", [0, 0.36, 0.72], [0.08, 0.11, 0.08]),
+    rotation("Hips", "z", [0, 0.18, 0.36, 0.54, 0.72], [0.055, 0, -0.055, 0, 0.055]),
+    rotation("Head", "x", [0, 0.18, 0.36, 0.54, 0.72], [-0.035, -0.055, -0.035, -0.055, -0.035]),
   ]),
   new AnimationClip("Celebrate", 1.8, [
     rotation("ArmLeft", "z", [0, 0.45, 1.35, 1.8], [0.08, -2.35, -2.35, 0.08]),
     rotation("ArmRight", "z", [0, 0.45, 1.35, 1.8], [-0.08, 2.35, 2.35, -0.08]),
-    scalar("NicoRoot.position[y]", [0, 0.35, 0.7, 1.05, 1.4, 1.8], [0, 0.14, 0, 0.16, 0, 0]),
+    rotation("ElbowLeft", "z", [0, 0.45, 1.35, 1.8], [0, -0.18, -0.1, 0]),
+    rotation("ElbowRight", "z", [0, 0.45, 1.35, 1.8], [0, 0.18, 0.1, 0]),
+    rotation("KneeLeft", "x", [0, 0.18, 0.55, 0.9, 1.35, 1.8], [0, 0.38, 0.1, 0.32, 0.06, 0]),
+    rotation("KneeRight", "x", [0, 0.18, 0.55, 0.9, 1.35, 1.8], [0, 0.38, 0.1, 0.32, 0.06, 0]),
+    vector("NicoRoot.position", [0, 0.18, 0.55, 0.9, 1.35, 1.8], [[0, 0, 0], [0, -0.035, 0], [0, 0.16, 0], [0, 0, 0], [0, 0.08, 0], [0, 0, 0]]),
     rotation("Head", "z", [0, 0.45, 0.9, 1.35, 1.8], [0, -0.08, 0.08, -0.06, 0]),
+    rotation("Torso", "x", [0, 0.18, 0.55, 0.9, 1.8], [0, -0.05, 0.06, -0.025, 0]),
   ]),
 ];
 
@@ -221,18 +274,44 @@ const glb = await new Promise((resolve, reject) => {
 fs.mkdirSync(outputDirectory, { recursive: true });
 fs.writeFileSync(outputPath, glb);
 const sha256 = createHash("sha256").update(glb).digest("hex");
+nico.updateMatrixWorld(true);
+const bounds = new Box3().setFromObject(nico);
+const dimensions = bounds.getSize(new Vector3());
 const metadata = {
   assetId: "character.nico.canonical",
   version: 1,
+  artStatus: "canonical-foundation",
   format: "glTF 2.0 binary",
   sourceOfTruth: "Approved illustrated Nico production references",
+  provenance: "Project-owned procedural model derived only from approved illustrated Nico production references",
+  license: "Project-owned original asset",
   privateFamilyPhotoUsed: false,
   units: "metres",
   upAxis: "+Y",
   forwardAxis: "+Z",
   groundOrigin: true,
+  boundsMeters: {
+    min: bounds.min.toArray(),
+    max: bounds.max.toArray(),
+    dimensions: dimensions.toArray(),
+  },
+  pivot: { node: "NicoRoot", position: [0, 0, 0] },
+  anchors: {
+    head: "Head",
+    leftHand: "LeftHand",
+    rightHand: "RightHand",
+    leftFoot: "FootLeft",
+    rightFoot: "FootRight",
+  },
+  rigType: "hierarchical articulated transform rig",
   animationClips: animations.map((clip) => clip.name),
-  nodeContract: ["NicoRoot", "Torso", "Hips", "Head", "ArmLeft", "ArmRight", "LegLeft", "LegRight"],
+  animationDurationsSeconds: Object.fromEntries(animations.map((clip) => [clip.name, clip.duration])),
+  reviewedViews: ["front", "three-quarter", "side"],
+  nodeContract: [
+    "NicoRoot", "Torso", "Hips", "Head",
+    "ArmLeft", "ElbowLeft", "ArmRight", "ElbowRight",
+    "LegLeft", "KneeLeft", "FootLeft", "LegRight", "KneeRight", "FootRight",
+  ],
   materials: [skin, skinLight, hair, red, eye, eyeLight, cream, green, greenDark, khaki, sole].map((item) => item.name),
   byteLength: glb.byteLength,
   sha256,

@@ -11,12 +11,6 @@ export default defineConfig({
     }
   },
   build: {
-    sourcemap: true,
-    rollupOptions: {
-      input: {
-        main: "index.html",
-        nicoReview: "nico-preview.html"
-      }
-    }
+    sourcemap: true
   }
 });
