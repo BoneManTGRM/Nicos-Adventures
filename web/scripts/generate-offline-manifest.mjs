@@ -12,7 +12,7 @@ if (!existsSync(path.join(dist, "index.html")) || !existsSync(assets)) {
 const bundleUrls = readdirSync(assets, { withFileTypes: true })
   .filter((entry) => entry.isFile() && (
     /\.(?:js|css)$/.test(entry.name)
-    || /^nico-(?:explorer|professions)-atlas-.*\.webp$/.test(entry.name)
+    || /^nico-(?:explorer-atlas|professions(?:-[a-z]+)?-atlas|librarian)-.*\.webp$/.test(entry.name)
   ))
   .map((entry) => `/assets/${entry.name}`);
 const canonicalAssets = [

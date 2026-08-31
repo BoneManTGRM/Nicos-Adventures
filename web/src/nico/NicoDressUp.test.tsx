@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { defaultWardrobe } from "../storage";
+import { CANONICAL_NICO_PRESETS } from "./canonicalNicoArt";
 import { NicoCostumeFigure, NICO_COSTUME_DECORATIONS } from "./NicoCostumeFigure";
 import { applyNicoProfession, filterNicoProfessions, NICO_PROFESSIONS } from "./NicoDressUp";
 import { wardrobeForPreset } from "./wardrobe/catalog";
@@ -48,6 +49,18 @@ describe("Nico wardrobe profession catalog", () => {
 });
 
 describe("Nico shared 2D renderer", () => {
+  it("provides premium canonical art for every profession preset", () => {
+    expect(CANONICAL_NICO_PRESETS).toHaveLength(NICO_PROFESSIONS.length);
+    for (const profession of NICO_PROFESSIONS) {
+      const html = renderToStaticMarkup(
+        <NicoCostumeFigure profession={profession.id} wardrobe={wardrobeForPreset(profession.id)} alt={`${profession.name.en} Nico`} />,
+      );
+      expect(html, profession.id).toContain('data-art-state="canonical-2d"');
+      expect(html, profession.id).toContain(`data-nico-preset="${profession.id}"`);
+      expect(html, profession.id).not.toContain("data:image/svg+xml");
+    }
+  });
+
   it("renders a supported preset with premium canonical art", () => {
     const wardrobe = wardrobeForPreset("doctor");
     const html = renderToStaticMarkup(
@@ -66,15 +79,16 @@ describe("Nico shared 2D renderer", () => {
       <NicoCostumeFigure profession="librarian" wardrobe={wardrobe} compact alt="Librarian Nico" />,
     );
     expect(html).toContain("nico-costume--compact");
-    expect(html).toContain('data-art-state="layered-wardrobe"');
+    expect(html).toContain('data-art-state="canonical-2d"');
     expect(html).toContain('data-layered-nico="true"');
-    expect(html).toContain('data-nico-renderer="layered-svg"');
+    expect(html).toContain('data-nico-renderer="canonical-2d"');
   });
 
-  it("derives a complete layered preset when a legacy caller provides only a profession", () => {
+  it("derives complete canonical art when a legacy caller provides only a profession", () => {
     const html = renderToStaticMarkup(<NicoCostumeFigure profession="firefighter" alt="Firefighter Nico" />);
-    expect(html).toContain('data-art-state="layered-wardrobe"');
-    expect(html).toContain("data:image/svg+xml");
-    expect(html).toContain('alt="Firefighter Nico"');
+    expect(html).toContain('data-art-state="canonical-2d"');
+    expect(html).toContain('data-nico-preset="firefighter"');
+    expect(html).not.toContain("data:image/svg+xml");
+    expect(html).toContain('aria-label="Firefighter Nico"');
   });
 });

@@ -224,7 +224,12 @@ export function WardrobeStudio({
                   style={{ "--preset-accent": profession.accent } as CSSProperties}
                   onClick={() => applyPreset(profession)}
                 >
-                  <span>{profession.emoji}</span>
+                  <NicoLayeredCharacter
+                    wardrobe={wardrobeForPreset(profession.id)}
+                    alt=""
+                    compact
+                    className="wardrobe-preset-thumbnail"
+                  />
                   <strong>{profession.name[language]}</strong>
                 </button>
               ))}
@@ -275,7 +280,9 @@ export function WardrobeStudio({
                         equip(entry);
                       }}
                     >
-                      <GarmentThumbnail item={entry} />
+                      <span className="wardrobe-garment-art" aria-hidden="true">
+                        <GarmentThumbnail item={entry} />
+                      </span>
                       <strong>{entry.name[language]}</strong>
                       <small>{equipped ? `✓ ${text.equip}` : text.drag}</small>
                     </button>

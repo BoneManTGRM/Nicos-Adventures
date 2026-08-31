@@ -1,12 +1,17 @@
 import type { CSSProperties } from "react";
 import explorerAtlas from "../assets/nico/nico-explorer-atlas.webp";
+import librarianArt from "../assets/nico/nico-librarian.webp";
 import professionsAtlas from "../assets/nico/nico-professions-atlas.webp";
+import communityProfessionsAtlas from "../assets/nico/nico-professions-community-atlas.webp";
+import worldProfessionsAtlas from "../assets/nico/nico-professions-world-atlas.webp";
 import type { NicoProfessionId, NicoWardrobe } from "../types";
 
 type SpriteCell = {
   atlas: string;
-  column: 0 | 1 | 2 | 3;
-  row: 0 | 1;
+  column: number;
+  row: number;
+  columns: 1 | 4;
+  rows: 1 | 2;
 };
 
 export type CanonicalNicoPresetArt = {
@@ -15,15 +20,32 @@ export type CanonicalNicoPresetArt = {
 };
 
 const PROFESSION_CELLS: Partial<Record<NicoProfessionId, SpriteCell>> = {
-  explorer: { atlas: explorerAtlas, column: 0, row: 0 },
-  astronaut: { atlas: professionsAtlas, column: 0, row: 0 },
-  doctor: { atlas: professionsAtlas, column: 1, row: 0 },
-  scientist: { atlas: professionsAtlas, column: 2, row: 0 },
-  engineer: { atlas: professionsAtlas, column: 3, row: 0 },
-  builder: { atlas: professionsAtlas, column: 0, row: 1 },
-  artist: { atlas: professionsAtlas, column: 1, row: 1 },
-  chef: { atlas: professionsAtlas, column: 2, row: 1 },
-  gardener: { atlas: professionsAtlas, column: 3, row: 1 },
+  explorer: { atlas: explorerAtlas, column: 0, row: 0, columns: 4, rows: 2 },
+  astronaut: { atlas: professionsAtlas, column: 0, row: 0, columns: 4, rows: 2 },
+  doctor: { atlas: professionsAtlas, column: 1, row: 0, columns: 4, rows: 2 },
+  scientist: { atlas: professionsAtlas, column: 2, row: 0, columns: 4, rows: 2 },
+  engineer: { atlas: professionsAtlas, column: 3, row: 0, columns: 4, rows: 2 },
+  builder: { atlas: professionsAtlas, column: 0, row: 1, columns: 4, rows: 2 },
+  artist: { atlas: professionsAtlas, column: 1, row: 1, columns: 4, rows: 2 },
+  chef: { atlas: professionsAtlas, column: 2, row: 1, columns: 4, rows: 2 },
+  gardener: { atlas: professionsAtlas, column: 3, row: 1, columns: 4, rows: 2 },
+  veterinarian: { atlas: communityProfessionsAtlas, column: 0, row: 0, columns: 4, rows: 2 },
+  dinosaur: { atlas: communityProfessionsAtlas, column: 1, row: 0, columns: 4, rows: 2 },
+  suit: { atlas: communityProfessionsAtlas, column: 2, row: 0, columns: 4, rows: 2 },
+  firefighter: { atlas: communityProfessionsAtlas, column: 3, row: 0, columns: 4, rows: 2 },
+  pilot: { atlas: communityProfessionsAtlas, column: 0, row: 1, columns: 4, rows: 2 },
+  teacher: { atlas: communityProfessionsAtlas, column: 1, row: 1, columns: 4, rows: 2 },
+  dentist: { atlas: communityProfessionsAtlas, column: 2, row: 1, columns: 4, rows: 2 },
+  "police-officer": { atlas: communityProfessionsAtlas, column: 3, row: 1, columns: 4, rows: 2 },
+  zookeeper: { atlas: worldProfessionsAtlas, column: 0, row: 0, columns: 4, rows: 2 },
+  musician: { atlas: worldProfessionsAtlas, column: 1, row: 0, columns: 4, rows: 2 },
+  farmer: { atlas: worldProfessionsAtlas, column: 2, row: 0, columns: 4, rows: 2 },
+  lifeguard: { atlas: worldProfessionsAtlas, column: 3, row: 0, columns: 4, rows: 2 },
+  magician: { atlas: worldProfessionsAtlas, column: 0, row: 1, columns: 4, rows: 2 },
+  "soccer-player": { atlas: worldProfessionsAtlas, column: 1, row: 1, columns: 4, rows: 2 },
+  "tennis-player": { atlas: worldProfessionsAtlas, column: 2, row: 1, columns: 4, rows: 2 },
+  detective: { atlas: worldProfessionsAtlas, column: 3, row: 1, columns: 4, rows: 2 },
+  librarian: { atlas: librarianArt, column: 0, row: 0, columns: 1, rows: 1 },
 };
 
 export const CANONICAL_NICO_PRESETS = Object.freeze(Object.keys(PROFESSION_CELLS) as NicoProfessionId[]);
@@ -37,7 +59,8 @@ export function canonicalNicoPresetArt(wardrobe: NicoWardrobe): CanonicalNicoPre
     profession,
     style: {
       backgroundImage: `url("${cell.atlas}")`,
-      backgroundPosition: `${cell.column * (100 / 3)}% ${cell.row * 100}%`,
+      backgroundPosition: `${cell.columns === 1 ? 0 : cell.column * (100 / (cell.columns - 1))}% ${cell.rows === 1 ? 0 : cell.row * 100}%`,
+      backgroundSize: `${cell.columns * 100}% ${cell.rows * 100}%`,
     },
   };
 }

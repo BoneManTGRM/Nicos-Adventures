@@ -4,6 +4,7 @@ import { canonicalNicoPresetArt } from "../canonicalNicoArt";
 import { garmentSvgDataUrl, wardrobeSvgDataUrl } from "./wardrobeSvg";
 import { resolveWardrobeItem, type WardrobeItem } from "./catalog";
 import "./wardrobe.css";
+import "./wardrobe-premium.css";
 import "../canonical-nico-art.css";
 
 export function NicoLayeredCharacter({

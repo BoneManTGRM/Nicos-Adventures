@@ -11,6 +11,7 @@ const requiredFiles = [
   "src/nico/wardrobe/WardrobeStudio.tsx",
   "src/nico/wardrobe/wardrobeCompatibility.ts",
   "src/nico/wardrobe/wardrobe.css",
+  "src/nico/wardrobe/wardrobe-premium.css",
   "src/nico/wardrobe/wardrobe.test.tsx",
   "src/nico/NicoDressUp.tsx",
   "src/nico/NicoCostumeFigure.tsx",
@@ -18,6 +19,9 @@ const requiredFiles = [
   "src/nico/canonical-nico-art.css",
   "src/assets/nico/nico-explorer-atlas.webp",
   "src/assets/nico/nico-professions-atlas.webp",
+  "src/assets/nico/nico-professions-community-atlas.webp",
+  "src/assets/nico/nico-professions-world-atlas.webp",
+  "src/assets/nico/nico-librarian.webp",
   "src/showtime/composeNicoImage.ts",
   "src/showtime/ShowtimeStudio.tsx",
 ];
@@ -44,6 +48,7 @@ const askNico = read("src/nico/AskNico.tsx");
 const showtime = read("src/showtime/ShowtimeStudio.tsx");
 const compositor = read("src/showtime/composeNicoImage.ts");
 const css = read("src/nico/wardrobe/wardrobe.css");
+const premiumCss = read("src/nico/wardrobe/wardrobe-premium.css");
 const tests = read("src/nico/wardrobe/wardrobe.test.tsx");
 const offlineGenerator = read("scripts/generate-offline-manifest.mjs");
 
@@ -103,11 +108,18 @@ if (
 ) {
   throw new Error("Shared Nico surfaces do not preserve canonical 2D art with the editable layered fallback");
 }
-for (const profession of ["explorer", "astronaut", "doctor", "scientist", "engineer", "builder", "artist", "chef", "gardener"]) {
-  if (!canonicalArt.includes(`${profession}: {`)) throw new Error(`Canonical Nico art is missing: ${profession}`);
+for (const profession of professions) {
+  if (!canonicalArt.includes(`${profession}: {`) && !canonicalArt.includes(`"${profession}": {`)) {
+    throw new Error(`Canonical Nico art is missing: ${profession}`);
+  }
 }
-if (!offlineGenerator.includes("nico-(?:explorer|professions)-atlas-")) {
+if (!offlineGenerator.includes("nico-(?:explorer-atlas|professions(?:-[a-z]+)?-atlas|librarian)-")) {
   throw new Error("Canonical Nico atlases are not included in the generated offline manifest");
+}
+for (const contract of ["wardrobe-preset-thumbnail", "wardrobe-garment-art", "-webkit-line-clamp: 2"]) {
+  if (!studio.includes(contract) && !premiumCss.includes(contract)) {
+    throw new Error(`Premium wardrobe presentation is missing: ${contract}`);
+  }
 }
 
 for (const [name, source] of [["guide", guide], ["portal", portal], ["clubhouse", clubhouse], ["Ask Nico", askNico], ["Showtime", showtime]]) {
