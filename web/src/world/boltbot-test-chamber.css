@@ -18,6 +18,134 @@
 .boltbot-readiness li.is-missing { border-color: rgba(251, 191, 36, .55); }
 
 .boltbot-chamber-layout { display: grid; grid-template-columns: minmax(420px, 1.25fr) minmax(280px, .75fr); gap: 18px; align-items: stretch; margin-top: 18px; }
+.boltbot-illustrated-chamber {
+  position: relative;
+  min-height: 520px;
+  overflow: hidden;
+  border: 1px solid rgba(103, 232, 249, .45);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 78% 22%, rgba(34, 211, 238, .2), transparent 22%),
+    linear-gradient(180deg, #102c57 0 62%, #071426 63% 100%);
+  box-shadow: inset 0 0 70px rgba(2, 8, 23, .5), 0 22px 55px rgba(0, 0, 0, .28);
+}
+.boltbot-illustrated-chamber::before {
+  content: "";
+  position: absolute;
+  inset: 42% 0 0;
+  background:
+    linear-gradient(90deg, transparent 49.5%, rgba(103, 232, 249, .16) 50%, transparent 50.5%),
+    linear-gradient(rgba(103, 232, 249, .1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(103, 232, 249, .1) 1px, transparent 1px),
+    linear-gradient(155deg, #102b4a, #06101f);
+  background-size: auto, 44px 44px, 44px 44px, auto;
+  transform: perspective(360px) rotateX(48deg) scale(1.28);
+  transform-origin: 50% 100%;
+}
+.boltbot-illustrated-chamber__window {
+  position: absolute;
+  top: 5%;
+  right: 6%;
+  display: flex;
+  justify-content: space-around;
+  width: 34%;
+  height: 20%;
+  padding: 14px;
+  border: 8px solid #233b5d;
+  border-radius: 20px;
+  background: radial-gradient(circle at 65% 35%, #2563eb, #020617 70%);
+  color: #fef3c7;
+  box-shadow: inset 0 0 28px rgba(34, 211, 238, .25);
+}
+.boltbot-illustrated-chamber__window span:nth-child(2) { align-self: end; }
+.boltbot-illustrated-chamber__route {
+  position: absolute;
+  z-index: 2;
+  left: 13%;
+  right: 37%;
+  bottom: 12%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  transform: perspective(300px) rotateX(45deg);
+}
+.boltbot-illustrated-chamber__route span {
+  display: grid;
+  min-height: 62px;
+  place-items: center;
+  border: 3px solid #155e75;
+  border-radius: 14px;
+  background: #0c4a6e;
+  color: #a5f3fc;
+  font-weight: 900;
+  box-shadow: inset 0 0 20px rgba(34, 211, 238, .18);
+}
+.boltbot-illustrated-chamber__route span.is-active {
+  border-color: #fde68a;
+  background: #854d0e;
+  color: #fff7ed;
+  box-shadow: 0 0 24px rgba(250, 204, 21, .32);
+}
+.boltbot-illustrated-chamber__signals {
+  position: absolute;
+  z-index: 2;
+  top: 30%;
+  right: 5%;
+  display: grid;
+  gap: 10px;
+}
+.boltbot-illustrated-chamber__signals span {
+  display: grid;
+  grid-template-columns: 18px auto;
+  align-items: center;
+  gap: 7px;
+  min-width: 66px;
+  padding: 8px 10px;
+  border: 1px solid rgba(103, 232, 249, .42);
+  border-radius: 12px;
+  background: rgba(2, 8, 23, .78);
+  color: #bae6fd;
+  font-weight: 900;
+}
+.boltbot-illustrated-chamber__signals i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #22d3ee;
+  box-shadow: 0 0 14px #22d3ee;
+}
+.boltbot-illustrated-chamber__signals span.is-selected {
+  border-color: #fde68a;
+  color: #fef3c7;
+  box-shadow: 0 0 22px rgba(250, 204, 21, .25);
+}
+.boltbot-illustrated-chamber__signals span.is-selected i { background: #facc15; box-shadow: 0 0 18px #facc15; }
+.boltbot-illustrated-chamber__robot {
+  position: absolute;
+  z-index: 4;
+  width: min(40%, 230px);
+  transform: translate(-50%, -50%);
+  transition: left 1.25s cubic-bezier(.22, .8, .28, 1), top 1.25s cubic-bezier(.22, .8, .28, 1);
+}
+.boltbot-illustrated-chamber__robot .premium-boltbot-sprite { width: 100%; }
+.boltbot-illustrated-chamber__console {
+  position: absolute;
+  z-index: 3;
+  left: 4%;
+  top: 7%;
+  display: flex;
+  gap: 8px;
+  width: 30%;
+  min-height: 70px;
+  align-items: center;
+  justify-content: center;
+  border: 6px solid #1e3a5f;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #071426, #12345d);
+}
+.boltbot-illustrated-chamber__console span { width: 18px; height: 18px; border-radius: 50%; background: #22d3ee; box-shadow: 0 0 12px #22d3ee; }
+.boltbot-illustrated-chamber__console span:nth-child(2) { background: #facc15; box-shadow: 0 0 12px #facc15; }
+.boltbot-illustrated-chamber__console span:nth-child(3) { background: #a78bfa; box-shadow: 0 0 12px #a78bfa; }
 .boltbot-test-controls { display: grid; align-content: center; gap: 14px; min-width: 0; padding: 18px; border: 1px solid rgba(103, 232, 249, .25); border-radius: 20px; background: rgba(2, 8, 23, .62); }
 .boltbot-choice-grid, .boltbot-scan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
 .boltbot-choice-grid button, .boltbot-scan-grid button, .boltbot-test-controls > button { border: 1px solid rgba(103, 232, 249, .38); border-radius: 13px; background: linear-gradient(145deg, rgba(14, 116, 144, .72), rgba(29, 78, 216, .65)); color: #fff; padding: 11px; font-weight: 800; }
@@ -41,7 +169,10 @@
   .boltbot-mission { padding: 15px; }
   .boltbot-readiness, .boltbot-choice-grid, .boltbot-scan-grid { grid-template-columns: 1fr; }
   .boltbot-test-controls { padding: 13px; }
-  .boltbot-mission .game-canvas, .boltbot-mission .game-canvas__viewport, .boltbot-mission .game-canvas__viewport canvas { min-height: 300px; }
+  .boltbot-illustrated-chamber { min-height: 430px; }
+  .boltbot-illustrated-chamber__robot { width: min(48%, 210px); }
+  .boltbot-illustrated-chamber__signals { top: 26%; right: 3%; }
+  .boltbot-illustrated-chamber__route { left: 7%; right: 25%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

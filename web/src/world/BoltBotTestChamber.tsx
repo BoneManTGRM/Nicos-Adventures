@@ -1,6 +1,5 @@
-import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { Group } from "three";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { PremiumBoltBotSprite } from "../boltbot/PremiumBoltBotSprite";
 import {
   BOLT_BOT_LOGIC_ANSWER,
   BOLT_BOT_LOGIC_SEQUENCE,
@@ -8,15 +7,12 @@ import {
   BOLT_BOT_SCAN_TARGETS,
   boltBotChamberStage,
   boltBotRoutePose,
-  boltBotRouteWaypoints,
   passesLogicTest,
   passesMovementTest,
   passesScannerTest,
   type MovementCommand,
 } from "../game/boltBot";
 import type { StarBridgeEvent, StarBridgeState } from "../game/goldenAdventure";
-import { BoltBot, GameCanvas, readQualityProfile, type BoltBotAnimation } from "../game3d";
-import { RouteMotor, routePlaybackRate } from "../game3d/simulation/routeMotor";
 import { tr, type Localized } from "../i18n/core";
 import type { Language, Robot } from "../types";
 import "./boltbot-test-chamber.css";
@@ -57,13 +53,8 @@ const copy = {
   confirmLogic: { en: "Complete test chamber", "es-MX": "Completar cámara de pruebas" },
   logicCorrect: { en: "Pattern solved!", "es-MX": "¡Patrón resuelto!" },
   logicWrong: { en: "Look at the alternating pattern and try again.", "es-MX": "Observa el patrón alternado e inténtalo de nuevo." },
-  scene: { en: "BoltBot test chamber", "es-MX": "Cámara de pruebas de BoltBot" },
-  sceneLoading: { en: "Loading the test chamber", "es-MX": "Cargando la cámara de pruebas" },
-  sceneReady: { en: "Test chamber ready", "es-MX": "Cámara de pruebas lista" },
-  contextLost: { en: "The 3D view paused. The controls still work.", "es-MX": "La vista 3D se pausó. Los controles siguen funcionando." },
-  contextRestored: { en: "The 3D view is ready again.", "es-MX": "La vista 3D está lista de nuevo." },
-  unavailable: { en: "The 3D view is unavailable. Continue with the accessible controls.", "es-MX": "La vista 3D no está disponible. Continúa con los controles accesibles." },
-  instructions: { en: "Use the test controls below the scene.", "es-MX": "Usa los controles de prueba debajo de la escena." },
+  scene: { en: "Illustrated BoltBot test chamber", "es-MX": "Cámara ilustrada de pruebas de BoltBot" },
+  instructions: { en: "Use the test controls beside the scene.", "es-MX": "Usa los controles de prueba junto a la escena." },
   signal: { en: "Signal", "es-MX": "Señal" },
   selected: { en: "Selected", "es-MX": "Seleccionado" },
 } satisfies Record<string, Localized>;
@@ -74,115 +65,84 @@ const targetCopy: Record<string, Localized> = {
   "decorative-panel": { en: "Decorative panel", "es-MX": "Panel decorativo" },
 };
 
-function NaturalBoltBot({
+function IllustratedChamber({
   robot,
   commands,
-  animation,
-  reducedMotion,
+  action,
+  selectedScan,
+  language,
+  routeActive,
   reportMotion,
 }: {
   robot: Robot;
   commands: readonly MovementCommand[];
-  animation: BoltBotAnimation;
-  reducedMotion: boolean;
+  action: string;
+  selectedScan: string | null;
+  language: Language;
+  routeActive: boolean;
   reportMotion: (motion: "programmed" | "moving" | "settled" | "reduced") => void;
 }) {
-  const start = useMemo(() => boltBotRoutePose([]), []);
-  const desired = boltBotRoutePose(commands);
-  const route = useMemo(() => {
-    const programmed = boltBotRouteWaypoints(commands);
-    return programmed.length ? programmed : [start];
-  }, [commands, start]);
-  const root = useRef<Group>(null);
-  const motor = useRef(new RouteMotor(start));
-  const driving = useRef(false);
-  const playbackRate = useRef(1);
-  const reportedMotion = useRef<"programmed" | "moving" | "settled" | "reduced" | null>(null);
-  const [motionAnimation, setMotionAnimation] = useState<BoltBotAnimation>("Idle");
-
-  const report = (motion: "programmed" | "moving" | "settled" | "reduced") => {
-    if (reportedMotion.current === motion) return;
-    reportedMotion.current = motion;
-    reportMotion(motion);
-  };
+  const [routeAction, setRouteAction] = useState("idle");
+  const pose = boltBotRoutePose(commands);
+  const xProgress = Math.max(0, Math.min(1, (pose.x + .8) / .85));
+  const zProgress = Math.max(0, Math.min(1, (pose.z + .75) / .85));
+  const robotStyle = {
+    left: `${25 + xProgress * 27}%`,
+    top: `${58 - zProgress * 22}%`,
+  } as CSSProperties;
 
   useEffect(() => {
-    motor.current.setRoute(route);
-    driving.current = false;
-    setMotionAnimation("Idle");
-    report(reducedMotion ? "reduced" : "programmed");
-  }, [reducedMotion, route]);
-
-  useFrame((_, delta) => {
-    if (!root.current) return;
-    if (reducedMotion) {
-      root.current.position.set(desired.x, 0, desired.z);
-      root.current.rotation.y = desired.heading;
-      playbackRate.current = 1;
-      report("reduced");
+    if (!routeActive) {
+      setRouteAction("idle");
+      reportMotion("settled");
       return;
     }
-    const snapshot = motor.current.step(delta);
-    playbackRate.current = routePlaybackRate(snapshot, motor.current.config);
-    root.current.position.set(snapshot.x, 0, snapshot.z);
-    root.current.rotation.y = snapshot.heading;
-    const isDriving = snapshot.speed > .02 || Math.abs(snapshot.angularSpeed) > .06;
-    if (driving.current !== isDriving) {
-      driving.current = isDriving;
-      setMotionAnimation(isDriving ? "Drive" : "Idle");
+    if (!commands.length) {
+      setRouteAction("idle");
+      reportMotion("programmed");
+      return;
     }
-    report(snapshot.settled ? "settled" : isDriving ? "moving" : "programmed");
-  });
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setRouteAction("idle");
+      reportMotion("reduced");
+      return;
+    }
+    setRouteAction("drive");
+    reportMotion("moving");
+    const timer = window.setTimeout(() => {
+      setRouteAction("idle");
+      reportMotion("settled");
+    }, 1_450);
+    return () => window.clearTimeout(timer);
+  }, [commands, reportMotion, routeActive]);
+
+  const displayAction = action.toLowerCase() === "idle" ? routeAction : action;
 
   return (
-    <group ref={root} position={[start.x, 0, start.z]} rotation={[0, start.heading, 0]}>
-      <BoltBot robot={robot} animation={reducedMotion ? "Idle" : animation === "Idle" ? motionAnimation : animation} playbackRate={playbackRate} scale={.82} />
-    </group>
-  );
-}
-
-function ChamberScene({
-  robot,
-  commands,
-  animation,
-  selectedScan,
-  reducedMotion,
-  reportMotion,
-}: {
-  robot: Robot;
-  commands: readonly MovementCommand[];
-  animation: BoltBotAnimation;
-  selectedScan: string | null;
-  reducedMotion: boolean;
-  reportMotion: (motion: "programmed" | "moving" | "settled" | "reduced") => void;
-}) {
-  return (
-    <>
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -.03, 0]}>
-        <planeGeometry args={[6, 5]} />
-        <meshStandardMaterial color="#17345c" roughness={.72} metalness={.22} />
-      </mesh>
-      {[
-        [-.8, .01, -.75],
-        [-.8, .01, .1],
-        [.05, .01, .1],
-      ].map((position, index) => (
-        <mesh key={index} receiveShadow position={position as [number, number, number]}>
-          <boxGeometry args={[.55, .04, .55]} />
-          <meshStandardMaterial color={index < commands.length ? "#facc15" : "#155e75"} emissive={index < commands.length ? "#854d0e" : "#082f49"} />
-        </mesh>
-      ))}
-      {BOLT_BOT_SCAN_TARGETS.map((target, index) => (
-        <mesh key={target.id} position={[-1.55 + index * 1.55, .35, -1.5]}>
-          <cylinderGeometry args={[.22, .3, .7, 12]} />
-          <meshStandardMaterial
-            color={selectedScan === target.id ? "#fde68a" : "#38bdf8"}
-            emissive={selectedScan === target.id ? "#f59e0b" : "#0c4a6e"}
-          />
-        </mesh>
-      ))}
-      <NaturalBoltBot robot={robot} commands={commands} animation={animation} reducedMotion={reducedMotion} reportMotion={reportMotion} />
-    </>
+    <div
+      className="boltbot-illustrated-chamber"
+      data-renderer="premium-2d"
+      role="img"
+      aria-label={`${tr(copy.scene, language)}. ${tr(copy.instructions, language)}`}
+    >
+      <div className="boltbot-illustrated-chamber__window" aria-hidden="true"><span>✦</span><span>✧</span><span>★</span></div>
+      <div className="boltbot-illustrated-chamber__route" aria-hidden="true">
+        {[0, 1, 2].map((index) => <span className={index < commands.length ? "is-active" : ""} key={index}>{index + 1}</span>)}
+      </div>
+      <div className="boltbot-illustrated-chamber__signals" aria-hidden="true">
+        {BOLT_BOT_SCAN_TARGETS.map((target) => (
+          <span className={selectedScan === target.id ? "is-selected" : ""} key={target.id}>
+            <i />{target.signal}
+          </span>
+        ))}
+      </div>
+      <div className="boltbot-illustrated-chamber__robot" style={robotStyle}>
+        <PremiumBoltBotSprite robot={robot} action={displayAction} alt="" />
+      </div>
+      <div className="boltbot-illustrated-chamber__console" aria-hidden="true">
+        <span /><span /><span />
+      </div>
+    </div>
   );
 }
 
@@ -203,11 +163,10 @@ export function BoltBotTestChamber({
   const [commands, setCommands] = useState<MovementCommand[]>([]);
   const [selectedScan, setSelectedScan] = useState<string | null>(null);
   const [logicAnswer, setLogicAnswer] = useState<string | null>(null);
-  const [animation, setAnimation] = useState<BoltBotAnimation>("Idle");
+  const [animation, setAnimation] = useState("Idle");
   const [routeMotion, setRouteMotion] = useState<"programmed" | "moving" | "settled" | "reduced">("settled");
   const timer = useRef<number | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
-  const quality = useMemo(() => readQualityProfile(), []);
 
   useEffect(() => () => {
     if (timer.current !== null) window.clearTimeout(timer.current);
@@ -224,14 +183,13 @@ export function BoltBotTestChamber({
     return () => window.cancelAnimationFrame(frame);
   }, [stage]);
 
-  const play = (next: BoltBotAnimation, duration = 900) => {
+  const play = (next: string, duration = 900) => {
     if (timer.current !== null) window.clearTimeout(timer.current);
     setAnimation(next);
     timer.current = window.setTimeout(() => setAnimation(stage === "complete" ? "Celebrate" : "Idle"), duration);
   };
 
-  if (stage === "inactive") return null;
-  if (stage === "configuration") return null;
+  if (stage === "inactive" || stage === "configuration") return null;
 
   const routeComplete = commands.length === BOLT_BOT_MOVEMENT_SEQUENCE.length;
   const routePassed = routeComplete && passesMovementTest(commands);
@@ -240,16 +198,6 @@ export function BoltBotTestChamber({
   const visualCommands = stage === "movement" ? commands : BOLT_BOT_MOVEMENT_SEQUENCE;
   const title = stage === "movement" ? copy.movement : stage === "scanner" ? copy.scanner : stage === "logic" ? copy.logic : copy.complete;
   const body = stage === "movement" ? copy.movementBody : stage === "scanner" ? copy.scannerBody : stage === "logic" ? copy.logicBody : copy.completeBody;
-
-  const labels = {
-    scene: tr(copy.scene, language),
-    loading: tr(copy.sceneLoading, language),
-    ready: tr(copy.sceneReady, language),
-    contextLost: tr(copy.contextLost, language),
-    contextRestored: tr(copy.contextRestored, language),
-    unavailable: tr(copy.unavailable, language),
-    instructions: tr(copy.instructions, language),
-  };
 
   const selectMovement = (command: MovementCommand) => {
     if (routeComplete) return;
@@ -264,9 +212,15 @@ export function BoltBotTestChamber({
         <p>{tr(body, language)}</p>
       </header>
       <div className="boltbot-chamber-layout">
-        <GameCanvas labels={labels} controls={<span>{tr(title, language)}</span>} quality={quality}>
-          <ChamberScene robot={robot} commands={visualCommands} animation={animation} selectedScan={selectedScan} reducedMotion={quality.reducedMotion} reportMotion={setRouteMotion} />
-        </GameCanvas>
+        <IllustratedChamber
+          robot={robot}
+          commands={visualCommands}
+          action={animation}
+          selectedScan={selectedScan}
+          language={language}
+          routeActive={stage === "movement"}
+          reportMotion={setRouteMotion}
+        />
         <div className="boltbot-test-controls">
           {stage === "movement" ? (
             <>
