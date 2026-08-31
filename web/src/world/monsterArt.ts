@@ -76,6 +76,23 @@ const TALL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
   core: { x: 0, y: -94, scale: 0.5 },
 };
 
+// These atlas cells have different head proportions even though their bodies
+// use the same broad sizing families. Keep their facial features independent:
+// the Dragon needs a readable three-eye row, while the Golem's shorter neck
+// needs its mouth lifted back onto the stone head.
+const DRAGON_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...TALL_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -124, scale: 0.42 },
+  mouth: { x: 0, y: -184, scale: 0.36 },
+  horns: { x: 0, y: -72, scale: 0.3 },
+};
+
+const STONE_GOLEM_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...COMPACT_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -120, scale: 0.4 },
+  mouth: { x: 0, y: -190, scale: 0.34 },
+};
+
 // The alien atlas uses a compact round head and a narrow torso. Reusing the
 // tall-body fit put the mouth below the head and made its traits look pasted on.
 const ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
@@ -89,9 +106,9 @@ const ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
 
 const MONSTER_ACCESSORY_LAYOUTS: Record<PremiumMonsterBody, MonsterAccessoryLayout> = {
   Blob: STANDARD_ACCESSORY_LAYOUT,
-  Dragon: TALL_ACCESSORY_LAYOUT,
+  Dragon: DRAGON_ACCESSORY_LAYOUT,
   "Jungle Beast": COMPACT_ACCESSORY_LAYOUT,
-  "Stone Golem": COMPACT_ACCESSORY_LAYOUT,
+  "Stone Golem": STONE_GOLEM_ACCESSORY_LAYOUT,
   Spirit: STANDARD_ACCESSORY_LAYOUT,
   Cosmic: STANDARD_ACCESSORY_LAYOUT,
   Aquatic: TALL_ACCESSORY_LAYOUT,
