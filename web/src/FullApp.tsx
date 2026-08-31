@@ -36,6 +36,7 @@ export default function FullApp() {
   const { store, profile, setStore, updateProfile, commitProfile } = useAppStore();
   const [announcement, setAnnouncement] = useState<Announcement>({ id: 0, message: "" });
   const pendingTitleFocus = useRef<"keyboard" | "pointer" | null>(null);
+  const lastNavigationInput = useRef<"keyboard" | "pointer">("pointer");
   const announce = (message: string) => setAnnouncement((current) => ({ id: current.id + 1, message }));
 
   useEffect(() => {
@@ -43,6 +44,17 @@ export default function FullApp() {
     document.documentElement.lang = profile.language;
     document.title = `${tr(section.name, profile.language)} · ${profile.language === "es-MX" ? "El Mundo de Nico" : "Nico's World"}`;
   }, [profile.language, profile.selectedSection]);
+
+  useEffect(() => {
+    const rememberKeyboard = () => { lastNavigationInput.current = "keyboard"; };
+    const rememberPointer = () => { lastNavigationInput.current = "pointer"; };
+    window.addEventListener("keydown", rememberKeyboard, true);
+    window.addEventListener("pointerdown", rememberPointer, true);
+    return () => {
+      window.removeEventListener("keydown", rememberKeyboard, true);
+      window.removeEventListener("pointerdown", rememberPointer, true);
+    };
+  }, []);
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -80,10 +92,8 @@ export default function FullApp() {
   }, [profile.selectedSection]);
 
   const presentSection = () => {
-    const focused = document.activeElement;
-    pendingTitleFocus.current = focused instanceof HTMLElement && focused.matches(":focus-visible")
-      ? "keyboard"
-      : "pointer";
+    pendingTitleFocus.current = lastNavigationInput.current;
+    lastNavigationInput.current = "pointer";
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   };
 

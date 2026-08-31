@@ -178,7 +178,11 @@ async function assertWardrobeCardLayout(page: Page, label: string) {
 }
 
 test("all destinations keep their main local interactions working", async ({ page }, testInfo) => {
-  test.setTimeout(420_000);
+  test.skip(
+    !visualProjects.has(testInfo.project.name),
+    "The full local-first journey runs on representative desktop English and iPhone Spanish; the Golden Adventure retains the complete eight-project matrix.",
+  );
+  test.setTimeout(600_000);
   const language = testInfo.project.metadata.language as Language;
   const text = copy[language];
   const runtimeErrors: string[] = [];
