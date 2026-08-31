@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import type { NicoProfessionId, NicoWardrobe } from "../types";
 import { canonicalNicoPresetArt } from "./canonicalNicoArt";
 import { wardrobeForPreset } from "./wardrobe/catalog";
+import "./canonical-nico-art.css";
 
 type Props = {
   artSource?: string;
