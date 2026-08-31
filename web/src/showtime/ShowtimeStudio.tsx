@@ -52,7 +52,7 @@ const catalog = showtimeData as {
 const copy = {
   en: {
     title: "Showtime Studio",
-    intro: "Make a short movie entirely on this device. Nico wears the exact layered wardrobe you saved. The video is never uploaded and only project instructions are saved.",
+    intro: "Make a short movie entirely on this device with Nico’s premium artwork. The video is never uploaded and only project instructions are saved.",
     characters: "1. Choose 1–3 characters",
     poses: "2. Build the pose sequence",
     scene: "3. Choose the stage",
@@ -75,7 +75,7 @@ const copy = {
   },
   "es-MX": {
     title: "Estudio Showtime",
-    intro: "Crea una película corta completamente en este dispositivo. Nico usa exactamente el guardarropa en capas que guardaste. El video nunca se sube y solo se guardan las instrucciones del proyecto.",
+    intro: "Crea una película corta completamente en este dispositivo con la ilustración prémium de Nico. El video nunca se sube y solo se guardan las instrucciones del proyecto.",
     characters: "1. Elige de 1 a 3 personajes",
     poses: "2. Crea la secuencia de poses",
     scene: "3. Elige el escenario",
@@ -171,7 +171,7 @@ export function ShowtimeStudio({
   useEffect(() => {
     let cancelled = false;
     nicoImageRef.current = null;
-    void composeNicoImage(profile.nico.wardrobe)
+    void composeNicoImage(profile.nico.profession)
       .then((image) => {
         if (cancelled) return;
         nicoImageRef.current = image;
@@ -185,7 +185,7 @@ export function ShowtimeStudio({
     return () => {
       cancelled = true;
     };
-  }, [profile.nico.wardrobe]);
+  }, [profile.nico.profession]);
 
   useEffect(() => {
     if (!previewing || !sequence.length) return;
