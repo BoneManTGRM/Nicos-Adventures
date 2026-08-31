@@ -47,16 +47,24 @@ export default function FullApp() {
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     if (!pendingTitleFocus.current) return;
-    document.getElementById("page-title")?.focus({ preventScroll: true });
-    pendingTitleFocus.current = false;
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (!pendingTitleFocus.current) return;
+        document.getElementById("page-title")?.focus({ preventScroll: true });
+        pendingTitleFocus.current = false;
+      });
+    });
   }, [profile.selectedSection]);
 
   const presentSection = () => {
     pendingTitleFocus.current = true;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     window.requestAnimationFrame(() => {
-      document.getElementById("page-title")?.focus({ preventScroll: true });
-      pendingTitleFocus.current = false;
+      window.requestAnimationFrame(() => {
+        if (!pendingTitleFocus.current) return;
+        document.getElementById("page-title")?.focus({ preventScroll: true });
+        pendingTitleFocus.current = false;
+      });
     });
   };
 
@@ -68,6 +76,7 @@ export default function FullApp() {
       return;
     }
     const section = WORLD_SECTIONS.find((item) => item.id === sectionId) ?? WORLD_SECTIONS[0];
+    presentSection();
     updateProfile({
       ...profile,
       selectedSection: sectionId,
@@ -77,11 +86,11 @@ export default function FullApp() {
       },
     });
     announce(`${tr(ui.openDestination, profile.language)}: ${tr(section.name, profile.language)}`);
-    presentSection();
   };
 
   const beginStarBridge = () => {
     const sectionId: SectionId = "robo-lab";
+    presentSection();
     commitProfile((current) => {
       const next = applyStarBridgeEvent(current, { type: "REVEAL_BRIDGE" });
       return {
@@ -96,7 +105,6 @@ export default function FullApp() {
     announce(profile.language === "es-MX"
       ? "Aventura iniciada: prepara a BoltBot en el Laboratorio de Robots"
       : "Adventure started: prepare BoltBot in Robo Lab");
-    presentSection();
   };
 
   const advanceStarBridge = (event: StarBridgeEvent) => {

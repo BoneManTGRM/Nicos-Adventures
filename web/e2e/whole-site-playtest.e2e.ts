@@ -143,7 +143,9 @@ async function openDestination(page: Page, worldTitle: string, destinationTitle:
   if (!(await page.getByRole("heading", { name: worldTitle, exact: true }).isVisible().catch(() => false))) {
     await returnToMap(page, worldTitle, label);
   }
-  const destination = page.locator(".fw-destination-grid > .fw-destination").filter({ hasText: destinationTitle });
+  const destination = page.locator(".fw-destination-grid > .fw-destination").filter({
+    has: page.getByText(destinationTitle, { exact: true }),
+  });
   await expect(destination).toHaveCount(1);
   await activateWithKeyboard(destination);
   await assertPageChrome(page, destinationTitle, label);

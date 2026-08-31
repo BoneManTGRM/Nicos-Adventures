@@ -7,3 +7,28 @@
   min-width: 0;
   max-width: 100%;
 }
+
+.nico-guide__launcher .nico-costume {
+  width: 82px;
+  height: 82px;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  contain: layout paint size;
+}
+
+.nico-guide__launcher .nico-costume__frame,
+.nico-guide__launcher .nico-layered-character {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  contain: paint;
+}
+
+@media (max-width: 620px) {
+  .nico-guide__launcher .nico-costume {
+    width: 68px;
+    height: 68px;
+  }
+}

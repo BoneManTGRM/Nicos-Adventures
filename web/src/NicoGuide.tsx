@@ -66,7 +66,9 @@ export default function NicoGuide() {
     commitProfile((current) => ({ ...current, selectedSection: "world-map" }));
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     window.requestAnimationFrame(() => {
-      document.getElementById("page-title")?.focus({ preventScroll: true });
+      window.requestAnimationFrame(() => {
+        document.getElementById("page-title")?.focus({ preventScroll: true });
+      });
     });
     setIsOpen(false);
   };
