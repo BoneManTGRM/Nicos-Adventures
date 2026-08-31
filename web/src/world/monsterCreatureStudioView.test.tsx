@@ -35,6 +35,7 @@ describe("Monster Lab localized preview", () => {
     expect(html).toContain('data-monster-pattern="galaxy"');
     expect(html).toContain("premium-monster-bodies-atlas");
     expect(html).toContain("monster-premium-body__pattern");
+    expect(html).toContain('data-monster-face-treatment="sculpted-dragon"');
     expect(html).toContain("monster-texture--crystal");
     expect(html).toContain("monster-traits monster-traits--rear");
     expect(html).toContain("monster-traits monster-traits--front");
@@ -48,6 +49,7 @@ describe("Monster Lab localized preview", () => {
 
     expect(html).toContain('data-monster-body-art="Alien"');
     expect(html).toContain('data-monster-arms-art="Four arms"');
+    expect(html).toContain('data-monster-face-treatment="integrated-visor"');
     expect(html).toContain("premium-alien-arms-atlas");
     expect(html).toContain("400% 200%");
     expect(html).not.toContain("<canvas");
@@ -63,6 +65,7 @@ describe("Monster Lab localized preview", () => {
     expect(html).toContain('class="monster-face" transform="translate(0 -120) translate(260 246) scale(0.4)');
     expect(html).toContain('class="monster-mouth" transform="translate(0 -190) translate(260 330) scale(0.34)');
     expect(html).toContain('class="monster-core" transform="translate(0 -88) translate(260 387) scale(0.5)');
+    expect(html).toContain('data-monster-face-treatment="carved-golem"');
   });
 
   it("gives a Dragon a readable face without crowding its horns", () => {
@@ -72,5 +75,6 @@ describe("Monster Lab localized preview", () => {
     expect(html).toContain('class="monster-horns" transform="translate(0 -72) translate(260 158) scale(0.3)');
     expect(html).toContain('class="monster-face" transform="translate(0 -124) translate(260 246) scale(0.42)');
     expect(html).toContain('class="monster-mouth" transform="translate(0 -184) translate(260 330) scale(0.36)');
+    expect(html).toContain('data-monster-face-treatment="sculpted-dragon"');
   });
 });
