@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MONSTER_OPTIONS } from "./catalogs";
-import { PREMIUM_MONSTER_BODIES, monsterBodyArtStyle } from "./monsterArt";
+import { PREMIUM_ALIEN_ARMS, PREMIUM_MONSTER_BODIES, monsterBodyArtStyle } from "./monsterArt";
 
 describe("premium illustrated monster body atlas", () => {
   it("maps every schema-v4 monster body to exactly one atlas cell", () => {
@@ -20,6 +20,24 @@ describe("premium illustrated monster body atlas", () => {
       "--monster-body-position": "100% 100%",
     });
     expect(monsterBodyArtStyle("Unknown legacy body", "#22d3ee")).toMatchObject({
+      "--monster-body-position": "0% 0%",
+    });
+  });
+
+  it("gives every saved alien arm choice a distinct premium body", () => {
+    expect(PREMIUM_ALIEN_ARMS).toEqual(MONSTER_OPTIONS.arms);
+    expect(monsterBodyArtStyle("Alien", "#a3e635", "Tiny arms")).toMatchObject({
+      "--monster-body-position": "0% 0%",
+      "--monster-body-size": "400% 200%",
+      "--monster-body-color": "#a3e635",
+    });
+    expect(monsterBodyArtStyle("Alien", "#a3e635", "Tentacles")).toMatchObject({
+      "--monster-body-position": "100% 0%",
+    });
+    expect(monsterBodyArtStyle("Alien", "#a3e635", "Wing arms")).toMatchObject({
+      "--monster-body-position": `${2 * (100 / 3)}% 100%`,
+    });
+    expect(monsterBodyArtStyle("Alien", "#a3e635", "Unknown legacy arms")).toMatchObject({
       "--monster-body-position": "0% 0%",
     });
   });

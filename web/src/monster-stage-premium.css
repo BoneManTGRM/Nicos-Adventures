@@ -74,7 +74,7 @@
   top: 0;
   left: 50%;
   width: 90%;
-  aspect-ratio: 9 / 10;
+  aspect-ratio: var(--monster-body-aspect, 9 / 10);
   transform: translateX(-50%);
   filter: drop-shadow(0 24px 18px rgba(0, 4, 13, .55));
 }
@@ -85,7 +85,7 @@
   display: block;
   background-position: var(--monster-body-position);
   background-repeat: no-repeat;
-  background-size: 500% 300%;
+  background-size: var(--monster-body-size, 500% 300%);
 }
 
 .monster-premium-body__art {
@@ -100,8 +100,8 @@
   mask-position: var(--monster-body-position);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  -webkit-mask-size: 500% 300%;
-  mask-size: 500% 300%;
+  -webkit-mask-size: var(--monster-body-size, 500% 300%);
+  mask-size: var(--monster-body-size, 500% 300%);
 }
 
 .monster-premium-body__tint {

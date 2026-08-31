@@ -39,4 +39,15 @@ describe("Monster Lab localized preview", () => {
     expect(html).not.toContain("<canvas");
     expect(monster).toMatchObject({ body: "Dragon", pattern: "Galaxy", power: "Rainbow shield" });
   });
+
+  it("renders an alien's saved arm choice with the dedicated 2D atlas", () => {
+    const alien = { ...monster, id: "orbit", name: "Orbit", body: "Alien", arms: "Four arms" };
+    const html = renderToStaticMarkup(<MonsterStage monster={alien} language="en" />);
+
+    expect(html).toContain('data-monster-body-art="Alien"');
+    expect(html).toContain('data-monster-arms-art="Four arms"');
+    expect(html).toContain("premium-alien-arms-atlas");
+    expect(html).toContain("400% 200%");
+    expect(html).not.toContain("<canvas");
+  });
 });
