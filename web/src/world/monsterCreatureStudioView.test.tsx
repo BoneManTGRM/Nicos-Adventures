@@ -59,8 +59,9 @@ describe("Monster Lab localized preview", () => {
 
     expect(html).toContain('class="monster-wings" transform="translate(0 28) translate(260 250) scale(0.54)');
     expect(html).toContain('class="monster-tail" transform="translate(-14 -2) translate(388 398) scale(0.52)');
-    expect(html).toContain('class="monster-horns" transform="translate(0 -20) translate(260 158) scale(0.36)');
-    expect(html).toContain('class="monster-face" transform="translate(0 -114) translate(260 246) scale(0.42)');
+    expect(html).toContain('class="monster-horns" transform="translate(0 -64) translate(260 158) scale(0.32)');
+    expect(html).toContain('class="monster-face" transform="translate(0 -120) translate(260 246) scale(0.38)');
+    expect(html).toContain('class="monster-mouth" transform="translate(0 -154) translate(260 330) scale(0.36)');
     expect(html).toContain('class="monster-core" transform="translate(0 -88) translate(260 387) scale(0.5)');
   });
 
@@ -68,7 +69,8 @@ describe("Monster Lab localized preview", () => {
     const dragon = { ...monster, id: "dragon", body: "Dragon" };
     const html = renderToStaticMarkup(<MonsterStage monster={dragon} language="en" />);
 
-    expect(html).toContain('class="monster-horns" transform="translate(0 -24) translate(260 158) scale(0.36)');
-    expect(html).toContain('class="monster-face" transform="translate(0 -120) translate(260 246) scale(0.42)');
+    expect(html).toContain('class="monster-horns" transform="translate(0 -68) translate(260 158) scale(0.32)');
+    expect(html).toContain('class="monster-face" transform="translate(0 -126) translate(260 246) scale(0.38)');
+    expect(html).toContain('class="monster-mouth" transform="translate(0 -158) translate(260 330) scale(0.36)');
   });
 });
