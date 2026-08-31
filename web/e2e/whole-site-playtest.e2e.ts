@@ -250,10 +250,10 @@ test("all destinations keep their main local interactions working", async ({ pag
     await page.locator(`.monster-studio__choice[data-option="${option}"]`).click();
   };
   await chooseMonsterOption("body", "Stone Golem");
-  await chooseMonsterOption("horns", "Crystal horns");
   await chooseMonsterOption("wings", "Star wings");
   await chooseMonsterOption("tail", "Dragon tail");
   const fittedGolem = page.locator('[data-monster-body-art="Stone Golem"]');
+  await expect(fittedGolem).toHaveAttribute("data-monster-face-treatment", "carved-golem");
   await expect(fittedGolem.locator(".monster-traits--rear")).toHaveCSS("z-index", "1");
   await expect(fittedGolem.locator(".monster-premium-body")).toHaveCSS("z-index", "2");
   await expect(fittedGolem.locator(".monster-traits--front")).toHaveCSS("z-index", "4");
@@ -278,6 +278,7 @@ test("all destinations keep their main local interactions working", async ({ pag
   await expect(page.locator(".monster-collection button").filter({ hasText: monsterName })).toHaveCount(1);
   const premiumAlien = page.locator('[data-monster-body-art="Alien"][data-monster-arms-art="Four arms"]');
   await expect(premiumAlien).toBeVisible();
+  await expect(premiumAlien).toHaveAttribute("data-monster-face-treatment", "integrated-visor");
   await expect(premiumAlien.locator(".monster-premium-body__art")).toHaveCSS("background-size", /400% 200%/);
   await attachVisual(page, testInfo, "monster-lab");
 
