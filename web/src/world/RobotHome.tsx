@@ -8,6 +8,7 @@ import type { Announce, UpdateProfile } from "./common";
 import { EmptyState } from "./common";
 import { completeOnce, hasCompleted } from "./progression";
 import { roomGoalId } from "./creativeProgression";
+import { PetArt } from "./PetArt";
 
 type RoomGoal = {
   id: "robot-team" | "pet-companion" | "art-display" | "decorator";
@@ -97,7 +98,7 @@ export function RobotHome({ profile, update, announce }: { profile: LocalProfile
           <RobotStage robot={profile.robot} statusLabel={tr(ui.homeStatus, language)} levelLabel={tr(ui.levelShort, language)} />
         </div>
         <div className="robot-home-stage__pet">
-          {activePet ? <><span aria-hidden="true">🐾</span><strong>{activePet.name}</strong><small>{optionLabel(activePet.species, language)}</small></> : <small>{language === "es-MX" ? "Sin mascota activa" : "No active pet"}</small>}
+          {activePet ? <><PetArt pet={activePet} language={language} /><strong>{activePet.name}</strong><small>{optionLabel(activePet.species, language)}</small></> : <small>{language === "es-MX" ? "Sin mascota activa" : "No active pet"}</small>}
         </div>
         <div className="robot-home-stage__decor" aria-label={language === "es-MX" ? "Decoraciones activas" : "Active decorations"}>
           {profile.decorations.map((item) => <span key={item}>{optionLabel(item, language)}</span>)}
@@ -122,7 +123,7 @@ export function RobotHome({ profile, update, announce }: { profile: LocalProfile
             {!profile.pets.length ? <EmptyState emoji="🐾">{language === "es-MX" ? "Construye una mascota en el taller." : "Build a pet in the workshop."}</EmptyState> : (
               <div className="robot-home-choice-list">
                 {profile.pets.map((pet) => (
-                  <button type="button" className={activePet?.id === pet.id ? "active" : ""} aria-pressed={activePet?.id === pet.id} key={pet.id} onClick={() => choosePet(pet)}>🐾 {pet.name}</button>
+                  <button type="button" className={`pet-collection-button ${activePet?.id === pet.id ? "active" : ""}`} aria-pressed={activePet?.id === pet.id} key={pet.id} onClick={() => choosePet(pet)}><PetArt pet={pet} language={language} decorative /><span>{pet.name}</span></button>
                 ))}
               </div>
             )}
