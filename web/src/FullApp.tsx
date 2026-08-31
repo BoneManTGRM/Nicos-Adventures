@@ -5,7 +5,6 @@ import { tr, ui } from "./i18n/core";
 import { useAppStore } from "./app/AppStoreContext";
 import { applyStarBridgeEvent } from "./game/goldenAdventureProfile";
 import { hasDinosaurValleyAccess } from "./game/starBridgeRepair";
-import { AnimalForest } from "./world/AnimalForest";
 import { Arcade } from "./world/Arcade";
 import { ArtStudio } from "./world/ArtStudio";
 import { Badges } from "./world/Badges";
@@ -34,6 +33,7 @@ import "./world/site-polish.css";
 
 const CousinsAdventure = lazy(() => import("./world/CousinsAdventure").then((module) => ({ default: module.CousinsAdventure })));
 const BeccaCorner = lazy(() => import("./world/BeccaCorner").then((module) => ({ default: module.BeccaCorner })));
+const AnimalForest = lazy(() => import("./world/AnimalForest").then((module) => ({ default: module.AnimalForest })));
 
 if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -161,7 +161,11 @@ export default function FullApp() {
     switch (profile.selectedSection) {
       case "world-map": return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} advanceStarBridge={advanceStarBridge} />;
       case "robo-lab": return <RoboLab {...props} open={open} />;
-      case "animal-forest": return <AnimalForest {...props} />;
+      case "animal-forest": return (
+        <Suspense fallback={<div className="fw-empty" role="status">{profile.language === "es-MX" ? "Preparando la expedición animal…" : "Preparing the wildlife expedition…"}</div>}>
+          <AnimalForest {...props} />
+        </Suspense>
+      );
       case "becca-corner": return (
         <Suspense fallback={<div className="fw-empty" role="status">{profile.language === "es-MX" ? "Abriendo el taller mágico…" : "Opening the magic workshop…"}</div>}>
           <BeccaCorner language={profile.language} />

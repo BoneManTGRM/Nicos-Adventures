@@ -47,6 +47,7 @@ const requiredFiles = [
   "src/world/cousins-adventure.css",
   "src/world/AnimalGeneratorGame.tsx",
   "src/world/animal-generator.css",
+  "src/world/animal-forest-premium.css",
   "src/assets/art/becca-premium.webp",
   "src/assets/art/lua-premium.webp",
   "src/assets/art/becca-lua-magic-workshop.webp",
@@ -228,6 +229,10 @@ if (!cousins.includes("NicoCostumeFigure") || !cousins.includes("lua-premium.web
 }
 if (!animalGenerator.includes("Mystery Animal Generator") || !animalGenerator.includes("WildlifeSprite") || !animalGenerator.includes("setTokens")) {
   throw new Error("Token-based random animal generator is incomplete");
+}
+if (!animalForest.includes("animal-field-station") || !animalForest.includes("animal-field-dashboard") ||
+    !animalForest.includes("Premium Animal Field Guide") || !animalForest.includes("Meet animal")) {
+  throw new Error("Premium Animal Forest field-guide experience is incomplete");
 }
 
 const packageJson = JSON.parse(read("package.json"));
