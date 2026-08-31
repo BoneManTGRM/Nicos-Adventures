@@ -177,6 +177,22 @@ async function assertWardrobeCardLayout(page: Page, label: string) {
   expect(overlaps, label).toEqual([]);
 }
 
+test("keyboard route focus and viewport chrome stay stable", async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  const language = testInfo.project.metadata.language as Language;
+  const text = copy[language];
+
+  await page.goto("/");
+  if (language === "es-MX") {
+    await activateWithKeyboard(page.getByRole("button", { name: text.switchLanguage }));
+  }
+  await expect(page.locator("html")).toHaveAttribute("lang", language);
+
+  await openDestination(page, text.world, text.roboLab, `${testInfo.project.name} focused Robo Lab`);
+  await returnToMap(page, text.world, `${testInfo.project.name} focused map return`);
+  await openDestination(page, text.world, text.storyCastle, `${testInfo.project.name} focused Story Castle`);
+});
+
 test("all destinations keep their main local interactions working", async ({ page }, testInfo) => {
   test.skip(
     !visualProjects.has(testInfo.project.name),
