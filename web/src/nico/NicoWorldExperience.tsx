@@ -2,11 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useActiveProfileStore } from "../hooks/useActiveProfileStore";
 import { useDialogFocusTrap } from "../hooks/useDialogFocusTrap";
-import type { MovieProject, NicoPreferences } from "../types";
+import type { MovieProject } from "../types";
 import { NicoMovieLibrary } from "../showtime/NicoMovieLibrary";
 import { ShowtimeStudio } from "../showtime/ShowtimeStudio";
 import { AskNico } from "./AskNico";
-import { NicoDressUp } from "./NicoDressUp";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
 import {
   isNicoHubHistoryState,
@@ -31,7 +30,6 @@ const copy = {
   en: {
     clubhouse: "Nico’s Clubhouse",
     ask: "Ask Nico",
-    dress: "Wardrobe",
     showtime: "Showtime",
     movies: "Movies",
     close: "Close Nico’s Clubhouse",
@@ -45,7 +43,6 @@ const copy = {
   "es-MX": {
     clubhouse: "Casa Club de Nico",
     ask: "Pregúntale",
-    dress: "Guardarropa",
     showtime: "Showtime",
     movies: "Películas",
     close: "Cerrar la Casa Club de Nico",
@@ -190,10 +187,6 @@ export default function NicoWorldExperience() {
     };
   }, [profile.selectedSection]);
 
-  const saveNicoPreferences = (preferences: NicoPreferences) => {
-    commitProfile((current) => ({ ...current, nico: preferences }));
-  };
-
   const saveMovieProject = (project: MovieProject) => {
     commitProfile((current) => {
       const existed = current.movieProjects.some((item) => item.id === project.id);
@@ -280,7 +273,6 @@ export default function NicoWorldExperience() {
             <nav className="nico-hub__tabs" aria-label={text.clubhouse}>
               {([
                 ["ask", "💬", text.ask],
-                ["dress", "🧵", text.dress],
                 ["showtime", "🎬", text.showtime],
                 ["movies", "🎞️", text.movies],
               ] as Array<[NicoHubTab, string, string]>).map(([item, emoji, label]) => (
@@ -306,13 +298,6 @@ export default function NicoWorldExperience() {
                   profession={profile.nico.profession}
                   wardrobe={profile.nico.wardrobe}
                   accentColor={profile.nico.accentColor}
-                />
-              )}
-              {tab === "dress" && (
-                <NicoDressUp
-                  language={profile.language}
-                  preferences={profile.nico}
-                  onSave={saveNicoPreferences}
                 />
               )}
               {tab === "showtime" && (
