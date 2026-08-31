@@ -1,0 +1,9 @@
+.story-studio-layout,
+.story-studio-layout > *,
+.story-controls,
+.story-controls > label,
+.story-controls input,
+.story-controls select {
+  min-width: 0;
+  max-width: 100%;
+}

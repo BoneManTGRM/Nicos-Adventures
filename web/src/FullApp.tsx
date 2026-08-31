@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SectionId } from "./types";
 import type { StarBridgeEvent } from "./game/goldenAdventure";
 import { tr, ui } from "./i18n/core";
@@ -26,6 +26,7 @@ import "./feature-parity.css";
 import "./world/system-parity.css";
 import "./world/progression.css";
 import "./world/creative-memory.css";
+import "./world/story-mobile-fixes.css";
 import "./world/local-media-art.css";
 import "./world/star-bridge-map.css";
 
@@ -34,6 +35,7 @@ type Announcement = { id: number; message: string };
 export default function FullApp() {
   const { store, profile, setStore, updateProfile, commitProfile } = useAppStore();
   const [announcement, setAnnouncement] = useState<Announcement>({ id: 0, message: "" });
+  const pendingTitleFocus = useRef(false);
   const announce = (message: string) => setAnnouncement((current) => ({ id: current.id + 1, message }));
 
   useEffect(() => {
@@ -41,6 +43,22 @@ export default function FullApp() {
     document.documentElement.lang = profile.language;
     document.title = `${tr(section.name, profile.language)} · ${profile.language === "es-MX" ? "El Mundo de Nico" : "Nico's World"}`;
   }, [profile.language, profile.selectedSection]);
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    if (!pendingTitleFocus.current) return;
+    document.getElementById("page-title")?.focus({ preventScroll: true });
+    pendingTitleFocus.current = false;
+  }, [profile.selectedSection]);
+
+  const presentSection = () => {
+    pendingTitleFocus.current = true;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    window.requestAnimationFrame(() => {
+      document.getElementById("page-title")?.focus({ preventScroll: true });
+      pendingTitleFocus.current = false;
+    });
+  };
 
   const open = (sectionId: SectionId) => {
     if (sectionId === "dinosaur-valley" && !hasDinosaurValleyAccess(profile)) {
@@ -59,7 +77,7 @@ export default function FullApp() {
       },
     });
     announce(`${tr(ui.openDestination, profile.language)}: ${tr(section.name, profile.language)}`);
-    window.requestAnimationFrame(() => document.getElementById("page-title")?.focus());
+    presentSection();
   };
 
   const beginStarBridge = () => {
@@ -78,7 +96,7 @@ export default function FullApp() {
     announce(profile.language === "es-MX"
       ? "Aventura iniciada: prepara a BoltBot en el Laboratorio de Robots"
       : "Adventure started: prepare BoltBot in Robo Lab");
-    window.requestAnimationFrame(() => document.getElementById("page-title")?.focus());
+    presentSection();
   };
 
   const advanceStarBridge = (event: StarBridgeEvent) => {

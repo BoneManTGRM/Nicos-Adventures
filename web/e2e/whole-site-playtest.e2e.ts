@@ -32,6 +32,15 @@ const copy = {
     saveName: "Save name",
     backup: "Download backup",
     restore: "Restore backup",
+    guide: "Meet Nico, your local adventure guide",
+    askNico: "Ask Nico",
+    clubhouse: "Nico’s Clubhouse",
+    closeClubhouse: "Close Nico’s Clubhouse",
+    wardrobe: "Wardrobe",
+    wardrobeTitle: "Nico’s Real Wardrobe",
+    suggestion: "What can I do here?",
+    saveWardrobe: "Save Nico’s wardrobe",
+    wardrobeSaved: "Wardrobe saved",
   },
   "es-MX": {
     world: "Mapa del mundo",
@@ -62,6 +71,15 @@ const copy = {
     saveName: "Guardar nombre",
     backup: "Descargar respaldo",
     restore: "Restaurar respaldo",
+    guide: "Conoce a Nico, tu guía local de aventuras",
+    askNico: "Pregúntale a Nico",
+    clubhouse: "Casa Club de Nico",
+    closeClubhouse: "Cerrar la Casa Club de Nico",
+    wardrobe: "Guardarropa",
+    wardrobeTitle: "El guardarropa real de Nico",
+    suggestion: "¿Qué puedo hacer aquí?",
+    saveWardrobe: "Guardar el guardarropa de Nico",
+    wardrobeSaved: "Guardarropa guardado",
   },
 } as const;
 
@@ -69,13 +87,13 @@ const visualProjects = new Set(["chromium-desktop-en", "webkit-iphone-es"]);
 
 async function activateWithKeyboard(locator: Locator) {
   await expect(locator).toBeVisible();
-  await locator.scrollIntoViewIfNeeded();
   await locator.press("Enter");
 }
 
-async function assertPageChrome(page: Page, title: string, label: string) {
+async function assertPageChrome(page: Page, title: string, label: string, expectFocus = true) {
   const heading = page.getByRole("heading", { name: title, exact: true });
-  await expect(heading).toBeFocused();
+  if (expectFocus) await expect(heading).toBeFocused();
+  else await expect(heading).toBeVisible();
   const metrics = await page.evaluate(() => {
     const topbar = document.querySelector<HTMLElement>(".fw-topbar")?.getBoundingClientRect();
     const pageTitle = document.querySelector<HTMLElement>("#page-title")?.getBoundingClientRect();
@@ -90,6 +108,13 @@ async function assertPageChrome(page: Page, title: string, label: string) {
       navigationTop: bottomNavigation?.top ?? 0,
       viewportHeight: window.innerHeight,
       scrollY: window.scrollY,
+      overflowingElements: [...document.body.querySelectorAll<HTMLElement>("*")]
+        .filter((element) => {
+          const bounds = element.getBoundingClientRect();
+          return bounds.right > document.documentElement.clientWidth + 2 || bounds.left < -2;
+        })
+        .slice(0, 8)
+        .map((element) => `${element.tagName.toLowerCase()}.${element.className}`),
       brokenImages: [...document.images]
         .filter((image) => image.complete && image.naturalWidth === 0)
         .map((image) => image.alt || image.currentSrc),
@@ -99,14 +124,17 @@ async function assertPageChrome(page: Page, title: string, label: string) {
   expect(metrics.titleTop, `${label}: title is hidden by the sticky header`).toBeGreaterThanOrEqual(metrics.headerBottom);
   expect(metrics.navigationTop, `${label}: bottom navigation covers the header`).toBeGreaterThan(metrics.headerBottom);
   expect(metrics.navigationBottom, `${label}: bottom navigation exceeds the safe viewport`).toBeLessThanOrEqual(metrics.viewportHeight);
-  expect(metrics.documentWidth, `${label}: document overflow`).toBeLessThanOrEqual(metrics.clientWidth + 2);
-  expect(metrics.bodyWidth, `${label}: body overflow`).toBeLessThanOrEqual(metrics.clientWidth + 2);
+  expect(metrics.documentWidth, `${label}: document overflow (${metrics.overflowingElements.join(", ")})`).toBeLessThanOrEqual(metrics.clientWidth + 2);
+  expect(metrics.bodyWidth, `${label}: body overflow (${metrics.overflowingElements.join(", ")})`).toBeLessThanOrEqual(metrics.clientWidth + 2);
   expect(metrics.brokenImages, `${label}: broken images`).toEqual([]);
 }
 
 async function returnToMap(page: Page, worldTitle: string, label: string) {
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  const canScroll = await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight + 2);
+  if (canScroll) {
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  }
   await activateWithKeyboard(page.locator(".fw-brand"));
   await assertPageChrome(page, worldTitle, `${label} return to map`);
 }
@@ -115,7 +143,7 @@ async function openDestination(page: Page, worldTitle: string, destinationTitle:
   if (!(await page.getByRole("heading", { name: worldTitle, exact: true }).isVisible().catch(() => false))) {
     await returnToMap(page, worldTitle, label);
   }
-  const destination = page.locator(".fw-destination").filter({ hasText: destinationTitle });
+  const destination = page.locator(".fw-destination-grid > .fw-destination").filter({ hasText: destinationTitle });
   await expect(destination).toHaveCount(1);
   await activateWithKeyboard(destination);
   await assertPageChrome(page, destinationTitle, label);
@@ -130,8 +158,25 @@ async function attachVisual(page: Page, testInfo: TestInfo, name: string) {
   });
 }
 
+async function assertWardrobeCardLayout(page: Page, label: string) {
+  const cards = page.locator(".wardrobe-garment-grid > button");
+  await expect(cards.first()).toBeVisible();
+  const overlaps = await cards.evaluateAll((buttons) => buttons.slice(0, 4).flatMap((button, index) => {
+    const art = button.querySelector<HTMLElement>(".wardrobe-garment-art")?.getBoundingClientRect();
+    const name = button.querySelector<HTMLElement>("strong")?.getBoundingClientRect();
+    const hint = button.querySelector<HTMLElement>("small")?.getBoundingClientRect();
+    if (!art || !name || !hint) return [`card ${index + 1} is missing a content region`];
+    const failures: string[] = [];
+    if (name.top < art.bottom - 1) failures.push(`card ${index + 1} name overlaps its art`);
+    if (hint.top < name.bottom - 1) failures.push(`card ${index + 1} hint overlaps its name`);
+    if (hint.bottom > button.getBoundingClientRect().bottom + 1) failures.push(`card ${index + 1} content escapes its card`);
+    return failures;
+  }));
+  expect(overlaps, label).toEqual([]);
+}
+
 test("all destinations keep their main local interactions working", async ({ page }, testInfo) => {
-  test.setTimeout(300_000);
+  test.setTimeout(420_000);
   const language = testInfo.project.metadata.language as Language;
   const text = copy[language];
   const runtimeErrors: string[] = [];
@@ -252,12 +297,51 @@ test("all destinations keep their main local interactions working", async ({ pag
   await expect(page.getByRole("button", { name: new RegExp(`${text.restore}$`) })).toBeEnabled();
   await attachVisual(page, testInfo, "parent-settings");
 
+  await activateWithKeyboard(page.getByRole("button", { name: text.guide }));
+  await expect(page.locator("#nico-guide-panel")).toBeVisible();
+  await page.getByRole("button", { name: text.askNico, exact: true }).click();
+  const clubhouse = page.getByRole("dialog", { name: text.clubhouse, exact: true });
+  await expect(clubhouse).toBeVisible();
+  await expect(page.getByRole("button", { name: text.closeClubhouse, exact: true })).toBeFocused();
+  await page.getByRole("button", { name: text.suggestion, exact: true }).click();
+  const answer = clubhouse.locator(".nico-chat-answer").last();
+  await expect(answer).toBeVisible();
+  await expect(answer).not.toHaveClass(/nico-chat-answer--fallback/);
+  await attachVisual(page, testInfo, "clubhouse-ask-nico");
+
+  await clubhouse.getByRole("button", { name: text.wardrobe, exact: true }).click();
+  await expect(page.getByRole("heading", { name: text.wardrobeTitle, exact: true })).toBeVisible();
+  await expect(clubhouse.locator(".wardrobe-preset-row > button")).toHaveCount(26);
+  await expect(clubhouse.locator('.wardrobe-slot-tabs [role="tab"]')).toHaveCount(9);
+  await assertWardrobeCardLayout(page, `${testInfo.project.name}: wardrobe card layout`);
+  await activateWithKeyboard(clubhouse.locator(".wardrobe-preset-row > button").nth(4));
+  const selectedGarment = clubhouse.locator(".wardrobe-garment-grid > button").nth(1);
+  const selectedGarmentName = await selectedGarment.locator("strong").innerText();
+  await selectedGarment.click();
+  await expect(selectedGarment).toHaveAttribute("aria-pressed", "true");
+  await clubhouse.getByRole("button", { name: new RegExp(`${text.saveWardrobe}$`) }).click();
+  await expect(clubhouse.getByRole("button", { name: new RegExp(`${text.wardrobeSaved}$`) })).toBeVisible();
+  await attachVisual(page, testInfo, "clubhouse-wardrobe");
+  await page.getByRole("button", { name: text.closeClubhouse, exact: true }).click();
+  await expect(clubhouse).toBeHidden();
+
+  const settingsCanScroll = await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight + 2);
+  if (settingsCanScroll) {
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  }
   await page.reload();
-  await expect(page.getByRole("heading", { name: text.settings, exact: true })).toBeVisible();
+  await assertPageChrome(page, text.settings, `${testInfo.project.name} persisted route reload`, false);
   await expect(page.locator(".fw-profile-pill").first()).toContainText(profileName);
   await openDestination(page, text.world, text.museum, `${testInfo.project.name} persisted Memory Museum`);
   await page.getByPlaceholder(text.searchMemories).fill(storyTitle);
   await expect(page.locator(".memory-entry-grid button").filter({ hasText: storyTitle })).toHaveCount(1);
+
+  await activateWithKeyboard(page.getByRole("button", { name: text.guide }));
+  await page.getByRole("button", { name: language === "es-MX" ? "Abrir Casa Club" : "Open Clubhouse", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: text.clubhouse, exact: true })).toBeVisible();
+  const persistedGarment = page.locator(".wardrobe-garment-grid > button").filter({ hasText: selectedGarmentName });
+  await expect(persistedGarment).toHaveAttribute("aria-pressed", "true");
 
   expect([...new Set(externalRequests)]).toEqual([]);
   expect(runtimeErrors).toEqual([]);
