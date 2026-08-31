@@ -91,7 +91,8 @@ export function PremiumBoltBotSprite({
     <span
       className={`premium-boltbot-sprite ${className}`.trim()}
       style={style}
-      data-boltbot-renderer="premium-customized-2d"
+      data-boltbot-renderer="premium-2d"
+      data-boltbot-customization="fitted"
       data-boltbot-pose={pose}
       data-boltbot-head={robot.head}
       data-boltbot-eyes={robot.eyes}
