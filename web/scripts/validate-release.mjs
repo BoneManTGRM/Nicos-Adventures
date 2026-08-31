@@ -35,6 +35,16 @@ const requiredFiles = [
   "src/showtime/recordMovie.ts",
   "src/showtime/movieRenderer.ts",
   "src/showtime/NicoMovieLibrary.tsx",
+  "src/world/BeccaCorner.tsx",
+  "src/world/WildlifeSprite.tsx",
+  "src/world/wildlifeAtlas.ts",
+  "src/world/artCutout.ts",
+  "src/world/PremiumCutout.tsx",
+  "src/world/becca-corner.css",
+  "src/assets/art/becca-premium.webp",
+  "src/assets/art/unicorn-generator.webp",
+  "src/assets/art/unicorn-prance-strip.webp",
+  "src/assets/art/wildlife-premium-atlas.webp",
   "src/catalogs/nico-knowledge.json",
   "src/catalogs/nico-professions.json",
   "src/catalogs/showtime.json",
@@ -158,6 +168,14 @@ if (!compositor.includes("loadCanonicalNicoImage") || compositor.includes("loadN
 }
 if (!showtime.includes('showtime-character--nico') || !showtime.includes('data-character-count') || showtime.includes('                        compact\n')) {
   throw new Error("Showtime live preview is not using the full-body responsive composition");
+}
+const wildlife = read("src/world/wildlifeAtlas.ts");
+const becca = read("src/world/BeccaCorner.tsx");
+if (!showtime.includes('kind: "animal" as const') || !showtime.includes("WildlifeSprite") || !wildlife.includes("WILDLIFE_IDS")) {
+  throw new Error("Premium full-body animals are not available in Showtime");
+}
+if (!becca.includes("Unicorn Generator") || !becca.includes("becca-unicorn--") || !becca.includes("PremiumCutout")) {
+  throw new Error("Becca’s Corner unicorn experience is incomplete");
 }
 
 const packageJson = JSON.parse(read("package.json"));
