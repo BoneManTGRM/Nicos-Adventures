@@ -119,32 +119,24 @@ if (dinosaurSpeciesAtlas.size > 100_000) throw new Error(`Premium dinosaur speci
 if (dinosaurOverlookAtlas.size > 180_000) throw new Error(`Premium dinosaur overlook atlas exceeds its 180 KB budget: ${dinosaurOverlookAtlas.size}`);
 if (fossilExpeditionAtlas.size > 240_000) throw new Error(`Premium fossil expedition atlas exceeds its 240 KB budget: ${fossilExpeditionAtlas.size}`);
 
-if (
-  !nicoFigure.includes("NicoLayeredCharacter")
-  || !nicoFigure.includes("usesCanonicalArt")
-  || !nicoFigure.includes('"canonical-2d"')
-  || !nicoFigure.includes('"layered-wardrobe"')
-) {
-  throw new Error("Nico does not preserve local canonical art with the resolution-independent layered fallback");
+if (!nicoFigure.includes("canonicalNicoPresetArt") || !nicoFigure.includes('"canonical-2d"') || nicoFigure.includes("wardrobeForDisplay")) {
+  throw new Error("Nico is not locked to the premium canonical local art");
 }
-if (!dressUp.includes("WardrobeStudio") || dressUp.includes("approvedOutfitStyle") || dressUp.includes("nicoOutfitSpriteStyle")) {
-  throw new Error("Dress Up still uses flattened full-character art or legacy sprites");
-}
-if (!askNico.includes("NicoCostumeFigure") || !askNico.includes("wardrobe")) {
-  throw new Error("Ask Nico does not use the shared saved wardrobe renderer");
+if (!askNico.includes("NicoCostumeFigure")) {
+  throw new Error("Ask Nico does not use the shared canonical Nico renderer");
 }
 if (!robotStage.includes("PremiumBoltBotSprite") || !robotStage.includes('data-robot-stage="premium-2d"')) {
   throw new Error("Shared BoltBot surfaces still use the angular placeholder renderer");
 }
-if (!boltBotSprite.includes('data-boltbot-renderer="premium-2d"') || !boltBotArt.includes("boltbot-premium-poses-atlas.webp")) {
-  throw new Error("Premium local BoltBot pose art is not wired to the shared renderer");
+if (!boltBotSprite.includes('data-boltbot-renderer="premium-customized-2d"') || !boltBotSprite.includes("BoltBotCustomization") || !boltBotSprite.includes("data-boltbot-head") || !boltBotArt.includes("boltbot-premium-poses-atlas.webp")) {
+  throw new Error("Premium local BoltBot art is not wired to its visible customization layer");
 }
 if (!testChamber.includes("IllustratedChamber") || !testChamber.includes('data-renderer="premium-2d"') || /GameCanvas|useFrame|<canvas/.test(testChamber)) {
   throw new Error("BoltBot test chamber has not completed its illustrated 2D migration");
 }
 const boltBotAtlas = fs.statSync(path.join(root, "src/assets/boltbot/boltbot-premium-poses-atlas.webp"));
 if (boltBotAtlas.size > 200_000) throw new Error(`Premium BoltBot atlas exceeds its 200 KB budget: ${boltBotAtlas.size}`);
-if (!featureArt.includes('data-monster-body-art={monster.body}') || !featureArt.includes('data-monster-arms-art={monster.arms}') || !featureArt.includes("monster-premium-body__pattern") || featureArt.includes('className="monster-body"')) {
+if (!featureArt.includes('data-monster-body-art={monster.body}') || !featureArt.includes('data-monster-arms-art={monster.arms}') || !featureArt.includes("data-monster-face-treatment") || !featureArt.includes("monster-premium-body__pattern") || featureArt.includes('className="monster-body"')) {
   throw new Error("Monster Lab has not completed its premium illustrated body migration");
 }
 for (const body of ["Blob", "Dragon", "Jungle Beast", "Stone Golem", "Spirit", "Cosmic", "Aquatic", "Candy", "Mecha", "Royal", "Volcano", "Ice Beast", "Alien", "Dinosaur", "Cloud"]) {
@@ -183,4 +175,4 @@ if (!tests.includes("without a network response") || !tests.includes("premium lo
   throw new Error("Local media regression coverage is incomplete");
 }
 
-console.log("Local media validation passed for canonical Nico and BoltBot 2D art, premium monsters and Dinosaur Valley, private offline habitat/wildlife illustrations, scoped recovery, and completed world-module integration.");
+console.log("Local media validation passed for canonical Nico, customized BoltBot art, curated monster faces, Dinosaur Valley, and private offline wildlife art.");
