@@ -52,7 +52,7 @@ describe("premium illustrated monster body atlas", () => {
     const stone = monsterAccessoryLayout("Stone Golem");
     const alien = monsterAccessoryLayout("Alien");
 
-    expect(stone.face.scale).toBeLessThan(0.5);
+    expect(stone.face).toEqual({ x: 0, y: -145, scale: 0.46 });
     expect(stone.horns.scale).toBeLessThan(0.4);
     expect(stone.wings.scale).toBeLessThan(0.6);
     expect(alien.face).toEqual({ x: 0, y: -140, scale: 0.27 });
@@ -60,10 +60,10 @@ describe("premium illustrated monster body atlas", () => {
     expect(alien.horns).toEqual({ x: 0, y: -72, scale: 0.22 });
     expect(alien.core.y).toBeLessThan(-100);
     expect(monsterAccessoryTransform("face", stone.face)).toBe(
-      "translate(0 -120) translate(260 246) scale(0.4) translate(-260 -246)",
+      "translate(0 -145) translate(260 246) scale(0.46) translate(-260 -246)",
     );
     expect(monsterAccessoryTransform("mouth", stone.mouth)).toBe(
-      "translate(0 -190) translate(260 330) scale(0.34) translate(-260 -330)",
+      "translate(0 -205) translate(260 330) scale(0.38) translate(-260 -330)",
     );
     expect(monsterBodyArtStyle("Stone Golem", "#22d3ee")).toMatchObject({
       "--monster-body-position": "75% 0%",
