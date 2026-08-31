@@ -35,6 +35,33 @@ const requiredFiles = [
   "src/showtime/recordMovie.ts",
   "src/showtime/movieRenderer.ts",
   "src/showtime/NicoMovieLibrary.tsx",
+  "src/world/BeccaCorner.tsx",
+  "src/world/WildlifeSprite.tsx",
+  "src/world/wildlifeAtlas.ts",
+  "src/world/artCutout.ts",
+  "src/world/PremiumCutout.tsx",
+  "src/world/becca-corner.css",
+  "src/world/CousinsAdventure.tsx",
+  "src/world/cousinsAdventureStories.ts",
+  "src/world/cousins-adventure.css",
+  "src/world/AnimalGeneratorGame.tsx",
+  "src/world/animal-generator.css",
+  "src/assets/art/becca-premium.webp",
+  "src/assets/art/lua-premium.webp",
+  "src/assets/art/cousins-adventure-map.webp",
+  "src/assets/art/unicorn-generator.webp",
+  "src/assets/art/unicorn-prance-strip.webp",
+  "src/assets/art/wildlife-premium-atlas.webp",
+  "src/assets/art/story-rainbow-1.webp",
+  "src/assets/art/story-rainbow-2.webp",
+  "src/assets/art/story-dino-1.webp",
+  "src/assets/art/story-dino-2.webp",
+  "src/assets/art/story-star-1.webp",
+  "src/assets/art/story-star-2.webp",
+  "src/assets/art/story-castle-1.webp",
+  "src/assets/art/story-castle-2.webp",
+  "src/assets/art/story-moon-1.webp",
+  "src/assets/art/story-moon-2.webp",
   "src/catalogs/nico-knowledge.json",
   "src/catalogs/nico-professions.json",
   "src/catalogs/showtime.json",
@@ -158,6 +185,23 @@ if (!compositor.includes("loadCanonicalNicoImage") || compositor.includes("loadN
 }
 if (!showtime.includes('showtime-character--nico') || !showtime.includes('data-character-count') || showtime.includes('                        compact\n')) {
   throw new Error("Showtime live preview is not using the full-body responsive composition");
+}
+const wildlife = read("src/world/wildlifeAtlas.ts");
+const becca = read("src/world/BeccaCorner.tsx");
+const cousins = read("src/world/CousinsAdventure.tsx");
+const cousinsStories = read("src/world/cousinsAdventureStories.ts");
+const animalGenerator = read("src/world/AnimalGeneratorGame.tsx");
+if (!showtime.includes('kind: "animal" as const') || !showtime.includes("WildlifeSprite") || !wildlife.includes("WILDLIFE_IDS")) {
+  throw new Error("Premium full-body animals are not available in Showtime");
+}
+if (!becca.includes("Unicorn Generator") || !becca.includes("becca-unicorn--") || !becca.includes("PremiumCutout")) {
+  throw new Error("Becca’s Corner unicorn experience is incomplete");
+}
+if (!cousins.includes("NicoCostumeFigure") || !cousins.includes("lua-premium.webp") || !cousins.includes("storybook-choice") || !cousinsStories.includes("buildCousinsStory")) {
+  throw new Error("Interactive cousins adventure map is incomplete");
+}
+if (!animalGenerator.includes("Mystery Animal Generator") || !animalGenerator.includes("WildlifeSprite") || !animalGenerator.includes("setTokens")) {
+  throw new Error("Token-based random animal generator is incomplete");
 }
 
 const packageJson = JSON.parse(read("package.json"));

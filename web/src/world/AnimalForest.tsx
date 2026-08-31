@@ -8,6 +8,8 @@ import { EmptyState } from "./common";
 import { completeOnce, fieldMissionId, hasCompleted } from "./progression";
 import { LocalWildlifeArt } from "./LocalWildlifeArt";
 
+const AnimalGeneratorGame = lazy(() => import("./AnimalGeneratorGame").then((module) => ({ default: module.AnimalGeneratorGame })));
+
 const AnimalForestTrail = lazy(() => import("./AnimalForestTrail").then((module) => ({
   default: module.AnimalForestTrail,
 })));
@@ -117,6 +119,9 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
           total={animals.length}
           select={setHabitat}
         />
+      </Suspense>
+      <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando el generador de animales…" : "Preparing the animal generator…"}</div>}>
+        <AnimalGeneratorGame animals={animals} language={language} onGenerated={discover} announce={announce} />
       </Suspense>
       <section className="field-mission-panel" aria-labelledby="field-missions-heading">
         <header>

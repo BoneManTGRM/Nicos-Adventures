@@ -26,6 +26,8 @@ export type SectionId =
   | "world-map"
   | "robo-lab"
   | "animal-forest"
+  | "becca-corner"
+  | "cousins-adventure"
   | "monster-lab"
   | "monster-habitats"
   | "art-studio"
@@ -157,7 +159,7 @@ export type NicoPreferences = {
   wardrobe: NicoWardrobe;
 };
 
-export type MovieCharacterKind = "nico" | "robot" | "monster" | "pet";
+export type MovieCharacterKind = "nico" | "robot" | "monster" | "pet" | "animal";
 export type MoviePose = "idle" | "wave" | "celebrate" | "launch" | "dance" | "spin" | "bounce" | "roar" | "sleep";
 
 export type MovieCharacterRef = {
