@@ -12,10 +12,7 @@ const copy = {
   en: {
     world: "World Map",
     atlas: "A whole world is waking up",
-    pauseAtlas: "Pause world motion",
-    resumeAtlas: "Resume world motion",
-    reducedAtlas: "World motion is reduced",
-    atlasUnavailable: "The illustrated world is unavailable. Choose any landmark below.",
+    atlasInstructions: "Choose a landmark below. No dragging or time limit.",
     animalForest: "Animal Forest",
     animalTrail: "Choose a living habitat trail",
     animalUnavailable: "The illustrated forest is unavailable. Choose a habitat below.",
@@ -71,10 +68,7 @@ const copy = {
   "es-MX": {
     world: "Mapa del mundo",
     atlas: "Todo un mundo está despertando",
-    pauseAtlas: "Pausar movimiento del mundo",
-    resumeAtlas: "Reanudar movimiento del mundo",
-    reducedAtlas: "El movimiento del mundo está reducido",
-    atlasUnavailable: "El mundo ilustrado no está disponible. Elige cualquier lugar abajo.",
+    atlasInstructions: "Elige un lugar abajo. No necesitas arrastrar ni tienes límite de tiempo.",
     animalForest: "Bosque animal",
     animalTrail: "Elige un sendero de hábitat viviente",
     animalUnavailable: "El bosque ilustrado no está disponible. Elige un hábitat abajo.",
@@ -187,10 +181,15 @@ test("Living destinations keep their navigation without WebGL", async ({ page },
     await activateWithKeyboard(page, page.getByRole("button", { name: "Cambiar a español de México" }));
   }
   const atlas = page.locator(".world-atlas");
-  await expect(atlas.locator(".game-canvas")).toHaveAttribute("data-renderer-status", "unavailable");
-  await expect(atlas.getByRole("alert")).toHaveText(text.atlasUnavailable);
+  await expect(atlas).toHaveAttribute("data-world-renderer", "illustrated-2d");
+  const illustratedMap = atlas.locator('.world-atlas-illustration__art[data-map-art="premium-storybook"]');
+  await expect(illustratedMap).toBeVisible();
+  await expect(illustratedMap.locator("img")).toBeVisible();
+  await expect(illustratedMap.locator("img")).toHaveJSProperty("complete", true);
+  await expect(atlas.locator(".world-atlas-illustration")).toHaveAttribute("data-valley-status", "locked");
+  await expect(atlas.locator("figcaption")).toHaveText(text.atlasInstructions);
   await expect(atlas.locator("canvas")).toHaveCount(0);
-  await expect(atlas.locator(".world-atlas__motion-control")).toBeHidden();
+  await expect(atlas.locator(".game-canvas")).toHaveCount(0);
   await expect(atlas.locator(".world-atlas__landmark")).toHaveCount(6);
   await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.roboLab })).toBeEnabled();
   await expect(atlas.locator(".world-atlas__landmark").filter({ hasText: text.dinosaur })).toBeDisabled();
@@ -253,17 +252,11 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   }
   await expect(page.locator("html")).toHaveAttribute("lang", language);
   await expect(page.getByRole("heading", { name: text.atlas, exact: true })).toBeVisible();
-  await assertRendererReady(page, expectsReducedMotion);
-  if (expectsReducedMotion) {
-    await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-motion", "reduced");
-    await expect(page.getByRole("button", { name: text.reducedAtlas, exact: true })).toBeDisabled();
-  } else {
-    const pauseAtlas = page.getByRole("button", { name: text.pauseAtlas, exact: true });
-    await activateWithKeyboard(page, pauseAtlas);
-    await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-motion", "paused");
-    await activateWithKeyboard(page, page.getByRole("button", { name: text.resumeAtlas, exact: true }));
-    await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-motion", "ambient");
-  }
+  await expect(page.locator(".world-atlas")).toHaveAttribute("data-world-renderer", "illustrated-2d");
+  const atlasArt = page.locator('.world-atlas-illustration__art[data-map-art="premium-storybook"] img');
+  await expect(atlasArt).toBeVisible();
+  await expect(atlasArt).toHaveJSProperty("complete", true);
+  await expect(page.locator(".world-atlas canvas")).toHaveCount(0);
   await expect(page.locator(".world-atlas__landmark")).toHaveCount(6);
   const lockedAtlasValley = page.locator(".world-atlas__landmark.is-locked").filter({ hasText: text.dinosaur });
   await expect(lockedAtlasValley).toBeDisabled();
@@ -379,6 +372,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   const unlockedAtlasValley = page.locator(".world-atlas__landmark").filter({ hasText: text.dinosaur });
   await expect(unlockedAtlasValley).toBeEnabled();
   await expect(page.locator(".world-atlas")).toHaveAttribute("data-valley-status", "open");
+  await expect.poll(() => page.locator(".world-atlas-illustration img").evaluate((image: HTMLImageElement) => image.currentSrc))
+    .toContain("nicos-world-map-restored");
   const unlockedValley = page.locator(".fw-destination").filter({ hasText: text.dinosaur });
   await expect(unlockedValley).toBeEnabled();
   await activateWithKeyboard(page, unlockedValley);
