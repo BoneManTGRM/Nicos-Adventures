@@ -31,8 +31,12 @@ describe("Monster Lab localized preview", () => {
     expect(html).toContain("Glimmer, Dragón monstruo");
     expect(html).toContain("monster-stage__environment");
     expect(html).toContain("monster-ground-shadow");
-    expect(html).toContain("monster-surface-pattern");
+    expect(html).toContain('data-monster-body-art="Dragon"');
+    expect(html).toContain('data-monster-pattern="galaxy"');
+    expect(html).toContain("premium-monster-bodies-atlas");
+    expect(html).toContain("monster-premium-body__pattern");
     expect(html).toContain("monster-texture--crystal");
+    expect(html).not.toContain("<canvas");
     expect(monster).toMatchObject({ body: "Dragon", pattern: "Galaxy", power: "Rainbow shield" });
   });
 });

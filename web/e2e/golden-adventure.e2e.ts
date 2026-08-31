@@ -300,6 +300,10 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(page.getByRole("heading", { name: text.monsterLab, exact: true })).toBeFocused();
   await expect(page.getByRole("heading", { name: text.monsterStudio, exact: true })).toBeVisible();
   await expect(page.locator(".monster-studio__trait")).toHaveCount(15);
+  const premiumMonster = page.locator('.monster-v2[data-monster-body-art="Dragon"]');
+  await expect(premiumMonster).toBeVisible();
+  await expect(premiumMonster.locator(".monster-premium-body__art")).toBeVisible();
+  await expect(premiumMonster.locator("canvas")).toHaveCount(0);
   const colorTrait = page.locator('.monster-studio__trait[data-trait="color"]');
   await activateWithKeyboard(page, colorTrait);
   const crimson = page.locator('.monster-studio__choice[data-option="Crimson"]');
@@ -312,6 +316,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await activateWithKeyboard(page, cosmic);
   await expect(cosmic).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".monster-v2")).toHaveClass(/monster-family--cosmic/);
+  await expect(page.locator(".monster-v2")).toHaveAttribute("data-monster-body-art", "Cosmic");
   await assertLayout(page, `${testInfo.project.name} Monster Lab`);
   await testInfo.attach("visual-monster-lab", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
