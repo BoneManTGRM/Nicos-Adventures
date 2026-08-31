@@ -98,12 +98,21 @@
   background: #173d5b;
 }
 
-.world-atlas-fallback svg {
+.world-atlas-fallback__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+}
+
+.world-atlas-fallback__art img {
   display: block;
   width: 100%;
   height: 100%;
   min-height: inherit;
   object-fit: cover;
+  object-position: center;
+  transition: filter 800ms ease, opacity 300ms ease;
 }
 
 .world-atlas-fallback > p {
@@ -124,14 +133,8 @@
   backdrop-filter: blur(12px);
 }
 
-.world-atlas-fallback__landmark { transform-box: fill-box; transform-origin: center bottom; }
-.world-atlas-fallback__bridge.is-open rect { filter: drop-shadow(0 0 7px rgba(250, 204, 21, .64)); }
-.world-atlas-fallback__dinosaur-gate { opacity: .82; }
-.world-atlas-fallback[data-valley-status="open"] .world-atlas-fallback__dinosaur-gate { opacity: 1; }
-.world-atlas-fallback__clouds { animation: atlasCloudDrift 18s ease-in-out infinite alternate; }
-
-@keyframes atlasCloudDrift {
-  to { transform: translateX(18px); }
+.world-atlas-fallback[data-valley-status="open"] .world-atlas-fallback__art img {
+  filter: saturate(1.04) brightness(1.03);
 }
 
 .world-atlas__motion-control {
