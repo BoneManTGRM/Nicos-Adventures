@@ -156,6 +156,9 @@ if (!showtime.includes("parentConfirmed") || !showtime.includes("composeNicoImag
 if (!compositor.includes("loadCanonicalNicoImage") || compositor.includes("loadNicoWardrobeImage")) {
   throw new Error("Showtime does not use canonical Nico art");
 }
+if (!showtime.includes('showtime-character--nico') || !showtime.includes('data-character-count') || showtime.includes('                        compact\n')) {
+  throw new Error("Showtime live preview is not using the full-body responsive composition");
+}
 
 const packageJson = JSON.parse(read("package.json"));
 const packageLock = JSON.parse(read("package-lock.json"));

@@ -409,17 +409,16 @@ export function ShowtimeStudio({
 
         <div className="showtime-preview-column">
           <section className="showtime-live" style={{ "--showtime-background": scene.background } as CSSProperties} aria-label={text.live}>
-            <div className="showtime-live__characters">
+            <div className="showtime-live__characters" data-character-count={selectedCharacters.length}>
               {selectedCharacters.map((character) => {
                 const pose = livePoseFor(character.kind);
                 if (character.kind === "nico") {
                   return (
-                    <div className={`showtime-character showtime-character--${pose}`} key={character.key}>
+                    <div className={`showtime-character showtime-character--nico showtime-character--${pose}`} key={character.key}>
                       <NicoCostumeFigure
                         profession={profile.nico.profession}
                         wardrobe={profile.nico.wardrobe}
                         accentColor={profile.nico.accentColor}
-                        compact
                         alt="Nico"
                       />
                     </div>

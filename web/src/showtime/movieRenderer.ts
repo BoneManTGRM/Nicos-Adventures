@@ -1,4 +1,3 @@
-import professionData from "../catalogs/nico-professions.json";
 import type {
   MovieCharacterKind,
   MoviePose,
@@ -60,10 +59,6 @@ const monsterColors: Record<string, string> = {
   Emerald: "#10b981",
   Crimson: "#be123c",
 };
-
-const professionIcons = Object.fromEntries(
-  professionData.map((profession) => [profession.id, profession.emoji]),
-) as Record<NicoProfessionId, string>;
 
 const petIcons: Record<string, string> = {
   "Robot Dog": "🐕",
@@ -287,7 +282,7 @@ function drawPet(ctx: CanvasRenderingContext2D, pet: PetRecord | undefined, x: n
 function drawNico(
   ctx: CanvasRenderingContext2D,
   image: HTMLImageElement | null,
-  profession: NicoProfessionId,
+  _profession: NicoProfessionId,
   accent: string,
   x: number,
   y: number,
@@ -295,9 +290,9 @@ function drawNico(
 ) {
   ctx.save();
   if (image?.complete && image.naturalWidth > 0) {
-    const targetHeight = size * 1.35;
+    const targetHeight = size * 1.42;
     const targetWidth = targetHeight * (image.naturalWidth / image.naturalHeight);
-    ctx.drawImage(image, x - targetWidth / 2, y - targetHeight * 0.63, targetWidth, targetHeight);
+    ctx.drawImage(image, x - targetWidth / 2, y - targetHeight, targetWidth, targetHeight);
   } else {
     ctx.fillStyle = accent;
     ctx.beginPath();
@@ -310,17 +305,6 @@ function drawNico(
     ctx.fillText("N", x, y);
   }
 
-  ctx.fillStyle = accent;
-  ctx.beginPath();
-  ctx.arc(x + size * 0.3, y - size * 0.38, size * 0.14, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = "#fff";
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  ctx.font = `${Math.round(size * 0.18)}px Apple Color Emoji, Segoe UI Emoji, sans-serif`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(professionIcons[profession] ?? "✨", x + size * 0.3, y - size * 0.38);
   ctx.restore();
 }
 
@@ -354,26 +338,26 @@ export function drawMovieFrame({
 
   const count = Math.max(1, characters.length);
   const spacing = width / (count + 1);
-  const size = count === 1 ? 245 : count === 2 ? 210 : 175;
+  const size = count === 1 ? 225 : count === 2 ? 205 : 170;
+  const floorY = height * 0.75;
   characters.forEach((character, index) => {
     const x = spacing * (index + 1);
-    const baseY = height * 0.59;
     const transform = poseTransform(pose, poseProgress, index);
     context.save();
-    context.translate(x, baseY + transform.y);
+    context.translate(x, floorY + transform.y);
     context.rotate(transform.rotation);
     context.scale(transform.scale, transform.scale);
-    context.translate(-x, -baseY);
+    context.translate(-x, -floorY);
 
-    context.fillStyle = "rgba(2,6,23,.25)";
+    context.fillStyle = "rgba(2,6,23,.32)";
     context.beginPath();
-    context.ellipse(x, baseY + size * 0.62, size * 0.44, size * 0.1, 0, 0, Math.PI * 2);
+    context.ellipse(x, floorY + 5, size * 0.45, size * 0.1, 0, 0, Math.PI * 2);
     context.fill();
 
-    if (character.kind === "nico") drawNico(context, nicoArt, nicoProfession, nicoAccent, x, baseY, size);
-    else if (character.kind === "robot") drawRobot(context, character.robot, x, baseY, size);
-    else if (character.kind === "monster") drawMonster(context, character.monster, x, baseY, size);
-    else drawPet(context, character.pet, x, baseY, size);
+    if (character.kind === "nico") drawNico(context, nicoArt, nicoProfession, nicoAccent, x, floorY, size);
+    else if (character.kind === "robot") drawRobot(context, character.robot, x, floorY - size * 0.73, size);
+    else if (character.kind === "monster") drawMonster(context, character.monster, x, floorY - size * 0.57, size);
+    else drawPet(context, character.pet, x, floorY - size * 0.41, size);
     context.restore();
     drawName(context, character.name, x, height * 0.82);
   });
