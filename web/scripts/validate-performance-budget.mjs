@@ -19,16 +19,22 @@ const enforce = (name, maxBytes, label) => {
   return size;
 };
 
+for (const [pattern, label] of [
+  [/^game3d-[^.]+\.js$/, "orphaned shared 3D runtime"],
+  [/^DinosaurValleyOverlook-[^.]+\.js$/, "3D Dinosaur Valley overlook"],
+  [/^BrachiosaurusFossilExpedition-[^.]+\.js$/, "3D fossil expedition"],
+]) {
+  const matches = files.filter((name) => pattern.test(name));
+  if (matches.length) throw new Error(`Unexpected ${label} chunk after the premium 2D migration: ${matches.join(", ")}`);
+}
+
 const measured = {
   mainJavaScript: enforce(findOne(/^index-[^.]+\.js$/, "main JavaScript"), 175_000, "Main JavaScript"),
   mainStyles: enforce(findOne(/^index-[^.]+\.css$/, "main stylesheet"), 30_000, "Main stylesheet"),
-  shared3d: enforce(findOne(/^game3d-[^.]+\.js$/, "shared 3D"), 300_000, "Shared lazy 3D runtime"),
   livingWorldAtlas: enforce(findOne(/^LivingWorldAtlas-[^.]+\.js$/, "Living World Atlas"), 24_000, "Living World Atlas"),
   animalForestTrail: enforce(findOne(/^AnimalForestTrail-[^.]+\.js$/, "Animal Forest trail"), 24_000, "Animal Forest trail"),
   testChamber: enforce(findOne(/^BoltBotTestChamber-[^.]+\.js$/, "BoltBot test chamber"), 20_000, "BoltBot test chamber"),
-  starBridge: enforce(findOne(/^BrokenStarBridge-[^.]+\.js$/, "Broken Star Bridge"), 20_000, "Broken Star Bridge"),
-  dinosaurValley: enforce(findOne(/^DinosaurValleyOverlook-[^.]+\.js$/, "Dinosaur Valley overlook"), 20_000, "Dinosaur Valley overlook"),
-  brachiosaurusExpedition: enforce(findOne(/^BrachiosaurusFossilExpedition-[^.]+\.js$/, "Brachiosaurus fossil expedition"), 20_000, "Brachiosaurus fossil expedition"),
+  starBridge3d: enforce(findOne(/^BrokenStarBridge-[^.]+\.js$/, "Broken Star Bridge"), 285_000, "Remaining lazy Star Bridge 3D route"),
 };
 
 console.log(`Performance budgets passed: ${Object.entries(measured).map(([name, bytes]) => `${name}=${bytes}B gzip`).join(", ")}.`);

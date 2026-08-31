@@ -1,0 +1,142 @@
+.dinosaur-art__scene {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background:
+    linear-gradient(180deg, rgba(8, 18, 28, .03), rgba(4, 12, 18, .4)),
+    var(--dinosaur-overlook-image) 0 0 / 200% 200% no-repeat;
+}
+
+.dinosaur-art__scene::after {
+  position: absolute;
+  z-index: 1;
+  inset: auto 8% 4%;
+  height: 12%;
+  border-radius: 50%;
+  background: rgba(2, 8, 23, .42);
+  filter: blur(11px);
+  content: "";
+}
+
+.dinosaur-art__creature {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: -3%;
+  display: block;
+  width: 98%;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  transform-origin: 50% 82%;
+  background-image: var(--dinosaur-species-image);
+  background-position: var(--dinosaur-species-position);
+  background-repeat: no-repeat;
+  background-size: 200% 300%;
+  filter: drop-shadow(0 16px 10px rgba(2, 8, 23, .52));
+  animation: premium-dino-breathe 3.8s ease-in-out infinite;
+}
+
+.dinosaur-art.is-mystery .dinosaur-art__creature {
+  opacity: .28;
+  filter: brightness(.28) saturate(.45) drop-shadow(0 14px 10px rgba(2, 8, 23, .56));
+}
+
+.dinosaur-art__mystery {
+  position: absolute;
+  z-index: 3;
+  inset: 50% auto auto 50%;
+  display: grid;
+  width: 82px;
+  height: 82px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(254, 240, 138, .72);
+  border-radius: 50%;
+  background: rgba(3, 12, 34, .7);
+  color: #fef08a;
+  font-size: 52px;
+  font-weight: 950;
+  box-shadow: 0 14px 34px rgba(2, 8, 23, .5);
+  backdrop-filter: blur(5px);
+}
+
+.dino-overlook__art,
+.fossil-expedition__art {
+  position: relative;
+  align-self: start;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(217, 249, 157, .4);
+  border-radius: 23px;
+  background: #132f2f;
+  box-shadow: inset 0 0 54px rgba(2, 8, 23, .28), 0 20px 42px rgba(0, 0, 0, .28);
+}
+
+.fossil-expedition__art {
+  border-color: rgba(253, 224, 71, .38);
+  background: #4a321f;
+}
+
+.dinosaur-premium-scene {
+  width: 100%;
+  aspect-ratio: 1;
+  background-image: var(--dinosaur-scene-image);
+  background-position: var(--dinosaur-scene-position);
+  background-repeat: no-repeat;
+  background-size: 200% 200%;
+  animation: premium-dino-scene-in .45s ease-out both;
+}
+
+.dino-overlook__art figcaption,
+.fossil-expedition__art figcaption {
+  position: absolute;
+  z-index: 2;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 14px;
+  background: rgba(3, 16, 27, .78);
+  color: #f0fdf4;
+  line-height: 1.3;
+  box-shadow: 0 12px 28px rgba(2, 8, 23, .34);
+  backdrop-filter: blur(8px);
+}
+
+.fossil-expedition__art figcaption { background: rgba(45, 29, 19, .82); color: #fff8e7; }
+.dino-overlook__art figcaption span,
+.fossil-expedition__art figcaption span { color: #d9f99d; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.fossil-expedition__art figcaption span { color: #fde68a; }
+.dino-overlook__art figcaption strong,
+.fossil-expedition__art figcaption strong { font-size: 13px; }
+.fossil-expedition__instruction { margin: 0 0 3px; color: #eadcc8; font-size: 13px; line-height: 1.45; }
+
+@keyframes premium-dino-breathe {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(-.15deg); }
+  50% { transform: translateX(-50%) translateY(-4px) rotate(.15deg); }
+}
+
+@keyframes premium-dino-scene-in {
+  from { opacity: .55; transform: scale(1.015); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 620px) {
+  .dinosaur-art__scene { aspect-ratio: 1.08; }
+  .dino-overlook__art,
+  .fossil-expedition__art { border-radius: 18px; }
+  .dino-overlook__art figcaption,
+  .fossil-expedition__art figcaption { right: 8px; bottom: 8px; left: 8px; padding: 8px 9px; }
+  .dino-overlook__art figcaption strong,
+  .fossil-expedition__art figcaption strong { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dinosaur-art__creature,
+  .dinosaur-premium-scene { animation: none; }
+}

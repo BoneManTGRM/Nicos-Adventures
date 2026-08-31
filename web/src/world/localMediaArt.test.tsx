@@ -30,13 +30,17 @@ describe("local media artwork", () => {
     expect(html).toContain("local-wildlife-art__animal");
   });
 
-  it("renders distinct sharp SVG silhouettes for supported dinosaurs", () => {
+  it("renders distinct premium local atlas portraits for every supported dinosaur", () => {
     const trex = renderToStaticMarkup(<DinosaurArt dinosaur={dinosaur("trex", "Tyrannosaurus rex", "Cretaceous")} language="en" />);
     const stegosaurus = renderToStaticMarkup(<DinosaurArt dinosaur={dinosaur("stegosaurus", "Stegosaurus", "Jurassic")} language="en" />);
     expect(trex).toContain("Tyrannosaurus rex");
     expect(stegosaurus).toContain("Stegosaurus");
     expect(trex).not.toBe(stegosaurus);
-    expect(trex).toContain("<svg");
+    expect(trex).toContain("premium-dinosaur-species-atlas");
+    expect(trex).toContain('data-dinosaur-art="trex"');
+    expect(stegosaurus).toContain('data-dinosaur-art="stegosaurus"');
+    expect(trex).not.toContain("<svg");
+    expect(trex).not.toContain("<canvas");
   });
 
   it("keeps undiscovered dinosaurs illustrated but visually protected", () => {

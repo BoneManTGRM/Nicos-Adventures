@@ -1,17 +1,13 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { DinosaurRecord, LocalProfile } from "../types";
 import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
 import type { Announce, UpdateProfile } from "./common";
 import { completeOnce, dinosaurDiscoveryMission } from "./progression";
 import { DinosaurArt } from "./DinosaurArt";
-
-const DinosaurValleyOverlook = lazy(() => import("./DinosaurValleyOverlook").then((module) => ({
-  default: module.DinosaurValleyOverlook,
-})));
-const BrachiosaurusFossilExpedition = lazy(() => import("./BrachiosaurusFossilExpedition").then((module) => ({
-  default: module.BrachiosaurusFossilExpedition,
-})));
+import { DinosaurValleyOverlook } from "./DinosaurValleyOverlook";
+import { BrachiosaurusFossilExpedition } from "./BrachiosaurusFossilExpedition";
+import "./dinosaur-valley-premium.css";
 
 const periods = ["Triassic", "Jurassic", "Cretaceous"] as const;
 
@@ -93,9 +89,7 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
 
   return (
     <>
-      <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando el mirador del valle…" : "Preparing the valley overlook…"}</div>}>
-        <DinosaurValleyOverlook language={language} announce={announce} />
-      </Suspense>
+      <DinosaurValleyOverlook language={language} announce={announce} />
       <section className="dino-progress-panel" aria-label={language === "es-MX" ? "Progreso de dinosaurios" : "Dinosaur progress"}>
         <div>
           <small>{language === "es-MX" ? "Guía de campo local" : "Local field guide"}</small>
@@ -106,17 +100,15 @@ export function DinosaurValley({ profile, update, announce }: { profile: LocalPr
       </section>
 
       {active?.id === "brachiosaurus" ? (
-        <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la excavación fósil…" : "Preparing the fossil excavation…"}</div>}>
-          <BrachiosaurusFossilExpedition
-            dinosaur={active}
-            language={language}
-            discovered={active.discovered}
-            announce={announce}
-            completeDiscovery={() => submit(active.period)}
-            close={() => setActiveId(null)}
-            nextDinosaur={nextUndiscovered}
-          />
-        </Suspense>
+        <BrachiosaurusFossilExpedition
+          dinosaur={active}
+          language={language}
+          discovered={active.discovered}
+          announce={announce}
+          completeDiscovery={() => submit(active.period)}
+          close={() => setActiveId(null)}
+          nextDinosaur={nextUndiscovered}
+        />
       ) : active ? (
         <section className="dino-expedition-panel" aria-labelledby="dino-expedition-heading">
           <button type="button" className="dino-expedition-close" onClick={() => setActiveId(null)} aria-label={language === "es-MX" ? "Cerrar expedición" : "Close expedition"}>×</button>

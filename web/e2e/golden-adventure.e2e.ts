@@ -391,10 +391,17 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await activateWithKeyboard(page, unlockedValley);
   await expect(page.getByRole("heading", { name: text.dinosaur, exact: true })).toBeFocused();
   await expect(page.getByRole("heading", { name: text.overlook, exact: true })).toBeVisible();
-  await assertRendererReady(page, expectsReducedMotion);
+  const premiumOverlook = page.locator('.dino-overlook[data-dinosaur-renderer="premium-2d"]');
+  await expect(premiumOverlook).toBeVisible();
+  await expect(premiumOverlook.locator("canvas")).toHaveCount(0);
+  await expect(premiumOverlook.locator(".game-canvas")).toHaveCount(0);
+  await expect(premiumOverlook.locator(".dino-overlook__art")).toHaveAttribute("data-dinosaur-overlook-stage", "0");
   await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.footprints) }));
+  await expect(premiumOverlook.locator(".dino-overlook__art")).toHaveAttribute("data-dinosaur-overlook-stage", "1");
   await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.canopy) }));
+  await expect(premiumOverlook.locator(".dino-overlook__art")).toHaveAttribute("data-dinosaur-overlook-stage", "2");
   await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.herdPath) }));
+  await expect(premiumOverlook.locator(".dino-overlook__art")).toHaveAttribute("data-dinosaur-overlook-stage", "3");
   await expect(page.getByText(text.dinosaurFound, { exact: true })).toBeVisible();
   await expect(page.locator(".dino-overlook__reveal")).toBeFocused();
   await expect(page.locator(".fw-skip-link")).toHaveCSS("opacity", "0");
@@ -406,13 +413,22 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   const brachiosaurusCard = page.locator('.fw-dino-card[data-dinosaur-id="brachiosaurus"]');
   await activateWithKeyboard(page, brachiosaurusCard.getByRole("button"));
   await expect(page.getByRole("heading", { name: text.fossilExpedition, exact: true })).toBeFocused();
-  await assertRendererReady(page, expectsReducedMotion);
+  const premiumFossil = page.locator('.fossil-expedition[data-dinosaur-renderer="premium-2d"]');
+  await expect(premiumFossil).toBeVisible();
+  await expect(premiumFossil.locator("canvas")).toHaveCount(0);
+  await expect(premiumFossil.locator(".game-canvas")).toHaveCount(0);
+  await expect(premiumFossil.locator(".fossil-expedition__art")).toHaveAttribute("data-fossil-stage", "survey");
   await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.fossilLayer) }));
+  await expect(premiumFossil.locator(".fossil-expedition__art")).toHaveAttribute("data-fossil-stage", "brush");
   await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.brushEdge) }));
+  await expect(premiumFossil.locator(".fossil-expedition__art")).toHaveAttribute("data-brushed-zones", "1");
   await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.brushVertebra) }));
+  await expect(premiumFossil.locator(".fossil-expedition__art")).toHaveAttribute("data-brushed-zones", "2");
   await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.brushLeg) }));
+  await expect(premiumFossil.locator(".fossil-expedition__art")).toHaveAttribute("data-fossil-stage", "classify");
   await activateWithKeyboard(page, page.getByRole("button", { name: text.jurassic, exact: true }));
   await expect(page.getByRole("heading", { name: text.fossilComplete, exact: true })).toBeFocused();
+  await expect(premiumFossil.locator(".fossil-expedition__art")).toHaveAttribute("data-fossil-stage", "complete");
   await assertLayout(page, `${testInfo.project.name} Brachiosaurus fossil expedition`);
   await testInfo.attach("brachiosaurus-fossil-expedition", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
