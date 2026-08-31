@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { MONSTER_OPTIONS } from "./catalogs";
-import { PREMIUM_ALIEN_ARMS, PREMIUM_MONSTER_BODIES, monsterBodyArtStyle } from "./monsterArt";
+import {
+  PREMIUM_ALIEN_ARMS,
+  PREMIUM_MONSTER_BODIES,
+  monsterAccessoryLayout,
+  monsterAccessoryTransform,
+  monsterBodyArtStyle,
+} from "./monsterArt";
 
 describe("premium illustrated monster body atlas", () => {
   it("maps every schema-v4 monster body to exactly one atlas cell", () => {
@@ -39,6 +45,22 @@ describe("premium illustrated monster body atlas", () => {
     });
     expect(monsterBodyArtStyle("Alien", "#a3e635", "Unknown legacy arms")).toMatchObject({
       "--monster-body-position": "0% 0%",
+    });
+  });
+
+  it("fits accessories to broad bodies without changing their body art", () => {
+    const stone = monsterAccessoryLayout("Stone Golem");
+    const alien = monsterAccessoryLayout("Alien");
+
+    expect(stone.face.scale).toBeLessThan(0.7);
+    expect(stone.horns.scale).toBeLessThan(0.6);
+    expect(stone.wings.scale).toBeLessThan(0.7);
+    expect(alien.face.scale).toBeLessThan(0.7);
+    expect(monsterAccessoryTransform("face", stone.face)).toBe(
+      "translate(0 -88) translate(260 246) scale(0.64) translate(-260 -246)",
+    );
+    expect(monsterBodyArtStyle("Stone Golem", "#22d3ee")).toMatchObject({
+      "--monster-body-position": "75% 0%",
     });
   });
 });

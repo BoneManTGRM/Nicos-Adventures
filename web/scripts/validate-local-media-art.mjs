@@ -156,6 +156,12 @@ if (!monsterArt.includes("premium-alien-arms-atlas.webp") || !monsterArtTest.inc
 if (!monsterArtTest.includes("every schema-v4 monster body") || !monsterViewTest.includes("premium-monster-bodies-atlas")) {
   throw new Error("Premium monster atlas regression coverage is incomplete");
 }
+if (!featureArt.includes("monster-traits--rear") || !featureArt.includes("monster-traits--front") || !featureArt.includes("monsterAccessoryTransform")) {
+  throw new Error("Monster accessories are not separated into fitted rear and front layers");
+}
+if (!monsterArt.includes("MONSTER_ACCESSORY_LAYOUTS") || !monsterArtTest.includes("fits accessories to broad bodies") || !monsterViewTest.includes("compact fit for a Stone Golem")) {
+  throw new Error("Body-specific monster accessory fit coverage is incomplete");
+}
 const monsterAtlas = fs.statSync(path.join(root, "src/assets/monsters/premium-monster-bodies-atlas.webp"));
 if (monsterAtlas.size > 360_000) throw new Error(`Premium monster body atlas exceeds its 360 KB budget: ${monsterAtlas.size}`);
 const alienAtlas = fs.statSync(path.join(root, "src/assets/monsters/premium-alien-arms-atlas.webp"));
