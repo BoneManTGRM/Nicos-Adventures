@@ -96,6 +96,9 @@ if (!appStore.includes("useState<LocalSaveStore>") || !appStore.includes('saveLo
 if (!fullApp.includes("useAppStore()") || fullApp.includes("loadLocalStore") || fullApp.includes("saveLocalStore")) {
   throw new Error("FullApp creates or persists a second store");
 }
+if (!fullApp.includes('window.history.scrollRestoration = "manual"')) {
+  throw new Error("Saved destinations must not reopen at a stale browser scroll position");
+}
 if (!activeProfileHook.includes("useAppStore()") || activeProfileHook.includes("useState") || activeProfileHook.includes("loadLocalStore")) {
   throw new Error("Legacy profile hook is not a context-only adapter");
 }

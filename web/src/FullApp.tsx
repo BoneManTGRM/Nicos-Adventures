@@ -30,6 +30,10 @@ import "./world/story-mobile-fixes.css";
 import "./world/local-media-art.css";
 import "./world/star-bridge-map.css";
 
+if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
 type Announcement = { id: number; message: string };
 
 export default function FullApp() {
