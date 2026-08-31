@@ -10,7 +10,7 @@ export type WorldSection = {
 
 export const WORLD_SECTIONS: WorldSection[] = [
   { id: "world-map", emoji: "🌍", name: { en: "World Map", "es-MX": "Mapa del mundo" }, description: { en: "Choose a destination and continue the adventure.", "es-MX": "Elige un destino y continúa la aventura." } },
-  { id: "robo-lab", emoji: "🤖", name: { en: "Robo Lab", "es-MX": "Laboratorio robot" }, description: { en: "Build, customize, save, animate, and assign jobs to robot friends.", "es-MX": "Construye, personaliza, anima y asigna trabajos a amigos robot." } },
+  { id: "robo-lab", emoji: "🤖", name: { en: "Robo Lab", "es-MX": "Laboratorio robot" }, description: { en: "Meet BoltBot and try six polished robot movements.", "es-MX": "Conoce a BoltBot y prueba seis movimientos de robot mejorados." } },
   { id: "animal-forest", emoji: "🐾", name: { en: "Animal Forest", "es-MX": "Bosque animal" }, description: { en: "Explore private local wildlife art, habitats, facts, favorites, and field missions.", "es-MX": "Explora ilustraciones locales privadas, hábitats, datos, favoritos y misiones de fauna." } },
   { id: "monster-lab", emoji: "👾", name: { en: "Monster Lab", "es-MX": "Laboratorio de monstruos" }, description: { en: "Create detailed layered monsters with powers, movement, and personalities.", "es-MX": "Crea monstruos detallados con poderes, movimientos y personalidades." } },
   { id: "monster-habitats", emoji: "🏕️", name: { en: "Monster Habitats", "es-MX": "Hábitats de monstruos" }, description: { en: "Care for monsters and grow their friendship.", "es-MX": "Cuida a los monstruos y aumenta su amistad." } },
