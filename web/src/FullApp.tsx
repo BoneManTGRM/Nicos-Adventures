@@ -116,14 +116,14 @@ export default function FullApp() {
     }
     const section = WORLD_SECTIONS.find((item) => item.id === sectionId) ?? WORLD_SECTIONS[0];
     presentSection();
-    updateProfile({
-      ...profile,
+    commitProfile((current) => ({
+      ...current,
       selectedSection: sectionId,
       sectionVisits: {
-        ...profile.sectionVisits,
-        [sectionId]: Number(profile.sectionVisits[sectionId] ?? 0) + 1,
+        ...current.sectionVisits,
+        [sectionId]: Number(current.sectionVisits[sectionId] ?? 0) + 1,
       },
-    });
+    }));
     announce(`${tr(ui.openDestination, profile.language)}: ${tr(section.name, profile.language)}`);
   };
 
