@@ -1,9 +1,7 @@
 import type { CSSProperties } from "react";
 import type { NicoProfessionId, NicoWardrobe } from "../types";
-import { hasCanonicalNicoPresetArt } from "./canonicalNicoArt";
-import { NicoLayeredCharacter } from "./wardrobe/NicoLayeredCharacter";
+import { canonicalNicoPresetArt } from "./canonicalNicoArt";
 import { wardrobeForPreset } from "./wardrobe/catalog";
-import { wardrobeForDisplay } from "./wardrobe/wardrobeCompatibility";
 
 type Props = {
   artSource?: string;
@@ -54,14 +52,14 @@ export const NICO_COSTUME_DECORATIONS: Record<NicoProfessionId, CostumeDecoratio
 
 export function NicoCostumeFigure({
   profession,
-  wardrobe,
   accentColor = "#22c55e",
   compact = false,
   alt = "Nico",
 }: Props) {
-  const base = wardrobe ?? wardrobeForPreset(profession, accentColor);
-  const resolvedWardrobe = wardrobeForDisplay(base, profession);
-  const usesCanonicalArt = hasCanonicalNicoPresetArt(resolvedWardrobe);
+  // Saved wardrobe data stays readable for profile compatibility, but live
+  // surfaces never render the retired "layered-wardrobe" cartoon.
+  const resolvedWardrobe = wardrobeForPreset(profession, accentColor);
+  const canonicalArt = canonicalNicoPresetArt(resolvedWardrobe);
   const style = { "--nico-costume-accent": resolvedWardrobe.accentColor } as CSSProperties;
 
   return (
@@ -69,10 +67,18 @@ export function NicoCostumeFigure({
       className={`nico-costume nico-costume--${profession} ${compact ? "nico-costume--compact" : ""}`.trim()}
       style={style}
       data-profession={profession}
-      data-art-state={usesCanonicalArt ? "canonical-2d" : "layered-wardrobe"}
+      data-art-state="canonical-2d"
     >
       <div className="nico-costume__frame">
-        <NicoLayeredCharacter wardrobe={resolvedWardrobe} compact={compact} alt={alt} />
+        <span
+          className="nico-canonical-sprite"
+          style={canonicalArt?.style}
+          role={alt ? "img" : undefined}
+          aria-label={alt || undefined}
+          aria-hidden={alt ? undefined : true}
+          data-nico-renderer="canonical-2d"
+          data-nico-preset={profession}
+        />
       </div>
     </figure>
   );
