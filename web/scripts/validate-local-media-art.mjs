@@ -128,8 +128,8 @@ if (!askNico.includes("NicoCostumeFigure")) {
 if (!robotStage.includes("PremiumBoltBotSprite") || !robotStage.includes('data-robot-stage="premium-2d"')) {
   throw new Error("Shared BoltBot surfaces still use the angular placeholder renderer");
 }
-if (!boltBotSprite.includes('data-boltbot-renderer="premium-2d"') || !boltBotSprite.includes('data-boltbot-customization="fitted"') || !boltBotSprite.includes("BoltBotCustomization") || !boltBotSprite.includes("data-boltbot-head") || !boltBotArt.includes("boltbot-premium-poses-atlas.webp")) {
-  throw new Error("Premium local BoltBot art is not wired to its visible customization layer");
+if (!boltBotSprite.includes('data-boltbot-renderer="premium-2d"') || boltBotSprite.includes("BoltBotCustomization") || boltBotSprite.includes('data-boltbot-customization="fitted"') || !boltBotArt.includes("boltbot-premium-poses-atlas.webp")) {
+  throw new Error("Premium local BoltBot pose art is not wired to the shared renderer");
 }
 if (!testChamber.includes("IllustratedChamber") || !testChamber.includes('data-renderer="premium-2d"') || /GameCanvas|useFrame|<canvas/.test(testChamber)) {
   throw new Error("BoltBot test chamber has not completed its illustrated 2D migration");
