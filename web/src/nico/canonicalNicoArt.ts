@@ -68,3 +68,28 @@ export function canonicalNicoPresetArt(wardrobe: NicoWardrobe): CanonicalNicoPre
 export function hasCanonicalNicoPresetArt(wardrobe: NicoWardrobe): boolean {
   return canonicalNicoPresetArt(wardrobe) !== null;
 }
+
+
+function loadImage(source: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Canonical Nico artwork could not be loaded."));
+    image.src = source;
+  });
+}
+
+export async function loadCanonicalNicoImage(profession: NicoProfessionId): Promise<HTMLImageElement> {
+  const cell = PROFESSION_CELLS[profession] ?? PROFESSION_CELLS.explorer;
+  if (!cell) throw new Error("Canonical Nico artwork is unavailable.");
+  const atlas = await loadImage(cell.atlas);
+  const width = Math.round(atlas.naturalWidth / cell.columns);
+  const height = Math.round(atlas.naturalHeight / cell.rows);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Canonical Nico artwork could not be composed.");
+  context.drawImage(atlas, cell.column * width, cell.row * height, width, height, 0, 0, width, height);
+  return loadImage(canvas.toDataURL("image/png"));
+}
