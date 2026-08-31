@@ -92,24 +92,8 @@ export default function FullApp() {
   }, [profile.selectedSection]);
 
   const presentSection = () => {
-    const activation = lastNavigationInput.current;
-    pendingTitleFocus.current = activation;
+    pendingTitleFocus.current = lastNavigationInput.current;
     lastNavigationInput.current = "pointer";
-
-    if (activation === "keyboard") {
-      let fallbackTimer = 0;
-      const focusAfterKeyboardActivation = () => {
-        window.removeEventListener("keyup", focusAfterKeyboardActivation);
-        window.clearTimeout(fallbackTimer);
-        window.requestAnimationFrame(() => {
-          document.getElementById("page-title")?.focus({ preventScroll: true });
-          pendingTitleFocus.current = null;
-        });
-      };
-      window.addEventListener("keyup", focusAfterKeyboardActivation, { once: true });
-      fallbackTimer = window.setTimeout(focusAfterKeyboardActivation, 250);
-    }
-
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   };
 

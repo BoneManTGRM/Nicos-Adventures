@@ -241,6 +241,9 @@ if (!recovery.includes('dataset.recoverable !== "wildlife"')) throw new Error("A
 const sw = read("public/sw.js");
 const swRefresh = read("src/ServiceWorkerRefresh.tsx");
 if (!sw.includes("nicos-world-static-v22") || !swRefresh.includes('"v22"')) throw new Error("Nico system cache version is not v22");
+if (swRefresh.includes("window.location.reload")) {
+  throw new Error("Service-worker updates must not force a reload during active play");
+}
 if (!sw.includes('await cache.put("/index.html", copy)') || !sw.includes("await cache.put(event.request, copy)")) {
   throw new Error("Service-worker cache writes must remain attached to the fetch lifecycle");
 }
