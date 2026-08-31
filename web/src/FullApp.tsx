@@ -9,7 +9,6 @@ import { AnimalForest } from "./world/AnimalForest";
 import { Arcade } from "./world/Arcade";
 import { ArtStudio } from "./world/ArtStudio";
 import { Badges } from "./world/Badges";
-import { BeccaCorner } from "./world/BeccaCorner";
 import { AppHeader, BottomNavigation, PageTitle } from "./world/common";
 import { DinosaurValley } from "./world/DinosaurValley";
 import { Museum } from "./world/Museum";
@@ -32,9 +31,9 @@ import "./world/story-mobile-fixes.css";
 import "./world/local-media-art.css";
 import "./world/star-bridge-map.css";
 import "./world/site-polish.css";
-import "./world/becca-corner.css";
 
 const CousinsAdventure = lazy(() => import("./world/CousinsAdventure").then((module) => ({ default: module.CousinsAdventure })));
+const BeccaCorner = lazy(() => import("./world/BeccaCorner").then((module) => ({ default: module.BeccaCorner })));
 
 if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -163,7 +162,11 @@ export default function FullApp() {
       case "world-map": return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} advanceStarBridge={advanceStarBridge} />;
       case "robo-lab": return <RoboLab {...props} open={open} />;
       case "animal-forest": return <AnimalForest {...props} />;
-      case "becca-corner": return <BeccaCorner language={profile.language} />;
+      case "becca-corner": return (
+        <Suspense fallback={<div className="fw-empty" role="status">{profile.language === "es-MX" ? "Abriendo el taller mágico…" : "Opening the magic workshop…"}</div>}>
+          <BeccaCorner language={profile.language} />
+        </Suspense>
+      );
       case "cousins-adventure": return (
         <Suspense fallback={<div className="fw-empty" role="status">{profile.language === "es-MX" ? "Abriendo el mapa de aventuras…" : "Opening the adventure map…"}</div>}>
           <CousinsAdventure language={profile.language} />

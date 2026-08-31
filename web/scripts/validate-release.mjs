@@ -41,6 +41,7 @@ const requiredFiles = [
   "src/world/artCutout.ts",
   "src/world/PremiumCutout.tsx",
   "src/world/becca-corner.css",
+  "src/world/becca-corner-refresh.css",
   "src/world/CousinsAdventure.tsx",
   "src/world/cousinsAdventureStories.ts",
   "src/world/cousins-adventure.css",
@@ -48,20 +49,41 @@ const requiredFiles = [
   "src/world/animal-generator.css",
   "src/assets/art/becca-premium.webp",
   "src/assets/art/lua-premium.webp",
+  "src/assets/art/becca-lua-magic-workshop.webp",
   "src/assets/art/cousins-adventure-map.webp",
   "src/assets/art/unicorn-generator.webp",
   "src/assets/art/unicorn-prance-strip.webp",
   "src/assets/art/wildlife-premium-atlas.webp",
   "src/assets/art/story-rainbow-1.webp",
   "src/assets/art/story-rainbow-2.webp",
+  "src/assets/art/story-rainbow-3.webp",
+  "src/assets/art/story-rainbow-4.webp",
+  "src/assets/art/story-rainbow-5.webp",
+  "src/assets/art/story-rainbow-6.webp",
   "src/assets/art/story-dino-1.webp",
   "src/assets/art/story-dino-2.webp",
+  "src/assets/art/story-dino-3.webp",
+  "src/assets/art/story-dino-4.webp",
+  "src/assets/art/story-dino-5.webp",
+  "src/assets/art/story-dino-6.webp",
   "src/assets/art/story-star-1.webp",
   "src/assets/art/story-star-2.webp",
+  "src/assets/art/story-star-3.webp",
+  "src/assets/art/story-star-4.webp",
+  "src/assets/art/story-star-5.webp",
+  "src/assets/art/story-star-6.webp",
   "src/assets/art/story-castle-1.webp",
   "src/assets/art/story-castle-2.webp",
+  "src/assets/art/story-castle-3.webp",
+  "src/assets/art/story-castle-4.webp",
+  "src/assets/art/story-castle-5.webp",
+  "src/assets/art/story-castle-6.webp",
   "src/assets/art/story-moon-1.webp",
   "src/assets/art/story-moon-2.webp",
+  "src/assets/art/story-moon-3.webp",
+  "src/assets/art/story-moon-4.webp",
+  "src/assets/art/story-moon-5.webp",
+  "src/assets/art/story-moon-6.webp",
   "src/catalogs/nico-knowledge.json",
   "src/catalogs/nico-professions.json",
   "src/catalogs/showtime.json",
@@ -194,10 +216,14 @@ const animalGenerator = read("src/world/AnimalGeneratorGame.tsx");
 if (!showtime.includes('kind: "animal" as const') || !showtime.includes("WildlifeSprite") || !wildlife.includes("WILDLIFE_IDS")) {
   throw new Error("Premium full-body animals are not available in Showtime");
 }
-if (!becca.includes("Unicorn Generator") || !becca.includes("becca-unicorn--") || !becca.includes("PremiumCutout")) {
+if (!becca.includes("Unicorn Generator") || !becca.includes("becca-unicorn--") || !becca.includes("PremiumCutout") ||
+    !becca.includes("lua-premium.webp") || !becca.includes("magic-host-picker") || !becca.includes("becca-magic-quest")) {
   throw new Error("Becca’s Corner unicorn experience is incomplete");
 }
-if (!cousins.includes("NicoCostumeFigure") || !cousins.includes("lua-premium.webp") || !cousins.includes("storybook-choice") || !cousinsStories.includes("buildCousinsStory")) {
+if (!cousins.includes("NicoCostumeFigure") || !cousins.includes("lua-premium.webp") ||
+    !cousins.includes("storybook-choice") || !cousins.includes("pathChoices") ||
+    !cousins.includes("story-rainbow-6.webp") || !cousinsStories.includes("buildCousinsStory") ||
+    !cousinsStories.includes('en: "Science Quest"')) {
   throw new Error("Interactive cousins adventure map is incomplete");
 }
 if (!animalGenerator.includes("Mystery Animal Generator") || !animalGenerator.includes("WildlifeSprite") || !animalGenerator.includes("setTokens")) {
