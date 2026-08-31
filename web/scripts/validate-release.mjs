@@ -108,8 +108,8 @@ if (!guide.includes("useAppStore") || !guide.includes("profession={profile.nico.
 if (!portalArt.includes("useActiveProfileStore") || !portalArt.includes("profession={profile.nico.profession}")) {
   throw new Error("Nico portal art is not connected to the canonical profile profession");
 }
-if (!clubhouse.includes("useDialogFocusTrap") || !clubhouse.includes('addEventListener("popstate"') || clubhouse.includes("NicoDressUp")) {
-  throw new Error("Nico Clubhouse focus, history, or Wardrobe retirement is incomplete");
+if (!clubhouse.includes("useDialogFocusTrap") || !clubhouse.includes('addEventListener("popstate"') || !clubhouse.includes("NicoDressUp")) {
+  throw new Error("Nico Clubhouse focus, history, or premium Wardrobe integration is incomplete");
 }
 if (!focusTrap.includes('event.key === "Tab"') || !focusTrap.includes('event.key === "Escape"')) {
   throw new Error("Accessible Clubhouse focus containment is incomplete");
