@@ -5,6 +5,12 @@ const root = path.resolve(import.meta.dirname, "..");
 const requiredFiles = [
   "src/world/LocalWildlifeArt.tsx",
   "src/world/DinosaurArt.tsx",
+  "src/world/dinosaurArt.ts",
+  "src/world/dinosaurArt.test.ts",
+  "src/world/dinosaurPremium2dView.test.tsx",
+  "src/world/DinosaurValleyOverlook.tsx",
+  "src/world/BrachiosaurusFossilExpedition.tsx",
+  "src/world/dinosaur-valley-premium.css",
   "src/world/local-media-art.css",
   "src/world/localMediaArt.test.tsx",
   "src/world/AnimalForest.tsx",
@@ -14,6 +20,9 @@ const requiredFiles = [
   "src/world/animal-forest-trail.css",
   "src/assets/habitats/animal-forest-premium-habitats-atlas.webp",
   "src/world/DinosaurValley.tsx",
+  "src/assets/dinosaurs/premium-dinosaur-species-atlas.webp",
+  "src/assets/dinosaurs/premium-dinosaur-overlook-atlas.webp",
+  "src/assets/dinosaurs/premium-fossil-expedition-atlas.webp",
   "src/nico/NicoCostumeFigure.tsx",
   "src/nico/NicoDressUp.tsx",
   "src/nico/AskNico.tsx",
@@ -47,6 +56,11 @@ const forestViewTest = read("src/world/AnimalForestTrail.test.tsx");
 const wildlifeArt = read("src/world/LocalWildlifeArt.tsx");
 const dinosaurs = read("src/world/DinosaurValley.tsx");
 const dinosaurArt = read("src/world/DinosaurArt.tsx");
+const dinosaurArtMap = read("src/world/dinosaurArt.ts");
+const dinosaurArtTest = read("src/world/dinosaurArt.test.ts");
+const dinosaurViewTest = read("src/world/dinosaurPremium2dView.test.tsx");
+const dinosaurOverlook = read("src/world/DinosaurValleyOverlook.tsx");
+const fossilExpedition = read("src/world/BrachiosaurusFossilExpedition.tsx");
 const nicoFigure = read("src/nico/NicoCostumeFigure.tsx");
 const dressUp = read("src/nico/NicoDressUp.tsx");
 const askNico = read("src/nico/AskNico.tsx");
@@ -90,12 +104,20 @@ if (habitatAtlas.size > 350_000) throw new Error(`Premium habitat atlas exceeds 
 if (!wildlifeArt.includes("local-wildlife-art__animal") || !wildlifeArt.includes("habitatPalette")) {
   throw new Error("Local wildlife illustration system is incomplete");
 }
-if (!dinosaurs.includes("DinosaurArt") || dinosaurs.includes("<div aria-hidden=\"true\">{dinosaur.emoji}</div>")) {
-  throw new Error("Dinosaur Valley still relies on emoji-only cards");
-}
+if (!dinosaurs.includes("DinosaurArt") || dinosaurs.includes("<div aria-hidden=\"true\">{dinosaur.emoji}</div>")) throw new Error("Dinosaur Valley still relies on emoji-only cards");
 for (const dinosaurId of ["trex", "triceratops", "stegosaurus", "brachiosaurus", "ankylosaurus", "velociraptor"]) {
-  if (!dinosaurArt.includes(`case "${dinosaurId}"`)) throw new Error(`Local dinosaur silhouette is missing: ${dinosaurId}`);
+  if (!dinosaurArtMap.includes(`${dinosaurId}: {`)) throw new Error(`Premium dinosaur portrait is missing: ${dinosaurId}`);
 }
+if (!dinosaurArt.includes('data-dinosaur-renderer="premium-2d"') || !dinosaurArtMap.includes("premium-dinosaur-species-atlas.webp")) throw new Error("Dinosaur cards have not completed their premium 2D migration");
+if (!dinosaurOverlook.includes('data-dinosaur-renderer="premium-2d"') || !dinosaurOverlook.includes("dinosaurOverlookArtStyle") || /GameCanvas|useFrame|<canvas/.test(dinosaurOverlook)) throw new Error("Dinosaur Valley overlook still depends on a 3D renderer");
+if (!fossilExpedition.includes('data-dinosaur-renderer="premium-2d"') || !fossilExpedition.includes("fossilExpeditionArtStyle") || /GameCanvas|useFrame|<canvas/.test(fossilExpedition)) throw new Error("Brachiosaurus fossil expedition still depends on a 3D renderer");
+if (!dinosaurArtTest.includes("every saved dinosaur species") || !dinosaurViewTest.includes("without a canvas or WebGL contract")) throw new Error("Premium Dinosaur Valley regression coverage is incomplete");
+const dinosaurSpeciesAtlas = fs.statSync(path.join(root, "src/assets/dinosaurs/premium-dinosaur-species-atlas.webp"));
+const dinosaurOverlookAtlas = fs.statSync(path.join(root, "src/assets/dinosaurs/premium-dinosaur-overlook-atlas.webp"));
+const fossilExpeditionAtlas = fs.statSync(path.join(root, "src/assets/dinosaurs/premium-fossil-expedition-atlas.webp"));
+if (dinosaurSpeciesAtlas.size > 100_000) throw new Error(`Premium dinosaur species atlas exceeds its 100 KB budget: ${dinosaurSpeciesAtlas.size}`);
+if (dinosaurOverlookAtlas.size > 180_000) throw new Error(`Premium dinosaur overlook atlas exceeds its 180 KB budget: ${dinosaurOverlookAtlas.size}`);
+if (fossilExpeditionAtlas.size > 240_000) throw new Error(`Premium fossil expedition atlas exceeds its 240 KB budget: ${fossilExpeditionAtlas.size}`);
 
 if (
   !nicoFigure.includes("NicoLayeredCharacter")
@@ -151,8 +173,8 @@ for (const contract of ["local-wildlife-art", "dinosaur-art"]) {
 for (const contract of ["nico-layered-character", "wardrobe-garment-thumbnail", "wardrobe-drag-ghost"]) {
   if (!wardrobeCss.includes(`.${contract}`)) throw new Error(`Layered Nico media style contract missing: ${contract}`);
 }
-if (!tests.includes("without a network response") || !tests.includes("distinct sharp SVG silhouettes")) {
+if (!tests.includes("without a network response") || !tests.includes("premium local atlas portraits")) {
   throw new Error("Local media regression coverage is incomplete");
 }
 
-console.log("Local media validation passed for canonical Nico and BoltBot 2D art, premium monster and alien-arm bodies, private offline habitat/wildlife illustrations, distinct dinosaur SVGs, scoped recovery, and completed world-module integration.");
+console.log("Local media validation passed for canonical Nico and BoltBot 2D art, premium monsters and Dinosaur Valley, private offline habitat/wildlife illustrations, scoped recovery, and completed world-module integration.");
