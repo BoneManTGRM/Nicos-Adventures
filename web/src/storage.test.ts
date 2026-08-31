@@ -74,6 +74,34 @@ describe("profile schema v4 migration", () => {
     expect(project.videoBlob).toBeUndefined();
   });
 
+  it("keeps bounded multi-page stories while accepting legacy stories", () => {
+    const profile = normalizeStore({
+      schemaVersion: 4,
+      activeProfileId: "player-1",
+      profiles: [{
+        id: "player-1",
+        playerName: "Nico",
+        stories: [{
+          id: "story-1",
+          title: "Moon Friends",
+          hero: "Nico",
+          companion: "BoltBot",
+          place: "the Moon",
+          problem: "a beacon went quiet",
+          ending: "the friends repaired it",
+          theme: "Teamwork",
+          magicItem: "a star lantern",
+          specialDetail: "A comet drew a clue",
+          pages: ["Page one", "Page two"],
+          language: "en",
+        }],
+      }],
+    }).profiles[0];
+
+    expect(profile.stories[0].pages).toEqual(["Page one", "Page two"]);
+    expect(profile.stories[0].companion).toBe("BoltBot");
+  });
+
   it("uses explicit active robot and displayed artwork identifiers", () => {
     const migrated = normalizeStore({
       schemaVersion: 4,

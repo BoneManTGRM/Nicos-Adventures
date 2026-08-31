@@ -1,0 +1,32 @@
+.pet-training-stage > .pet-art {
+  width: min(100%, 390px);
+  margin: -8px auto -18px;
+  filter: drop-shadow(0 20px 22px rgba(0, 0, 0, .38));
+  animation: pet-art-float 3s ease-in-out infinite;
+}
+
+.pet-art { display: block; overflow: visible; }
+.pet-art__tail { transform-origin: 280px 246px; animation: pet-tail-wag 1.35s ease-in-out infinite; }
+.pet-art__orbital { transform-origin: 210px 171px; animation: pet-orbit 5s linear infinite; }
+.pet-art__shine { pointer-events: none; }
+
+.pet-collection-button {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-width: 170px;
+  text-align: left;
+}
+
+.pet-collection-button .pet-art { width: 52px; height: 46px; }
+.robot-home-stage__pet > .pet-art { width: min(100%, 150px); margin: -14px 0 -12px; }
+
+@keyframes pet-art-float { 50% { transform: translateY(-8px); } }
+@keyframes pet-tail-wag { 50% { transform: rotate(8deg); } }
+@keyframes pet-orbit { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pet-art,
+  .pet-art * { animation: none !important; }
+}

@@ -3,74 +3,24 @@ import type { Language, LocalProfile, StoryRecord } from "../types";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, makeId } from "./common";
 import { completeCreativeMilestones } from "./creativeProgression";
+import { buildStoryPages, defaultStoryTitle, STORY_OPTIONS, storyCombinationCount, storyPages } from "./storyBook";
 
-const PLACE_OPTIONS = {
-  en: ["Animal Forest", "Dinosaur Valley", "a moon base", "a crystal cave", "Robot Home", "an underwater laboratory"],
-  "es-MX": ["el Bosque animal", "el Valle de dinosaurios", "una base lunar", "una cueva de cristal", "la Casa Robot", "un laboratorio submarino"],
-} as const;
-
-const PROBLEM_OPTIONS = {
-  en: [
-    "a mysterious light disappeared",
-    "a tiny robot lost its map",
-    "a dinosaur egg needed protection",
-    "the bridge to the next adventure stopped working",
-    "a shy monster wanted to make a friend",
-    "a storm scattered important clues",
-  ],
-  "es-MX": [
-    "una luz misteriosa desapareció",
-    "un robot pequeño perdió su mapa",
-    "un huevo de dinosaurio necesitaba protección",
-    "el puente hacia la siguiente aventura dejó de funcionar",
-    "un monstruo tímido quería hacer un amigo",
-    "una tormenta dispersó pistas importantes",
-  ],
-} as const;
-
-const ENDING_OPTIONS = {
-  en: [
-    "everyone worked together and found a kind solution",
-    "the team repaired the problem and celebrated under the stars",
-    "a new friendship made the whole world brighter",
-    "careful observation revealed the final clue",
-    "the heroes returned home with a lesson and a new idea",
-  ],
-  "es-MX": [
-    "todos trabajaron juntos y encontraron una solución amable",
-    "el equipo reparó el problema y celebró bajo las estrellas",
-    "una nueva amistad hizo que todo el mundo brillara más",
-    "la observación cuidadosa reveló la pista final",
-    "los héroes regresaron a casa con una lección y una idea nueva",
-  ],
-} as const;
+const PAGE_ART = ["🏰", "🧭", "🔎", "💡", "🤝", "🌟"] as const;
 
 function defaultStory(profile: LocalProfile, heroes: string[], language: Language = profile.language): StoryRecord {
-  return language === "es-MX"
-    ? {
-        id: makeId("story"),
-        title: "El sendero brillante",
-        hero: heroes[0] || "Nico",
-        place: PLACE_OPTIONS[language][0],
-        problem: PROBLEM_OPTIONS[language][0],
-        ending: ENDING_OPTIONS[language][0],
-        language,
-      }
-    : {
-        id: makeId("story"),
-        title: "The Bright Trail",
-        hero: heroes[0] || "Nico",
-        place: PLACE_OPTIONS[language][0],
-        problem: PROBLEM_OPTIONS[language][0],
-        ending: ENDING_OPTIONS[language][0],
-        language,
-      };
-}
-
-function storyText(story: StoryRecord): string {
-  return story.language === "es-MX"
-    ? `${story.hero} viajó a ${story.place}. Allí, ${story.problem}. Después de una gran aventura, ${story.ending}.`
-    : `${story.hero} traveled to ${story.place}. There, ${story.problem}. After a great adventure, ${story.ending}.`;
+  return {
+    id: makeId("story"),
+    title: defaultStoryTitle(language),
+    hero: heroes[0] || "Nico",
+    companion: heroes[1] || profile.robot.name || "BoltBot",
+    place: STORY_OPTIONS.place[language][0],
+    problem: STORY_OPTIONS.problem[language][0],
+    ending: STORY_OPTIONS.ending[language][0],
+    theme: STORY_OPTIONS.theme[language][0],
+    magicItem: STORY_OPTIONS.magicItem[language][0],
+    specialDetail: "",
+    language,
+  };
 }
 
 export function StoryCastle({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
@@ -83,32 +33,44 @@ export function StoryCastle({ profile, update, announce }: { profile: LocalProfi
   ].filter((name, index, list) => Boolean(name) && list.indexOf(name) === index), [profile.monsters, profile.pets, profile.robot.name]);
   const [draft, setDraft] = useState<StoryRecord>(() => defaultStory(profile, heroes));
   const [editingId, setEditingId] = useState<string | null>(null);
-  const text = storyText(draft);
+  const [pageIndex, setPageIndex] = useState(0);
+  const pages = storyPages(draft);
+  const safePageIndex = Math.min(pageIndex, pages.length - 1);
+
+  const change = (patch: Partial<StoryRecord>) => setDraft((current) => ({ ...current, ...patch, pages: undefined }));
+  const pick = <T,>(values: readonly T[]): T => values[Math.floor(Math.random() * values.length)];
 
   const startNew = () => {
     setEditingId(null);
     setDraft(defaultStory(profile, heroes, draft.language));
-    announce(language === "es-MX" ? "Página nueva lista." : "New story page ready.");
+    setPageIndex(0);
+    announce(language === "es-MX" ? "Libro nuevo listo." : "New storybook ready.");
   };
 
   const surprise = () => {
-    const pick = <T,>(values: readonly T[]): T => values[Math.floor(Math.random() * values.length)];
     setDraft((current) => ({
       ...current,
       title: current.language === "es-MX" ? "La aventura sorpresa" : "The Surprise Adventure",
       hero: pick(heroes),
-      place: pick(PLACE_OPTIONS[current.language]),
-      problem: pick(PROBLEM_OPTIONS[current.language]),
-      ending: pick(ENDING_OPTIONS[current.language]),
+      companion: pick(heroes),
+      place: pick(STORY_OPTIONS.place[current.language]),
+      problem: pick(STORY_OPTIONS.problem[current.language]),
+      ending: pick(STORY_OPTIONS.ending[current.language]),
+      theme: pick(STORY_OPTIONS.theme[current.language]),
+      magicItem: pick(STORY_OPTIONS.magicItem[current.language]),
+      pages: undefined,
     }));
-    announce(language === "es-MX" ? "Se creó una idea sorpresa." : "A surprise story idea was created.");
+    setPageIndex(0);
+    announce(language === "es-MX" ? "Se creó un libro sorpresa de seis páginas." : "A surprise six-page storybook was created.");
   };
 
   const save = () => {
-    const story = {
+    const story: StoryRecord = {
       ...draft,
       id: editingId ?? draft.id ?? makeId("story"),
       title: draft.title.trim() || (draft.language === "es-MX" ? "Cuento sin título" : "Untitled Story"),
+      specialDetail: draft.specialDetail?.trim(),
+      pages: buildStoryPages(draft),
     };
     const exists = profile.stories.some((item) => item.id === story.id);
     const previousCount = profile.stories.length;
@@ -122,22 +84,23 @@ export function StoryCastle({ profile, update, announce }: { profile: LocalProfi
     setEditingId(story.id);
     setDraft(story);
     announce(language === "es-MX"
-      ? `${story.title} guardado.${!exists ? " Ganaste dos estrellas." : ""}${milestones.milestones.length ? " Alcanzaste un hito de cuentos." : ""}`
-      : `${story.title} saved.${!exists ? " You earned two stars." : ""}${milestones.milestones.length ? " You reached a story milestone." : ""}`);
+      ? `${story.title} guardado con seis páginas.${!exists ? " Ganaste dos estrellas." : ""}`
+      : `${story.title} saved with six pages.${!exists ? " You earned two stars." : ""}`);
   };
 
-  const speak = () => {
+  const speak = (allPages = false) => {
     if (!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(allPages ? pages.join(" ") : pages[safePageIndex]);
     utterance.lang = draft.language === "es-MX" ? "es-MX" : "en-US";
     window.speechSynthesis.speak(utterance);
   };
 
   const edit = (story: StoryRecord) => {
     setEditingId(story.id);
-    setDraft({ ...story });
-    announce(language === "es-MX" ? `Editando ${story.title}.` : `Editing ${story.title}.`);
+    setDraft({ ...defaultStory(profile, heroes, story.language), ...story, pages: storyPages(story) });
+    setPageIndex(0);
+    announce(language === "es-MX" ? `Abriendo ${story.title}.` : `Opening ${story.title}.`);
   };
 
   const remove = (story: StoryRecord) => {
@@ -150,74 +113,70 @@ export function StoryCastle({ profile, update, announce }: { profile: LocalProfi
   const changeLanguage = (nextLanguage: Language) => {
     const next = defaultStory(profile, heroes, nextLanguage);
     setEditingId(null);
-    setDraft({ ...next, hero: draft.hero });
+    setDraft({ ...next, hero: draft.hero, companion: draft.companion });
+    setPageIndex(0);
   };
 
   return (
     <div className="story-studio-layout">
-      <section className="story-book-preview" aria-labelledby="story-preview-heading">
+      <section className="story-book-preview" aria-labelledby="story-preview-heading" data-page={`${safePageIndex + 1}-of-${pages.length}`}>
         <div className="story-book-spine" aria-hidden="true" />
         <article>
-          <small>{draft.language === "es-MX" ? "CUENTO" : "STORY"}</small>
+          <div className="story-page-kicker">
+            <small>{draft.language === "es-MX" ? "LIBRO DE AVENTURAS" : "ADVENTURE STORYBOOK"}</small>
+            <span>{safePageIndex + 1} / {pages.length}</span>
+          </div>
+          <div className="story-page-art" aria-hidden="true">{PAGE_ART[safePageIndex] ?? "✨"}</div>
           <h2 id="story-preview-heading">{draft.title}</h2>
-          <p>{text}</p>
+          <p>{pages[safePageIndex]}</p>
+          <div className="story-page-turner" aria-label={draft.language === "es-MX" ? "Páginas del cuento" : "Story pages"}>
+            <button type="button" onClick={() => setPageIndex((value) => Math.max(0, value - 1))} disabled={safePageIndex === 0}>← {draft.language === "es-MX" ? "Anterior" : "Back"}</button>
+            <div aria-hidden="true">{pages.map((_, index) => <span className={index === safePageIndex ? "active" : ""} key={index} />)}</div>
+            <button type="button" onClick={() => setPageIndex((value) => Math.min(pages.length - 1, value + 1))} disabled={safePageIndex === pages.length - 1}>{draft.language === "es-MX" ? "Siguiente" : "Next"} →</button>
+          </div>
           <div className="story-preview-actions">
-            <button type="button" onClick={speak}>🔊 {language === "es-MX" ? "Leer en voz alta" : "Read aloud"}</button>
-            <button type="button" onClick={surprise}>🎲 {language === "es-MX" ? "Idea sorpresa" : "Surprise idea"}</button>
+            <button type="button" onClick={() => speak(false)}>🔊 {draft.language === "es-MX" ? "Leer página" : "Read page"}</button>
+            <button type="button" onClick={() => speak(true)}>🎧 {draft.language === "es-MX" ? "Leer libro" : "Read book"}</button>
+            <button type="button" onClick={surprise}>🎲 {draft.language === "es-MX" ? "Sorpresa" : "Surprise"}</button>
           </div>
         </article>
       </section>
 
       <section className="fw-panel story-controls" aria-label={language === "es-MX" ? "Controles del cuento" : "Story controls"}>
-        <label>
-          {language === "es-MX" ? "Idioma del cuento" : "Story language"}
-          <select value={draft.language} onChange={(event) => changeLanguage(event.target.value as Language)}>
-            <option value="en">English</option>
-            <option value="es-MX">Español de México</option>
-          </select>
-        </label>
-        <label>{draft.language === "es-MX" ? "Título" : "Title"}<input value={draft.title} maxLength={60} onChange={(event) => setDraft({ ...draft, title: event.target.value })} /></label>
-        <label>
-          {draft.language === "es-MX" ? "Protagonista" : "Hero"}
-          <select value={draft.hero} onChange={(event) => setDraft({ ...draft, hero: event.target.value })}>
-            {heroes.map((hero) => <option key={hero}>{hero}</option>)}
-          </select>
-        </label>
-        <label>
-          {draft.language === "es-MX" ? "Lugar" : "Place"}
-          <select value={draft.place} onChange={(event) => setDraft({ ...draft, place: event.target.value })}>
-            {PLACE_OPTIONS[draft.language].map((place) => <option key={place}>{place}</option>)}
-          </select>
-        </label>
-        <label>
-          {draft.language === "es-MX" ? "Problema" : "Problem"}
-          <select value={draft.problem} onChange={(event) => setDraft({ ...draft, problem: event.target.value })}>
-            {PROBLEM_OPTIONS[draft.language].map((problem) => <option key={problem}>{problem}</option>)}
-          </select>
-        </label>
-        <label>
-          {draft.language === "es-MX" ? "Final" : "Ending"}
-          <select value={draft.ending} onChange={(event) => setDraft({ ...draft, ending: event.target.value })}>
-            {ENDING_OPTIONS[draft.language].map((ending) => <option key={ending}>{ending}</option>)}
-          </select>
-        </label>
+        <header className="story-controls__header">
+          <div><small>{language === "es-MX" ? "TALLER DE HISTORIAS" : "STORY WORKSHOP"}</small><h2>{language === "es-MX" ? "Inventa tu libro" : "Build your book"}</h2></div>
+          <strong>{storyCombinationCount.toLocaleString(draft.language === "es-MX" ? "es-MX" : "en-US")}+</strong>
+          <span>{language === "es-MX" ? "combinaciones" : "combinations"}</span>
+        </header>
+        <div className="story-choice-grid">
+          <label>{draft.language === "es-MX" ? "Idioma" : "Language"}<select value={draft.language} onChange={(event) => changeLanguage(event.target.value as Language)}><option value="en">English</option><option value="es-MX">Español de México</option></select></label>
+          <label>{draft.language === "es-MX" ? "Título" : "Title"}<input value={draft.title} maxLength={60} onChange={(event) => change({ title: event.target.value })} /></label>
+          <label>{draft.language === "es-MX" ? "Protagonista" : "Hero"}<input list="story-heroes" value={draft.hero} maxLength={40} onChange={(event) => change({ hero: event.target.value })} /><datalist id="story-heroes">{heroes.map((hero) => <option key={hero} value={hero} />)}</datalist></label>
+          <label>{draft.language === "es-MX" ? "Compañero" : "Companion"}<select value={draft.companion} onChange={(event) => change({ companion: event.target.value })}>{heroes.map((hero) => <option key={hero}>{hero}</option>)}</select></label>
+          <label>{draft.language === "es-MX" ? "Tema" : "Theme"}<select value={draft.theme} onChange={(event) => change({ theme: event.target.value })}>{STORY_OPTIONS.theme[draft.language].map((item) => <option key={item}>{item}</option>)}</select></label>
+          <label>{draft.language === "es-MX" ? "Lugar" : "Place"}<select value={draft.place} onChange={(event) => change({ place: event.target.value })}>{STORY_OPTIONS.place[draft.language].map((item) => <option key={item}>{item}</option>)}</select></label>
+          <label>{draft.language === "es-MX" ? "Desafío" : "Challenge"}<select value={draft.problem} onChange={(event) => change({ problem: event.target.value })}>{STORY_OPTIONS.problem[draft.language].map((item) => <option key={item}>{item}</option>)}</select></label>
+          <label>{draft.language === "es-MX" ? "Objeto especial" : "Special item"}<select value={draft.magicItem} onChange={(event) => change({ magicItem: event.target.value })}>{STORY_OPTIONS.magicItem[draft.language].map((item) => <option key={item}>{item}</option>)}</select></label>
+          <label className="story-choice-grid__wide">{draft.language === "es-MX" ? "Tu detalle secreto (opcional)" : "Your secret detail (optional)"}<input value={draft.specialDetail ?? ""} maxLength={120} placeholder={draft.language === "es-MX" ? "Ej. Una estrella morada dejó una pista" : "Example: A purple star left a clue"} onChange={(event) => change({ specialDetail: event.target.value })} /></label>
+          <label className="story-choice-grid__wide">{draft.language === "es-MX" ? "Final" : "Ending"}<select value={draft.ending} onChange={(event) => change({ ending: event.target.value })}>{STORY_OPTIONS.ending[draft.language].map((item) => <option key={item}>{item}</option>)}</select></label>
+        </div>
         <div className="fw-action-row">
-          <button type="button" onClick={startNew}>＋ {language === "es-MX" ? "Página nueva" : "New page"}</button>
+          <button type="button" onClick={startNew}>＋ {language === "es-MX" ? "Libro nuevo" : "New book"}</button>
           <button type="button" className="fw-primary" onClick={save}>💾 {editingId ? (language === "es-MX" ? "Actualizar cuento" : "Update story") : (language === "es-MX" ? "Guardar cuento" : "Save story")}</button>
         </div>
       </section>
 
       <section className="creative-library" aria-labelledby="story-library-heading">
         <header>
-          <div><small>{language === "es-MX" ? "Biblioteca local" : "Local library"}</small><h2 id="story-library-heading">{language === "es-MX" ? "Mis cuentos" : "My stories"}</h2></div>
+          <div><small>{language === "es-MX" ? "BIBLIOTECA PRIVADA EN ESTE DISPOSITIVO" : "PRIVATE ON-DEVICE LIBRARY"}</small><h2 id="story-library-heading">{language === "es-MX" ? "Mis libros" : "My storybooks"}</h2></div>
           <strong>{profile.stories.length}/60</strong>
         </header>
-        {!profile.stories.length ? <EmptyState emoji="📚">{language === "es-MX" ? "Tu primer cuento aparecerá aquí." : "Your first story will appear here."}</EmptyState> : (
+        {!profile.stories.length ? <EmptyState emoji="📚">{language === "es-MX" ? "Tu primer libro de seis páginas aparecerá aquí." : "Your first six-page book will appear here."}</EmptyState> : (
           <div className="creative-library-grid">
             {[...profile.stories].reverse().map((story) => (
               <article className={editingId === story.id ? "selected" : ""} key={story.id}>
                 <span aria-hidden="true">📖</span>
-                <div><h3>{story.title}</h3><p>{story.hero} · {story.language === "es-MX" ? "Español" : "English"}</p></div>
+                <div><h3>{story.title}</h3><p>{story.hero} · {storyPages(story).length} {story.language === "es-MX" ? "páginas" : "pages"}</p></div>
                 <button type="button" onClick={() => edit(story)}>{language === "es-MX" ? "Abrir" : "Open"}</button>
                 <button type="button" className="danger" onClick={() => remove(story)} aria-label={`${language === "es-MX" ? "Eliminar" : "Delete"}: ${story.title}`}>×</button>
               </article>

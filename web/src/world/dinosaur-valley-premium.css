@@ -19,7 +19,7 @@
   content: "";
 }
 
-.dinosaur-art__creature {
+.dinosaur-art .dinosaur-art__creature {
   position: absolute;
   z-index: 2;
   left: 50%;
@@ -34,7 +34,7 @@
   background-repeat: no-repeat;
   background-size: 200% 300%;
   filter: drop-shadow(0 16px 10px rgba(2, 8, 23, .52));
-  animation: premium-dino-breathe 3.8s ease-in-out infinite;
+  animation: premium-dinosaur-card-breathe 3.8s ease-in-out infinite;
 }
 
 .dinosaur-art.is-mystery .dinosaur-art__creature {
@@ -116,7 +116,7 @@
 .fossil-expedition__art figcaption strong { font-size: 13px; }
 .fossil-expedition__instruction { margin: 0 0 3px; color: #eadcc8; font-size: 13px; line-height: 1.45; }
 
-@keyframes premium-dino-breathe {
+@keyframes premium-dinosaur-card-breathe {
   0%, 100% { transform: translateX(-50%) translateY(0) rotate(-.15deg); }
   50% { transform: translateX(-50%) translateY(-4px) rotate(.15deg); }
 }
@@ -137,6 +137,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dinosaur-art__creature,
+  .dinosaur-art .dinosaur-art__creature,
   .dinosaur-premium-scene { animation: none; }
 }

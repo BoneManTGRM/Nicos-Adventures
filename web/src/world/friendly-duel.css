@@ -1,0 +1,143 @@
+.friendly-duel {
+  --duel-gold: #fde047;
+  --duel-aqua: #67e8f9;
+  display: grid;
+  gap: 16px;
+  padding: clamp(14px, 3vw, 24px);
+  overflow: hidden;
+  border: 1px solid rgba(103, 232, 249, .34);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(59, 130, 246, .24), transparent 38%),
+    linear-gradient(155deg, #102d5c, #050b21 64%, #160b34);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .12), 0 24px 60px rgba(0, 0, 0, .32);
+}
+
+.friendly-duel__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 16px;
+}
+
+.friendly-duel__header h2 { margin: 2px 0 4px; font-size: clamp(24px, 4vw, 40px); }
+.friendly-duel__header p { max-width: 720px; margin: 0; color: #bfd2ef; }
+.friendly-duel__header small { color: var(--duel-aqua); font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.friendly-duel__header > strong { padding: 10px 12px; border: 1px solid rgba(253, 224, 71, .36); border-radius: 14px; color: #fef3c7; background: rgba(66, 32, 6, .42); }
+
+.friendly-duel__meters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.friendly-duel__meters label { display: grid; gap: 6px; padding: 10px 12px; border-radius: 14px; background: rgba(2, 8, 23, .62); font-weight: 850; }
+.friendly-duel__meters progress { width: 100%; height: 15px; accent-color: #4ade80; }
+.friendly-duel__meters label:last-child progress { accent-color: #c084fc; direction: rtl; }
+
+.friendly-duel__arena {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: 340px;
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(253, 224, 71, .82) 0 3px, rgba(103, 232, 249, .22) 4px, transparent 24%),
+    linear-gradient(180deg, #4169a8 0 42%, #1d3562 43% 58%, #151b3b 59% 100%);
+}
+
+.friendly-duel__arena::before {
+  position: absolute;
+  z-index: -1;
+  inset: 58% -8% -22%;
+  border-top: 2px solid rgba(103, 232, 249, .38);
+  background: repeating-linear-gradient(90deg, rgba(103, 232, 249, .08) 0 2px, transparent 2px 68px), linear-gradient(180deg, #18284d, #060a1b);
+  content: "";
+  transform: perspective(380px) rotateX(54deg);
+  transform-origin: top;
+}
+
+.friendly-duel__fighter { position: relative; display: grid; justify-items: center; align-items: end; gap: 4px; padding: 12px; transform-origin: 50% 88%; }
+.friendly-duel__fighter > strong { z-index: 3; padding: 6px 12px; border-radius: 999px; background: rgba(2, 8, 23, .8); color: #f8fafc; box-shadow: 0 8px 22px rgba(0, 0, 0, .3); }
+.friendly-duel__fighter--nico .nico-costume { width: min(70%, 210px); margin: 0; }
+.friendly-duel__fighter--nico .nico-costume__frame { min-height: 250px; }
+.friendly-duel__fighter--rival { padding-bottom: 24px; }
+
+.mischief-bot {
+  position: relative;
+  display: grid;
+  width: 150px;
+  height: 190px;
+  place-items: center;
+  border: 6px solid #251148;
+  border-radius: 48% 48% 36% 36%;
+  background: radial-gradient(circle at 32% 25%, #f0abfc, #a855f7 35%, #4c1d95 80%);
+  box-shadow: inset 0 -18px 0 rgba(30, 10, 55, .32), 0 24px 26px rgba(0, 0, 0, .4);
+}
+
+.mischief-bot::before,
+.mischief-bot::after { position: absolute; bottom: -28px; width: 42px; height: 48px; border: 5px solid #251148; border-radius: 18px; background: #7c3aed; content: ""; }
+.mischief-bot::before { left: 16px; transform: rotate(5deg); }
+.mischief-bot::after { right: 16px; transform: rotate(-5deg); }
+.mischief-bot i { position: absolute; top: -36px; width: 5px; height: 42px; border-radius: 8px; background: #251148; }
+.mischief-bot i::after { position: absolute; top: -7px; left: -7px; width: 18px; height: 18px; border-radius: 50%; background: var(--duel-gold); box-shadow: 0 0 18px var(--duel-gold); content: ""; }
+.mischief-bot span { padding: 9px 14px; border: 4px solid #251148; border-radius: 18px; background: #111827; color: #67e8f9; font-size: 24px; letter-spacing: 7px; }
+.mischief-bot b { font-size: 42px; line-height: 1; transform: rotate(4deg); }
+
+.friendly-duel__burst { position: absolute; z-index: 5; top: 40%; left: 50%; color: var(--duel-gold); font-size: 72px; opacity: 0; transform: translate(-50%, -50%); text-shadow: 0 0 26px #fff; }
+.friendly-duel__arena.move-quick .friendly-duel__fighter--nico { animation: duel-quick .46s ease-out; }
+.friendly-duel__arena.move-block .friendly-duel__fighter--nico { animation: duel-block .52s ease; }
+.friendly-duel__arena.move-star .friendly-duel__burst { animation: duel-star .72s ease-out; }
+.friendly-duel__arena.move-star .friendly-duel__fighter--rival,
+.friendly-duel[data-duel-status="won"] .friendly-duel__fighter--rival { animation: duel-wobble .48s ease; }
+
+.friendly-duel__status { min-height: 48px; margin: 0; padding: 12px 14px; border: 1px solid rgba(103, 232, 249, .22); border-radius: 14px; background: rgba(2, 8, 23, .66); color: #e0f2fe; font-weight: 800; text-align: center; }
+.friendly-duel__controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.friendly-duel__controls button { display: grid; min-height: 92px; place-items: center; gap: 3px; padding: 11px; text-align: center; }
+.friendly-duel__controls button > span { font-size: 28px; }
+.friendly-duel__controls button small { color: #b9c9e4; }
+.friendly-duel__controls button:disabled { opacity: .5; }
+
+.friendly-duel__finish { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 15px; border: 1px solid rgba(74, 222, 128, .42); border-radius: 18px; background: rgba(20, 83, 45, .34); }
+.friendly-duel__finish--breather { border-color: rgba(103, 232, 249, .35); background: rgba(14, 116, 144, .22); }
+.friendly-duel__finish > span { font-size: 44px; }
+.friendly-duel__finish h3, .friendly-duel__finish p { margin: 0; }
+.friendly-duel__finish p { margin-top: 4px; color: #c8d8eb; }
+
+.arcade-featured-duel { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; margin-bottom: 18px; padding: 18px; border: 1px solid rgba(253, 224, 71, .42); border-radius: 22px; background: radial-gradient(circle at 16% 50%, rgba(168, 85, 247, .26), transparent 34%), linear-gradient(135deg, rgba(17, 48, 91, .96), rgba(32, 13, 67, .96)); box-shadow: 0 18px 42px rgba(0, 0, 0, .24); }
+.arcade-featured-duel > span { font-size: 52px; }
+.arcade-featured-duel h2, .arcade-featured-duel p { margin: 0; }
+.arcade-featured-duel p { margin-top: 5px; color: #c7d7ed; }
+
+@keyframes duel-quick { 45% { transform: translateX(18%) scale(.98); } }
+@keyframes duel-block { 50% { filter: drop-shadow(0 0 22px #67e8f9); transform: scale(1.04); } }
+@keyframes duel-star { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.4) rotate(0); } 45% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(2.7) rotate(140deg); } }
+@keyframes duel-wobble { 35% { transform: rotate(5deg) translateX(8px); } 70% { transform: rotate(-5deg) translateX(-8px); } }
+
+@media (max-width: 720px) {
+  .friendly-duel__header { grid-template-columns: 1fr; }
+  .friendly-duel__header > button, .friendly-duel__header > strong { justify-self: start; }
+  .friendly-duel__arena { min-height: 280px; }
+  .friendly-duel__fighter--nico .nico-costume__frame { min-height: 190px; }
+  .mischief-bot { width: 112px; height: 145px; }
+  .friendly-duel__controls { grid-template-columns: 1fr; }
+  .friendly-duel__controls button { min-height: 68px; grid-template-columns: auto 1fr; justify-items: start; column-gap: 10px; }
+  .friendly-duel__controls button > span { grid-row: 1 / 3; }
+  .friendly-duel__finish, .arcade-featured-duel { grid-template-columns: auto minmax(0, 1fr); }
+  .friendly-duel__finish > button, .arcade-featured-duel > button { grid-column: 1 / -1; width: 100%; }
+}
+
+@media (max-width: 430px) {
+  .friendly-duel { padding: 11px; border-radius: 22px; }
+  .friendly-duel__meters { grid-template-columns: 1fr; }
+  .friendly-duel__arena { min-height: 244px; border-radius: 18px; }
+  .friendly-duel__fighter { padding-inline: 4px; }
+  .friendly-duel__fighter--nico .nico-costume { width: 100%; }
+  .friendly-duel__fighter--nico .nico-costume__frame { min-height: 160px; }
+  .mischief-bot { width: 88px; height: 118px; border-width: 4px; }
+  .mischief-bot span { padding: 6px 8px; border-width: 3px; font-size: 17px; letter-spacing: 3px; }
+  .mischief-bot b { font-size: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .friendly-duel__arena *, .friendly-duel__burst { animation: none !important; }
+}

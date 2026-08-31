@@ -72,6 +72,16 @@ const TALL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
   core: { x: 0, y: -70, scale: 0.66 },
 };
 
+// The alien atlas uses a compact round head and a narrow torso. Reusing the
+// tall-body fit put the mouth below the head and made its traits look pasted on.
+const ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  face: { x: 0, y: -104, scale: 0.34 },
+  horns: { x: 0, y: -8, scale: 0.3 },
+  wings: { x: 0, y: 16, scale: 0.46 },
+  tail: { x: -18, y: -8, scale: 0.42 },
+  core: { x: 0, y: -112, scale: 0.42 },
+};
+
 const MONSTER_ACCESSORY_LAYOUTS: Record<PremiumMonsterBody, MonsterAccessoryLayout> = {
   Blob: STANDARD_ACCESSORY_LAYOUT,
   Dragon: TALL_ACCESSORY_LAYOUT,
@@ -85,7 +95,7 @@ const MONSTER_ACCESSORY_LAYOUTS: Record<PremiumMonsterBody, MonsterAccessoryLayo
   Royal: COMPACT_ACCESSORY_LAYOUT,
   Volcano: COMPACT_ACCESSORY_LAYOUT,
   "Ice Beast": COMPACT_ACCESSORY_LAYOUT,
-  Alien: TALL_ACCESSORY_LAYOUT,
+  Alien: ALIEN_ACCESSORY_LAYOUT,
   Dinosaur: TALL_ACCESSORY_LAYOUT,
   Cloud: COMPACT_ACCESSORY_LAYOUT,
 };

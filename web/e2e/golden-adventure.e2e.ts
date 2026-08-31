@@ -317,8 +317,32 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(cosmic).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".monster-v2")).toHaveClass(/monster-family--cosmic/);
   await expect(page.locator(".monster-v2")).toHaveAttribute("data-monster-body-art", "Cosmic");
+  await activateWithKeyboard(page, page.locator('.monster-studio__trait[data-trait="body"]'));
+  const alien = page.locator('.monster-studio__choice[data-option="Alien"]');
+  await activateWithKeyboard(page, alien);
+  await expect(alien).toHaveAttribute("aria-pressed", "true");
+  const alienMonster = page.locator('.monster-v2[data-monster-body-art="Alien"]');
+  await expect(alienMonster).toBeVisible();
+  const alienFit = await alienMonster.evaluate((element) => {
+    const body = element.querySelector<HTMLElement>(".monster-premium-body")!.getBoundingClientRect();
+    const face = element.querySelector<SVGGElement>(".monster-face")!.getBoundingClientRect();
+    const horns = element.querySelector<SVGGElement>(".monster-horns")?.getBoundingClientRect();
+    const core = element.querySelector<SVGGElement>(".monster-core")!.getBoundingClientRect();
+    return {
+      faceWidthRatio: face.width / body.width,
+      faceTop: face.top - body.top,
+      faceBottom: face.bottom - body.top,
+      hornWidthRatio: horns ? horns.width / body.width : 0,
+      coreWidthRatio: core.width / body.width,
+    };
+  });
+  expect(alienFit.faceWidthRatio).toBeLessThan(0.35);
+  expect(alienFit.faceTop).toBeGreaterThanOrEqual(0);
+  expect(alienFit.faceBottom).toBeLessThan(210);
+  expect(alienFit.hornWidthRatio).toBeLessThan(0.3);
+  expect(alienFit.coreWidthRatio).toBeLessThan(0.2);
   await assertLayout(page, `${testInfo.project.name} Monster Lab`);
-  await testInfo.attach("visual-monster-lab", {
+  await testInfo.attach("visual-alien-monster-lab", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
     contentType: "image/png",
   });
@@ -405,6 +429,23 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(page.getByText(text.dinosaurFound, { exact: true })).toBeVisible();
   await expect(page.locator(".dino-overlook__reveal")).toBeFocused();
   await expect(page.locator(".fw-skip-link")).toHaveCSS("opacity", "0");
+  const dinosaurCards = page.locator(".fw-dino-card .dinosaur-art__scene");
+  for (let index = 0; index < await dinosaurCards.count(); index += 1) {
+    const framing = await dinosaurCards.nth(index).evaluate((scene) => {
+      const creature = scene.querySelector<HTMLElement>(".dinosaur-art__creature");
+      const sceneBox = scene.getBoundingClientRect();
+      const creatureBox = creature?.getBoundingClientRect();
+      return creatureBox ? {
+        leftInset: creatureBox.left - sceneBox.left,
+        rightInset: sceneBox.right - creatureBox.right,
+        widthRatio: creatureBox.width / sceneBox.width,
+      } : null;
+    });
+    expect(framing, `dinosaur card ${index + 1} should have creature art`).not.toBeNull();
+    expect(framing!.leftInset, `dinosaur card ${index + 1} left edge`).toBeGreaterThanOrEqual(-2);
+    expect(framing!.rightInset, `dinosaur card ${index + 1} right edge`).toBeGreaterThanOrEqual(-2);
+    expect(framing!.widthRatio, `dinosaur card ${index + 1} width`).toBeLessThanOrEqual(1);
+  }
   await assertLayout(page, `${testInfo.project.name} dinosaur overlook`);
   await testInfo.attach("dinosaur-overlook", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),

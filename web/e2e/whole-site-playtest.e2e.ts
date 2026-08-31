@@ -296,11 +296,23 @@ test("all destinations keep their main local interactions working", async ({ pag
 
   await openDestination(page, text.world, text.storyCastle, `${testInfo.project.name} Story Castle`);
   await page.getByLabel(text.title, { exact: true }).fill(storyTitle);
+  await page.getByLabel(language === "es-MX" ? "Tu detalle secreto (opcional)" : "Your secret detail (optional)").fill(language === "es-MX" ? "Un cometa morado dibujó una pista" : "A purple comet drew a clue");
+  await expect(page.locator(".story-book-preview")).toHaveAttribute("data-page", "1-of-6");
+  await page.getByRole("button", { name: language === "es-MX" ? /Siguiente/ : /Next/ }).click();
+  await expect(page.locator(".story-book-preview")).toHaveAttribute("data-page", "2-of-6");
   await page.getByRole("button", { name: new RegExp(`${text.saveStory}$`) }).click();
   await expect(page.locator(".creative-library-grid h3").filter({ hasText: storyTitle })).toHaveCount(1);
+  await expect(page.locator(".creative-library-grid article").filter({ hasText: storyTitle })).toContainText(language === "es-MX" ? "6 páginas" : "6 pages");
   await attachVisual(page, testInfo, "story-castle");
 
   await openDestination(page, text.world, text.arcade, `${testInfo.project.name} Game Arcade`);
+  await page.locator(".arcade-featured-duel button").click();
+  await expect(page.locator('.friendly-duel[data-duel-status="playing"]')).toBeVisible();
+  for (const index of [0, 1, 2, 0, 1, 2]) await page.locator(".friendly-duel__controls button").nth(index).click();
+  await expect(page.locator('.friendly-duel[data-duel-status="won"]')).toBeVisible();
+  await expect(page.locator(".friendly-duel__finish")).toContainText(language === "es-MX" ? "amigo" : "friend");
+  await attachVisual(page, testInfo, "friendly-duel");
+  await page.locator(".friendly-duel__header > button").click();
   await page.locator(".fw-game-card button").first().click();
   await expect(page.locator(".arcade-challenge")).toBeVisible();
   await page.locator(".arcade-answer-grid button").first().click();

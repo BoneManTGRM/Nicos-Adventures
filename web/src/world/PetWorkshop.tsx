@@ -6,6 +6,7 @@ import { PET_OPTIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, LocalizedSelect, makeId } from "./common";
 import { completeOnce, hasCompleted, petTrickMission } from "./progression";
+import { PetArt } from "./PetArt";
 
 type Trick = {
   id: string;
@@ -98,7 +99,7 @@ export function PetWorkshop({ profile, update, announce }: { profile: LocalProfi
     <div className="pet-workshop-layout">
       <section className="fw-builder-layout">
         <article className="fw-pet-stage pet-training-stage" aria-label={draft.name}>
-          <div className="fw-pet" aria-hidden="true">🐾</div>
+          <PetArt pet={draft} language={language} />
           <h2>{draft.name}</h2>
           <p>{optionLabel(draft.species, language)} · {optionLabel(draft.accessory, language)}</p>
           <label>
@@ -136,12 +137,13 @@ export function PetWorkshop({ profile, update, announce }: { profile: LocalProfi
                 {profile.pets.map((pet) => (
                   <button
                     type="button"
-                    className={profile.activePetId === pet.id ? "active" : ""}
+                    className={`pet-collection-button ${profile.activePetId === pet.id ? "active" : ""}`}
                     aria-pressed={profile.activePetId === pet.id}
                     key={pet.id}
                     onClick={() => choosePet(pet)}
                   >
-                    🐾 {pet.name} · {pet.tricks.length}/{TRICKS.length}
+                    <PetArt pet={pet} language={language} decorative />
+                    <span>{pet.name} · {pet.tricks.length}/{TRICKS.length}</span>
                   </button>
                 ))}
               </div>
