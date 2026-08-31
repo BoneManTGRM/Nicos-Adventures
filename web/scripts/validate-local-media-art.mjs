@@ -24,6 +24,10 @@ const requiredFiles = [
   "src/boltbot/canonicalBoltBotArt.ts",
   "src/boltbot/premium-boltbot.css",
   "src/assets/boltbot/boltbot-premium-poses-atlas.webp",
+  "src/assets/monsters/premium-monster-bodies-atlas.webp",
+  "src/world/monsterArt.ts",
+  "src/world/monsterArt.test.ts",
+  "src/world/monsterCreatureStudioView.test.tsx",
   "src/world/BoltBotTestChamber.tsx",
   "src/world/boltbot-test-chamber.css",
 ];
@@ -50,6 +54,10 @@ const wardrobeCss = read("src/nico/wardrobe/wardrobe.css");
 const robotStage = read("src/RobotStage.tsx");
 const boltBotSprite = read("src/boltbot/PremiumBoltBotSprite.tsx");
 const boltBotArt = read("src/boltbot/canonicalBoltBotArt.ts");
+const featureArt = read("src/FeatureArt.tsx");
+const monsterArt = read("src/world/monsterArt.ts");
+const monsterArtTest = read("src/world/monsterArt.test.ts");
+const monsterViewTest = read("src/world/monsterCreatureStudioView.test.tsx");
 const testChamber = read("src/world/BoltBotTestChamber.tsx");
 const recovery = read("public/asset-recovery.js");
 const css = read("src/world/local-media-art.css");
@@ -113,6 +121,17 @@ if (!testChamber.includes("IllustratedChamber") || !testChamber.includes('data-r
 }
 const boltBotAtlas = fs.statSync(path.join(root, "src/assets/boltbot/boltbot-premium-poses-atlas.webp"));
 if (boltBotAtlas.size > 200_000) throw new Error(`Premium BoltBot atlas exceeds its 200 KB budget: ${boltBotAtlas.size}`);
+if (!featureArt.includes('data-monster-body-art={monster.body}') || !featureArt.includes("monster-premium-body__pattern") || featureArt.includes('className="monster-body"')) {
+  throw new Error("Monster Lab has not completed its premium illustrated body migration");
+}
+for (const body of ["Blob", "Dragon", "Jungle Beast", "Stone Golem", "Spirit", "Cosmic", "Aquatic", "Candy", "Mecha", "Royal", "Volcano", "Ice Beast", "Alien", "Dinosaur", "Cloud"]) {
+  if (!monsterArt.includes(`${body}: {`) && !monsterArt.includes(`"${body}": {`)) throw new Error(`Premium monster body art is missing: ${body}`);
+}
+if (!monsterArtTest.includes("every schema-v4 monster body") || !monsterViewTest.includes("premium-monster-bodies-atlas")) {
+  throw new Error("Premium monster atlas regression coverage is incomplete");
+}
+const monsterAtlas = fs.statSync(path.join(root, "src/assets/monsters/premium-monster-bodies-atlas.webp"));
+if (monsterAtlas.size > 360_000) throw new Error(`Premium monster body atlas exceeds its 360 KB budget: ${monsterAtlas.size}`);
 if (!wardrobeSvg.includes("buildNicoWardrobeSvg") || !wardrobeSvg.includes("buildGarmentSvg") || !wardrobeSvg.includes('data-nico-body="true"')) {
   throw new Error("Layered Nico or garment-only SVG generation is incomplete");
 }
@@ -130,4 +149,4 @@ if (!tests.includes("without a network response") || !tests.includes("distinct s
   throw new Error("Local media regression coverage is incomplete");
 }
 
-console.log("Local media validation passed for canonical Nico 2D art with a layered SVG fallback, private offline wildlife illustrations, distinct dinosaur SVGs, scoped recovery, and completed world-module integration.");
+console.log("Local media validation passed for canonical Nico and BoltBot 2D art, premium monster bodies, private offline habitat/wildlife illustrations, distinct dinosaur SVGs, scoped recovery, and completed world-module integration.");
