@@ -57,10 +57,18 @@ describe("Monster Lab localized preview", () => {
     const golem = { ...monster, id: "golem", body: "Stone Golem" };
     const html = renderToStaticMarkup(<MonsterStage monster={golem} language="en" />);
 
-    expect(html).toContain('class="monster-wings" transform="translate(0 30) translate(260 250) scale(0.62)');
-    expect(html).toContain('class="monster-tail" transform="translate(-12 -2) translate(388 398) scale(0.6)');
-    expect(html).toContain('class="monster-horns" transform="translate(0 0) translate(260 158) scale(0.54)');
-    expect(html).toContain('class="monster-face" transform="translate(0 -88) translate(260 246) scale(0.64)');
-    expect(html).toContain('class="monster-core" transform="translate(0 -64) translate(260 387) scale(0.64)');
+    expect(html).toContain('class="monster-wings" transform="translate(0 28) translate(260 250) scale(0.54)');
+    expect(html).toContain('class="monster-tail" transform="translate(-14 -2) translate(388 398) scale(0.52)');
+    expect(html).toContain('class="monster-horns" transform="translate(0 -20) translate(260 158) scale(0.36)');
+    expect(html).toContain('class="monster-face" transform="translate(0 -114) translate(260 246) scale(0.42)');
+    expect(html).toContain('class="monster-core" transform="translate(0 -88) translate(260 387) scale(0.5)');
+  });
+
+  it("uses the smaller high-head fit for Dragon bodies too", () => {
+    const dragon = { ...monster, id: "dragon", body: "Dragon" };
+    const html = renderToStaticMarkup(<MonsterStage monster={dragon} language="en" />);
+
+    expect(html).toContain('class="monster-horns" transform="translate(0 -24) translate(260 158) scale(0.36)');
+    expect(html).toContain('class="monster-face" transform="translate(0 -120) translate(260 246) scale(0.42)');
   });
 });
