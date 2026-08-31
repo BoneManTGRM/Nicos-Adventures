@@ -26,6 +26,15 @@
   contain: paint;
 }
 
+.nico-guide__launcher .nico-costume[data-art-state="canonical-2d"] .nico-canonical-sprite {
+  inset: 0 auto 0 12.5%;
+  width: 75%;
+  height: 100%;
+  max-width: 75%;
+  max-height: 100%;
+  transform: none;
+}
+
 @media (max-width: 620px) {
   .nico-guide__launcher .nico-costume {
     width: 68px;

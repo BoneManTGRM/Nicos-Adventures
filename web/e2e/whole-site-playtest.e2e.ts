@@ -273,7 +273,8 @@ test("all destinations keep their main local interactions working", async ({ pag
   const artworkChoice = page.locator(".robot-home-choice-list button").filter({ hasText: artworkTitle });
   await artworkChoice.click();
   await expect(artworkChoice).toHaveAttribute("aria-pressed", "true");
-  const decoration = page.locator(".robot-home-decoration-grid button").first();
+  const decoration = page.locator('.robot-home-decoration-grid button[aria-pressed="false"]').first();
+  await expect(decoration).toBeVisible();
   await decoration.click();
   await expect(decoration).toHaveAttribute("aria-pressed", "true");
   await attachVisual(page, testInfo, "robot-home");

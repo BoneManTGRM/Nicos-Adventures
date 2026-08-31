@@ -59,13 +59,6 @@ export default function FullApp() {
   const presentSection = () => {
     pendingTitleFocus.current = true;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        if (!pendingTitleFocus.current) return;
-        document.getElementById("page-title")?.focus({ preventScroll: true });
-        pendingTitleFocus.current = false;
-      });
-    });
   };
 
   const open = (sectionId: SectionId) => {
