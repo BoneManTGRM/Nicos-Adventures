@@ -5,7 +5,9 @@ import type {
   Robot,
   MonsterRecord,
   PetRecord,
+  AnimalRecord,
 } from "../types";
+import { drawWildlifeCell } from "../world/wildlifeAtlas";
 
 export type RenderableMovieCharacter = {
   key: string;
@@ -15,6 +17,7 @@ export type RenderableMovieCharacter = {
   robot?: Robot;
   monster?: MonsterRecord;
   pet?: PetRecord;
+  animal?: AnimalRecord;
 };
 
 export type DrawMovieFrameOptions = {
@@ -28,6 +31,7 @@ export type DrawMovieFrameOptions = {
   nicoArt: HTMLImageElement | null;
   nicoProfession: NicoProfessionId;
   nicoAccent: string;
+  wildlifeArt: HTMLCanvasElement | null;
 };
 
 const robotColors: Record<string, string> = {
@@ -319,6 +323,7 @@ export function drawMovieFrame({
   nicoArt,
   nicoProfession,
   nicoAccent,
+  wildlifeArt,
 }: DrawMovieFrameOptions): void {
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas drawing is unavailable.");
@@ -357,6 +362,7 @@ export function drawMovieFrame({
     if (character.kind === "nico") drawNico(context, nicoArt, nicoProfession, nicoAccent, x, floorY, size);
     else if (character.kind === "robot") drawRobot(context, character.robot, x, floorY - size * 0.73, size);
     else if (character.kind === "monster") drawMonster(context, character.monster, x, floorY - size * 0.57, size);
+    else if (character.kind === "animal" && character.animal && wildlifeArt) drawWildlifeCell(context, wildlifeArt, character.animal.id, x - size * 0.68, floorY - size * 1.36, size * 1.36);
     else drawPet(context, character.pet, x, floorY - size * 0.41, size);
     context.restore();
     drawName(context, character.name, x, height * 0.82);
