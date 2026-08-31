@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { answerNicoQuestion } from "./knowledge";
+import { answerNicoQuestion, suggestedQuestions } from "./knowledge";
 
 describe("answerNicoQuestion", () => {
   it("answers from the local bilingual knowledge catalog", () => {
@@ -13,6 +13,17 @@ describe("answerNicoQuestion", () => {
     const answer = answerNicoQuestion("¿Cómo gano estrellas?", "es-MX");
     expect(answer.id).toBe("stars");
     expect(answer.text).toContain("Ganas estrellas");
+  });
+
+  it("keeps every suggested question actionable in both languages", () => {
+    const expectedIds = ["world-overview", "stars", "movies", "safe-question", "backup"];
+    for (const language of ["en", "es-MX"] as const) {
+      for (const [index, question] of suggestedQuestions(language).entries()) {
+        expect(answerNicoQuestion(question, language), `${language}: ${question}`).toMatchObject({
+          id: expectedIds[index],
+        });
+      }
+    }
   });
 
   it("explains Phase 2 jobs in both languages", () => {
