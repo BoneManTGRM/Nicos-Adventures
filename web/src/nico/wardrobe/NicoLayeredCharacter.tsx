@@ -1,8 +1,11 @@
 import { useMemo } from "react";
 import type { NicoWardrobe, WardrobeSlot } from "../../types";
+import { canonicalNicoPresetArt } from "../canonicalNicoArt";
 import { garmentSvgDataUrl, wardrobeSvgDataUrl } from "./wardrobeSvg";
 import { resolveWardrobeItem, type WardrobeItem } from "./catalog";
 import "./wardrobe.css";
+import "./wardrobe-premium.css";
+import "../canonical-nico-art.css";
 
 export function NicoLayeredCharacter({
   wardrobe,
@@ -17,14 +20,30 @@ export function NicoLayeredCharacter({
   className?: string;
   highlightedSlot?: WardrobeSlot | null;
 }) {
-  const source = useMemo(() => wardrobeSvgDataUrl(wardrobe), [wardrobe]);
+  const canonicalArt = useMemo(() => canonicalNicoPresetArt(wardrobe), [wardrobe]);
+  const source = useMemo(
+    () => canonicalArt ? "" : wardrobeSvgDataUrl(wardrobe),
+    [canonicalArt, wardrobe],
+  );
   return (
     <figure
       className={`nico-layered-character ${compact ? "nico-layered-character--compact" : ""} ${className}`.trim()}
       data-layered-nico="true"
+      data-nico-renderer={canonicalArt ? "canonical-2d" : "layered-svg"}
+      data-nico-preset={canonicalArt?.profession}
       data-highlighted-slot={highlightedSlot ?? undefined}
     >
-      <img src={source} alt={alt} draggable={false} decoding="async" data-asset-recovery="ignore" />
+      {canonicalArt ? (
+        <span
+          className="nico-canonical-sprite"
+          style={canonicalArt.style}
+          role={alt ? "img" : undefined}
+          aria-label={alt || undefined}
+          aria-hidden={alt ? undefined : true}
+        />
+      ) : (
+        <img src={source} alt={alt} draggable={false} decoding="async" data-asset-recovery="ignore" />
+      )}
       {highlightedSlot && <span className={`nico-layered-character__slot nico-layered-character__slot--${highlightedSlot}`} aria-hidden="true" />}
     </figure>
   );

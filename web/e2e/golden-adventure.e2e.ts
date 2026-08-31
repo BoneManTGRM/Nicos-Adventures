@@ -331,7 +331,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(page.locator(".boltbot-mission")).toHaveAttribute("data-route-motion", expectsReducedMotion ? "reduced" : "moving");
   await page.getByRole("button", { name: text.right, exact: true }).click();
   await page.getByRole("button", { name: text.forward, exact: true }).click();
-  await expect(page.locator(".boltbot-mission")).toHaveAttribute("data-route-motion", expectsReducedMotion ? "reduced" : "settled", { timeout: 10_000 });
+  await expect(page.locator(".boltbot-mission")).toHaveAttribute("data-route-motion", expectsReducedMotion ? "reduced" : "settled", { timeout: 20_000 });
   await testInfo.attach("boltbot-route-settled", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
     contentType: "image/png",

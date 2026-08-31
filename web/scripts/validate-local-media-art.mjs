@@ -58,8 +58,13 @@ for (const dinosaurId of ["trex", "triceratops", "stegosaurus", "brachiosaurus",
   if (!dinosaurArt.includes(`case "${dinosaurId}"`)) throw new Error(`Local dinosaur silhouette is missing: ${dinosaurId}`);
 }
 
-if (!nicoFigure.includes("NicoLayeredCharacter") || !nicoFigure.includes('data-art-state="layered-wardrobe"')) {
-  throw new Error("Nico is not using the local resolution-independent layered renderer");
+if (
+  !nicoFigure.includes("NicoLayeredCharacter")
+  || !nicoFigure.includes("usesCanonicalArt")
+  || !nicoFigure.includes('"canonical-2d"')
+  || !nicoFigure.includes('"layered-wardrobe"')
+) {
+  throw new Error("Nico does not preserve local canonical art with the resolution-independent layered fallback");
 }
 if (!dressUp.includes("WardrobeStudio") || dressUp.includes("approvedOutfitStyle") || dressUp.includes("nicoOutfitSpriteStyle")) {
   throw new Error("Dress Up still uses flattened full-character art or legacy sprites");
@@ -84,4 +89,4 @@ if (!tests.includes("without a network response") || !tests.includes("distinct s
   throw new Error("Local media regression coverage is incomplete");
 }
 
-console.log("Local media validation passed for layered Nico SVG art, private offline wildlife illustrations, distinct dinosaur SVGs, scoped recovery, and completed world-module integration.");
+console.log("Local media validation passed for canonical Nico 2D art with a layered SVG fallback, private offline wildlife illustrations, distinct dinosaur SVGs, scoped recovery, and completed world-module integration.");

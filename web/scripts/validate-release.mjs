@@ -139,8 +139,13 @@ const figure = read("src/nico/NicoCostumeFigure.tsx");
 const dressUp = read("src/nico/NicoDressUp.tsx");
 const wardrobeStudio = read("src/nico/wardrobe/WardrobeStudio.tsx");
 const wardrobeSvg = read("src/nico/wardrobe/wardrobeSvg.ts");
-if (!figure.includes("NicoLayeredCharacter") || !figure.includes('data-art-state="layered-wardrobe"')) {
-  throw new Error("Shared Nico surfaces are not using the layered wardrobe renderer");
+if (
+  !figure.includes("NicoLayeredCharacter")
+  || !figure.includes("usesCanonicalArt")
+  || !figure.includes('"canonical-2d"')
+  || !figure.includes('"layered-wardrobe"')
+) {
+  throw new Error("Shared Nico surfaces do not preserve canonical 2D art with the editable layered fallback");
 }
 if (!dressUp.includes("WardrobeStudio") || dressUp.includes("approvedOutfitStyle") || dressUp.includes("nicoOutfitSpriteStyle")) {
   throw new Error("NicoDressUp still uses flattened outfit art");

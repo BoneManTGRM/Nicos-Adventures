@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { NicoProfessionId, NicoWardrobe } from "../types";
+import { hasCanonicalNicoPresetArt } from "./canonicalNicoArt";
 import { NicoLayeredCharacter } from "./wardrobe/NicoLayeredCharacter";
 import { wardrobeForPreset } from "./wardrobe/catalog";
 import { wardrobeForDisplay } from "./wardrobe/wardrobeCompatibility";
@@ -60,6 +61,7 @@ export function NicoCostumeFigure({
 }: Props) {
   const base = wardrobe ?? wardrobeForPreset(profession, accentColor);
   const resolvedWardrobe = wardrobeForDisplay(base, profession);
+  const usesCanonicalArt = hasCanonicalNicoPresetArt(resolvedWardrobe);
   const style = { "--nico-costume-accent": resolvedWardrobe.accentColor } as CSSProperties;
 
   return (
@@ -67,7 +69,7 @@ export function NicoCostumeFigure({
       className={`nico-costume nico-costume--${profession} ${compact ? "nico-costume--compact" : ""}`.trim()}
       style={style}
       data-profession={profession}
-      data-art-state="layered-wardrobe"
+      data-art-state={usesCanonicalArt ? "canonical-2d" : "layered-wardrobe"}
     >
       <div className="nico-costume__frame">
         <NicoLayeredCharacter wardrobe={resolvedWardrobe} compact={compact} alt={alt} />
