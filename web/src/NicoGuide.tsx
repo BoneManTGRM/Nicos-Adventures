@@ -64,7 +64,12 @@ export default function NicoGuide() {
 
   const openWorldMap = () => {
     commitProfile((current) => ({ ...current, selectedSection: "world-map" }));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById("page-title")?.focus({ preventScroll: true });
+      });
+    });
     setIsOpen(false);
   };
 

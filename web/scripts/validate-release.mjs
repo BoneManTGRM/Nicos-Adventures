@@ -96,6 +96,9 @@ if (!appStore.includes("useState<LocalSaveStore>") || !appStore.includes('saveLo
 if (!fullApp.includes("useAppStore()") || fullApp.includes("loadLocalStore") || fullApp.includes("saveLocalStore")) {
   throw new Error("FullApp creates or persists a second store");
 }
+if (!fullApp.includes('window.history.scrollRestoration = "manual"')) {
+  throw new Error("Saved destinations must not reopen at a stale browser scroll position");
+}
 if (!activeProfileHook.includes("useAppStore()") || activeProfileHook.includes("useState") || activeProfileHook.includes("loadLocalStore")) {
   throw new Error("Legacy profile hook is not a context-only adapter");
 }
@@ -241,6 +244,9 @@ if (!recovery.includes('dataset.recoverable !== "wildlife"')) throw new Error("A
 const sw = read("public/sw.js");
 const swRefresh = read("src/ServiceWorkerRefresh.tsx");
 if (!sw.includes("nicos-world-static-v22") || !swRefresh.includes('"v22"')) throw new Error("Nico system cache version is not v22");
+if (swRefresh.includes("window.location.reload")) {
+  throw new Error("Service-worker updates must not force a reload during active play");
+}
 if (!sw.includes('await cache.put("/index.html", copy)') || !sw.includes("await cache.put(event.request, copy)")) {
   throw new Error("Service-worker cache writes must remain attached to the fetch lifecycle");
 }

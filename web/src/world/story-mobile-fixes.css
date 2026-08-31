@@ -1,0 +1,64 @@
+.story-studio-layout,
+.story-studio-layout > *,
+.story-controls,
+.story-controls > label,
+.story-controls input,
+.story-controls select {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.story-controls {
+  width: 100%;
+  overflow: hidden;
+}
+
+.story-controls input,
+.story-controls select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.story-controls .fw-action-row {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.story-controls .fw-action-row > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.nico-guide__launcher .nico-costume {
+  width: 82px;
+  height: 82px;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  contain: layout paint size;
+}
+
+.nico-guide__launcher .nico-costume__frame,
+.nico-guide__launcher .nico-layered-character {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  contain: paint;
+}
+
+.nico-guide__launcher .nico-costume[data-art-state="canonical-2d"] .nico-canonical-sprite {
+  inset: 0 auto 0 12.5%;
+  width: 75%;
+  height: 100%;
+  max-width: 75%;
+  max-height: 100%;
+  transform: none;
+}
+
+@media (max-width: 620px) {
+  .nico-guide__launcher .nico-costume {
+    width: 68px;
+    height: 68px;
+  }
+}
