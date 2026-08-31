@@ -56,8 +56,8 @@ if (!progression.includes("COMPLETED_MISSION_LIMIT = 1000") || !progression.incl
   throw new Error("One-time reward history is not retaining the newest 1000 identifiers");
 }
 
-if (!robot.includes("selectedJobComplete") || !robot.includes("robotJobMission") || !robot.includes("completeOnce")) {
-  throw new Error("Robo Lab jobs are not finite per-robot certifications");
+if (!robot.includes("ROBOT_MOVEMENTS") || !robot.includes("RELIABLE_MOVEMENT_POSES") || robot.includes("RobotAssemblyBay") || robot.includes("ROBOT_OPTIONS")) {
+  throw new Error("Robo Lab is not focused on the premium robot and reliable authored movements");
 }
 if (!animals.includes("fieldMissions") || !animals.includes("claimMission") || !animals.includes("disabled={sourceAnimal.discovered}")) {
   throw new Error("Animal Forest missions or one-way discovery protection is incomplete");
@@ -94,4 +94,4 @@ if (!progressionTests.includes("awards a mission exactly once") || !progressionT
   throw new Error("Interactive progression regression tests are incomplete");
 }
 
-console.log("Interactive progression validation passed for a 1000-entry reward ledger, robot certifications, animal field missions, monster care milestones, six Arcade challenge banks plus Friendship Duel, dinosaur expeditions, and pet trick training.");
+console.log("Interactive progression validation passed for a 1000-entry reward ledger, focused robot movements, animal field missions, monster care milestones, six Arcade challenge banks plus Friendship Duel, dinosaur expeditions, and pet trick training.");
