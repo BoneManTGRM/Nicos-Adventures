@@ -42,6 +42,7 @@ type AccessoryFit = Readonly<{ x: number; y: number; scale: number }>;
 
 export type MonsterAccessoryLayout = Readonly<{
   face: AccessoryFit;
+  mouth: AccessoryFit;
   horns: AccessoryFit;
   wings: AccessoryFit;
   tail: AccessoryFit;
@@ -49,24 +50,27 @@ export type MonsterAccessoryLayout = Readonly<{
 }>;
 
 const STANDARD_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -112, scale: 0.46 },
-  horns: { x: 0, y: -18, scale: 0.4 },
+  face: { x: 0, y: -118, scale: 0.42 },
+  mouth: { x: 0, y: -150, scale: 0.38 },
+  horns: { x: 0, y: -60, scale: 0.36 },
   wings: { x: 0, y: 24, scale: 0.6 },
   tail: { x: -12, y: -4, scale: 0.58 },
   core: { x: 0, y: -90, scale: 0.52 },
 };
 
 const COMPACT_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -114, scale: 0.42 },
-  horns: { x: 0, y: -20, scale: 0.36 },
+  face: { x: 0, y: -120, scale: 0.38 },
+  mouth: { x: 0, y: -154, scale: 0.36 },
+  horns: { x: 0, y: -64, scale: 0.32 },
   wings: { x: 0, y: 28, scale: 0.54 },
   tail: { x: -14, y: -2, scale: 0.52 },
   core: { x: 0, y: -88, scale: 0.5 },
 };
 
 const TALL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -120, scale: 0.42 },
-  horns: { x: 0, y: -24, scale: 0.36 },
+  face: { x: 0, y: -126, scale: 0.38 },
+  mouth: { x: 0, y: -158, scale: 0.36 },
+  horns: { x: 0, y: -68, scale: 0.32 },
   wings: { x: 0, y: 22, scale: 0.56 },
   tail: { x: -14, y: -6, scale: 0.54 },
   core: { x: 0, y: -94, scale: 0.5 },
@@ -75,8 +79,9 @@ const TALL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
 // The alien atlas uses a compact round head and a narrow torso. Reusing the
 // tall-body fit put the mouth below the head and made its traits look pasted on.
 const ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -136, scale: 0.29 },
-  horns: { x: 0, y: -35, scale: 0.24 },
+  face: { x: 0, y: -140, scale: 0.27 },
+  mouth: { x: 0, y: -166, scale: 0.3 },
+  horns: { x: 0, y: -72, scale: 0.22 },
   wings: { x: 0, y: 16, scale: 0.46 },
   tail: { x: -18, y: -8, scale: 0.42 },
   core: { x: 0, y: -112, scale: 0.42 },
@@ -106,6 +111,7 @@ export function monsterAccessoryLayout(body: string): MonsterAccessoryLayout {
 
 const ACCESSORY_ORIGINS = {
   face: [260, 246],
+  mouth: [260, 330],
   horns: [260, 158],
   wings: [260, 250],
   tail: [388, 398],
