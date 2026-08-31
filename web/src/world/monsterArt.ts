@@ -49,27 +49,27 @@ export type MonsterAccessoryLayout = Readonly<{
 }>;
 
 const STANDARD_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -88, scale: 0.72 },
-  horns: { x: 0, y: -4, scale: 0.6 },
-  wings: { x: 0, y: 26, scale: 0.72 },
-  tail: { x: -10, y: -4, scale: 0.68 },
-  core: { x: 0, y: -66, scale: 0.72 },
+  face: { x: 0, y: -112, scale: 0.46 },
+  horns: { x: 0, y: -18, scale: 0.4 },
+  wings: { x: 0, y: 24, scale: 0.6 },
+  tail: { x: -12, y: -4, scale: 0.58 },
+  core: { x: 0, y: -90, scale: 0.52 },
 };
 
 const COMPACT_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -88, scale: 0.64 },
-  horns: { x: 0, y: 0, scale: 0.54 },
-  wings: { x: 0, y: 30, scale: 0.62 },
-  tail: { x: -12, y: -2, scale: 0.6 },
-  core: { x: 0, y: -64, scale: 0.64 },
+  face: { x: 0, y: -114, scale: 0.42 },
+  horns: { x: 0, y: -20, scale: 0.36 },
+  wings: { x: 0, y: 28, scale: 0.54 },
+  tail: { x: -14, y: -2, scale: 0.52 },
+  core: { x: 0, y: -88, scale: 0.5 },
 };
 
 const TALL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -92, scale: 0.66 },
-  horns: { x: 0, y: -8, scale: 0.55 },
-  wings: { x: 0, y: 24, scale: 0.66 },
-  tail: { x: -12, y: -6, scale: 0.63 },
-  core: { x: 0, y: -70, scale: 0.66 },
+  face: { x: 0, y: -120, scale: 0.42 },
+  horns: { x: 0, y: -24, scale: 0.36 },
+  wings: { x: 0, y: 22, scale: 0.56 },
+  tail: { x: -14, y: -6, scale: 0.54 },
+  core: { x: 0, y: -94, scale: 0.5 },
 };
 
 // The alien atlas uses a compact round head and a narrow torso. Reusing the
