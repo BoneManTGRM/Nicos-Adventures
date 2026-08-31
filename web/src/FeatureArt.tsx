@@ -75,13 +75,20 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
   const family = monster.body.toLowerCase().replace(/\s+/g,"-");
   const texture = String(monster.texture || "smooth").toLowerCase().replace(/\s+/g,"-");
   const pattern = String(monster.pattern || "solid").toLowerCase().replace(/\s+/g,"-");
-  const eyes = monster.eyes.includes("Three") ? 3 : monster.eyes.includes("One") || monster.eyes.includes("Cyclops") ? 1 : monster.eyes.includes("Four") ? 4 : 2;
+  const faceTreatment = monster.body === "Stone Golem"
+    ? "carved-golem"
+    : ["Alien", "Mecha", "Cosmic"].includes(monster.body)
+      ? "integrated-visor"
+      : monster.body === "Dragon"
+        ? "sculpted-dragon"
+        : "soft-creature";
   const hasWings = !monster.wings.toLowerCase().includes("no ");
-  const hasHorns = !monster.horns.toLowerCase().includes("no ");
+  const hasHorns = ["Stone Golem", "Dragon", "Royal", "Volcano"].includes(monster.body);
   const hasTail = !String(monster.tail || "No tail").toLowerCase().includes("no ");
-  const sleepyEyes = monster.eyes.toLowerCase().includes("sleepy");
-  const robotVisor = monster.eyes.toLowerCase().includes("visor");
-  const eyePositions = eyes === 1 ? [260] : eyes === 2 ? [215, 305] : eyes === 3 ? [185, 260, 335] : [185, 235, 285, 335];
+  const robotVisor = faceTreatment === "integrated-visor";
+  const sleepyEyes = faceTreatment === "carved-golem";
+  const eyes = robotVisor && monster.body === "Alien" ? 3 : 2;
+  const eyePositions = eyes === 3 ? [210, 260, 310] : [226, 294];
   const accessoryLayout = monsterAccessoryLayout(monster.body);
   return <article className={`monster-stage monster-stage--${action}`} style={{ "--monster-main": color } as CSSProperties}>
     <div className="monster-stage__environment" aria-hidden="true"><i/><i/><i/></div>
@@ -91,6 +98,7 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
       data-monster-body-art={monster.body}
       data-monster-arms-art={monster.arms}
       data-monster-pattern={pattern}
+      data-monster-face-treatment={faceTreatment}
       style={monsterBodyArtStyle(monster.body, color, monster.arms)}
       role="img"
       aria-label={`${monster.name}, ${optionLabel(monster.body, language)} ${language === "es-MX" ? "monstruo" : "monster"}`}
@@ -113,21 +121,30 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
       </span>
       <svg className="monster-traits monster-traits--front" viewBox="0 0 520 520" aria-hidden="true">
         <defs>
-        <linearGradient id={`horn-${monster.id}`} x1="0" y1="0" x2=".75" y2="1"><stop stopColor="#fff7c2"/><stop offset=".34" stopColor="#facc15"/><stop offset="1" stopColor="#854d0e"/></linearGradient>
-        <radialGradient id={`eye-${monster.id}`} cx="35%" cy="30%"><stop offset="0" stopColor="#e0fbff"/><stop offset=".36" stopColor="#3ddcf3"/><stop offset=".74" stopColor="#155e75"/><stop offset="1" stopColor="#020617"/></radialGradient>
+        <linearGradient id={`horn-${monster.id}`} x1="0" y1="0" x2=".75" y2="1"><stop stopColor="#fff" stopOpacity=".82"/><stop offset=".38" stopColor={color}/><stop offset="1" stopColor="#071426"/></linearGradient>
+        <radialGradient id={`eye-${monster.id}`} cx="35%" cy="30%"><stop offset="0" stopColor="#fff"/><stop offset=".32" stopColor={color}/><stop offset=".74" stopColor="#164e63"/><stop offset="1" stopColor="#020617"/></radialGradient>
+        <linearGradient id={`face-shell-${monster.id}`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#fff" stopOpacity=".7"/><stop offset=".32" stopColor={color}/><stop offset="1" stopColor="#071426"/></linearGradient>
         <radialGradient id={`core-${monster.id}`} cx="38%" cy="32%"><stop offset="0" stopColor="#fff"/><stop offset=".24" stopColor="#cffafe"/><stop offset=".62" stopColor="#22d3ee"/><stop offset="1" stopColor="#164e63"/></radialGradient>
         <filter id={`monster-glow-${monster.id}`}><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
         <g className="monster-anatomy monster-anatomy--front">
-        {hasHorns && <g className="monster-horns" transform={monsterAccessoryTransform("horns", accessoryLayout.horns)} fill={`url(#horn-${monster.id})`} stroke="#4a2a08" strokeWidth="7" strokeLinejoin="round"><path d="M191 164l-35-91q47 25 78 62z"/><path d="M329 164l35-91q-47 25-78 62z"/><path d="M170 100l37 44m143-44-37 44" stroke="#fff" strokeOpacity=".38" strokeWidth="4"/></g>}
+        {hasHorns && <g className="monster-horns" transform={monsterAccessoryTransform("horns", accessoryLayout.horns)} fill={`url(#horn-${monster.id})`} stroke="#071426" strokeWidth="6" strokeLinejoin="round" filter={`url(#monster-glow-${monster.id})`}><path d="M205 164l-25-67q34 19 56 51z"/><path d="M315 164l25-67q-34 19-56 51z"/><path d="M191 116l29 37m109-37-29 37" stroke="#fff" strokeOpacity=".3" strokeWidth="3"/></g>}
         <g className="monster-face" transform={monsterAccessoryTransform("face", accessoryLayout.face)}>
           {robotVisor
-            ? <g className="monster-eye monster-eye--visor"><rect x="181" y="198" width="158" height="70" rx="30" fill="#07111e" stroke="#a5f3fc" strokeWidth="6"/><rect x="196" y="212" width="128" height="40" rx="18" fill={`url(#eye-${monster.id})`}/><circle cx="235" cy="232" r="8" fill="#fff"/><circle cx="286" cy="232" r="8" fill="#fff"/></g>
-            : eyePositions.map((position,index) => sleepyEyes
-              ? <path className="monster-eye monster-eye--sleepy" key={index} d={`M${position-25} 232Q${position} 250 ${position+25} 232`} fill="none" stroke="#253044" strokeWidth="7" strokeLinecap="round"/>
-              : <g className="monster-eye" key={index}><ellipse cx={position} cy="231" rx={eyes > 2 ? 25 : 31} ry={eyes > 2 ? 29 : 34} fill="#f8fdff" stroke="#253044" strokeWidth="5"/><ellipse cx={position} cy="236" rx={eyes > 2 ? 12 : 15} ry={eyes > 2 ? 17 : 20} fill={`url(#eye-${monster.id})`}/><ellipse cx={position} cy="239" rx="6" ry="10" fill="#01040a"/><circle cx={position-7} cy="226" r="5" fill="#fff"/><path d={`M${position-24} 211Q${position} 196 ${position+24} 211`} fill="none" stroke="#253044" strokeWidth="5" strokeLinecap="round"/></g>)}
+            ? <g className="monster-eye monster-eye--visor" filter={`url(#monster-glow-${monster.id})`}><rect x="190" y="207" width="140" height="55" rx="25" fill="#06111f" stroke={color} strokeWidth="6"/><rect x="200" y="217" width="120" height="35" rx="16" fill={`url(#eye-${monster.id})`}/>{eyePositions.map((position) => <g key={position}><ellipse cx={position} cy="235" rx="7" ry="10" fill="#dffcff"/><circle cx={position-2} cy="232" r="2.5" fill="#fff"/></g>)}</g>
+            : sleepyEyes
+              ? <g className="monster-eye monster-eye--carved"><path d="M202 230Q226 248 250 230M270 230Q294 248 318 230" fill="none" stroke="#153746" strokeWidth="7" strokeLinecap="round"/><path d="M207 225Q226 237 245 225M275 225Q294 237 313 225" fill="none" stroke="#fff" strokeOpacity=".28" strokeWidth="2.5" strokeLinecap="round"/></g>
+              : eyePositions.map((position) => <g className="monster-eye monster-eye--sculpted" key={position} filter={`url(#monster-glow-${monster.id})`}><ellipse cx={position} cy="232" rx="25" ry="28" fill={`url(#face-shell-${monster.id})`} stroke="#071426" strokeWidth="5"/><ellipse cx={position} cy="236" rx="11" ry="16" fill={`url(#eye-${monster.id})`}/><ellipse cx={position} cy="239" rx="5" ry="9" fill="#01040a"/><circle cx={position-6} cy="227" r="4" fill="#fff"/><path d={`M${position-20} 211Q${position} 201 ${position+20} 211`} fill="none" stroke="#153746" strokeWidth="5" strokeLinecap="round"/></g>)}
         </g>
-        <g className="monster-mouth" transform={monsterAccessoryTransform("mouth", accessoryLayout.mouth)}>{monster.mouth?.includes("Fang") ? <><path d="M211 304Q260 342 309 304Q301 354 260 360Q219 354 211 304Z" fill="#29101c" stroke="#253044" strokeWidth="5"/><path d="M224 311l15 29 12-23m45-6-15 29-12-23" fill="#fff8e8" stroke="#d9e3e8" strokeWidth="2" strokeLinejoin="round"/><path d="M238 348q22-12 44 0" fill="none" stroke="#f472b6" strokeWidth="7" strokeLinecap="round"/></> : <path d={monster.mouth?.includes("Grin") ? "M211 311Q260 347 309 311" : "M222 320Q260 340 298 320"} fill="none" stroke="#f8fafc" strokeWidth="7" strokeLinecap="round"/>}</g>
+        <g className="monster-mouth" transform={monsterAccessoryTransform("mouth", accessoryLayout.mouth)}>
+          {faceTreatment === "sculpted-dragon"
+            ? <><path d="M224 316Q260 344 296 316Q290 347 260 352Q230 347 224 316Z" fill="#20151d" stroke="#153746" strokeWidth="5"/><path d="m234 320 10 20 9-16m33-4-10 20-9-16" fill="#fff7e8" stroke="#d9e3e8" strokeWidth="1.5" strokeLinejoin="round"/><path d="M243 344q17-8 34 0" fill="none" stroke={color} strokeWidth="5" strokeLinecap="round"/></>
+            : faceTreatment === "carved-golem"
+              ? <><path d="M232 321Q260 338 288 321" fill="none" stroke="#153746" strokeWidth="7" strokeLinecap="round"/><path d="M238 317Q260 328 282 317" fill="none" stroke="#fff" strokeOpacity=".25" strokeWidth="2.5" strokeLinecap="round"/></>
+              : robotVisor
+                ? <g><rect x="238" y="318" width="44" height="17" rx="8" fill="#071426" stroke={color} strokeWidth="3"/><path d="M246 326h4m5 0h4m5 0h4m5 0h2" stroke="#dffcff" strokeWidth="2" strokeLinecap="round"/></g>
+                : <><path d="M232 318Q260 342 288 318" fill="none" stroke="#153746" strokeWidth="8" strokeLinecap="round"/><path d="M236 316Q260 335 284 316" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round"/></>}
+        </g>
         <g className="monster-core" transform={monsterAccessoryTransform("core", accessoryLayout.core)} filter={`url(#monster-glow-${monster.id})`}><circle cx="260" cy="387" r="36" fill="#051525" stroke="#a5f3fc" strokeOpacity=".65" strokeWidth="4"/><circle cx="260" cy="387" r="25" fill={`url(#core-${monster.id})`}/><circle cx="251" cy="378" r="7" fill="#fff" opacity=".78"/></g>
         </g>
       </svg>

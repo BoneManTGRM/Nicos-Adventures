@@ -67,7 +67,6 @@ describe("Nico shared 2D renderer", () => {
       <NicoCostumeFigure profession="doctor" wardrobe={wardrobe} alt="Doctor Nico" />,
     );
     expect(html).toContain('data-art-state="canonical-2d"');
-    expect(html).toContain('data-layered-nico="true"');
     expect(html).toContain('data-nico-preset="doctor"');
     expect(html).toContain('aria-label="Doctor Nico"');
     expect(html).not.toContain("data:image/svg+xml");
@@ -80,8 +79,18 @@ describe("Nico shared 2D renderer", () => {
     );
     expect(html).toContain("nico-costume--compact");
     expect(html).toContain('data-art-state="canonical-2d"');
-    expect(html).toContain('data-layered-nico="true"');
     expect(html).toContain('data-nico-renderer="canonical-2d"');
+  });
+
+  it("never falls back to old layered art when a saved wardrobe was customized", () => {
+    const customized = { ...wardrobeForPreset("astronaut"), presetId: null };
+    const html = renderToStaticMarkup(
+      <NicoCostumeFigure profession="astronaut" wardrobe={customized} alt="Astronaut Nico" />,
+    );
+    expect(html).toContain('data-art-state="canonical-2d"');
+    expect(html).toContain('data-nico-preset="astronaut"');
+    expect(html).not.toContain("layered-svg");
+    expect(html).not.toContain("data:image/svg+xml");
   });
 
   it("derives complete canonical art when a legacy caller provides only a profession", () => {

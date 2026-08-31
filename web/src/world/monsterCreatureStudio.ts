@@ -13,9 +13,6 @@ export const MONSTER_TRAITS: ReadonlyArray<{
   group: MonsterTraitGroup;
 }> = [
   { key: "body", icon: "◉", group: "form" },
-  { key: "eyes", icon: "◉◉", group: "form" },
-  { key: "mouth", icon: "⌣", group: "form" },
-  { key: "horns", icon: "♈", group: "features" },
   { key: "wings", icon: "🪽", group: "features" },
   { key: "arms", icon: "✦", group: "features" },
   { key: "legs", icon: "⌁", group: "features" },

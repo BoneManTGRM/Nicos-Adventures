@@ -1,10 +1,10 @@
-import type { NicoWardrobe } from "../types";
-import { loadNicoWardrobeImage } from "../nico/wardrobe/wardrobeSvg";
+import type { NicoProfessionId } from "../types";
+import { loadCanonicalNicoImage } from "../nico/canonicalNicoArt";
 
 /**
- * Uses the exact same vector wardrobe renderer as the live React character.
- * No child content or image is uploaded; the SVG is generated in memory.
+ * Crops the same authored local profession atlas used by every live Nico
+ * surface. No child content or image is uploaded.
  */
-export function composeNicoImage(wardrobe: NicoWardrobe): Promise<HTMLImageElement> {
-  return loadNicoWardrobeImage(wardrobe);
+export function composeNicoImage(profession: NicoProfessionId): Promise<HTMLImageElement> {
+  return loadCanonicalNicoImage(profession);
 }
