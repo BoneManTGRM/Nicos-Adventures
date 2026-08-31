@@ -102,14 +102,14 @@ if (!fullApp.includes('window.history.scrollRestoration = "manual"')) {
 if (!activeProfileHook.includes("useAppStore()") || activeProfileHook.includes("useState") || activeProfileHook.includes("loadLocalStore")) {
   throw new Error("Legacy profile hook is not a context-only adapter");
 }
-if (!guide.includes("useAppStore") || !guide.includes("wardrobe={profile.nico.wardrobe}")) {
-  throw new Error("Nico guide is not connected to the canonical profile and wardrobe");
+if (!guide.includes("useAppStore") || !guide.includes("profession={profile.nico.profession}")) {
+  throw new Error("Nico guide is not connected to the canonical profile profession");
 }
-if (!portalArt.includes("useActiveProfileStore") || !portalArt.includes("wardrobe={profile.nico.wardrobe}")) {
-  throw new Error("Nico portal art is not connected to the shared profile wardrobe");
+if (!portalArt.includes("useActiveProfileStore") || !portalArt.includes("profession={profile.nico.profession}")) {
+  throw new Error("Nico portal art is not connected to the canonical profile profession");
 }
-if (!clubhouse.includes("useDialogFocusTrap") || !clubhouse.includes('addEventListener("popstate"') || !clubhouse.includes("wardrobe={profile.nico.wardrobe}")) {
-  throw new Error("Nico Clubhouse profile, focus, history, or wardrobe synchronization is incomplete");
+if (!clubhouse.includes("useDialogFocusTrap") || !clubhouse.includes('addEventListener("popstate"') || clubhouse.includes("NicoDressUp")) {
+  throw new Error("Nico Clubhouse focus, history, or Wardrobe retirement is incomplete");
 }
 if (!focusTrap.includes('event.key === "Tab"') || !focusTrap.includes('event.key === "Escape"')) {
   throw new Error("Accessible Clubhouse focus containment is incomplete");
@@ -139,46 +139,22 @@ const professions = JSON.parse(read("src/catalogs/nico-professions.json"));
 if (!Array.isArray(professions) || professions.length < 26) throw new Error("Nico must provide at least 26 bilingual profession choices");
 
 const figure = read("src/nico/NicoCostumeFigure.tsx");
-const dressUp = read("src/nico/NicoDressUp.tsx");
-const wardrobeStudio = read("src/nico/wardrobe/WardrobeStudio.tsx");
-const wardrobeSvg = read("src/nico/wardrobe/wardrobeSvg.ts");
-if (
-  !figure.includes("NicoLayeredCharacter")
-  || !figure.includes("usesCanonicalArt")
-  || !figure.includes('"canonical-2d"')
-  || !figure.includes('"layered-wardrobe"')
-) {
-  throw new Error("Shared Nico surfaces do not preserve canonical 2D art with the editable layered fallback");
+if (!figure.includes("canonicalNicoPresetArt") || !figure.includes('"canonical-2d"') || figure.includes("wardrobeForDisplay")) {
+  throw new Error("Shared Nico surfaces are not locked to canonical premium art");
 }
-if (!dressUp.includes("WardrobeStudio") || dressUp.includes("approvedOutfitStyle") || dressUp.includes("nicoOutfitSpriteStyle")) {
-  throw new Error("NicoDressUp still uses flattened outfit art");
-}
-if (!wardrobeStudio.includes("onPointerDown") || !wardrobeStudio.includes("wardrobeReducer") || !wardrobeStudio.includes("GarmentThumbnail")) {
-  throw new Error("True garment drag, edit history, or garment-only thumbnails are incomplete");
-}
-if (!wardrobeSvg.includes('data-nico-body="true"') || !wardrobeSvg.includes("buildGarmentSvg")) {
-  throw new Error("One-body or garment-only SVG rendering is incomplete");
-}
-
 const askNico = read("src/nico/AskNico.tsx");
-if (!askNico.includes("NicoCostumeFigure") || !askNico.includes("wardrobe")) {
-  throw new Error("Ask Nico is not using the synchronized saved wardrobe renderer");
-}
+if (!askNico.includes("NicoCostumeFigure")) throw new Error("Ask Nico is not using canonical Nico art");
 
 const showtime = read("src/showtime/ShowtimeStudio.tsx");
 const compositor = read("src/showtime/composeNicoImage.ts");
 const recorder = read("src/showtime/recordMovie.ts");
-if (!recorder.includes("captureStream") || !recorder.includes("MediaRecorder")) {
-  throw new Error("Showtime client-side recording is incomplete");
+if (!recorder.includes("captureStream") || !recorder.includes("MediaRecorder")) throw new Error("Showtime client-side recording is incomplete");
+if (showtime.includes("localStorage") || recorder.includes("localStorage")) throw new Error("Showtime must not write video data to localStorage");
+if (!showtime.includes("parentConfirmed") || !showtime.includes("composeNicoImage(profile.nico.profession)")) {
+  throw new Error("Showtime parental confirmation or canonical Nico composition is missing");
 }
-if (showtime.includes("localStorage") || recorder.includes("localStorage")) {
-  throw new Error("Showtime must not write video data to localStorage");
-}
-if (!showtime.includes("parentConfirmed") || !showtime.includes("composeNicoImage(profile.nico.wardrobe)")) {
-  throw new Error("Showtime parental confirmation or layered Nico composition is missing");
-}
-if (!showtime.includes("wardrobe={profile.nico.wardrobe}") || !compositor.includes("loadNicoWardrobeImage")) {
-  throw new Error("Showtime live and recorded Nico output do not share the wardrobe renderer");
+if (!compositor.includes("loadCanonicalNicoImage") || compositor.includes("loadNicoWardrobeImage")) {
+  throw new Error("Showtime does not use canonical Nico art");
 }
 
 const packageJson = JSON.parse(read("package.json"));
@@ -257,4 +233,4 @@ if (!sw.includes("caches.match(event.request, { ignoreSearch: true, ignoreVary: 
   throw new Error("Offline requests must fall back to the generated Golden Adventure cache");
 }
 
-console.log(`Release validation passed for one AppShell, schema v4, one-body layered Nico wardrobe, ${labels.length} wildlife species, ${professions.length} profession presets, accessible Clubhouse routing, and wardrobe-aware Showtime recording.`);
+console.log(`Release validation passed for one AppShell, schema v4, canonical Nico art, ${labels.length} wildlife species, ${professions.length} profession presets, accessible Clubhouse routing, and canonical Showtime recording.`);
