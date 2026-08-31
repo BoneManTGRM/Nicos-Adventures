@@ -153,7 +153,6 @@
 
 .monster-traits {
   position: absolute;
-  z-index: 4;
   inset: 0;
   display: block;
   width: 100%;
@@ -162,11 +161,13 @@
   pointer-events: none;
 }
 
+.monster-traits--rear { z-index: 1; }
+.monster-traits--front { z-index: 4; }
 .monster-anatomy { transform-origin: 50% 78%; }
-.monster-wings { opacity: .94; }
+.monster-wings { opacity: .78; }
+.monster-tail { opacity: .9; }
 .monster-ground-shadow { filter: blur(9px); }
 .monster-eye { filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .28)); }
-.monster-core { transform-origin: 260px 387px; }
 
 .monster-texture--crystal .monster-premium-body__art,
 .monster-texture--metal .monster-premium-body__art { filter: contrast(1.1) saturate(.9); }

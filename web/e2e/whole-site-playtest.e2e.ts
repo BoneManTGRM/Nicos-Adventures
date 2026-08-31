@@ -245,10 +245,34 @@ test("all destinations keep their main local interactions working", async ({ pag
   await attachVisual(page, testInfo, "animal-forest");
 
   await openDestination(page, text.world, text.monsterLab, `${testInfo.project.name} Monster Lab`);
-  await page.locator('.monster-studio__trait[data-trait="body"]').click();
-  await page.locator('.monster-studio__choice[data-option="Alien"]').click();
-  await page.locator('.monster-studio__trait[data-trait="arms"]').click();
-  await page.locator('.monster-studio__choice[data-option="Four arms"]').click();
+  const chooseMonsterOption = async (trait: string, option: string) => {
+    await page.locator(`.monster-studio__trait[data-trait="${trait}"]`).click();
+    await page.locator(`.monster-studio__choice[data-option="${option}"]`).click();
+  };
+  await chooseMonsterOption("body", "Stone Golem");
+  await chooseMonsterOption("horns", "Crystal horns");
+  await chooseMonsterOption("wings", "Star wings");
+  await chooseMonsterOption("tail", "Dragon tail");
+  const fittedGolem = page.locator('[data-monster-body-art="Stone Golem"]');
+  await expect(fittedGolem.locator(".monster-traits--rear")).toHaveCSS("z-index", "1");
+  await expect(fittedGolem.locator(".monster-premium-body")).toHaveCSS("z-index", "2");
+  await expect(fittedGolem.locator(".monster-traits--front")).toHaveCSS("z-index", "4");
+  const fittedPartWidths = await fittedGolem.evaluate((element) => {
+    const width = (selector: string) => element.querySelector<SVGGraphicsElement>(selector)?.getBoundingClientRect().width ?? 0;
+    return {
+      body: element.querySelector<HTMLElement>(".monster-premium-body")?.getBoundingClientRect().width ?? 0,
+      face: width(".monster-face"),
+      horns: width(".monster-horns"),
+      wings: width(".monster-wings"),
+    };
+  });
+  expect(fittedPartWidths.face).toBeLessThan(fittedPartWidths.body * 0.48);
+  expect(fittedPartWidths.horns).toBeLessThan(fittedPartWidths.body * 0.5);
+  expect(fittedPartWidths.wings).toBeLessThan(fittedPartWidths.body * 0.78);
+  await attachVisual(page, testInfo, "monster-lab-stone-golem-fit");
+
+  await chooseMonsterOption("body", "Alien");
+  await chooseMonsterOption("arms", "Four arms");
   await page.locator(".monster-lab-name input").fill(monsterName);
   await page.getByRole("button", { name: new RegExp(`${text.saveMonster}$`) }).click();
   await expect(page.locator(".monster-collection button").filter({ hasText: monsterName })).toHaveCount(1);
