@@ -261,8 +261,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(page.locator(".world-atlas__landmark")).toHaveCount(6);
   const lockedAtlasValley = page.locator(".world-atlas__landmark.is-locked").filter({ hasText: text.dinosaur });
   await expect(lockedAtlasValley).toBeDisabled();
-  await expect(page.locator(".fw-destination-grid .fw-destination")).toHaveCount(14);
-  await expect(page.locator(".fw-destination-grid .fw-destination:not(.nico-world-destination)")).toHaveCount(13);
+  await expect(page.locator(".fw-destination-grid .fw-destination")).toHaveCount(16);
+  await expect(page.locator(".fw-destination-grid .fw-destination:not(.nico-world-destination)")).toHaveCount(15);
   await expect(page.locator(".nico-world-destination")).toHaveCount(1);
   const lockedValley = page.locator(".fw-destination.is-locked").filter({ hasText: text.dinosaur });
   await expect(lockedValley).toBeDisabled();

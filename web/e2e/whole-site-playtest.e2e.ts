@@ -224,7 +224,7 @@ test("all destinations keep their main local interactions working", async ({ pag
     await activateWithKeyboard(page.getByRole("button", { name: text.switchLanguage }));
   }
   await expect(page.locator("html")).toHaveAttribute("lang", language);
-  await expect(page.locator(".fw-destination-grid .fw-destination")).toHaveCount(14);
+  await expect(page.locator(".fw-destination-grid .fw-destination")).toHaveCount(16);
   await expect(page.locator(".fw-destination.is-locked").filter({ hasText: text.dinosaurValley })).toBeDisabled();
   await attachVisual(page, testInfo, "world-map");
 
