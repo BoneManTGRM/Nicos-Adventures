@@ -8,6 +8,11 @@ const requiredFiles = [
   "src/world/local-media-art.css",
   "src/world/localMediaArt.test.tsx",
   "src/world/AnimalForest.tsx",
+  "src/world/AnimalForestTrail.tsx",
+  "src/world/AnimalForestTrail.test.tsx",
+  "src/world/animalForestArt.ts",
+  "src/world/animal-forest-trail.css",
+  "src/assets/habitats/animal-forest-premium-habitats-atlas.webp",
   "src/world/DinosaurValley.tsx",
   "src/nico/NicoCostumeFigure.tsx",
   "src/nico/NicoDressUp.tsx",
@@ -31,6 +36,9 @@ for (const relative of requiredFiles) {
 const read = (relative) => fs.readFileSync(path.join(root, relative), "utf8");
 const fullApp = read("src/FullApp.tsx");
 const animals = read("src/world/AnimalForest.tsx");
+const forestTrail = read("src/world/AnimalForestTrail.tsx");
+const forestArt = read("src/world/animalForestArt.ts");
+const forestViewTest = read("src/world/AnimalForestTrail.test.tsx");
 const wildlifeArt = read("src/world/LocalWildlifeArt.tsx");
 const dinosaurs = read("src/world/DinosaurValley.tsx");
 const dinosaurArt = read("src/world/DinosaurArt.tsx");
@@ -59,6 +67,17 @@ if (!fullApp.includes('import "./world/creative-memory.css"')) throw new Error("
 if (!animals.includes("LocalWildlifeArt") || !animals.includes("private local illustration") || /wikipedia|wikimedia|navigator\.onLine|fetch\(/i.test(animals)) {
   throw new Error("Animal Forest is not using its private local wildlife-art contract");
 }
+if (!forestTrail.includes('data-habitat-renderer="premium-2d"') || /GameCanvas|useFrame|<canvas/.test(forestTrail)) {
+  throw new Error("Animal Forest trail has not completed its premium illustrated 2D migration");
+}
+for (const habitat of ["Jungle", "Rainforest", "Ocean", "Savanna", "Arctic", "Desert", "Forest", "Wetlands", "Mountains"]) {
+  if (!forestArt.includes(`${habitat}: {`)) throw new Error(`Premium Animal Forest art is missing: ${habitat}`);
+}
+if (!forestViewTest.includes("without a canvas") || !forestViewTest.includes("natural Mexican Spanish copy")) {
+  throw new Error("Premium Animal Forest view regression coverage is incomplete");
+}
+const habitatAtlas = fs.statSync(path.join(root, "src/assets/habitats/animal-forest-premium-habitats-atlas.webp"));
+if (habitatAtlas.size > 350_000) throw new Error(`Premium habitat atlas exceeds its 350 KB budget: ${habitatAtlas.size}`);
 if (!wildlifeArt.includes("local-wildlife-art__animal") || !wildlifeArt.includes("habitatPalette")) {
   throw new Error("Local wildlife illustration system is incomplete");
 }

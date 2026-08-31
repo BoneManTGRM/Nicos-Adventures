@@ -198,9 +198,10 @@ test("Living destinations keep their navigation without WebGL", async ({ page },
   await openDestination(page, text.animalForest);
   await expect(page.getByRole("heading", { name: text.animalTrail, exact: true })).toBeVisible();
   const forest = page.locator(".animal-forest-trail");
-  await expect(forest.locator(".game-canvas")).toHaveAttribute("data-renderer-status", "unavailable");
-  await expect(forest.getByRole("alert")).toHaveText(text.animalUnavailable);
+  await expect(forest).toHaveAttribute("data-habitat-renderer", "premium-2d");
+  await expect(forest.locator('.animal-forest-illustration__art[data-habitat-art="Jungle"]')).toBeVisible();
   await expect(forest.locator("canvas")).toHaveCount(0);
+  await expect(forest.locator(".game-canvas")).toHaveCount(0);
   await expect(forest.locator(".animal-forest-trail__habitat")).toHaveCount(10);
   const ocean = forest.locator('.animal-forest-trail__habitat[data-habitat="Ocean"]');
   await activateWithKeyboard(page, ocean);
@@ -274,7 +275,10 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await openDestination(page, text.animalForest);
   await expect(page.getByRole("heading", { name: text.animalForest, exact: true })).toBeFocused();
   await expect(page.getByRole("heading", { name: text.animalTrail, exact: true })).toBeVisible();
-  await assertRendererReady(page, expectsReducedMotion);
+  const premiumForest = page.locator('.animal-forest-trail[data-habitat-renderer="premium-2d"]');
+  await expect(premiumForest).toBeVisible();
+  await expect(premiumForest.locator('.animal-forest-illustration__art[data-habitat-art="Jungle"]')).toBeVisible();
+  await expect(premiumForest.locator("canvas")).toHaveCount(0);
   const habitatButtons = page.locator(".animal-forest-trail__habitat");
   await expect(habitatButtons).toHaveCount(10);
   const ocean = page.locator('.animal-forest-trail__habitat[data-habitat="Ocean"]');
