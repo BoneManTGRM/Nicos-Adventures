@@ -15,12 +15,12 @@ const emptyTargets: Targets = { worldGrid: null, room: null };
 const copy = {
   en: {
     clubhouse: "Nico’s Clubhouse",
-    clubhouseDescription: "Ask Nico, build his wardrobe, and make little movies.",
+    clubhouseDescription: "Ask Nico questions and make little movies.",
     robotHome: "Visit Nico’s Clubhouse",
   },
   "es-MX": {
     clubhouse: "Casa Club de Nico",
-    clubhouseDescription: "Pregúntale a Nico, arma su guardarropa y crea pequeñas películas.",
+    clubhouseDescription: "Pregúntale a Nico y crea pequeñas películas.",
     robotHome: "Visitar la Casa Club de Nico",
   },
 } as const;
@@ -88,7 +88,7 @@ export default function NicoPortalArt() {
   }
   if (targets.room) {
     portals.push(createPortal(
-      <button type="button" className="nico-room-entry" onClick={() => openNicoWorld("dress")}>
+      <button type="button" className="nico-room-entry" onClick={() => openNicoWorld("ask")}>
         <span className="nico-room-entry__art">{character(text.robotHome)}</span>
         <strong>{text.robotHome}</strong>
       </button>,
