@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { ROBOT_ACTIONS } from "../FeatureArt";
 import { RobotStage } from "../RobotStage";
 import { starterRobot } from "../storage";
+import { ROBOT_MOVEMENTS } from "../world/RoboLab";
 import { PremiumBoltBotSprite } from "./PremiumBoltBotSprite";
 import { PREMIUM_BOLTBOT_POSES, premiumBoltBotPose } from "./canonicalBoltBotArt";
 
@@ -12,6 +13,11 @@ describe("premium illustrated BoltBot art", () => {
     for (const action of ROBOT_ACTIONS) {
       expect(PREMIUM_BOLTBOT_POSES).toContain(premiumBoltBotPose(action.pose));
     }
+  });
+
+  it("offers only movements with six distinct authored poses", () => {
+    expect(ROBOT_MOVEMENTS).toHaveLength(6);
+    expect(new Set(ROBOT_MOVEMENTS.map((action) => premiumBoltBotPose(action.pose))).size).toBe(6);
   });
 
   it("renders the local atlas instead of the angular SVG placeholder", () => {
