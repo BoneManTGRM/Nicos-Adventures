@@ -21,26 +21,26 @@ const copy: Record<"en" | "es-MX", GuideCopy> = {
   en: {
     eyebrow: "Your local adventure guide",
     title: "Hi, I'm Nico!",
-    body: "Ask me safe questions, build my outfit piece by piece, make a little movie, or continue exploring my world. Everything stays on this device.",
+    body: "Ask me safe questions, make a little movie, or continue exploring my world. Everything stays on this device.",
     worldMap: "Open World Map",
     askNico: "Ask Nico",
     clubhouse: "Open Clubhouse",
     switchLanguage: "Español",
     openLabel: "Meet Nico, your local adventure guide",
     closeLabel: "Close Nico's guide",
-    artAlt: "Nico wearing his saved layered wardrobe",
+    artAlt: "Nico in his premium explorer artwork",
   },
   "es-MX": {
     eyebrow: "Tu guía local de aventuras",
     title: "¡Hola, soy Nico!",
-    body: "Hazme preguntas seguras, arma mi ropa pieza por pieza, crea una pequeña película o sigue explorando. Todo permanece en este dispositivo.",
+    body: "Hazme preguntas seguras, crea una pequeña película o sigue explorando. Todo permanece en este dispositivo.",
     worldMap: "Abrir mapa del mundo",
     askNico: "Pregúntale a Nico",
     clubhouse: "Abrir Casa Club",
     switchLanguage: "English",
     openLabel: "Conoce a Nico, tu guía local de aventuras",
     closeLabel: "Cerrar la guía de Nico",
-    artAlt: "Nico con su guardarropa en capas guardado",
+    artAlt: "Nico en su ilustración prémium de explorador",
   },
 };
 
@@ -73,7 +73,7 @@ export default function NicoGuide() {
     setIsOpen(false);
   };
 
-  const openNico = (tab: "ask" | "dress") => {
+  const openNico = (tab: "ask") => {
     openNicoWorld(tab);
     setIsOpen(false);
   };
@@ -107,7 +107,7 @@ export default function NicoGuide() {
             <p>{text.body}</p>
             <div className="nico-guide__actions">
               <button type="button" className="nico-guide__primary" onClick={() => openNico("ask")}>💬 {text.askNico}</button>
-              <button type="button" onClick={() => openNico("dress")}>🧰 {text.clubhouse}</button>
+              <button type="button" onClick={() => openNico("ask")}>🏠 {text.clubhouse}</button>
               <button type="button" onClick={openWorldMap}>🌍 {text.worldMap}</button>
               <button type="button" onClick={switchLanguage}>{text.switchLanguage}</button>
             </div>
