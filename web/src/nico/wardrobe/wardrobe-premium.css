@@ -80,16 +80,21 @@
   }
 
   .wardrobe-garment-grid > button {
-    grid-template-rows: 108px minmax(2.6em, auto) minmax(2.4em, auto);
-    min-height: 198px;
-    padding: 8px;
+    grid-template-rows: 78px minmax(2.4em, auto) auto;
+    min-height: 148px;
+    gap: 5px;
+    padding: 7px;
   }
+
+  .wardrobe-garment-art { padding: 5px; }
+  .wardrobe-garment-grid > button strong { font-size: 11px; }
+  .wardrobe-garment-grid > button small { min-height: 1.5em; font-size: 9px; }
 }
 
 @media (max-width: 410px) {
   .wardrobe-garment-grid > button {
-    grid-template-rows: 100px minmax(2.6em, auto) minmax(2.4em, auto);
-    min-height: 190px;
+    grid-template-rows: 72px minmax(2.4em, auto) auto;
+    min-height: 140px;
   }
 }
 

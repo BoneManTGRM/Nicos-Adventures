@@ -75,8 +75,8 @@ const TALL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
 // The alien atlas uses a compact round head and a narrow torso. Reusing the
 // tall-body fit put the mouth below the head and made its traits look pasted on.
 const ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -104, scale: 0.34 },
-  horns: { x: 0, y: -8, scale: 0.3 },
+  face: { x: 0, y: -136, scale: 0.29 },
+  horns: { x: 0, y: -35, scale: 0.24 },
   wings: { x: 0, y: 16, scale: 0.46 },
   tail: { x: -18, y: -8, scale: 0.42 },
   core: { x: 0, y: -112, scale: 0.42 },
