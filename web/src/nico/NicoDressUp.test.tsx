@@ -84,6 +84,17 @@ describe("Nico shared 2D renderer", () => {
     expect(html).toContain('data-nico-renderer="canonical-2d"');
   });
 
+  it("never falls back to old layered art when a saved wardrobe was customized", () => {
+    const customized = { ...wardrobeForPreset("astronaut"), presetId: null };
+    const html = renderToStaticMarkup(
+      <NicoCostumeFigure profession="astronaut" wardrobe={customized} alt="Astronaut Nico" />,
+    );
+    expect(html).toContain('data-art-state="canonical-2d"');
+    expect(html).toContain('data-nico-preset="astronaut"');
+    expect(html).not.toContain("layered-svg");
+    expect(html).not.toContain("data:image/svg+xml");
+  });
+
   it("derives complete canonical art when a legacy caller provides only a profession", () => {
     const html = renderToStaticMarkup(<NicoCostumeFigure profession="firefighter" alt="Firefighter Nico" />);
     expect(html).toContain('data-art-state="canonical-2d"');
