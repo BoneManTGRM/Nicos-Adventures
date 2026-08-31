@@ -35,7 +35,7 @@ type Announcement = { id: number; message: string };
 export default function FullApp() {
   const { store, profile, setStore, updateProfile, commitProfile } = useAppStore();
   const [announcement, setAnnouncement] = useState<Announcement>({ id: 0, message: "" });
-  const pendingTitleFocus = useRef(false);
+  const pendingTitleFocus = useRef<"keyboard" | "pointer" | null>(null);
   const announce = (message: string) => setAnnouncement((current) => ({ id: current.id + 1, message }));
 
   useEffect(() => {
@@ -46,18 +46,44 @@ export default function FullApp() {
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    if (!pendingTitleFocus.current) return;
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        if (!pendingTitleFocus.current) return;
-        document.getElementById("page-title")?.focus({ preventScroll: true });
-        pendingTitleFocus.current = false;
+    const activation = pendingTitleFocus.current;
+    if (!activation) return;
+
+    let firstFrame = 0;
+    let secondFrame = 0;
+    const focusTitle = () => document.getElementById("page-title")?.focus({ preventScroll: true });
+    const scheduleFocus = () => {
+      firstFrame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(focusTitle);
       });
-    });
+    };
+    scheduleFocus();
+
+    if (activation === "pointer") {
+      pendingTitleFocus.current = null;
+      return () => {
+        window.cancelAnimationFrame(firstFrame);
+        window.cancelAnimationFrame(secondFrame);
+      };
+    }
+
+    const focusAfterKeyUp = () => {
+      scheduleFocus();
+      pendingTitleFocus.current = null;
+    };
+    window.addEventListener("keyup", focusAfterKeyUp, { once: true });
+    return () => {
+      window.removeEventListener("keyup", focusAfterKeyUp);
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+    };
   }, [profile.selectedSection]);
 
   const presentSection = () => {
-    pendingTitleFocus.current = true;
+    const focused = document.activeElement;
+    pendingTitleFocus.current = focused instanceof HTMLElement && focused.matches(":focus-visible")
+      ? "keyboard"
+      : "pointer";
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   };
 

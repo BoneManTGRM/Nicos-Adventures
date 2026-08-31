@@ -275,8 +275,9 @@ test("all destinations keep their main local interactions working", async ({ pag
   await expect(artworkChoice).toHaveAttribute("aria-pressed", "true");
   const decoration = page.locator('.robot-home-decoration-grid button[aria-pressed="false"]').first();
   await expect(decoration).toBeVisible();
+  const decorationLabel = (await decoration.textContent())?.replace(/^[＋✓]\s*/, "").trim() ?? "";
   await decoration.click();
-  await expect(decoration).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('.robot-home-decoration-grid button[aria-pressed="true"]').filter({ hasText: decorationLabel })).toHaveCount(1);
   await attachVisual(page, testInfo, "robot-home");
 
   await openDestination(page, text.world, text.museum, `${testInfo.project.name} Memory Museum`);

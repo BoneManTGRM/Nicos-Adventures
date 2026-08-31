@@ -8,6 +8,27 @@
   max-width: 100%;
 }
 
+.story-controls {
+  width: 100%;
+  overflow: hidden;
+}
+
+.story-controls input,
+.story-controls select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.story-controls .fw-action-row {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.story-controls .fw-action-row > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .nico-guide__launcher .nico-costume {
   width: 82px;
   height: 82px;
