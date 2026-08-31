@@ -15,7 +15,8 @@ describe("premium illustrated BoltBot art", () => {
   it("renders the premium atlas with a fitted customization layer", () => {
     const html = renderToStaticMarkup(<RobotStage robot={starterRobot("Nico")} pose="repair" />);
     expect(html).toContain('data-robot-stage="premium-2d"');
-    expect(html).toContain('data-boltbot-renderer="premium-customized-2d"');
+    expect(html).toContain('data-boltbot-renderer="premium-2d"');
+    expect(html).toContain('data-boltbot-customization="fitted"');
     expect(html).toContain('data-boltbot-pose="repair"');
     expect(html).toContain("boltbot-premium-poses-atlas");
     expect(html).toContain("premium-boltbot-sprite__custom");
