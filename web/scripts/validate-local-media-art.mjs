@@ -14,6 +14,13 @@ const requiredFiles = [
   "src/nico/AskNico.tsx",
   "src/nico/wardrobe/wardrobeSvg.ts",
   "src/nico/wardrobe/wardrobe.css",
+  "src/RobotStage.tsx",
+  "src/boltbot/PremiumBoltBotSprite.tsx",
+  "src/boltbot/canonicalBoltBotArt.ts",
+  "src/boltbot/premium-boltbot.css",
+  "src/assets/boltbot/boltbot-premium-poses-atlas.webp",
+  "src/world/BoltBotTestChamber.tsx",
+  "src/world/boltbot-test-chamber.css",
 ];
 
 for (const relative of requiredFiles) {
@@ -32,6 +39,10 @@ const dressUp = read("src/nico/NicoDressUp.tsx");
 const askNico = read("src/nico/AskNico.tsx");
 const wardrobeSvg = read("src/nico/wardrobe/wardrobeSvg.ts");
 const wardrobeCss = read("src/nico/wardrobe/wardrobe.css");
+const robotStage = read("src/RobotStage.tsx");
+const boltBotSprite = read("src/boltbot/PremiumBoltBotSprite.tsx");
+const boltBotArt = read("src/boltbot/canonicalBoltBotArt.ts");
+const testChamber = read("src/world/BoltBotTestChamber.tsx");
 const recovery = read("public/asset-recovery.js");
 const css = read("src/world/local-media-art.css");
 const tests = read("src/world/localMediaArt.test.tsx");
@@ -72,6 +83,17 @@ if (!dressUp.includes("WardrobeStudio") || dressUp.includes("approvedOutfitStyle
 if (!askNico.includes("NicoCostumeFigure") || !askNico.includes("wardrobe")) {
   throw new Error("Ask Nico does not use the shared saved wardrobe renderer");
 }
+if (!robotStage.includes("PremiumBoltBotSprite") || !robotStage.includes('data-robot-stage="premium-2d"')) {
+  throw new Error("Shared BoltBot surfaces still use the angular placeholder renderer");
+}
+if (!boltBotSprite.includes('data-boltbot-renderer="premium-2d"') || !boltBotArt.includes("boltbot-premium-poses-atlas.webp")) {
+  throw new Error("Premium local BoltBot pose art is not wired to the shared renderer");
+}
+if (!testChamber.includes("IllustratedChamber") || !testChamber.includes('data-renderer="premium-2d"') || /GameCanvas|useFrame|<canvas/.test(testChamber)) {
+  throw new Error("BoltBot test chamber has not completed its illustrated 2D migration");
+}
+const boltBotAtlas = fs.statSync(path.join(root, "src/assets/boltbot/boltbot-premium-poses-atlas.webp"));
+if (boltBotAtlas.size > 200_000) throw new Error(`Premium BoltBot atlas exceeds its 200 KB budget: ${boltBotAtlas.size}`);
 if (!wardrobeSvg.includes("buildNicoWardrobeSvg") || !wardrobeSvg.includes("buildGarmentSvg") || !wardrobeSvg.includes('data-nico-body="true"')) {
   throw new Error("Layered Nico or garment-only SVG generation is incomplete");
 }

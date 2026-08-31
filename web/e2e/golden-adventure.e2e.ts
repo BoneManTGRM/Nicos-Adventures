@@ -325,7 +325,10 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(repairArms).toHaveAttribute("aria-pressed", "true");
   await activateWithKeyboard(page, page.getByRole("button", { name: text.useRobot, exact: true }));
   await expect(page.getByRole("heading", { name: text.movement, exact: true })).toBeFocused();
-  await assertRendererReady(page, expectsReducedMotion);
+  const illustratedBoltBot = page.locator('.boltbot-illustrated-chamber[data-renderer="premium-2d"]');
+  await expect(illustratedBoltBot).toBeVisible();
+  await expect(illustratedBoltBot.locator('[data-boltbot-renderer="premium-2d"]')).toHaveCount(1);
+  await expect(page.locator(".boltbot-mission canvas")).toHaveCount(0);
 
   await page.getByRole("button", { name: text.forward, exact: true }).click();
   await expect(page.locator(".boltbot-mission")).toHaveAttribute("data-route-motion", expectsReducedMotion ? "reduced" : "moving");
