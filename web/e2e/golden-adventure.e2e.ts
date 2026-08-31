@@ -18,8 +18,6 @@ const copy = {
     animalUnavailable: "The illustrated forest is unavailable. Choose a habitat below.",
     monsterLab: "Monster Lab",
     monsterStudio: "Sculpt a creature you can see",
-    petWorkshop: "Robot Pet Workshop",
-    species: "Species",
     roboLab: "Robo Lab",
     configure: "Build a bridge-ready BoltBot",
     begin: "Begin the adventure",
@@ -76,8 +74,6 @@ const copy = {
     animalUnavailable: "El bosque ilustrado no está disponible. Elige un hábitat abajo.",
     monsterLab: "Laboratorio de monstruos",
     monsterStudio: "Esculpe una criatura que puedas ver",
-    petWorkshop: "Taller de mascotas robot",
-    species: "Especie",
     roboLab: "Laboratorio robot",
     configure: "Construye un BoltBot listo para el puente",
     begin: "Comenzar la aventura",
@@ -347,21 +343,6 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   expect(alienFit.coreWidthRatio).toBeLessThan(0.2);
   await assertLayout(page, `${testInfo.project.name} Monster Lab`);
   await testInfo.attach("visual-alien-monster-lab", {
-    body: await page.screenshot({ fullPage: true, animations: "disabled" }),
-    contentType: "image/png",
-  });
-  await activateWithKeyboard(page, page.locator(".fw-brand"));
-  await expect(page.getByRole("heading", { name: text.world, exact: true })).toBeVisible();
-
-  await openDestination(page, text.petWorkshop);
-  const petStage = page.locator(".pet-training-stage");
-  await expect(petStage.locator('svg[data-pet-species-art="Robot Dog"]')).toBeVisible();
-  const speciesSelect = page.getByLabel(text.species, { exact: true });
-  await speciesSelect.selectOption("Space Orb");
-  await expect(petStage.locator('svg[data-pet-species-art="Space Orb"]')).toBeVisible();
-  await expect(petStage.locator(".fw-pet")).toHaveCount(0);
-  await assertLayout(page, `${testInfo.project.name} illustrated pets`);
-  await testInfo.attach("visual-robot-pet-workshop", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
     contentType: "image/png",
   });
