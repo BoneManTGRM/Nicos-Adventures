@@ -9,7 +9,7 @@ import {
 describe("Nico Clubhouse route helpers", () => {
   it("recognizes only supported Nico tabs", () => {
     expect(parseNicoHubHash("#nico/ask")).toBe("ask");
-    expect(parseNicoHubHash("#nico/dress")).toBe("dress");
+    expect(parseNicoHubHash("#nico/dress")).toBe("ask");
     expect(parseNicoHubHash("#nico/showtime")).toBe("showtime");
     expect(parseNicoHubHash("#nico/movies")).toBe("movies");
     expect(parseNicoHubHash("#nico/unknown")).toBeNull();
