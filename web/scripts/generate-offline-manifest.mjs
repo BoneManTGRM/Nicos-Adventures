@@ -14,6 +14,7 @@ const bundleUrls = readdirSync(assets, { withFileTypes: true })
     /\.(?:js|css)$/.test(entry.name)
     || /^nico-(?:explorer-atlas|professions(?:-[a-z]+)?-atlas|librarian)-.*\.webp$/.test(entry.name)
     || /^boltbot-premium-poses-atlas-.*\.webp$/.test(entry.name)
+    || /^animal-forest-premium-habitats-atlas-.*\.webp$/.test(entry.name)
   ))
   .map((entry) => `/assets/${entry.name}`);
 const canonicalAssets = [

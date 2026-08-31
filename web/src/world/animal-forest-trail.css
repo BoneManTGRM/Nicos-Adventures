@@ -16,11 +16,87 @@
 .animal-forest-trail__intro h2 { margin: 6px 0 8px; font-size: clamp(31px, 5vw, 54px); line-height: 1; }
 .animal-forest-trail__intro p { max-width: 760px; margin: 0; color: #c5ddd3; line-height: 1.55; }
 
-.animal-forest-trail .game-canvas,
-.animal-forest-trail .game-canvas__viewport,
-.animal-forest-trail .game-canvas__viewport canvas { min-height: clamp(390px, 44vw, 520px); }
-.animal-forest-trail .game-canvas { border-color: rgba(167, 243, 208, .42); background: #123f51; box-shadow: inset 0 0 75px rgba(2, 8, 23, .34); }
-.animal-forest-trail__progress { color: #fef08a; font-size: 12px; white-space: nowrap; }
+.animal-forest-illustration {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(167, 243, 208, .48);
+  border-radius: 26px;
+  background: #0b2530;
+  box-shadow: inset 0 0 75px rgba(2, 8, 23, .28), 0 24px 65px rgba(0, 0, 0, .3);
+}
+.animal-forest-illustration__art {
+  position: relative;
+  min-height: clamp(390px, 44vw, 520px);
+  overflow: hidden;
+  background-repeat: no-repeat;
+  transition: background-position .7s cubic-bezier(.22, .8, .28, 1), filter .35s ease;
+  isolation: isolate;
+}
+.animal-forest-illustration__art::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 58%, rgba(2, 8, 23, .42));
+  pointer-events: none;
+}
+.animal-forest-illustration__light {
+  position: absolute;
+  z-index: 1;
+  top: -30%;
+  left: 34%;
+  width: 32%;
+  height: 125%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22), transparent 68%);
+  clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%);
+  mix-blend-mode: screen;
+  animation: habitat-light 7s ease-in-out infinite;
+}
+.animal-forest-illustration__spark {
+  position: absolute;
+  z-index: 3;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fef08a;
+  box-shadow: 0 0 18px var(--habitat-accent, #a7f3d0);
+  animation: habitat-spark 4.8s ease-in-out infinite;
+}
+.animal-forest-illustration__spark--one { left: 18%; top: 48%; }
+.animal-forest-illustration__spark--two { left: 66%; top: 36%; animation-delay: 1.2s; }
+.animal-forest-illustration__spark--three { left: 82%; top: 58%; animation-delay: 2.5s; }
+.animal-forest-illustration figcaption {
+  position: absolute;
+  z-index: 5;
+  right: 18px;
+  bottom: 18px;
+  left: 18px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 14px;
+  align-items: center;
+  padding: 13px 16px;
+  border: 1px solid rgba(167, 243, 208, .38);
+  border-radius: 17px;
+  background: rgba(2, 15, 23, .82);
+  color: #ecfdf5;
+  backdrop-filter: blur(10px);
+}
+.animal-forest-illustration figcaption strong { color: #fef08a; font-size: 13px; }
+.animal-forest-illustration figcaption span { justify-self: end; color: var(--habitat-accent, #a7f3d0); font-weight: 900; }
+.animal-forest-illustration figcaption small { grid-column: 1 / -1; color: #c5ddd3; line-height: 1.35; }
+
+@keyframes habitat-light {
+  0%, 100% { opacity: .44; transform: translateX(-3%); }
+  50% { opacity: .7; transform: translateX(4%); }
+}
+
+@keyframes habitat-spark {
+  0%, 100% { opacity: .22; transform: translateY(4px) scale(.8); }
+  50% { opacity: 1; transform: translateY(-8px) scale(1.25); }
+}
 
 .animal-forest-trail__habitats { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 8px; }
 .animal-forest-trail__habitat {
@@ -48,10 +124,9 @@
 
 @media (max-width: 620px) {
   .animal-forest-trail { padding: 13px; border-radius: 23px; }
-  .animal-forest-trail .game-canvas,
-  .animal-forest-trail .game-canvas__viewport,
-  .animal-forest-trail .game-canvas__viewport canvas { min-height: 350px; }
-  .animal-forest-trail .game-canvas__instructions { display: none; }
+  .animal-forest-illustration__art { min-height: 350px; }
+  .animal-forest-illustration figcaption { right: 10px; bottom: 10px; left: 10px; padding: 11px 12px; }
+  .animal-forest-illustration figcaption small { display: none; }
   .animal-forest-trail__habitats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
