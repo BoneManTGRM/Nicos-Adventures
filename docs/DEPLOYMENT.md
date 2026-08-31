@@ -62,3 +62,9 @@ After a successful production deployment, mobile Safari users may need to close 
 ## Privacy boundary
 
 The deployed static site does not upload profiles, questions, artwork, or videos. Browser profiles and lightweight movie project metadata remain local. Showtime video blobs exist only in the current browser session until the user downloads them.
+
+The footer's optional visitor counter is the only shared metric. It calls the restricted
+`register_site_visit` Neon Data API function and stores one aggregate integer. The browser
+uses a local flag to count itself once; the database table stores no profiles, child activity,
+IP addresses, user agents, artwork, stories, or identifiers. The idempotent database definition
+is tracked in `database/neon-visitor-counter.sql`.

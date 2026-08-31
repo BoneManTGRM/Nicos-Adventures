@@ -1,11 +1,14 @@
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import type { LocalProfile } from "../types";
 import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
 import { ARCADE_GAMES, ARCADE_ICONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { ARCADE_QUESTIONS } from "./arcadeChallenges";
+import { FRIENDLY_DUEL_ID } from "./friendlyDuel";
 import { arcadeMissionId, completeOnce, hasCompleted } from "./progression";
+
+const FriendlyDuel = lazy(() => import("./FriendlyDuel").then((module) => ({ default: module.FriendlyDuel })));
 
 export function Arcade({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
@@ -58,6 +61,14 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
     setQuestionIndex((current) => current + 1);
     setAnswerIndex(null);
   };
+
+  if (activeGame === FRIENDLY_DUEL_ID) {
+    return (
+      <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la arena…" : "Preparing the arena…"}</div>}>
+        <FriendlyDuel profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} />
+      </Suspense>
+    );
+  }
 
   if (activeGame && question) {
     return (
@@ -122,7 +133,17 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
   }
 
   return (
-    <div className="fw-card-grid arcade-game-grid">
+    <div className="arcade-hub">
+      <article className="arcade-featured-duel">
+        <span aria-hidden="true">🥊</span>
+        <div>
+          <small>{language === "es-MX" ? "NUEVO · DUELO AMISTOSO" : "NEW · FRIENDLY DUEL"}</small>
+          <h2>{language === "es-MX" ? "Duelo de amistad de Nico" : "Nico's Friendship Duel"}</h2>
+          <p>{language === "es-MX" ? "Uno contra uno, tranquilo y sin violencia gráfica. Convierte al rival en amigo." : "A gentle one-on-one match with no graphic violence. Turn the rival into a friend."}</p>
+        </div>
+        <button type="button" className="fw-primary" onClick={() => openGame(FRIENDLY_DUEL_ID)}>▶ {tr(ui.play, language)}</button>
+      </article>
+      <div className="fw-card-grid arcade-game-grid">
       {ARCADE_GAMES.map((game, index) => {
         const gameQuestions = ARCADE_QUESTIONS[game] ?? [];
         const solved = gameQuestions.filter((item) => hasCompleted(profile, arcadeMissionId(game, item.id))).length;
@@ -137,6 +158,7 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
           </article>
         );
       })}
+      </div>
     </div>
   );
 }

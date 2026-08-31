@@ -7,6 +7,7 @@ const requiredFiles = [
   "src/world/creativeProgression.test.ts",
   "src/world/ArtStudio.tsx",
   "src/world/StoryCastle.tsx",
+  "src/world/storyBook.ts",
   "src/world/RobotHome.tsx",
   "src/world/Museum.tsx",
   "src/world/Badges.tsx",
@@ -44,6 +45,9 @@ if (!art.includes("creative-library-grid") || !art.includes("editingId") || !art
 }
 if (!stories.includes("surprise") || !stories.includes("speechSynthesis") || !stories.includes("creative-library-grid") || !stories.includes("completeCreativeMilestones")) {
   throw new Error("Story Castle does not support surprise generation, narration, editing, and milestones");
+}
+if (!stories.includes("storyCombinationCount") || !stories.includes("story-page-turner") || !stories.includes("buildStoryPages")) {
+  throw new Error("Story Castle does not provide extensive customizable multi-page storybooks");
 }
 if (!home.includes("roomGoals") || !home.includes("chooseRobot") || !home.includes("choosePet") || !home.includes("displayArtwork") || !home.includes("roomGoalId")) {
   throw new Error("Robot Home is not a configurable headquarters with finite goals");

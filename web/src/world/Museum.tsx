@@ -6,6 +6,7 @@ import { STAR_BRIDGE_ENGINEER } from "../game/goldenAdventure";
 import type { LocalProfile } from "../types";
 import { openNicoWorld } from "../nico/NicoWorldExperience";
 import { EmptyState } from "./common";
+import { storyPages } from "./storyBook";
 
 export type MemoryCategory = "all" | "achievement" | "robot" | "animal" | "monster" | "pet" | "artwork" | "story" | "dinosaur" | "fossil" | "movie";
 
@@ -56,7 +57,7 @@ export function buildMemoryEntries(profile: LocalProfile): MemoryEntry[] {
   for (const monster of profile.monsters) entries.push({ id: `monster:${monster.id}`, category: "monster", emoji: "👾", title: monster.name, subtitle: `${optionLabel(monster.body, language)} · ${optionLabel(monster.habitat, language)}`, details: `${optionLabel(monster.personality, language)} · ${language === "es-MX" ? "Amistad" : "Friendship"} ${monster.friendship}/100` });
   for (const pet of profile.pets) entries.push({ id: `pet:${pet.id}`, category: "pet", emoji: "🐕", title: pet.name, subtitle: `${optionLabel(pet.species, language)} · ${optionLabel(pet.personality, language)}`, details: `${language === "es-MX" ? "Vínculo" : "Bond"} ${pet.bond}/100 · ${pet.tricks.length} ${language === "es-MX" ? "trucos" : "tricks"}` });
   for (const artwork of profile.artwork) entries.push({ id: `artwork:${artwork.id}`, category: "artwork", emoji: "🖼️", title: artwork.title, subtitle: artwork.subject, details: artwork.caption });
-  for (const story of profile.stories) entries.push({ id: `story:${story.id}`, category: "story", emoji: "📖", title: story.title, subtitle: `${story.hero} · ${story.language === "es-MX" ? "Español" : "English"}`, details: story.language === "es-MX" ? `${story.hero} viajó a ${story.place}. ${story.problem}. ${story.ending}.` : `${story.hero} traveled to ${story.place}. ${story.problem}. ${story.ending}.` });
+  for (const story of profile.stories) entries.push({ id: `story:${story.id}`, category: "story", emoji: "📖", title: story.title, subtitle: `${story.hero} · ${storyPages(story).length} ${story.language === "es-MX" ? "páginas" : "pages"}`, details: storyPages(story).join(" ") });
   for (const dinosaur of profile.dinosaurs.filter((item) => item.discovered)) entries.push({ id: `dinosaur:${dinosaur.id}`, category: "dinosaur", emoji: dinosaur.emoji, title: dinosaur.name, subtitle: optionLabel(dinosaur.period, language), details: language === "es-MX" ? "Entrada desbloqueada en la guía de campo." : "Field-guide entry unlocked." });
   profile.fossils.forEach((fossil, index) => entries.push({ id: `fossil:${index}:${fossil}`, category: "fossil", emoji: "🦴", title: fossilLabel(fossil, language), subtitle: language === "es-MX" ? "Colección de fósiles" : "Fossil collection", details: language === "es-MX" ? "Recuperado durante una expedición." : "Recovered during an expedition." }));
   for (const project of profile.movieProjects) entries.push({ id: `movie:${project.id}`, category: "movie", emoji: "🎬", title: project.title, subtitle: `${project.durationMs / 1000}s · ${project.characters.length} ${language === "es-MX" ? "personajes" : "characters"}`, details: project.caption || (language === "es-MX" ? "Proyecto de película local" : "Local movie project"), movieProjectId: project.id });

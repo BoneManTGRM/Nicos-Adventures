@@ -8,6 +8,11 @@ const requiredFiles = [
   "src/world/arcadeChallenges.ts",
   "src/world/arcadeChallenges.test.ts",
   "src/world/Arcade.tsx",
+  "src/world/FriendlyDuel.tsx",
+  "src/world/FriendlyDuelView.test.tsx",
+  "src/world/friendlyDuel.ts",
+  "src/world/friendlyDuel.test.ts",
+  "src/world/friendly-duel.css",
   "src/world/DinosaurValley.tsx",
   "src/world/PetWorkshop.tsx",
   "src/world/progression.css",
@@ -26,6 +31,10 @@ const animals = read("src/world/AnimalForest.tsx");
 const monsters = read("src/world/MonsterWorld.tsx");
 const arcade = read("src/world/Arcade.tsx");
 const arcadeQuestions = read("src/world/arcadeChallenges.ts");
+const friendlyDuel = read("src/world/friendlyDuel.ts");
+const friendlyDuelView = read("src/world/FriendlyDuel.tsx");
+const friendlyDuelTests = read("src/world/friendlyDuel.test.ts");
+const friendlyDuelCss = read("src/world/friendly-duel.css");
 const dinosaurs = read("src/world/DinosaurValley.tsx");
 const pets = read("src/world/PetWorkshop.tsx");
 const css = read("src/world/progression.css");
@@ -62,6 +71,15 @@ if (arcade.includes("Math.random") || !arcade.includes("ARCADE_QUESTIONS") || !a
 for (const game of ["Animal Clue", "Pattern Power", "Robot Memory", "Dino Dig", "Monster Maze", "Rocket Math"]) {
   if (!arcadeQuestions.includes(`"${game}"`)) throw new Error(`Arcade question bank is missing: ${game}`);
 }
+if (!arcade.includes("FriendlyDuel") || !friendlyDuel.includes('FRIENDLY_DUEL_ID = "Friendship Duel"') || !friendlyDuelView.includes("NicoCostumeFigure")) {
+  throw new Error("The gentle one-versus-one Friendship Duel is not integrated with Nico's saved 2D character");
+}
+if (!friendlyDuel.includes('FriendlyDuelStatus = "playing" | "won" | "breather"') || !friendlyDuelView.includes("Nobody is hurt") || !friendlyDuelTests.includes("safe breather instead of defeat")) {
+  throw new Error("Friendship Duel safety and nonviolent completion contracts are incomplete");
+}
+if (!friendlyDuelCss.includes(".friendly-duel__arena") || !friendlyDuelCss.includes("prefers-reduced-motion")) {
+  throw new Error("Friendship Duel responsive or reduced-motion presentation is incomplete");
+}
 if (!dinosaurs.includes("dinosaurDiscoveryMission") || !dinosaurs.includes("dino-period-options") || !dinosaurs.includes("period !== active.period")) {
   throw new Error("Dinosaur discoveries do not require the expedition period challenge");
 }
@@ -76,4 +94,4 @@ if (!progressionTests.includes("awards a mission exactly once") || !progressionT
   throw new Error("Interactive progression regression tests are incomplete");
 }
 
-console.log("Interactive progression validation passed for a 1000-entry reward ledger, robot certifications, animal field missions, monster care milestones, six Arcade challenge banks, dinosaur expeditions, and pet trick training.");
+console.log("Interactive progression validation passed for a 1000-entry reward ledger, robot certifications, animal field missions, monster care milestones, six Arcade challenge banks plus Friendship Duel, dinosaur expeditions, and pet trick training.");

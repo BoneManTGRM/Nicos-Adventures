@@ -288,6 +288,9 @@ function normalizeStory(candidate: unknown): StoryRecord | null {
   if (!value) return null;
   const storyId = clampText(value.id, 80);
   if (!storyId) return null;
+  const pages = Array.isArray(value.pages)
+    ? value.pages.map((page) => clampText(page, 900)).filter(Boolean).slice(0, 12)
+    : [];
   return {
     id: storyId,
     title: clampText(value.title, 60, "Untitled Story"),
@@ -296,6 +299,11 @@ function normalizeStory(candidate: unknown): StoryRecord | null {
     problem: clampText(value.problem, 300),
     ending: clampText(value.ending, 300),
     language: normalizeLanguage(value.language),
+    companion: optionalText(value.companion, 80),
+    theme: optionalText(value.theme, 80),
+    magicItem: optionalText(value.magicItem, 160),
+    specialDetail: optionalText(value.specialDetail, 120),
+    pages: pages.length ? pages : undefined,
   };
 }
 

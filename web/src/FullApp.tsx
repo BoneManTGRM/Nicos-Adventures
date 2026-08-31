@@ -19,6 +19,7 @@ import { RobotHome } from "./world/RobotHome";
 import { Settings } from "./world/Settings";
 import { StoryCastle } from "./world/StoryCastle";
 import { WorldMap } from "./world/WorldMap";
+import { VisitorCounter } from "./world/VisitorCounter";
 import { WORLD_SECTIONS } from "./world/catalogs";
 import "./styles.css";
 import "./full-world.css";
@@ -29,6 +30,7 @@ import "./world/creative-memory.css";
 import "./world/story-mobile-fixes.css";
 import "./world/local-media-art.css";
 import "./world/star-bridge-map.css";
+import "./world/site-polish.css";
 
 if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -181,6 +183,13 @@ export default function FullApp() {
         <PageTitle sectionId={profile.selectedSection} language={profile.language} />
         {page}
       </main>
+      <footer className="fw-site-footer">
+        <VisitorCounter language={profile.language} />
+        <div className="fw-site-footer__promise">
+          <strong>{profile.language === "es-MX" ? "Hecho para mentes curiosas" : "Made for curious minds"}</strong>
+          <span>{profile.language === "es-MX" ? "Amable · Creativo · Privado por diseño" : "Kind · Creative · Private by design"}</span>
+        </div>
+      </footer>
       <BottomNavigation profile={profile} open={open} />
     </div>
   );

@@ -405,6 +405,23 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(page.getByText(text.dinosaurFound, { exact: true })).toBeVisible();
   await expect(page.locator(".dino-overlook__reveal")).toBeFocused();
   await expect(page.locator(".fw-skip-link")).toHaveCSS("opacity", "0");
+  const dinosaurCards = page.locator(".fw-dino-card .dinosaur-art__scene");
+  for (let index = 0; index < await dinosaurCards.count(); index += 1) {
+    const framing = await dinosaurCards.nth(index).evaluate((scene) => {
+      const creature = scene.querySelector<HTMLElement>(".dinosaur-art__creature");
+      const sceneBox = scene.getBoundingClientRect();
+      const creatureBox = creature?.getBoundingClientRect();
+      return creatureBox ? {
+        leftInset: creatureBox.left - sceneBox.left,
+        rightInset: sceneBox.right - creatureBox.right,
+        widthRatio: creatureBox.width / sceneBox.width,
+      } : null;
+    });
+    expect(framing, `dinosaur card ${index + 1} should have creature art`).not.toBeNull();
+    expect(framing!.leftInset, `dinosaur card ${index + 1} left edge`).toBeGreaterThanOrEqual(-2);
+    expect(framing!.rightInset, `dinosaur card ${index + 1} right edge`).toBeGreaterThanOrEqual(-2);
+    expect(framing!.widthRatio, `dinosaur card ${index + 1} width`).toBeLessThanOrEqual(1);
+  }
   await assertLayout(page, `${testInfo.project.name} dinosaur overlook`);
   await testInfo.attach("dinosaur-overlook", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),

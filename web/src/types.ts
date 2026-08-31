@@ -81,7 +81,20 @@ export type MonsterRecord = {
 
 export type PetRecord = { id: string; name: string; species: string; color: string; accessory: string; personality: string; bond: number; tricks: string[]; };
 export type ArtworkRecord = { id: string; title: string; background: string; subject: string; frame: string; caption: string; };
-export type StoryRecord = { id: string; title: string; hero: string; place: string; problem: string; ending: string; language: Language; };
+export type StoryRecord = {
+  id: string;
+  title: string;
+  hero: string;
+  place: string;
+  problem: string;
+  ending: string;
+  language: Language;
+  companion?: string;
+  theme?: string;
+  magicItem?: string;
+  specialDetail?: string;
+  pages?: string[];
+};
 export type DinosaurRecord = { id: string; name: string; emoji: string; period: string; discovered: boolean; };
 
 export type NicoProfessionId =
