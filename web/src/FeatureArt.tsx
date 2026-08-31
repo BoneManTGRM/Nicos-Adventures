@@ -83,7 +83,7 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
         ? "sculpted-dragon"
         : "soft-creature";
   const hasWings = !monster.wings.toLowerCase().includes("no ");
-  const hasHorns = ["Stone Golem", "Dragon", "Royal", "Volcano"].includes(monster.body);
+  const hasHorns = ["Dragon", "Royal", "Volcano"].includes(monster.body);
   const hasTail = !String(monster.tail || "No tail").toLowerCase().includes("no ");
   const robotVisor = faceTreatment === "integrated-visor";
   const sleepyEyes = faceTreatment === "carved-golem";
@@ -133,14 +133,14 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
           {robotVisor
             ? <g className="monster-eye monster-eye--visor" filter={`url(#monster-glow-${monster.id})`}><rect x="190" y="207" width="140" height="55" rx="25" fill="#06111f" stroke={color} strokeWidth="6"/><rect x="200" y="217" width="120" height="35" rx="16" fill={`url(#eye-${monster.id})`}/>{eyePositions.map((position) => <g key={position}><ellipse cx={position} cy="235" rx="7" ry="10" fill="#dffcff"/><circle cx={position-2} cy="232" r="2.5" fill="#fff"/></g>)}</g>
             : sleepyEyes
-              ? <g className="monster-eye monster-eye--carved"><path d="M202 230Q226 248 250 230M270 230Q294 248 318 230" fill="none" stroke="#153746" strokeWidth="7" strokeLinecap="round"/><path d="M207 225Q226 237 245 225M275 225Q294 237 313 225" fill="none" stroke="#fff" strokeOpacity=".28" strokeWidth="2.5" strokeLinecap="round"/></g>
+              ? <g className="monster-eye monster-eye--carved">{[226, 294].map((position) => <g key={position}><ellipse cx={position} cy="232" rx="22" ry="18" fill="#082738" stroke="#8bdcea" strokeWidth="5"/><ellipse cx={position} cy="234" rx="9" ry="11" fill={`url(#eye-${monster.id})`}/><circle cx={position-4} cy="229" r="3.5" fill="#fff" opacity=".9"/></g>)}</g>
               : eyePositions.map((position) => <g className="monster-eye monster-eye--sculpted" key={position} filter={`url(#monster-glow-${monster.id})`}><ellipse cx={position} cy="232" rx="25" ry="28" fill={`url(#face-shell-${monster.id})`} stroke="#071426" strokeWidth="5"/><ellipse cx={position} cy="236" rx="11" ry="16" fill={`url(#eye-${monster.id})`}/><ellipse cx={position} cy="239" rx="5" ry="9" fill="#01040a"/><circle cx={position-6} cy="227" r="4" fill="#fff"/><path d={`M${position-20} 211Q${position} 201 ${position+20} 211`} fill="none" stroke="#153746" strokeWidth="5" strokeLinecap="round"/></g>)}
         </g>
         <g className="monster-mouth" transform={monsterAccessoryTransform("mouth", accessoryLayout.mouth)}>
           {faceTreatment === "sculpted-dragon"
             ? <><path d="M224 316Q260 344 296 316Q290 347 260 352Q230 347 224 316Z" fill="#20151d" stroke="#153746" strokeWidth="5"/><path d="m234 320 10 20 9-16m33-4-10 20-9-16" fill="#fff7e8" stroke="#d9e3e8" strokeWidth="1.5" strokeLinejoin="round"/><path d="M243 344q17-8 34 0" fill="none" stroke={color} strokeWidth="5" strokeLinecap="round"/></>
             : faceTreatment === "carved-golem"
-              ? <><path d="M232 321Q260 338 288 321" fill="none" stroke="#153746" strokeWidth="7" strokeLinecap="round"/><path d="M238 317Q260 328 282 317" fill="none" stroke="#fff" strokeOpacity=".25" strokeWidth="2.5" strokeLinecap="round"/></>
+              ? <path d="M230 319Q260 345 290 319" fill="none" stroke="#123443" strokeWidth="9" strokeLinecap="round"/>
               : robotVisor
                 ? <g><rect x="238" y="318" width="44" height="17" rx="8" fill="#071426" stroke={color} strokeWidth="3"/><path d="M246 326h4m5 0h4m5 0h4m5 0h2" stroke="#dffcff" strokeWidth="2" strokeLinecap="round"/></g>
                 : <><path d="M232 318Q260 342 288 318" fill="none" stroke="#153746" strokeWidth="8" strokeLinecap="round"/><path d="M236 316Q260 335 284 316" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round"/></>}

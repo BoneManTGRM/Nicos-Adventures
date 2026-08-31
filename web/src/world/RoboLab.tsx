@@ -1,24 +1,22 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { ROBOT_ACTIONS, ROBOT_JOBS, type RobotPose } from "../FeatureArt";
 import { RobotStage } from "../RobotStage";
-import type { LocalProfile, Robot, SectionId } from "../types";
-import { fieldLabel, tr, ui } from "../i18n/core";
+import type { LocalProfile, SectionId } from "../types";
+import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/options";
 import { boltBotChamberStage, evaluateBoltBotReadiness } from "../game/boltBot";
 import type { StarBridgeEvent } from "../game/goldenAdventure";
 import { applyStarBridgeEvent } from "../game/goldenAdventureProfile";
-import { ROBOT_OPTIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
-import { makeId } from "./common";
 import { BoltBotConfigurationGate } from "./BoltBotConfigurationGate";
-import { RobotAssemblyBay } from "./RobotAssemblyBay";
-import type { RobotAssemblyField } from "./robotAssemblyBay";
-import { completeOnce, hasCompleted, robotJobMission } from "./progression";
 import "./robo-lab.css";
 
 const BoltBotTestChamber = lazy(() => import("./BoltBotTestChamber").then((module) => ({
   default: module.BoltBotTestChamber,
 })));
+
+const RELIABLE_MOVEMENT_POSES = new Set<RobotPose>(["wave", "launch", "scan", "repair", "lights", "celebrate"]);
+export const ROBOT_MOVEMENTS = ROBOT_ACTIONS.filter((action) => RELIABLE_MOVEMENT_POSES.has(action.pose));
 
 export function RoboLab({
   profile,
@@ -32,83 +30,28 @@ export function RoboLab({
   open: (id: SectionId) => void;
 }) {
   const language = profile.language;
-  const [draft, setDraft] = useState<Robot>({
-    ...profile.robot,
-    job: profile.robot.job || ROBOT_JOBS[0],
-    mood: profile.robot.mood || "Happy",
-    voice: profile.robot.voice || "Classic Beep",
-  });
   const [pose, setPose] = useState<RobotPose>("idle");
-  const [activeField, setActiveField] = useState<RobotAssemblyField>("arms");
-
-  useEffect(() => {
-    setDraft({
-      ...profile.robot,
-      job: profile.robot.job || ROBOT_JOBS[0],
-      mood: profile.robot.mood || "Happy",
-      voice: profile.robot.voice || "Classic Beep",
-    });
-  }, [profile.id, profile.robot]);
-
-  const set = (key: keyof Robot, value: string) => setDraft((current) => ({ ...current, [key]: value }));
-  const play = (next: RobotPose) => {
-    setPose(next);
-    window.setTimeout(() => setPose("idle"), 1600);
-  };
-  const pick = (values: string[]) => values[Math.floor(Math.random() * values.length)];
-  const selectedJob = draft.job || ROBOT_JOBS[0];
-  const selectedJobMission = robotJobMission(draft.id, selectedJob);
-  const selectedJobComplete = hasCompleted(profile, selectedJobMission);
-  const completedJobs = ROBOT_JOBS.filter((job) => hasCompleted(profile, robotJobMission(draft.id, job))).length;
+  const motionTimer = useRef<number | null>(null);
+  const robot = profile.robot;
+  const selectedJob = robot.job || ROBOT_JOBS[0];
   const chamberStage = boltBotChamberStage(profile.adventures.starBridge.step);
 
-  const randomize = () => {
-    setDraft((current) => ({
-      ...current,
-      id: makeId("robot"),
-      name: `BoltBot ${Math.floor(Math.random() * 900 + 100)}`,
-      color: pick(ROBOT_OPTIONS.color),
-      secondary_color: pick(ROBOT_OPTIONS.secondary_color),
-      head: pick(ROBOT_OPTIONS.head),
-      eyes: pick(ROBOT_OPTIONS.eyes),
-      body: pick(ROBOT_OPTIONS.body),
-      arms: pick(ROBOT_OPTIONS.arms),
-      base: pick(ROBOT_OPTIONS.base),
-      backpack: pick(ROBOT_OPTIONS.backpack),
-      power: pick(ROBOT_OPTIONS.power),
-      personality: pick(ROBOT_OPTIONS.personality),
-      mood: pick(ROBOT_OPTIONS.mood),
-      voice: pick(ROBOT_OPTIONS.voice),
-      job: pick(ROBOT_JOBS),
-      level: 1,
-      xp: 0,
-    }));
-    announce(language === "es-MX" ? "Se creó un robot al azar." : "A random robot was created.");
-  };
+  useEffect(() => () => {
+    if (motionTimer.current !== null) window.clearTimeout(motionTimer.current);
+  }, []);
 
-  const save = () => {
-    const robot = { ...draft, id: draft.id || makeId("robot"), name: draft.name.trim() || "BoltBot" };
-    const exists = profile.robots.some((item) => item.id === robot.id);
-    const robots = exists
-      ? profile.robots.map((item) => item.id === robot.id ? robot : item)
-      : [...profile.robots, robot];
-    update({ ...profile, robot, robots, activeRobotId: robot.id, stars: profile.stars + (exists ? 0 : 2) });
-    setDraft(robot);
-    play("celebrate");
-    announce(`${robot.name}: ${tr(ui.saveSuccess, language)}`);
+  const play = (next: RobotPose) => {
+    if (motionTimer.current !== null) window.clearTimeout(motionTimer.current);
+    setPose(next);
+    motionTimer.current = window.setTimeout(() => {
+      setPose("idle");
+      motionTimer.current = null;
+    }, 1800);
   };
 
   const configureForAdventure = () => {
-    if (!evaluateBoltBotReadiness(draft).ready) return;
-    const robot = { ...draft, id: draft.id || makeId("robot"), name: draft.name.trim() || "BoltBot" };
-    const robots = profile.robots.some((item) => item.id === robot.id)
-      ? profile.robots.map((item) => item.id === robot.id ? robot : item)
-      : [...profile.robots, robot];
-    const configured = applyStarBridgeEvent(
-      { ...profile, robot, robots, activeRobotId: robot.id },
-      { type: "CONFIGURE_ROBOT" },
-    );
-    setDraft(robot);
+    if (!evaluateBoltBotReadiness(robot).ready) return;
+    const configured = applyStarBridgeEvent(profile, { type: "CONFIGURE_ROBOT" });
     update(configured);
     play("celebrate");
     announce(language === "es-MX"
@@ -129,154 +72,47 @@ export function RoboLab({
     if (message) announce(message[language]);
   };
 
-  const doJob = () => {
-    if (selectedJobComplete) return;
-    const xp = draft.xp + 20;
-    const robot = { ...draft, job: selectedJob, xp, level: Math.floor(xp / 50) + 1 };
-    const robots = profile.robots.some((item) => item.id === robot.id)
-      ? profile.robots.map((item) => item.id === robot.id ? robot : item)
-      : [...profile.robots, robot];
-    const completion = completeOnce({ ...profile, robot, robots, activeRobotId: robot.id }, selectedJobMission, 1);
-    setDraft(robot);
-    update(completion.profile);
-    play("scan");
-    announce(language === "es-MX"
-      ? `Certificación completada: ${optionLabel(selectedJob, language)}. Ganaste 20 de experiencia y una estrella.`
-      : `Certification completed: ${selectedJob}. You earned 20 XP and one star.`);
-  };
-
   return (
     <>
       {chamberStage === "configuration" ? (
-        <BoltBotConfigurationGate robot={draft} language={language} configure={configureForAdventure} />
+        <BoltBotConfigurationGate robot={robot} language={language} configure={configureForAdventure} />
       ) : null}
       {chamberStage !== "inactive" && chamberStage !== "configuration" ? (
         <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la cámara de pruebas…" : "Preparing the test chamber…"}</div>}>
           <BoltBotTestChamber
             state={profile.adventures.starBridge}
-            robot={profile.robot}
+            robot={robot}
             language={language}
             advance={advanceAdventure}
             returnToMap={() => open("world-map")}
           />
         </Suspense>
       ) : null}
-      <div className="fw-builder-layout robo-lab-workbench">
+
+      <div className="robo-lab-workbench robo-lab-workbench--simple">
         <section className="robo-lab-stage" aria-label={tr(ui.robotPreview, language)}>
           <RobotStage
-            robot={draft}
-            pose={pose as never}
+            robot={robot}
+            pose={pose}
             statusLabel={optionLabel(selectedJob, language)}
             levelLabel={tr(ui.levelShort, language)}
           />
-          <details className="robo-lab-disclosure robo-lab-motion">
-            <summary>{language === "es-MX" ? "Probar movimientos" : "Test robot movement"}</summary>
+          <details className="robo-lab-disclosure robo-lab-motion" open>
+            <summary>{language === "es-MX" ? "Movimientos de BoltBot" : "BoltBot movements"}</summary>
             <div className="robot-action-grid" role="group" aria-label={language === "es-MX" ? "Movimientos del robot" : "Robot movements"}>
-              {ROBOT_ACTIONS.map((action) => (
-                <button type="button" key={action.pose} onClick={() => play(action.pose)}>
+              {ROBOT_MOVEMENTS.map((action) => (
+                <button
+                  type="button"
+                  key={action.pose}
+                  aria-pressed={pose === action.pose}
+                  className={pose === action.pose ? "active" : ""}
+                  onClick={() => play(action.pose)}
+                >
                   <span aria-hidden="true">{action.icon}</span> {language === "es-MX" ? action.es : action.en}
                 </button>
               ))}
             </div>
           </details>
-        </section>
-
-        <section className="robo-lab-controls" aria-label={tr(ui.formControls, language)}>
-          <div className="robo-lab-identity">
-            <label>
-              {tr(ui.robotName, language)}
-              <input value={draft.name} maxLength={32} onChange={(event) => set("name", event.target.value)} />
-            </label>
-            <div className="fw-action-row">
-              <button type="button" onClick={randomize}>🎲 {tr(ui.randomRobot, language)}</button>
-              <button type="button" className="fw-primary" onClick={save}>💾 {tr(ui.saveRobot, language)}</button>
-            </div>
-          </div>
-
-          <RobotAssemblyBay
-            robot={draft}
-            language={language}
-            activeField={activeField}
-            selectField={setActiveField}
-            install={(field, option) => set(field, option)}
-          />
-
-          <details className="robo-lab-disclosure robo-lab-precise-controls">
-            <summary>{language === "es-MX" ? "Controles de precisión" : "Precision controls"}</summary>
-            <fieldset className="fw-fieldset-reset">
-              <legend>{tr(ui.formControls, language)}</legend>
-              <div className="fw-form-grid">
-                {Object.entries(ROBOT_OPTIONS).map(([key, values]) => (
-                  <label key={key}>
-                    {fieldLabel(key, language)}
-                    <select
-                      value={String(draft[key as keyof Robot] || values[0])}
-                      onChange={(event) => set(key as keyof Robot, event.target.value)}
-                    >
-                      {values.map((value) => <option value={value} key={value}>{optionLabel(value, language)}</option>)}
-                    </select>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-          </details>
-
-          <details className="robo-lab-disclosure robo-lab-certifications">
-            <summary>
-              {tr(ui.robotJobs, language)} · {language === "es-MX" ? "Certificaciones" : "Certifications"} {completedJobs}/{ROBOT_JOBS.length}
-            </summary>
-            <fieldset className="monster-form-section">
-              <legend><h2>{tr(ui.robotJobs, language)}</h2></legend>
-              <div className="job-grid">
-                {ROBOT_JOBS.map((job) => {
-                  const certified = hasCompleted(profile, robotJobMission(draft.id, job));
-                  return (
-                    <button
-                      type="button"
-                      aria-pressed={selectedJob === job}
-                      className={`${selectedJob === job ? "active" : ""} ${certified ? "completed" : ""}`.trim()}
-                      key={job}
-                      onClick={() => set("job", job)}
-                    >
-                      {certified ? "✅ " : ""}{optionLabel(job, language)}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="job-readout" role="status">
-                <b>{tr(ui.currentJob, language)}:</b> {optionLabel(selectedJob, language)}<br />
-                <small>{selectedJobComplete
-                  ? (language === "es-MX" ? "Este robot ya obtuvo esta certificación." : "This robot already earned this certification.")
-                  : tr(ui.jobHelp, language)}</small>
-              </div>
-              <button type="button" onClick={doJob} disabled={selectedJobComplete}>
-                {selectedJobComplete ? "✅" : "⚙️"} {selectedJobComplete
-                  ? (language === "es-MX" ? "Certificación completada" : "Certification complete")
-                  : tr(ui.doJob, language)}
-              </button>
-            </fieldset>
-          </details>
-
-          <section className="robo-lab-saved" aria-labelledby="saved-robots-heading">
-            <h2 id="saved-robots-heading" className="fw-subheading">{tr(ui.savedRobots, language)}</h2>
-            <div className="fw-collection-row">
-              {profile.robots.map((robot) => (
-                <button
-                  type="button"
-                  key={robot.id}
-                  aria-pressed={profile.activeRobotId === robot.id}
-                  className={profile.activeRobotId === robot.id ? "active" : ""}
-                  onClick={() => {
-                    setDraft({ ...robot });
-                    update({ ...profile, robot, activeRobotId: robot.id });
-                    announce(`${robot.name}: ${tr(ui.selected, language)}`);
-                  }}
-                >
-                  🤖 {robot.name}
-                </button>
-              ))}
-            </div>
-          </section>
         </section>
       </div>
     </>

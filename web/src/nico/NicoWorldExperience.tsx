@@ -7,6 +7,7 @@ import { NicoMovieLibrary } from "../showtime/NicoMovieLibrary";
 import { ShowtimeStudio } from "../showtime/ShowtimeStudio";
 import { AskNico } from "./AskNico";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
+import { NicoDressUp } from "./NicoDressUp";
 import {
   isNicoHubHistoryState,
   makeNicoHubHistoryState,
@@ -30,6 +31,7 @@ const copy = {
   en: {
     clubhouse: "Nico’s Clubhouse",
     ask: "Ask Nico",
+    dress: "Wardrobe",
     showtime: "Showtime",
     movies: "Movies",
     close: "Close Nico’s Clubhouse",
@@ -43,6 +45,7 @@ const copy = {
   "es-MX": {
     clubhouse: "Casa Club de Nico",
     ask: "Pregúntale",
+    dress: "Guardarropa",
     showtime: "Showtime",
     movies: "Películas",
     close: "Cerrar la Casa Club de Nico",
@@ -273,6 +276,7 @@ export default function NicoWorldExperience() {
             <nav className="nico-hub__tabs" aria-label={text.clubhouse}>
               {([
                 ["ask", "💬", text.ask],
+                ["dress", "🧵", text.dress],
                 ["showtime", "🎬", text.showtime],
                 ["movies", "🎞️", text.movies],
               ] as Array<[NicoHubTab, string, string]>).map(([item, emoji, label]) => (
@@ -298,6 +302,13 @@ export default function NicoWorldExperience() {
                   profession={profile.nico.profession}
                   wardrobe={profile.nico.wardrobe}
                   accentColor={profile.nico.accentColor}
+                />
+              )}
+              {tab === "dress" && (
+                <NicoDressUp
+                  language={profile.language}
+                  preferences={profile.nico}
+                  onSave={(nico) => commitProfile((current) => ({ ...current, nico }))}
                 />
               )}
               {tab === "showtime" && (

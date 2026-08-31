@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { defaultWardrobe } from "../storage";
 import { CANONICAL_NICO_PRESETS } from "./canonicalNicoArt";
 import { NicoCostumeFigure, NICO_COSTUME_DECORATIONS } from "./NicoCostumeFigure";
-import { applyNicoProfession, filterNicoProfessions, NICO_PROFESSIONS } from "./NicoDressUp";
+import { applyNicoProfession, filterNicoProfessions, NicoDressUp, NICO_PROFESSIONS } from "./NicoDressUp";
 import { wardrobeForPreset } from "./wardrobe/catalog";
 
 describe("Nico wardrobe profession catalog", () => {
@@ -45,6 +45,27 @@ describe("Nico wardrobe profession catalog", () => {
 
   it("keeps legacy fallback decorations defined for every profession", () => {
     for (const profession of NICO_PROFESSIONS) expect(NICO_COSTUME_DECORATIONS[profession.id]).toBeDefined();
+  });
+});
+
+describe("premium-only Wardrobe", () => {
+  it("renders complete canonical outfits without the retired layered garment editor", () => {
+    const preferences = {
+      profession: "explorer" as const,
+      accentColor: "#16a34a",
+      speechEnabled: true,
+      wardrobe: defaultWardrobe("explorer", "#16a34a"),
+    };
+    const html = renderToStaticMarkup(
+      <NicoDressUp language="en" preferences={preferences} onSave={() => undefined} />,
+    );
+
+    expect(html).toContain("Nico’s Wardrobe");
+    expect(html).toContain('data-nico-preset="explorer"');
+    expect(html).toContain('data-nico-preset="librarian"');
+    expect(html).not.toContain("wardrobe-garment-grid");
+    expect(html).not.toContain("nico-layered-character");
+    expect(html).not.toContain("data:image/svg+xml");
   });
 });
 
