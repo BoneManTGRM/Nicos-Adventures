@@ -3,9 +3,13 @@ import { MONSTER_OPTIONS } from "./catalogs";
 import { MONSTER_TRAITS, monsterColorSwatch, monsterTrait } from "./monsterCreatureStudio";
 
 describe("Monster Lab visual creature contract", () => {
-  it("keeps every schema-v4 monster trait available exactly once", () => {
-    expect(MONSTER_TRAITS.map((trait) => trait.key)).toEqual(Object.keys(MONSTER_OPTIONS));
-    expect(new Set(MONSTER_TRAITS.map((trait) => trait.key)).size).toBe(MONSTER_TRAITS.length);
+  it("offers only controls that have a dependable visual result", () => {
+    const keys = MONSTER_TRAITS.map((trait) => trait.key);
+    expect(keys).not.toContain("eyes");
+    expect(keys).not.toContain("mouth");
+    expect(keys).not.toContain("horns");
+    expect(new Set(keys).size).toBe(keys.length);
+    expect(keys.every((key) => key in MONSTER_OPTIONS)).toBe(true);
   });
 
   it("routes traits to stable visual groups", () => {
