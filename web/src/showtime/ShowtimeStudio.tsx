@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { MonsterStage } from "../FeatureArt";
+import { mergeAnimalLibrary, MonsterStage } from "../FeatureArt";
 import { RobotStage } from "../RobotStage";
 import showtimeData from "../catalogs/showtime.json";
 import { NicoCostumeFigure } from "../nico/NicoCostumeFigure";
+import { localizeAnimalCompat } from "../i18n/animalsCompat";
+import { WildlifeSprite } from "../world/WildlifeSprite";
+import { loadPremiumWildlifeAtlas } from "../world/wildlifeAtlas";
 import type {
   LocalProfile,
   LocalizedText,
@@ -124,7 +127,15 @@ export function ShowtimeStudio({
     { key: `robot:${profile.robot.id}`, kind: "robot", id: profile.robot.id, name: profile.robot.name, emoji: "🤖", robot: profile.robot },
     ...profile.monsters.map((monster) => ({ key: `monster:${monster.id}`, kind: "monster" as const, id: monster.id, name: monster.name, emoji: "👾", monster })),
     ...profile.pets.map((pet) => ({ key: `pet:${pet.id}`, kind: "pet" as const, id: pet.id, name: pet.name, emoji: petIcons[pet.species] ?? "🐾", pet })),
-  ], [profile.monsters, profile.pets, profile.robot]);
+    ...mergeAnimalLibrary(profile.animals).map((animal) => ({
+      key: `animal:${animal.id}`,
+      kind: "animal" as const,
+      id: animal.id,
+      name: localizeAnimalCompat(animal, profile.language).name,
+      emoji: animal.emoji,
+      animal,
+    })),
+  ], [profile.animals, profile.language, profile.monsters, profile.pets, profile.robot]);
 
   const initialSelected = useMemo(() => {
     const keys = initialProject?.characters.map(projectCharacterKey).filter((key) => characterOptions.some((item) => item.key === key)) ?? [];
@@ -149,6 +160,7 @@ export function ShowtimeStudio({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const nicoImageRef = useRef<HTMLImageElement | null>(null);
+  const wildlifeImageRef = useRef<HTMLCanvasElement | null>(null);
 
   const selectedCharacters = useMemo(
     () => selectedKeys.flatMap((key) => characterOptions.find((item) => item.key === key) ?? []),
@@ -186,6 +198,25 @@ export function ShowtimeStudio({
       cancelled = true;
     };
   }, [profile.nico.profession]);
+
+  useEffect(() => {
+    let cancelled = false;
+    wildlifeImageRef.current = null;
+    void loadPremiumWildlifeAtlas()
+      .then((image) => {
+        if (cancelled) return;
+        wildlifeImageRef.current = image;
+        renderCanvasFrame(0);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        wildlifeImageRef.current = null;
+        renderCanvasFrame(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!previewing || !sequence.length) return;
@@ -243,6 +274,7 @@ export function ShowtimeStudio({
       nicoArt: nicoImageRef.current,
       nicoProfession: profile.nico.profession,
       nicoAccent: profile.nico.accentColor,
+      wildlifeArt: wildlifeImageRef.current,
     });
   };
 
@@ -429,6 +461,9 @@ export function ShowtimeStudio({
                 }
                 if (character.kind === "monster" && character.monster) {
                   return <div className="showtime-character showtime-character--monster" key={character.key}><MonsterStage monster={character.monster} action={pose} language={profile.language} /></div>;
+                }
+                if (character.kind === "animal" && character.animal) {
+                  return <div className={`showtime-character showtime-character--animal showtime-character--${pose}`} key={character.key}><WildlifeSprite animalId={character.animal.id} alt={character.name} /></div>;
                 }
                 return <div className={`showtime-character showtime-character--pet showtime-character--${pose}`} key={character.key}><span>{character.emoji}</span><strong>{character.name}</strong></div>;
               })}
