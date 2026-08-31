@@ -14,6 +14,10 @@ const requiredFiles = [
   "src/nico/wardrobe/wardrobe.test.tsx",
   "src/nico/NicoDressUp.tsx",
   "src/nico/NicoCostumeFigure.tsx",
+  "src/nico/canonicalNicoArt.ts",
+  "src/nico/canonical-nico-art.css",
+  "src/assets/nico/nico-explorer-atlas.webp",
+  "src/assets/nico/nico-professions-atlas.webp",
   "src/showtime/composeNicoImage.ts",
   "src/showtime/ShowtimeStudio.tsx",
 ];
@@ -32,6 +36,7 @@ const character = read("src/nico/wardrobe/NicoLayeredCharacter.tsx");
 const studio = read("src/nico/wardrobe/WardrobeStudio.tsx");
 const dressUp = read("src/nico/NicoDressUp.tsx");
 const figure = read("src/nico/NicoCostumeFigure.tsx");
+const canonicalArt = read("src/nico/canonicalNicoArt.ts");
 const guide = read("src/NicoGuide.tsx");
 const portal = read("src/nico/NicoPortalArt.tsx");
 const clubhouse = read("src/nico/NicoWorldExperience.tsx");
@@ -40,6 +45,7 @@ const showtime = read("src/showtime/ShowtimeStudio.tsx");
 const compositor = read("src/showtime/composeNicoImage.ts");
 const css = read("src/nico/wardrobe/wardrobe.css");
 const tests = read("src/nico/wardrobe/wardrobe.test.tsx");
+const offlineGenerator = read("scripts/generate-offline-manifest.mjs");
 
 for (const slot of ["headwear", "eyewear", "top", "outerwear", "bottoms", "shoes", "backpack", "badge", "prop"]) {
   if (!types.includes(`| "${slot}"`) && !types.includes(`${slot}: string | null`)) {
@@ -89,8 +95,19 @@ if (!studio.includes("onPointerDown") || !studio.includes("onPointerMove") || !s
 if (!dressUp.includes("WardrobeStudio") || dressUp.includes("approvedOutfitStyle") || dressUp.includes("nicoOutfitSpriteStyle")) {
   throw new Error("NicoDressUp still uses flattened outfit images instead of the wardrobe studio");
 }
-if (!figure.includes("NicoLayeredCharacter") || !figure.includes('data-art-state="layered-wardrobe"')) {
-  throw new Error("Shared Nico surfaces are not using the layered renderer");
+if (
+  !figure.includes("NicoLayeredCharacter")
+  || !figure.includes("usesCanonicalArt")
+  || !figure.includes('"canonical-2d"')
+  || !figure.includes('"layered-wardrobe"')
+) {
+  throw new Error("Shared Nico surfaces do not preserve canonical 2D art with the editable layered fallback");
+}
+for (const profession of ["explorer", "astronaut", "doctor", "scientist", "engineer", "builder", "artist", "chef", "gardener"]) {
+  if (!canonicalArt.includes(`${profession}: {`)) throw new Error(`Canonical Nico art is missing: ${profession}`);
+}
+if (!offlineGenerator.includes("nico-(?:explorer|professions)-atlas-")) {
+  throw new Error("Canonical Nico atlases are not included in the generated offline manifest");
 }
 
 for (const [name, source] of [["guide", guide], ["portal", portal], ["clubhouse", clubhouse], ["Ask Nico", askNico], ["Showtime", showtime]]) {

@@ -47,16 +47,17 @@ describe("Nico wardrobe profession catalog", () => {
   });
 });
 
-describe("Nico shared layered renderer", () => {
-  it("renders the same independent wardrobe in large placements", () => {
+describe("Nico shared 2D renderer", () => {
+  it("renders a supported preset with premium canonical art", () => {
     const wardrobe = wardrobeForPreset("doctor");
     const html = renderToStaticMarkup(
       <NicoCostumeFigure profession="doctor" wardrobe={wardrobe} alt="Doctor Nico" />,
     );
-    expect(html).toContain('data-art-state="layered-wardrobe"');
+    expect(html).toContain('data-art-state="canonical-2d"');
     expect(html).toContain('data-layered-nico="true"');
-    expect(html).toContain('alt="Doctor Nico"');
-    expect(html).toContain("data:image/svg+xml");
+    expect(html).toContain('data-nico-preset="doctor"');
+    expect(html).toContain('aria-label="Doctor Nico"');
+    expect(html).not.toContain("data:image/svg+xml");
   });
 
   it("renders the same wardrobe in compact synchronized placements", () => {
@@ -67,6 +68,7 @@ describe("Nico shared layered renderer", () => {
     expect(html).toContain("nico-costume--compact");
     expect(html).toContain('data-art-state="layered-wardrobe"');
     expect(html).toContain('data-layered-nico="true"');
+    expect(html).toContain('data-nico-renderer="layered-svg"');
   });
 
   it("derives a complete layered preset when a legacy caller provides only a profession", () => {

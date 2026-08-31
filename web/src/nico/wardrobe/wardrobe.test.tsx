@@ -81,12 +81,24 @@ describe("true Nico wardrobe catalog", () => {
     expect(svg).not.toContain("data-nico-body");
   });
 
-  it("uses the layered renderer in React output", () => {
+  it("uses premium canonical 2D art for a supported profession preset", () => {
     const html = renderToStaticMarkup(
       <NicoLayeredCharacter wardrobe={wardrobeForPreset("astronaut")} alt="Astronaut Nico" />,
     );
     expect(html).toContain('data-layered-nico="true"');
-    expect(html).toContain('alt="Astronaut Nico"');
+    expect(html).toContain('data-nico-renderer="canonical-2d"');
+    expect(html).toContain('data-nico-preset="astronaut"');
+    expect(html).toContain('aria-label="Astronaut Nico"');
+    expect(html).not.toContain("data:image/svg+xml");
+  });
+
+  it("keeps the editable layered SVG renderer for a customized outfit", () => {
+    const customized = { ...wardrobeForPreset("astronaut"), presetId: null };
+    const html = renderToStaticMarkup(
+      <NicoLayeredCharacter wardrobe={customized} alt="Custom Nico" />,
+    );
+    expect(html).toContain('data-nico-renderer="layered-svg"');
+    expect(html).toContain('alt="Custom Nico"');
     expect(html).toContain("data:image/svg+xml");
   });
 });
