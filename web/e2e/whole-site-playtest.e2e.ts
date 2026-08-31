@@ -245,10 +245,16 @@ test("all destinations keep their main local interactions working", async ({ pag
   await attachVisual(page, testInfo, "animal-forest");
 
   await openDestination(page, text.world, text.monsterLab, `${testInfo.project.name} Monster Lab`);
+  await page.locator('.monster-studio__trait[data-trait="body"]').click();
+  await page.locator('.monster-studio__choice[data-option="Alien"]').click();
+  await page.locator('.monster-studio__trait[data-trait="arms"]').click();
+  await page.locator('.monster-studio__choice[data-option="Four arms"]').click();
   await page.locator(".monster-lab-name input").fill(monsterName);
   await page.getByRole("button", { name: new RegExp(`${text.saveMonster}$`) }).click();
   await expect(page.locator(".monster-collection button").filter({ hasText: monsterName })).toHaveCount(1);
-  await expect(page.locator('[data-monster-body-art="Dragon"]')).toBeVisible();
+  const premiumAlien = page.locator('[data-monster-body-art="Alien"][data-monster-arms-art="Four arms"]');
+  await expect(premiumAlien).toBeVisible();
+  await expect(premiumAlien.locator(".monster-premium-body__art")).toHaveCSS("background-size", /400% 200%/);
   await attachVisual(page, testInfo, "monster-lab");
 
   await openDestination(page, text.world, text.monsterHabitats, `${testInfo.project.name} Monster Habitats`);

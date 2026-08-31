@@ -88,8 +88,9 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
     <div
       className={`monster-v2 monster-family--${family} monster-texture--${texture}`}
       data-monster-body-art={monster.body}
+      data-monster-arms-art={monster.arms}
       data-monster-pattern={pattern}
-      style={monsterBodyArtStyle(monster.body, color)}
+      style={monsterBodyArtStyle(monster.body, color, monster.arms)}
       role="img"
       aria-label={`${monster.name}, ${optionLabel(monster.body, language)} ${language === "es-MX" ? "monstruo" : "monster"}`}
     >
