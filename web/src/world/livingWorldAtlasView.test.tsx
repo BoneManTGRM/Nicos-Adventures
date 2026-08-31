@@ -1,13 +1,13 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { IllustratedWorldFallback } from "./IllustratedWorldFallback";
+import { IllustratedWorldMap } from "./IllustratedWorldMap";
 
-describe("Illustrated World fallback", () => {
+describe("Illustrated World Map", () => {
   it("uses the premium broken-bridge artwork before Dinosaur Valley unlocks", () => {
     const markup = renderToStaticMarkup(
-      <IllustratedWorldFallback
+      <IllustratedWorldMap
         alt="Living illustrated map of Nico's World"
-        unavailableMessage="The illustrated world is unavailable. Choose any landmark below."
+        description="Choose a landmark below. No dragging or time limit."
         dinosaurValleyAvailable={false}
       />,
     );
@@ -20,9 +20,9 @@ describe("Illustrated World fallback", () => {
 
   it("switches to the restored bridge artwork after the route opens", () => {
     const markup = renderToStaticMarkup(
-      <IllustratedWorldFallback
+      <IllustratedWorldMap
         alt="Mapa ilustrado viviente del Mundo de Nico"
-        unavailableMessage="El mundo ilustrado no está disponible. Elige cualquier lugar abajo."
+        description="Elige un lugar abajo. No necesitas arrastrar ni tienes límite de tiempo."
         dinosaurValleyAvailable
       />,
     );
