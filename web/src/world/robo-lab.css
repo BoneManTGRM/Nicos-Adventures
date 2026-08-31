@@ -88,6 +88,9 @@
 
 @media (max-width: 620px) {
   .robo-lab-stage { padding: 10px; border-radius: 22px; }
+  .robo-lab-stage .hangar { min-height: 390px; }
+  .robo-lab-stage .mecha { width: min(74%, 300px); }
+  .robo-lab-stage .robot-readout { left: 10px; right: 10px; bottom: 10px; }
   .robo-lab-identity,
   .robo-lab-saved { padding: 14px; }
   .robo-lab-identity .fw-action-row { grid-template-columns: 1fr; }

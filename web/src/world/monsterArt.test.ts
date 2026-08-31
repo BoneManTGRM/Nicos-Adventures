@@ -55,8 +55,8 @@ describe("premium illustrated monster body atlas", () => {
     expect(stone.face.scale).toBeLessThan(0.7);
     expect(stone.horns.scale).toBeLessThan(0.6);
     expect(stone.wings.scale).toBeLessThan(0.7);
-    expect(alien.face.scale).toBeLessThan(0.4);
-    expect(alien.horns.scale).toBeLessThanOrEqual(0.3);
+    expect(alien.face).toEqual({ x: 0, y: -136, scale: 0.29 });
+    expect(alien.horns).toEqual({ x: 0, y: -35, scale: 0.24 });
     expect(alien.core.y).toBeLessThan(-100);
     expect(monsterAccessoryTransform("face", stone.face)).toBe(
       "translate(0 -88) translate(260 246) scale(0.64) translate(-260 -246)",

@@ -33,7 +33,7 @@
   background-position: var(--dinosaur-species-position);
   background-repeat: no-repeat;
   background-size: 200% 300%;
-  filter: drop-shadow(0 16px 10px rgba(2, 8, 23, .52));
+  filter: brightness(1.24) saturate(1.08) drop-shadow(0 16px 10px rgba(2, 8, 23, .42));
   animation: premium-dinosaur-card-breathe 3.8s ease-in-out infinite;
 }
 
