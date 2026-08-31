@@ -27,6 +27,7 @@ export type SectionId =
   | "robo-lab"
   | "animal-forest"
   | "becca-corner"
+  | "cousins-adventure"
   | "monster-lab"
   | "monster-habitats"
   | "art-studio"

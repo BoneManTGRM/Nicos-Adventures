@@ -26,7 +26,7 @@ describe("local media artwork", () => {
   it("always renders a named local wildlife illustration without a network response", () => {
     const html = renderToStaticMarkup(<LocalWildlifeArt animal={animal} displayName="Jaguar" language="en" />);
     expect(html).toContain("Jaguar");
-    expect(html).toContain("Local illustration");
+    expect(html).toContain("Premium local illustration");
     expect(html).toContain("local-wildlife-art__animal");
   });
 

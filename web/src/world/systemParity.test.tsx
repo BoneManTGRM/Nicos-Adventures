@@ -13,7 +13,7 @@ const flatten = (catalog: Record<string, string[]>) => Object.values(catalog).fl
 describe("bilingual catalog coverage", () => {
   it("provides English and Mexican Spanish for every shared UI label and destination", () => {
     expect(Object.values(ui).every((item) => item.en.trim() && item["es-MX"].trim())).toBe(true);
-    expect(WORLD_SECTIONS).toHaveLength(14);
+    expect(WORLD_SECTIONS).toHaveLength(16);
     expect(WORLD_SECTIONS.every((section) => section.name.en && section.name["es-MX"] && section.description.en && section.description["es-MX"])).toBe(true);
   });
 

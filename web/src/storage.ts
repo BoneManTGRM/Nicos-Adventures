@@ -39,7 +39,7 @@ const professionIds = professionData.map((item) => item.id) as NicoProfessionId[
 const characterKinds: MovieCharacterKind[] = ["nico", "robot", "monster", "pet", "animal"];
 const moviePoses: MoviePose[] = ["idle", "wave", "celebrate", "launch", "dance", "spin", "bounce", "roar", "sleep"];
 const sectionIds: SectionId[] = [
-  "world-map", "robo-lab", "animal-forest", "becca-corner", "monster-lab", "monster-habitats",
+  "world-map", "robo-lab", "animal-forest", "becca-corner", "cousins-adventure", "monster-lab", "monster-habitats",
   "art-studio", "story-castle", "game-arcade", "dinosaur-valley", "pet-workshop",
   "robot-home", "memory-book", "badge-book", "parent-settings",
 ];
