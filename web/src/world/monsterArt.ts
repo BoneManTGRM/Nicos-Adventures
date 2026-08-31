@@ -89,8 +89,8 @@ const DRAGON_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
 
 const STONE_GOLEM_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
   ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -120, scale: 0.4 },
-  mouth: { x: 0, y: -190, scale: 0.34 },
+  face: { x: 0, y: -145, scale: 0.46 },
+  mouth: { x: 0, y: -205, scale: 0.38 },
 };
 
 // The alien atlas uses a compact round head and a narrow torso. Reusing the
