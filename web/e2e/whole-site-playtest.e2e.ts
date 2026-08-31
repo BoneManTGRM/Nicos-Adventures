@@ -323,7 +323,7 @@ test("all destinations keep their main local interactions working", async ({ pag
 
   await activateWithKeyboard(page.getByRole("button", { name: text.guide }));
   await expect(page.locator("#nico-guide-panel")).toBeVisible();
-  await page.getByRole("button", { name: text.askNico, exact: true }).click();
+  await page.getByRole("button", { name: new RegExp(`${text.askNico}$`) }).click();
   const clubhouse = page.getByRole("dialog", { name: text.clubhouse, exact: true });
   await expect(clubhouse).toBeVisible();
   await expect(page.getByRole("button", { name: text.closeClubhouse, exact: true })).toBeFocused();
@@ -333,7 +333,7 @@ test("all destinations keep their main local interactions working", async ({ pag
   await expect(answer).not.toHaveClass(/nico-chat-answer--fallback/);
   await attachVisual(page, testInfo, "clubhouse-ask-nico");
 
-  await clubhouse.getByRole("button", { name: text.wardrobe, exact: true }).click();
+  await clubhouse.getByRole("button", { name: new RegExp(`${text.wardrobe}$`) }).click();
   await expect(page.getByRole("heading", { name: text.wardrobeTitle, exact: true })).toBeVisible();
   await expect(clubhouse.locator(".wardrobe-preset-row > button")).toHaveCount(26);
   await expect(clubhouse.locator('.wardrobe-slot-tabs [role="tab"]')).toHaveCount(9);
@@ -362,7 +362,7 @@ test("all destinations keep their main local interactions working", async ({ pag
   await expect(page.locator(".memory-entry-grid button").filter({ hasText: storyTitle })).toHaveCount(1);
 
   await activateWithKeyboard(page.getByRole("button", { name: text.guide }));
-  await page.getByRole("button", { name: language === "es-MX" ? "Abrir Casa Club" : "Open Clubhouse", exact: true }).click();
+  await page.getByRole("button", { name: new RegExp(`${language === "es-MX" ? "Abrir Casa Club" : "Open Clubhouse"}$`) }).click();
   await expect(page.getByRole("dialog", { name: text.clubhouse, exact: true })).toBeVisible();
   const persistedGarment = page.locator(".wardrobe-garment-grid > button").filter({ hasText: selectedGarmentName });
   await expect(persistedGarment).toHaveAttribute("aria-pressed", "true");
