@@ -250,7 +250,8 @@ if (!cousins.includes("NicoCostumeFigure") || !cousins.includes("lua-premium-v2.
 if (!animalGenerator.includes("Mystery Animal Generator") || !animalGenerator.includes("LocalWildlifeArt") || !animalGenerator.includes("setTokens") || !animalGenerator.includes("getRandomValues")) {
   throw new Error("Token-based random animal generator is incomplete");
 }
-if (roboLab.includes("BoltBotConfigurationGate") || !roboLab.includes("ROBOT_MOVEMENTS") || !roboLab.includes("Continue to the test chamber")) {
+if (roboLab.includes("BoltBotConfigurationGate") || roboLab.includes("evaluateBoltBotReadiness") ||
+    !roboLab.includes("ROBOT_MOVEMENTS") || !roboLab.includes("Continue to the test chamber")) {
   throw new Error("Robo Lab still exposes retired customization instead of the movement-only experience");
 }
 if (monsterWorld.includes("monster-precision") || monsterStudio.includes('key: "eyes"') || monsterStudio.includes('key: "mouth"') || monsterStudio.includes('key: "horns"')) {

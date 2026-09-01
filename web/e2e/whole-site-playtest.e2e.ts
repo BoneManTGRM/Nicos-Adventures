@@ -239,7 +239,8 @@ test("all destinations keep their main local interactions working", async ({ pag
   const ocean = page.locator('.animal-forest-trail__habitat[data-habitat="Ocean"]');
   await activateWithKeyboard(ocean);
   const firstAnimal = page.locator(".fw-creature-card").first();
-  await firstAnimal.locator(".fw-action-row button").first().click();
+  await firstAnimal.locator(".animal-open-spotlight").click();
+  await page.locator(".animal-field-station__discover").click();
   await expect(firstAnimal).toHaveClass(/is-discovered/);
   await firstAnimal.locator(".fw-action-row button").nth(1).click();
   await expect(firstAnimal.locator(".fw-action-row button").nth(1)).toHaveAttribute("aria-pressed", "true");
