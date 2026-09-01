@@ -227,11 +227,11 @@ if (!cousins.includes("NicoCostumeFigure") || !cousins.includes("lua-premium.web
     !cousinsStories.includes('en: "Science Quest"')) {
   throw new Error("Interactive cousins adventure map is incomplete");
 }
-if (!animalGenerator.includes("Mystery Animal Generator") || !animalGenerator.includes("WildlifeSprite") || !animalGenerator.includes("setTokens")) {
+if (!animalGenerator.includes("Mystery Animal Generator") || !animalGenerator.includes("LocalWildlifeArt") || !animalGenerator.includes("setTokens") || !animalGenerator.includes("getRandomValues")) {
   throw new Error("Token-based random animal generator is incomplete");
 }
 if (!animalForest.includes("animal-field-station") || !animalForest.includes("animal-field-dashboard") ||
-    !animalForest.includes("Premium Animal Field Guide") || !animalForest.includes("Meet animal")) {
+    !animalForest.includes("Wildlife Collection") || !animalForest.includes("Open scene") || !animalForest.includes("animal-field-station__movements")) {
   throw new Error("Premium Animal Forest field-guide experience is incomplete");
 }
 

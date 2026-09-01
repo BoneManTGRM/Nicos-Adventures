@@ -101,7 +101,7 @@ if (!forestViewTest.includes("without a canvas") || !forestViewTest.includes("na
 }
 const habitatAtlas = fs.statSync(path.join(root, "src/assets/habitats/animal-forest-premium-habitats-atlas.webp"));
 if (habitatAtlas.size > 350_000) throw new Error(`Premium habitat atlas exceeds its 350 KB budget: ${habitatAtlas.size}`);
-if (!wildlifeArt.includes("local-wildlife-art__animal") || !wildlifeArt.includes("habitatPalette")) {
+if (!wildlifeArt.includes("local-wildlife-art__animal") || !wildlifeArt.includes("animalForestArtStyle") || !wildlifeArt.includes("data-motion")) {
   throw new Error("Local wildlife illustration system is incomplete");
 }
 if (!dinosaurs.includes("DinosaurArt") || dinosaurs.includes("<div aria-hidden=\"true\">{dinosaur.emoji}</div>")) throw new Error("Dinosaur Valley still relies on emoji-only cards");

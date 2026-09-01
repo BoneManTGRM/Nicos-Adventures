@@ -13,6 +13,7 @@ type UnicornMood = "brave" | "sweet" | "curious";
 type UnicornMotion = "prance" | "spin" | "float" | "rest";
 type MagicHost = "becca" | "lua";
 type MagicQuest = "song" | "kindness" | "starlight";
+type CreatedUnicorn = { host: MagicHost; mood: UnicornMood; color: string; generation: number };
 
 const names = {
   en: ["Starlight", "Moonbeam", "Rainbow", "Twinkle", "Nova", "Daisy"],
@@ -38,7 +39,7 @@ const hostCopy: Record<MagicHost, { en: string; "es-MX": string; detail: { en: s
 };
 
 const questCopy: Record<MagicQuest, { icon: string; en: string; "es-MX": string; result: { en: string; "es-MX": string } }> = {
-  song: { icon: "🎵", en: "Play a gentle rainbow song", "es-MX": "Tocar una canción arcoíris", result: { en: "The unicorn's mane sparkles in time with the melody!", "es-MX": "¡La melena de la unicornio brilla al ritmo de la melodía!" } },
+  song: { icon: "🎵", en: "Play a gentle rainbow song", "es-MX": "Tocar una canción arcoíris", result: { en: "The unicorn's mane sparkles in time with the melody!", "es-MX": "¡La crin del unicornio brilla al ritmo de la melodía!" } },
   kindness: { icon: "💗", en: "Whisper three kind words", "es-MX": "Susurrar tres palabras amables", result: { en: "A warm heart-shaped glow fills the workshop!", "es-MX": "¡Un brillo cálido en forma de corazón llena el taller!" } },
   starlight: { icon: "🌙", en: "Follow the moonlight trail", "es-MX": "Seguir el sendero lunar", result: { en: "Tiny stars reveal a secret prancing path!", "es-MX": "¡Pequeñas estrellas revelan un sendero secreto para trotar!" } },
 };
@@ -49,9 +50,10 @@ export function BeccaCorner({ language }: { language: Language }) {
   const [motion, setMotion] = useState<UnicornMotion>("prance");
   const [color, setColor] = useState("rainbow");
   const [generation, setGeneration] = useState(0);
+  const [created, setCreated] = useState<CreatedUnicorn>({ host: "becca", mood: "sweet", color: "rainbow", generation: 0 });
   const [quest, setQuest] = useState<MagicQuest | null>(null);
-  const unicornName = useMemo(() => names[language][(generation + (host === "lua" ? 2 : 0)) % names[language].length], [generation, host, language]);
-  const hue = color === "moonlight" ? "90deg" : color === "sunset" ? "-35deg" : "0deg";
+  const unicornName = useMemo(() => names[language][(created.generation + (created.host === "lua" ? 2 : 0)) % names[language].length], [created, language]);
+  const hue = created.color === "moonlight" ? "90deg" : created.color === "sunset" ? "-35deg" : "0deg";
   const colorLabel = color === "moonlight"
     ? (language === "es-MX" ? "Luz lunar" : "Moonlight")
     : color === "sunset"
@@ -61,6 +63,14 @@ export function BeccaCorner({ language }: { language: Language }) {
     "--becca-unicorn-strip": `url("${unicornStrip}")`,
     "--becca-unicorn-hue": hue,
   } as CSSProperties;
+
+  const createUnicorn = () => {
+    const nextGeneration = generation + 1;
+    setGeneration(nextGeneration);
+    setCreated({ host, mood, color, generation: nextGeneration });
+    setMotion("prance");
+    setQuest(null);
+  };
 
   return (
     <div className="becca-corner" style={style}>
@@ -81,19 +91,39 @@ export function BeccaCorner({ language }: { language: Language }) {
         </div>
       </section>
 
+      <section className="becca-team-showcase" aria-labelledby="becca-team-title">
+        <header>
+          <small>{language === "es-MX" ? "LAS CREADORAS DEL TALLER" : "MEET THE WORKSHOP CREATORS"}</small>
+          <h2 id="becca-team-title">{language === "es-MX" ? "Becca y Lua, juntas" : "Becca and Lua, together"}</h2>
+          <p>{language === "es-MX" ? "Mira a las dos creadoras de cuerpo completo y elige quién dirigirá la próxima creación." : "See both full-body creators up close, then choose who will lead the next creation."}</p>
+        </header>
+        <div className="becca-team-showcase__portraits">
+          <article className={host === "becca" ? "active" : ""}>
+            <PremiumCutout source={beccaArt} alt="Becca" className="becca-team-showcase__character" />
+            <div><strong>Becca</strong><span>{language === "es-MX" ? "Inventora creativa" : "Creative inventor"}</span><button type="button" aria-pressed={host === "becca"} onClick={() => setHost("becca")}>{language === "es-MX" ? "Elegir a Becca" : "Choose Becca"}</button></div>
+          </article>
+          <article className={host === "lua" ? "active" : ""}>
+            <PremiumCutout source={luaArt} alt="Lua" className="becca-team-showcase__character" />
+            <div><strong>Lua</strong><span>{language === "es-MX" ? "Ayudante mágica" : "Magical helper"}</span><button type="button" aria-pressed={host === "lua"} onClick={() => setHost("lua")}>{language === "es-MX" ? "Elegir a Lua" : "Choose Lua"}</button></div>
+          </article>
+        </div>
+      </section>
+
       <section className="unicorn-lab" aria-labelledby="unicorn-generator-title">
-        <div className="unicorn-lab__stage">
+        <div className="unicorn-lab__stage" data-color={created.color} data-mood={created.mood} aria-live="polite">
+          <div className="unicorn-lab__creation-burst" key={`burst-${created.generation}`} aria-hidden="true"><i /><i /><i /><i /><i /></div>
           <img className="unicorn-generator-art" src={generatorArt} alt="" aria-hidden="true" />
+          <PremiumCutout source={created.host === "becca" ? beccaArt : luaArt} alt={created.host === "becca" ? "Becca beside the Unicorn Generator" : "Lua beside the Unicorn Generator"} className="unicorn-lab__guide" />
           <div
             className={`becca-unicorn becca-unicorn--${motion}`}
             role="img"
             aria-label={language === "es-MX" ? `Unicornio ${unicornName} en movimiento` : `${unicornName} the unicorn moving`}
-            key={generation}
+            key={`${created.generation}-${motion}`}
           />
           <div className="unicorn-nameplate">
             <small>{language === "es-MX" ? "UNICORNIO CREADO" : "UNICORN CREATED"}</small>
             <strong>{unicornName}</strong>
-            <span>{moodCopy[mood][language]}</span>
+            <span>{created.host === "becca" ? "Becca" : "Lua"} · {moodCopy[created.mood][language]}</span>
           </div>
         </div>
 
@@ -103,6 +133,12 @@ export function BeccaCorner({ language }: { language: Language }) {
           <p>{language === "es-MX"
             ? "Elige una guía, un brillo, una personalidad y un movimiento. Cada decisión cambia tu unicornio."
             : "Choose a guide, sparkle, personality, and movement. Every decision changes your unicorn."}</p>
+          <div className="unicorn-generator-steps" aria-label={language === "es-MX" ? "Pasos del generador" : "Generator steps"}>
+            <span className="complete">1 <b>{language === "es-MX" ? "Guía" : "Guide"}</b></span>
+            <span className="complete">2 <b>{language === "es-MX" ? "Brillo" : "Sparkle"}</b></span>
+            <span className="complete">3 <b>{language === "es-MX" ? "Personalidad" : "Personality"}</b></span>
+            <span>4 <b>{language === "es-MX" ? "Crear" : "Create"}</b></span>
+          </div>
 
           <fieldset className="magic-host-picker">
             <legend>{language === "es-MX" ? "¿Quién guía la creación?" : "Who leads the creation?"}</legend>
@@ -124,7 +160,7 @@ export function BeccaCorner({ language }: { language: Language }) {
                 ["moonlight", language === "es-MX" ? "Luz lunar" : "Moonlight"],
                 ["sunset", language === "es-MX" ? "Atardecer" : "Sunset"],
               ].map(([value, label]) => (
-                <button type="button" className={color === value ? "active" : ""} onClick={() => setColor(value)} key={value}>{label}</button>
+                <button type="button" className={color === value ? "active" : ""} aria-pressed={color === value} onClick={() => setColor(value)} key={value}>{label}</button>
               ))}
             </div>
           </fieldset>
@@ -133,16 +169,12 @@ export function BeccaCorner({ language }: { language: Language }) {
             <legend>{language === "es-MX" ? "Personalidad" : "Personality"}</legend>
             <div className="becca-choice-row">
               {(Object.keys(moodCopy) as UnicornMood[]).map((value) => (
-                <button type="button" className={mood === value ? "active" : ""} onClick={() => setMood(value)} key={value}>{moodCopy[value][language]}</button>
+                <button type="button" className={mood === value ? "active" : ""} aria-pressed={mood === value} onClick={() => setMood(value)} key={value}>{moodCopy[value][language]}</button>
               ))}
             </div>
           </fieldset>
 
-          <button type="button" className="becca-create-button" onClick={() => {
-            setGeneration((current) => current + 1);
-            setMotion("prance");
-            setQuest(null);
-          }}>
+          <button type="button" className="becca-create-button" onClick={createUnicorn}>
             ✨ {host === "becca"
               ? (language === "es-MX" ? "Crear con Becca" : "Create with Becca")
               : (language === "es-MX" ? "Crear con Lua" : "Create with Lua")}
@@ -150,8 +182,8 @@ export function BeccaCorner({ language }: { language: Language }) {
 
           <div className="becca-motion-grid" aria-label={language === "es-MX" ? "Movimientos del unicornio" : "Unicorn movements"}>
             {(Object.keys(motionCopy) as UnicornMotion[]).map((value) => (
-              <button type="button" className={motion === value ? "active" : ""} onClick={() => setMotion(value)} key={value}>
-                {motionCopy[value][language]}
+              <button type="button" className={motion === value ? "active" : ""} aria-pressed={motion === value} onClick={() => setMotion(value)} key={value}>
+                <span aria-hidden="true">{value === "prance" ? "🐎" : value === "spin" ? "💫" : value === "float" ? "☁️" : "🌙"}</span>{motionCopy[value][language]}
               </button>
             ))}
           </div>

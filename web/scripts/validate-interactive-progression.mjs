@@ -59,7 +59,7 @@ if (!progression.includes("COMPLETED_MISSION_LIMIT = 1000") || !progression.incl
 if (!robot.includes("ROBOT_MOVEMENTS") || !robot.includes("RELIABLE_MOVEMENT_POSES") || robot.includes("RobotAssemblyBay") || robot.includes("ROBOT_OPTIONS")) {
   throw new Error("Robo Lab is not focused on the premium robot and reliable authored movements");
 }
-if (!animals.includes("fieldMissions") || !animals.includes("claimMission") || !animals.includes("disabled={sourceAnimal.discovered}")) {
+if (!animals.includes("fieldMissions") || !animals.includes("claimMission") || !animals.includes("disabled={spotlightSource.discovered}") || !animals.includes("animal.discovered) return")) {
   throw new Error("Animal Forest missions or one-way discovery protection is incomplete");
 }
 if (!monsters.includes("monsterFriendshipMission") || !monsters.includes("earnedMilestones") || !monsters.includes("nextFriendship")) {

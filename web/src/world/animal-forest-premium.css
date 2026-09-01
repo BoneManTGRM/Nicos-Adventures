@@ -12,9 +12,19 @@
 }
 
 .animal-field-station__art { position: relative; min-height: 510px; overflow: hidden; }
-.animal-field-station__art .local-wildlife-art { min-height: 510px; }
-.animal-field-station__art .local-wildlife-art__animal { width: min(70%, 420px); }
+.animal-field-station__art .local-wildlife-art { min-height: 510px; background-color: #04131d; background-repeat: no-repeat; }
+.animal-field-station__art .local-wildlife-art__animal { width: min(78%, 455px); }
 .animal-field-station__art .local-wildlife-art__label { display: none; }
+.animal-field-station__art .local-wildlife-art > small { top: 18px; right: 18px; padding: 6px 9px; background: rgba(2, 8, 23, .72); color: #dcfce7; }
+.animal-field-station .local-wildlife-art::before { z-index: 2; background: linear-gradient(180deg, rgba(2, 8, 23, .05) 45%, rgba(2, 8, 23, .68)); }
+.animal-field-station .local-wildlife-art__depth { position: absolute; z-index: 2; inset: 0; background: radial-gradient(circle at 50% 54%, transparent 0 26%, rgba(2, 8, 23, .1) 48%, rgba(2, 8, 23, .42) 100%); }
+.animal-field-station .local-wildlife-art__glow { position: absolute; z-index: 3; left: 50%; bottom: 9%; width: 62%; height: 58%; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .2), transparent 68%); filter: blur(10px); }
+.animal-field-station .local-wildlife-art__ground { z-index: 3; bottom: 45px; width: min(54%, 320px); background: #020617; opacity: .55; }
+.animal-field-station .local-wildlife-art__animal { z-index: 4; transform-origin: 50% 88%; animation: wildlife-idle 3.2s ease-in-out infinite; }
+.animal-field-station .local-wildlife-art[data-motion="walk"] .local-wildlife-art__animal { animation: wildlife-walk 1.15s ease-in-out 2; }
+.animal-field-station .local-wildlife-art[data-motion="leap"] .local-wildlife-art__animal { animation: wildlife-leap 1.2s cubic-bezier(.25,.8,.25,1) 1; }
+.animal-field-station .local-wildlife-art[data-motion="celebrate"] .local-wildlife-art__animal { animation: wildlife-celebrate 1.25s ease-in-out 1; }
+.animal-field-station .local-wildlife-art[data-motion="sleep"] .local-wildlife-art__animal { animation: wildlife-sleep 2.4s ease-in-out infinite; }
 .animal-field-station__status {
   position: absolute;
   z-index: 8;
@@ -46,6 +56,10 @@
 .animal-field-station__adaptation { display: grid; gap: 5px; padding: 14px; border: 1px solid rgba(250, 204, 21, .3); border-radius: 16px; background: rgba(113, 63, 18, .2); }
 .animal-field-station__adaptation strong { color: #fde68a; }
 .animal-field-station__adaptation span { color: #fef3c7; line-height: 1.45; }
+.animal-field-station__movements { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-top: 16px; }
+.animal-field-station__movements button { display: grid; place-items: center; gap: 3px; min-width: 0; min-height: 58px; padding: 7px 4px; border: 1px solid rgba(103, 232, 249, .24); border-radius: 13px; background: rgba(3, 18, 46, .74); color: #e0f2fe; font: inherit; font-size: 11px; font-weight: 850; }
+.animal-field-station__movements button span { font-size: 20px; }
+.animal-field-station__movements button.active { border-color: #facc15; background: linear-gradient(145deg, rgba(14, 116, 144, .82), rgba(76, 29, 149, .76)); box-shadow: 0 0 0 2px rgba(250, 204, 21, .1); }
 .animal-field-station__actions { display: grid; grid-template-columns: 48px minmax(150px, 1fr) 48px 48px; gap: 9px; margin-top: 19px; }
 .animal-field-station__actions button { min-height: 48px; border: 1px solid rgba(110, 231, 183, .35); border-radius: 14px; background: #0b2a4a; color: #fff; font: inherit; font-weight: 850; }
 .animal-field-station__actions .animal-field-station__discover { background: linear-gradient(135deg, #047857, #0e7490); }
@@ -79,29 +93,39 @@
 .animal-guide-heading .field-guide-tools { min-width: min(340px, 100%); margin: 0; }
 .animal-guide-heading input { min-height: 50px; padding: 13px 16px; border: 1px solid rgba(103, 232, 249, .38); border-radius: 15px; background: rgba(3, 12, 34, .82); color: #fff; font: inherit; }
 
-.animal-field-guide-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.animal-field-guide-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .animal-card-v2 { display: grid; padding: 0; border-color: rgba(110, 231, 183, .25); transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
 .animal-card-v2:hover { transform: translateY(-4px); border-color: rgba(110, 231, 183, .64); box-shadow: 0 26px 65px rgba(0, 0, 0, .38); }
-.animal-card-v2 .real-animal-photo { height: auto; min-height: 300px; border: 0; border-radius: 0; }
-.animal-card-v2 .local-wildlife-art { min-height: 300px; }
-.animal-card-v2 .local-wildlife-art__animal { width: min(74%, 280px); }
-.animal-card-v2 .real-animal-photo figcaption { right: 10px; bottom: 9px; left: auto; width: auto; }
-.animal-card-v2 .animal-copy { display: flex; flex-direction: column; padding: 18px; }
+.animal-card-v2 .real-animal-photo { height: auto; min-height: 230px; border: 0; border-radius: 0; }
+.animal-card-v2 .local-wildlife-art { min-height: 230px; background-color: #071426; background-repeat: no-repeat; }
+.animal-card-v2 .local-wildlife-art::before { background: linear-gradient(180deg, rgba(2, 8, 23, .06), rgba(2, 8, 23, .52)); }
+.animal-card-v2 .local-wildlife-art__depth { position: absolute; z-index: 2; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(2, 8, 23, .45)); }
+.animal-card-v2 .local-wildlife-art__glow { position: absolute; z-index: 3; left: 50%; bottom: 12%; width: 75%; height: 46%; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .2), transparent 68%); }
+.animal-card-v2 .local-wildlife-art__animal { z-index: 4; width: min(78%, 250px); transition: transform .22s ease; }
+.animal-card-v2:hover .local-wildlife-art__animal { transform: translateY(-2px) scale(1.04); }
+.animal-card-v2 .local-wildlife-art__label, .animal-card-v2 .local-wildlife-art > small, .animal-card-v2 .real-animal-photo figcaption { display: none; }
+.animal-card-v2 .animal-copy { display: flex; flex-direction: column; padding: 14px; }
 .animal-card-v2__heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .animal-card-v2__heading h3 { margin: 0; font-size: 22px; }
 .animal-card-v2__heading > span { padding: 5px 8px; border-radius: 999px; background: rgba(20, 83, 45, .46); color: #bbf7d0; font-size: 10px; font-weight: 900; letter-spacing: .08em; }
 .animal-card-v2 .animal-meta { margin-top: 9px; }
 .animal-card-v2 .animal-meta span { padding: 5px 7px; border-radius: 999px; background: rgba(14, 116, 144, .18); }
-.animal-card-v2 .animal-copy > p { min-height: 0; margin-bottom: 10px; line-height: 1.5; }
+.animal-card-v2 .animal-copy > p { min-height: 3.8em; margin: 10px 0 8px; color: #c8d5ec; font-size: 13px; line-height: 1.42; }
 .animal-card-v2 .animal-copy > small { display: block; margin-top: auto; padding: 11px; border-radius: 12px; background: rgba(3, 20, 32, .52); color: #cfeadd; line-height: 1.4; }
-.animal-card-v2 .fw-action-row { display: grid; grid-template-columns: 1fr 1fr 48px; margin-top: 14px; }
+.animal-card-v2 .fw-action-row { display: grid; grid-template-columns: minmax(0, 1fr) 48px; margin-top: auto; }
 .animal-card-v2 .fw-action-row button { min-width: 0; padding-inline: 8px; }
 .animal-card-v2 .fw-action-row .animal-open-spotlight { border-color: rgba(110, 231, 183, .44); background: linear-gradient(135deg, #047857, #0e7490); }
+
+@keyframes wildlife-idle { 50% { transform: translateY(-5px) scale(1.01); } }
+@keyframes wildlife-walk { 25% { transform: translateX(-20px) rotate(-2deg); } 75% { transform: translateX(20px) rotate(2deg); } }
+@keyframes wildlife-leap { 45% { transform: translateY(-72px) scale(.96) rotate(-2deg); } 70% { transform: translateY(-18px) scale(1.03); } }
+@keyframes wildlife-celebrate { 25% { transform: translateY(-28px) rotate(-6deg); } 50% { transform: translateY(-5px) rotate(6deg); } 75% { transform: translateY(-22px) rotate(-3deg); } }
+@keyframes wildlife-sleep { 50% { transform: translateY(9px) rotate(-4deg) scale(.98); filter: brightness(.72) drop-shadow(0 18px 15px rgba(0,0,0,.4)); } }
 
 @media (max-width: 980px) {
   .animal-field-station { grid-template-columns: 1fr; }
   .animal-field-station__art, .animal-field-station__art .local-wildlife-art { min-height: 450px; }
-  .animal-field-guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .animal-field-guide-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .animal-field-dashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .animal-guide-heading { align-items: stretch; flex-direction: column; }
 }
@@ -111,15 +135,26 @@
   .animal-field-station { border-radius: 23px; }
   .animal-field-station__art, .animal-field-station__art .local-wildlife-art { min-height: 360px; }
   .animal-field-station__copy { padding: 21px 17px; }
-  .animal-field-station__actions { grid-template-columns: 46px minmax(0, 1fr) 46px; }
-  .animal-field-station__actions button:nth-child(3) { grid-column: 1 / -1; grid-row: 2; }
+  .animal-field-station__actions { grid-template-columns: 46px minmax(0, 1fr) 46px 46px; }
   .animal-field-dashboard > div { padding: 12px; }
   .animal-guide-heading { padding: 18px; }
-  .animal-field-guide-grid { grid-template-columns: 1fr; }
-  .animal-card-v2 .real-animal-photo, .animal-card-v2 .local-wildlife-art { min-height: 310px; }
+  .animal-field-station__art, .animal-field-station__art .local-wildlife-art { min-height: 390px; }
+  .animal-field-station__art .local-wildlife-art__animal { width: min(82%, 360px); }
+  .animal-field-station__movements button { min-height: 55px; font-size: 10px; }
+  .animal-field-guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .animal-card-v2 .real-animal-photo, .animal-card-v2 .local-wildlife-art { min-height: 190px; }
+  .animal-card-v2 .local-wildlife-art__animal { width: min(84%, 200px); }
+  .animal-card-v2 .animal-copy { padding: 11px; }
+  .animal-card-v2__heading h3 { font-size: 16px; line-height: 1.1; }
+  .animal-card-v2 .animal-meta span { font-size: 10px; }
+  .animal-card-v2 .animal-meta span:nth-child(n+2) { display: none; }
+  .animal-card-v2 .animal-copy > p { min-height: 0; font-size: 11px; }
+  .animal-card-v2 .fw-action-row { grid-template-columns: 1fr 44px; gap: 6px; }
+  .animal-card-v2 .fw-action-row button { min-height: 44px; font-size: 11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animal-card-v2 { transition: none; }
   .animal-card-v2:hover { transform: none; }
+  .animal-field-station .local-wildlife-art__animal { animation: none !important; }
 }

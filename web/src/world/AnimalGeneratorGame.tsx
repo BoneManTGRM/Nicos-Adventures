@@ -1,10 +1,13 @@
 import { useMemo, useState } from "react";
+import { ANIMAL_CATALOG } from "../generated/sharedCatalogs";
 import type { AnimalRecord, Language } from "../types";
 import { localizeAnimalCompat } from "../i18n/animalsCompat";
-import { WildlifeSprite } from "./WildlifeSprite";
+import { LocalWildlifeArt } from "./LocalWildlifeArt";
 import "./animal-generator.css";
 
 type Quiz = { animal: AnimalRecord; options: AnimalRecord[] };
+
+const missionByAnimal = new Map<string, string>(ANIMAL_CATALOG.animals.map((animal) => [animal.id, animal.mission]));
 
 function makeQuiz(animals: AnimalRecord[], offset = 0): Quiz {
   const answerIndex = Math.abs(offset) % animals.length;
@@ -33,17 +36,23 @@ export function AnimalGeneratorGame({
   const [answered, setAnswered] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [generatedId, setGeneratedId] = useState<string | null>(null);
+  const [guessedIds, setGuessedIds] = useState<string[]>([]);
+  const [streak, setStreak] = useState(0);
+  const [questionNumber, setQuestionNumber] = useState(1);
   const quiz = useMemo(() => makeQuiz(animals, round), [animals, round]);
   const generated = animals.find((animal) => animal.id === generatedId) ?? null;
 
   const answer = (animalId: string) => {
     if (answered) return;
     if (animalId !== quiz.animal.id) {
+      setGuessedIds((current) => current.includes(animalId) ? current : [...current, animalId]);
+      setStreak(0);
       setFeedback(language === "es-MX" ? "Casi. Mira la pista y prueba otra vez." : "Almost. Read the clue and try again.");
       return;
     }
     setAnswered(true);
     setTokens((current) => current + 1);
+    setStreak((current) => current + 1);
     const message = language === "es-MX" ? "¡Correcto! Ganaste una ficha de generación." : "Correct! You earned one generation token.";
     setFeedback(message);
     announce(message);
@@ -51,14 +60,20 @@ export function AnimalGeneratorGame({
 
   const nextQuestion = () => {
     setRound((current) => current + 11);
+    setQuestionNumber((current) => current + 1);
     setAnswered(false);
     setFeedback("");
+    setGuessedIds([]);
   };
 
   const generate = () => {
     if (tokens < 1) return;
     const currentIndex = Math.max(-1, animals.findIndex((animal) => animal.id === generatedId));
-    const index = (currentIndex + round * 5 + tokens * 3 + 1) % animals.length;
+    const randomValue = window.crypto?.getRandomValues
+      ? window.crypto.getRandomValues(new Uint32Array(1))[0]
+      : Math.floor(Math.random() * 2 ** 32);
+    let index = randomValue % animals.length;
+    if (animals.length > 1 && index === currentIndex) index = (index + 1) % animals.length;
     const animal = animals[index];
     setTokens((current) => current - 1);
     setGeneratedId(animal.id);
@@ -70,6 +85,9 @@ export function AnimalGeneratorGame({
   if (!animals.length) return null;
   const localizedQuiz = localizeAnimalCompat(quiz.animal, language);
   const localizedGenerated = generated ? localizeAnimalCompat(generated, language) : null;
+  const clue = language === "es-MX"
+    ? localizedQuiz.adaptation
+    : missionByAnimal.get(quiz.animal.id) ?? localizedQuiz.adaptation;
 
   return (
     <section className="animal-generator-game" aria-labelledby="animal-generator-title">
@@ -81,12 +99,13 @@ export function AnimalGeneratorGame({
           : "Answer one question to earn a token. Spend the token to reveal a random full-body animal."}</p>
 
         <div className="animal-quiz">
-          <span className="animal-quiz__clue">🔎 {language === "es-MX" ? "PISTA" : "CLUE"}</span>
-          <strong>{localizedQuiz.fact}</strong>
+          <div className="animal-quiz__hud"><span>🧭 {language === "es-MX" ? "RONDA" : "ROUND"} {questionNumber}</span><span>🔥 {language === "es-MX" ? "RACHA" : "STREAK"} {streak}</span></div>
+          <span className="animal-quiz__clue">🔎 {language === "es-MX" ? "PISTA DE CAMPO" : "FIELD CLUE"}</span>
+          <strong>{clue}</strong>
           <p>{language === "es-MX" ? "¿Qué animal coincide con esta pista?" : "Which animal matches this clue?"}</p>
           <div className="animal-quiz__answers">
             {quiz.options.map((animal) => (
-              <button type="button" key={animal.id} disabled={answered} onClick={() => answer(animal.id)}>
+              <button type="button" className={guessedIds.includes(animal.id) ? "is-wrong" : ""} key={animal.id} disabled={answered || guessedIds.includes(animal.id)} onClick={() => answer(animal.id)}>
                 {localizeAnimalCompat(animal, language).name}
               </button>
             ))}
@@ -103,7 +122,7 @@ export function AnimalGeneratorGame({
         <div className={`animal-generator-machine__chamber${generated ? " has-animal" : ""}`}>
           {generated && localizedGenerated ? (
             <>
-              <WildlifeSprite animalId={generated.id} alt={localizedGenerated.name} />
+              <LocalWildlifeArt animal={generated} displayName={localizedGenerated.name} language={language} motion="celebrate" />
               <div><strong>{localizedGenerated.name}</strong><span>{localizedGenerated.habitat}</span><p>{localizedGenerated.fact}</p></div>
             </>
           ) : <div className="animal-generator-machine__mystery" aria-hidden="true"><span>?</span><small>{language === "es-MX" ? "ANIMAL MISTERIOSO" : "MYSTERY ANIMAL"}</small></div>}

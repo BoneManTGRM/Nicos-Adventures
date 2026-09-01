@@ -6,7 +6,7 @@ import { tr, ui } from "../i18n/core";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState } from "./common";
 import { completeOnce, fieldMissionId, hasCompleted } from "./progression";
-import { LocalWildlifeArt } from "./LocalWildlifeArt";
+import { LocalWildlifeArt, type WildlifeMotion } from "./LocalWildlifeArt";
 import "./animal-forest-premium.css";
 
 const AnimalGeneratorGame = lazy(() => import("./AnimalGeneratorGame").then((module) => ({ default: module.AnimalGeneratorGame })));
@@ -39,6 +39,8 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
   const [habitat, setHabitat] = useState("All");
   const [query, setQuery] = useState("");
   const [spotlightId, setSpotlightId] = useState(animals[0]?.id ?? "");
+  const [wildlifeMotion, setWildlifeMotion] = useState<WildlifeMotion>("idle");
+  const [motionKey, setMotionKey] = useState(0);
   const spotlightRef = useRef<HTMLElement>(null);
   const habitats = useMemo(() => ["All", ...new Set(animals.map((animal) => animal.habitat))], [animals]);
   const discoveredAnimals = useMemo(() => animals.filter((animal) => animal.discovered), [animals]);
@@ -90,6 +92,7 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
 
   const openSpotlight = (animalId: string) => {
     setSpotlightId(animalId);
+    setWildlifeMotion("idle");
     window.requestAnimationFrame(() => spotlightRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }));
   };
 
@@ -127,6 +130,19 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
       : `Mission completed: ${mission.title[language]}. You earned ${mission.reward} stars.`);
   };
 
+  const playWildlifeMotion = (motion: WildlifeMotion) => {
+    setWildlifeMotion(motion);
+    setMotionKey((current) => current + 1);
+    const labels: Record<WildlifeMotion, { en: string; "es-MX": string }> = {
+      idle: { en: "ready", "es-MX": "lista" },
+      walk: { en: "exploring", "es-MX": "explorando" },
+      leap: { en: "leaping", "es-MX": "saltando" },
+      celebrate: { en: "celebrating", "es-MX": "celebrando" },
+      sleep: { en: "resting", "es-MX": "descansando" },
+    };
+    if (spotlightAnimal) announce(`${spotlightAnimal.name}: ${labels[motion][language]}`);
+  };
+
   return (
     <>
       <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Haciendo crecer el Bosque animal…" : "Growing the Animal Forest…"}</div>}>
@@ -139,14 +155,10 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
           select={setHabitat}
         />
       </Suspense>
-      <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando el generador de animales…" : "Preparing the animal generator…"}</div>}>
-        <AnimalGeneratorGame animals={animals} language={language} onGenerated={discover} announce={announce} />
-      </Suspense>
-
       {spotlightSource && spotlightAnimal && (
         <section className="animal-field-station" ref={spotlightRef} aria-labelledby="animal-field-station-title">
           <div className="animal-field-station__art">
-            <LocalWildlifeArt animal={spotlightSource} displayName={spotlightAnimal.name} language={language} />
+            <LocalWildlifeArt key={`${spotlightSource.id}-${wildlifeMotion}-${motionKey}`} animal={spotlightSource} displayName={spotlightAnimal.name} language={language} motion={wildlifeMotion} />
             <span className="animal-field-station__status">{spotlightSource.discovered
               ? (language === "es-MX" ? "✓ EN TU GUÍA" : "✓ IN YOUR GUIDE")
               : (language === "es-MX" ? "NUEVO AVISTAMIENTO" : "NEW SIGHTING")}</span>
@@ -163,6 +175,18 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
             {spotlightSource.discovered && spotlightAnimal.adaptation && (
               <div className="animal-field-station__adaptation"><strong>💡 {tr(ui.adaptation, language)}</strong><span>{spotlightAnimal.adaptation}</span></div>
             )}
+            <div className="animal-field-station__movements" role="group" aria-label={language === "es-MX" ? "Movimientos del animal" : "Animal movements"}>
+              {([
+                ["walk", "🐾", language === "es-MX" ? "Explorar" : "Explore"],
+                ["leap", "✨", language === "es-MX" ? "Saltar" : "Leap"],
+                ["celebrate", "🎉", language === "es-MX" ? "Celebrar" : "Celebrate"],
+                ["sleep", "🌙", language === "es-MX" ? "Descansar" : "Rest"],
+              ] as Array<[WildlifeMotion, string, string]>).map(([value, icon, label]) => (
+                <button type="button" className={wildlifeMotion === value ? "active" : ""} aria-pressed={wildlifeMotion === value} onClick={() => playWildlifeMotion(value)} key={value}>
+                  <span aria-hidden="true">{icon}</span>{label}
+                </button>
+              ))}
+            </div>
             <div className="animal-field-station__actions">
               <button type="button" onClick={() => cycleSpotlight(-1)} aria-label={language === "es-MX" ? "Animal anterior" : "Previous animal"}>←</button>
               <button type="button" className="animal-field-station__discover" onClick={() => discover(spotlightSource.id)} disabled={spotlightSource.discovered}>
@@ -181,6 +205,10 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
         <div><span>⭐</span><strong>{favoriteCount}</strong><small>{language === "es-MX" ? "Favoritos" : "Favorites"}</small></div>
         <div><span>✨</span><strong>{profile.stars}</strong><small>{language === "es-MX" ? "Estrellas" : "Stars"}</small></div>
       </section>
+
+      <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando el generador de animales…" : "Preparing the animal generator…"}</div>}>
+        <AnimalGeneratorGame animals={animals} language={language} onGenerated={discover} announce={announce} />
+      </Suspense>
 
       <section className="field-mission-panel" aria-labelledby="field-missions-heading">
         <header>
@@ -216,7 +244,7 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
       </section>
 
       <section className="animal-guide-heading" aria-labelledby="animal-guide-heading-title">
-        <div><small>{language === "es-MX" ? "32 RETRATOS DE CUERPO COMPLETO" : "32 FULL-BODY PORTRAITS"}</small><h2 id="animal-guide-heading-title">{language === "es-MX" ? "Guía de animales premium" : "Premium Animal Field Guide"}</h2><p>{language === "es-MX" ? "Toca cualquier retrato para verlo en la estación de observación." : "Open any portrait in the wildlife spotlight for a closer look."}</p></div>
+        <div><small>{language === "es-MX" ? "32 ANIMALES · 9 HÁBITATS" : "32 ANIMALS · 9 HABITATS"}</small><h2 id="animal-guide-heading-title">{language === "es-MX" ? "Colección de campo" : "Wildlife Collection"}</h2><p>{language === "es-MX" ? "Cada retrato abre una escena de hábitat completa en la estación de observación." : "Every portrait opens a complete habitat scene in the wildlife spotlight."}</p></div>
         <div className="field-guide-tools">
           <label className="sr-only" htmlFor="animal-search">{tr(ui.searchAnimals, language)}</label>
           <input
@@ -242,14 +270,10 @@ export function AnimalForest({ profile, update, announce }: { profile: LocalProf
                     {animal.group && <span>{animal.group}</span>}
                     {animal.region && <span>{animal.region}</span>}
                   </div>
-                  <p>{sourceAnimal.discovered ? animal.fact : tr(ui.hiddenFact, language)}</p>
-                  {sourceAnimal.discovered && animal.adaptation && <small><b>{tr(ui.adaptation, language)}:</b> {animal.adaptation}</small>}
+                  <p>{sourceAnimal.discovered ? animal.fact : (language === "es-MX" ? "Abre esta escena y completa el avistamiento." : "Open this scene and complete the sighting.")}</p>
                   <div className="fw-action-row">
                     <button type="button" className="animal-open-spotlight" onClick={() => openSpotlight(sourceAnimal.id)}>
-                      {language === "es-MX" ? "🔎 Ver de cerca" : "🔎 Meet animal"}
-                    </button>
-                    <button type="button" onClick={() => discover(sourceAnimal.id)} disabled={sourceAnimal.discovered}>
-                      {sourceAnimal.discovered ? `✅ ${tr(ui.inGuide, language)}` : `🔭 ${tr(ui.discover, language)}`}
+                      {language === "es-MX" ? "🔎 Abrir escena" : "🔎 Open scene"}
                     </button>
                     <button
                       type="button"
