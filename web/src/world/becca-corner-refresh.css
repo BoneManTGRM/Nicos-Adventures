@@ -181,12 +181,12 @@
 .unicorn-generator-steps b { font-size: 9px; letter-spacing: .07em; text-transform: uppercase; }
 
 .unicorn-lab__stage { overflow: hidden; min-height: 690px; border: 1px solid rgba(216, 180, 254, .3); }
-.unicorn-lab__stage::after { content: ""; position: absolute; z-index: 0; inset: 0; background: radial-gradient(circle at 68% 45%, rgba(244, 114, 182, .26), transparent 32%); pointer-events: none; }
-.unicorn-lab__stage[data-color="moonlight"]::after { background: radial-gradient(circle at 68% 45%, rgba(103, 232, 249, .35), transparent 34%); }
-.unicorn-lab__stage[data-color="sunset"]::after { background: radial-gradient(circle at 68% 45%, rgba(251, 146, 60, .34), transparent 34%); }
-.unicorn-generator-art { z-index: 1; inset: 2% -2% 1% auto; width: 82%; height: 95%; }
-.premium-cutout.unicorn-lab__guide { position: absolute; z-index: 2; left: -2%; bottom: 8%; width: 39%; height: 67%; filter: drop-shadow(0 22px 20px rgba(2, 6, 23, .54)); }
-.becca-unicorn { z-index: 3; left: 43%; top: 38%; width: 39%; }
+.unicorn-lab__stage::after { content: ""; position: absolute; z-index: 0; inset: 0; background: radial-gradient(circle at 50% 37%, rgba(244, 114, 182, .34), transparent 36%); pointer-events: none; }
+.unicorn-lab__stage[data-color="moonlight"]::after { background: radial-gradient(circle at 50% 37%, rgba(103, 232, 249, .42), transparent 38%); }
+.unicorn-lab__stage[data-color="sunset"]::after { background: radial-gradient(circle at 50% 37%, rgba(251, 146, 60, .4), transparent 38%); }
+.unicorn-generator-art { z-index: 1; inset: 7% -8% 8% auto; width: 76%; height: 83%; opacity: .5; filter: saturate(.9) drop-shadow(0 20px 22px rgba(2, 6, 23, .38)); }
+.premium-cutout.unicorn-lab__guide { position: absolute; z-index: 4; left: 2%; bottom: 12%; width: 28%; height: 43%; filter: drop-shadow(0 18px 18px rgba(2, 6, 23, .54)); }
+.becca-unicorn { z-index: 3; left: 27%; top: 9%; width: 52%; aspect-ratio: 543 / 724; }
 .unicorn-nameplate { z-index: 5; left: 4%; right: 4%; }
 .unicorn-lab__creation-burst { position: absolute; z-index: 4; inset: 0; pointer-events: none; }
 .unicorn-lab__creation-burst i { position: absolute; left: 68%; top: 48%; width: 10px; height: 10px; border-radius: 50%; background: #fff7ed; box-shadow: 0 0 22px #f0abfc; animation: unicorn-burst .85s ease-out both; }
@@ -207,9 +207,9 @@
 
 @media (max-width: 800px) {
   .unicorn-lab__stage { min-height: 620px; }
-  .unicorn-generator-art { right: -7%; width: 88%; }
-  .premium-cutout.unicorn-lab__guide { left: -3%; width: 40%; height: 64%; }
-  .becca-unicorn { left: 44%; top: 38%; width: 42%; }
+  .unicorn-generator-art { right: -10%; width: 80%; }
+  .premium-cutout.unicorn-lab__guide { left: 1%; width: 29%; height: 42%; }
+  .becca-unicorn { left: 25%; top: 8%; width: 55%; }
 }
 
 @media (max-width: 520px) {
@@ -223,9 +223,9 @@
   .becca-team-showcase__portraits button { min-height: 40px; font-size: 11px; }
   .unicorn-generator-steps { grid-template-columns: repeat(4, 1fr); }
   .unicorn-lab__stage { min-height: 540px; }
-  .unicorn-generator-art { right: -13%; width: 98%; height: 94%; }
-  .premium-cutout.unicorn-lab__guide { left: -8%; bottom: 10%; width: 46%; height: 58%; }
-  .becca-unicorn { left: 43%; top: 38%; width: 48%; }
+  .unicorn-generator-art { right: -16%; width: 88%; height: 82%; }
+  .premium-cutout.unicorn-lab__guide { left: 0; bottom: 12%; width: 30%; height: 39%; }
+  .becca-unicorn { left: 22%; top: 7%; width: 60%; }
   .unicorn-nameplate { bottom: 3%; }
 }
 
