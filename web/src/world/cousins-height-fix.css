@@ -1,0 +1,37 @@
+.cousins-hero__team .nico-costume {
+  left: -6%;
+  width: 68%;
+  transform: scale(1.05);
+}
+
+.cousins-hero__becca {
+  left: 38%;
+  width: 42%;
+  height: 76%;
+}
+
+.cousins-hero__lua {
+  right: -3%;
+  width: 36%;
+  height: 61%;
+}
+
+@media (max-width: 620px) {
+  .cousins-hero__team .nico-costume {
+    left: -8%;
+    width: 70%;
+    transform: scale(1.02);
+  }
+
+  .cousins-hero__becca {
+    left: 39%;
+    width: 42%;
+    height: 72%;
+  }
+
+  .cousins-hero__lua {
+    right: -5%;
+    width: 36%;
+    height: 57%;
+  }
+}

@@ -44,6 +44,7 @@ import {
   type CousinsDestinationId,
 } from "./cousinsAdventureStories";
 import "./cousins-adventure.css";
+import "./cousins-height-fix.css";
 
 const leadLabels: Record<CousinLead, string> = { nico: "Nico", becca: "Becca", lua: "Lua" };
 const storyScenes: Record<CousinsDestinationId, [string, string, string, string, string, string]> = {
