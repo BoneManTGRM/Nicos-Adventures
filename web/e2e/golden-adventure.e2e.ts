@@ -354,10 +354,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await activateWithKeyboard(page, page.getByRole("button", { name: text.begin, exact: true }));
   await expect(page.getByRole("heading", { name: text.roboLab, exact: true })).toBeFocused();
   await expect(page.getByRole("heading", { name: text.configure, exact: true })).toBeVisible();
-  const repairArms = page.locator('.robot-assembly__choice[data-option="Tool Arms"]');
-  await expect(repairArms).toHaveCount(1);
-  await repairArms.click();
-  await expect(repairArms).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".boltbot-readiness li")).toHaveCount(4);
+  await expect(page.locator(".boltbot-readiness li.is-ready")).toHaveCount(4);
   await activateWithKeyboard(page, page.getByRole("button", { name: text.useRobot, exact: true }));
   await expect(page.getByRole("heading", { name: text.movement, exact: true })).toBeFocused();
   const illustratedBoltBot = page.locator('.boltbot-illustrated-chamber[data-renderer="premium-2d"]');
