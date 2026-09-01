@@ -54,7 +54,7 @@ const requiredFiles = [
   "src/assets/art/cousins-adventure-map.webp",
   "src/assets/art/unicorn-generator.webp",
   "src/assets/art/unicorn-prance-strip.webp",
-  "src/assets/art/wildlife-premium-atlas.webp",
+  "src/assets/art/wildlife-premium-clean-atlas.webp",
   "src/assets/art/story-rainbow-1.webp",
   "src/assets/art/story-rainbow-2.webp",
   "src/assets/art/story-rainbow-3.webp",
@@ -216,6 +216,9 @@ const cousinsStories = read("src/world/cousinsAdventureStories.ts");
 const animalGenerator = read("src/world/AnimalGeneratorGame.tsx");
 if (!showtime.includes('kind: "animal" as const') || !showtime.includes("WildlifeSprite") || !wildlife.includes("WILDLIFE_IDS")) {
   throw new Error("Premium full-body animals are not available in Showtime");
+}
+if (!wildlife.includes("wildlife-premium-clean-atlas.webp") || wildlife.includes("wildlifeCellBounds")) {
+  throw new Error("Wildlife art is not using the isolated transparent atlas");
 }
 if (!becca.includes("Unicorn Generator") || !becca.includes("becca-unicorn--") || !becca.includes("PremiumCutout") ||
     !becca.includes("lua-premium.webp") || !becca.includes("magic-host-picker") || !becca.includes("becca-magic-quest")) {
