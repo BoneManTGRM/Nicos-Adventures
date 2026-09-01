@@ -18,6 +18,17 @@ type RoomGoal = {
   reward: number;
 };
 
+export const ROOM_DECORATION_VISUALS: Record<string, { icon: string; className: string }> = {
+  "Animal Photo Wall": { icon: "🐾", className: "animal-wall" },
+  "Charging Dock": { icon: "⚡", className: "charging-dock" },
+  "Trophy Shelf": { icon: "🏆", className: "trophy-shelf" },
+  "Mecha Banner": { icon: "⚙️", className: "mecha-banner" },
+  "Star Window": { icon: "🌌", className: "star-window" },
+  "Monster Plush": { icon: "👾", className: "monster-plush" },
+  "Dino Fossil Case": { icon: "🦴", className: "dino-fossil" },
+  "Art Gallery": { icon: "🎨", className: "art-gallery" },
+};
+
 export function RobotHome({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
   const activePet = profile.pets.find((pet) => pet.id === profile.activePetId) ?? profile.pets[0];
@@ -90,7 +101,12 @@ export function RobotHome({ profile, update, announce }: { profile: LocalProfile
   return (
     <div className="robot-home-system">
       <section className="robot-home-stage" aria-label={language === "es-MX" ? "Casa Robot interactiva" : "Interactive Robot Home"}>
-        <div className="robot-home-stage__sky" aria-hidden="true">✦　☾　✧</div>
+        <div className="robot-home-stage__room" aria-hidden="true">
+          <span className="robot-home-stage__ceiling-light" />
+          <span className="robot-home-stage__rug" />
+          <span className="robot-home-stage__side-table" />
+        </div>
+        <div className="robot-home-stage__sky" aria-hidden="true"><span>✦</span><span>☾</span><span>✧</span></div>
         <div className="robot-home-stage__art">
           {displayedArtwork ? <><span aria-hidden="true">🖼️</span><strong>{displayedArtwork.title}</strong></> : <span aria-hidden="true">＋</span>}
         </div>
@@ -101,7 +117,20 @@ export function RobotHome({ profile, update, announce }: { profile: LocalProfile
           {activePet ? <><PetArt pet={activePet} language={language} /><strong>{activePet.name}</strong><small>{optionLabel(activePet.species, language)}</small></> : <small>{language === "es-MX" ? "Sin mascota activa" : "No active pet"}</small>}
         </div>
         <div className="robot-home-stage__decor" aria-label={language === "es-MX" ? "Decoraciones activas" : "Active decorations"}>
-          {profile.decorations.map((item) => <span key={item}>{optionLabel(item, language)}</span>)}
+          {profile.decorations.map((item) => {
+            const visual = ROOM_DECORATION_VISUALS[item] ?? { icon: "✨", className: "sparkle" };
+            return (
+              <span
+                key={item}
+                className={`robot-home-decoration robot-home-decoration--${visual.className}`}
+                role="img"
+                aria-label={optionLabel(item, language)}
+                title={optionLabel(item, language)}
+              >
+                <span aria-hidden="true">{visual.icon}</span>
+              </span>
+            );
+          })}
         </div>
       </section>
 

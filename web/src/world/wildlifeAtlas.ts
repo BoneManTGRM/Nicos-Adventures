@@ -41,7 +41,7 @@ function replaceCell(atlas: HTMLCanvasElement, animalId: string, source: HTMLCan
 export function loadPremiumWildlifeAtlas(): Promise<HTMLCanvasElement> {
   if (composedAtlas) return composedAtlas;
   composedAtlas = Promise.all([
-    loadPremiumCutout(wildlifeAtlasSource),
+    loadPremiumCutout(wildlifeAtlasSource, true),
     loadPremiumCutout(PREMIUM_WILDLIFE_REPLACEMENTS["polar-bear"]),
     loadPremiumCutout(PREMIUM_WILDLIFE_REPLACEMENTS["arctic-fox"]),
   ]).then(([atlas, polarBear, arcticFox]) => {

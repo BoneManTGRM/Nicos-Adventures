@@ -21,7 +21,22 @@ function isLightBackdrop(data: Uint8ClampedArray, offset: number): boolean {
   return alpha > 0 && darkest > 226 && brightest - darkest < 18;
 }
 
-function removeConnectedBackdrop(image: HTMLImageElement): HTMLCanvasElement {
+/**
+ * The original wildlife sheet was exported with opaque white guide bars and a
+ * white matte around several silhouettes. Those pixels are not connected to
+ * the outside of the atlas, so a normal edge flood-fill cannot reach them.
+ * Keep this calculation exported and deterministic so the cutout policy can
+ * be regression-tested without a browser canvas.
+ */
+export function wildlifeMatteOpacity(red: number, green: number, blue: number): number {
+  const darkest = Math.min(red, green, blue);
+  const brightest = Math.max(red, green, blue);
+  const chroma = brightest - darkest;
+  if (darkest < 232 || chroma > 24) return 1;
+  return Math.max(0, Math.min(1, (250 - darkest) / 18));
+}
+
+function removeConnectedBackdrop(image: HTMLImageElement, removeInternalWhiteMatte = false): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
@@ -61,15 +76,25 @@ function removeConnectedBackdrop(image: HTMLImageElement): HTMLCanvasElement {
     if (y + 1 < canvas.height) enqueue(index + canvas.width);
   }
 
+  if (removeInternalWhiteMatte) {
+    for (let offset = 0; offset < pixels.data.length; offset += 4) {
+      const alpha = pixels.data[offset + 3];
+      if (!alpha) continue;
+      const opacity = wildlifeMatteOpacity(pixels.data[offset], pixels.data[offset + 1], pixels.data[offset + 2]);
+      pixels.data[offset + 3] = Math.round(alpha * opacity);
+    }
+  }
+
   context.putImageData(pixels, 0, 0);
   return canvas;
 }
 
-export function loadPremiumCutout(source: string): Promise<HTMLCanvasElement> {
-  const cached = cutoutCache.get(source);
+export function loadPremiumCutout(source: string, removeInternalWhiteMatte = false): Promise<HTMLCanvasElement> {
+  const cacheKey = `${source}::${removeInternalWhiteMatte ? "wildlife-matte" : "edge"}`;
+  const cached = cutoutCache.get(cacheKey);
   if (cached) return cached;
-  const pending = loadImage(source).then(removeConnectedBackdrop);
-  cutoutCache.set(source, pending);
+  const pending = loadImage(source).then((image) => removeConnectedBackdrop(image, removeInternalWhiteMatte));
+  cutoutCache.set(cacheKey, pending);
   return pending;
 }
 
