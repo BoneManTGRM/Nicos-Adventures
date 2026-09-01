@@ -127,7 +127,9 @@
   .animal-forest-illustration__art { min-height: 350px; }
   .animal-forest-illustration figcaption { right: 10px; bottom: 10px; left: 10px; padding: 11px 12px; }
   .animal-forest-illustration figcaption small { display: none; }
-  .animal-forest-trail__habitats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .animal-forest-trail__habitats { display: flex; margin-inline: -13px; padding: 2px 13px 8px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; }
+  .animal-forest-trail__habitats::-webkit-scrollbar { display: none; }
+  .animal-forest-trail__habitat { flex: 0 0 112px; scroll-snap-align: start; }
 }
 
 @media (prefers-reduced-motion: reduce) {
