@@ -145,6 +145,9 @@ for (const body of ["Blob", "Dragon", "Jungle Beast", "Stone Golem", "Spirit", "
 if (!monsterArt.includes("premium-alien-arms-atlas.webp") || !monsterArtTest.includes("every saved alien arm choice") || !monsterViewTest.includes("premium-alien-arms-atlas")) {
   throw new Error("Premium alien arm-variant coverage is incomplete");
 }
+if (!monsterArt.includes("premium-lizard-alien.webp") || !monsterArtTest.includes("standalone full-body art for the lizard alien") || !monsterViewTest.includes("proportional integrated body")) {
+  throw new Error("Premium lizard alien body coverage is incomplete");
+}
 if (!monsterArtTest.includes("every schema-v4 monster body") || !monsterViewTest.includes("premium-monster-bodies-atlas")) {
   throw new Error("Premium monster atlas regression coverage is incomplete");
 }
@@ -158,6 +161,8 @@ const monsterAtlas = fs.statSync(path.join(root, "src/assets/monsters/premium-mo
 if (monsterAtlas.size > 360_000) throw new Error(`Premium monster body atlas exceeds its 360 KB budget: ${monsterAtlas.size}`);
 const alienAtlas = fs.statSync(path.join(root, "src/assets/monsters/premium-alien-arms-atlas.webp"));
 if (alienAtlas.size > 120_000) throw new Error(`Premium alien arm atlas exceeds its 120 KB budget: ${alienAtlas.size}`);
+const lizardAlien = fs.statSync(path.join(root, "src/assets/monsters/premium-lizard-alien.webp"));
+if (lizardAlien.size > 150_000) throw new Error(`Premium lizard alien exceeds its 150 KB budget: ${lizardAlien.size}`);
 if (!wardrobeSvg.includes("buildNicoWardrobeSvg") || !wardrobeSvg.includes("buildGarmentSvg") || !wardrobeSvg.includes('data-nico-body="true"')) {
   throw new Error("Layered Nico or garment-only SVG generation is incomplete");
 }

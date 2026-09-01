@@ -325,6 +325,12 @@ test("all destinations keep their main local interactions working", async ({ pag
   await expect(premiumAlien).toBeVisible();
   await expect(premiumAlien).toHaveAttribute("data-monster-face-treatment", "integrated-visor");
   await expect(premiumAlien.locator(".monster-premium-body__art")).toHaveCSS("background-size", /400% 200%/);
+  await chooseMonsterOption("body", "Lizard Alien");
+  const lizardAlien = page.locator('[data-monster-body-art="Lizard Alien"]');
+  await expect(lizardAlien).toHaveAttribute("data-monster-face-treatment", "integrated-lizard");
+  await expect(lizardAlien.locator(".monster-face, .monster-mouth, .monster-core")).toHaveCount(0);
+  await attachVisual(page, testInfo, "monster-lab-lizard-alien");
+  await chooseMonsterOption("body", "Alien");
   await attachVisual(page, testInfo, "monster-lab");
 
   await openDestination(page, text.world, text.monsterHabitats, `${testInfo.project.name} Monster Habitats`);

@@ -1,0 +1,16 @@
+{
+  "asset": "premium-lizard-alien.webp",
+  "created": "2026-09-01",
+  "generator": "OpenAI built-in image generation",
+  "role": "Monster Lab full-body lizard alien",
+  "styleReference": "premium-monster-bodies-atlas.webp",
+  "promptSummary": "Original athletic reptilian alien with a strong proportional silhouette, integrated angular brow, cyan eyes, reptilian snout, pearl scales, restrained teal shadows, full-body framing, and transparent background.",
+  "constraints": [
+    "single original character",
+    "complete body and tail",
+    "child-friendly heroic intensity",
+    "no weapons, text, watermark, white matte, or halo",
+    "genuine transparent alpha"
+  ],
+  "normalization": "Centered on a square transparent canvas and encoded as WebP with preserved alpha."
+}

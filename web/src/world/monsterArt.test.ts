@@ -48,9 +48,20 @@ describe("premium illustrated monster body atlas", () => {
     });
   });
 
+  it("uses standalone full-body art for the lizard alien", () => {
+    expect(monsterBodyArtStyle("Lizard Alien", "#22d3ee")).toMatchObject({
+      "--monster-body-position": "center",
+      "--monster-body-size": "contain",
+      "--monster-body-aspect": "1",
+      "--monster-body-width": "100%",
+    });
+    expect(PREMIUM_MONSTER_BODIES).toContain("Lizard Alien");
+  });
+
   it("fits accessories to broad bodies without changing their body art", () => {
     const stone = monsterAccessoryLayout("Stone Golem");
     const alien = monsterAccessoryLayout("Alien");
+    const lizard = monsterAccessoryLayout("Lizard Alien");
 
     expect(stone.face).toEqual({ x: 0, y: -145, scale: 0.46 });
     expect(stone.horns.scale).toBeLessThan(0.4);
@@ -59,6 +70,7 @@ describe("premium illustrated monster body atlas", () => {
     expect(alien.mouth).toEqual({ x: 0, y: -166, scale: 0.3 });
     expect(alien.horns).toEqual({ x: 0, y: -72, scale: 0.22 });
     expect(alien.core.y).toBeLessThan(-100);
+    expect(lizard.tail.scale).toBe(0);
     expect(monsterAccessoryTransform("face", stone.face)).toBe(
       "translate(0 -145) translate(260 246) scale(0.46) translate(-260 -246)",
     );
