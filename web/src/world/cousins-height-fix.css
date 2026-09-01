@@ -1,10 +1,10 @@
 .cousins-hero__team { overflow: hidden; }
 .cousins-hero__team .nico-costume {
   z-index: 2;
-  left: -3%;
+  left: 0;
   bottom: 18px;
-  width: 70%;
-  transform: scaleX(.65);
+  width: 56%;
+  transform: scaleX(.78);
   transform-origin: bottom center;
 }
 .cousins-hero__team .nico-costume[data-art-state="canonical-2d"] .nico-costume__frame { background: transparent; }
