@@ -91,7 +91,8 @@ async function activateWithKeyboard(locator: Locator) {
 }
 
 async function assertPageChrome(page: Page, title: string, label: string, expectFocus = true) {
-  const heading = page.getByRole("heading", { name: title, exact: true });
+  const heading = page.locator("#page-title");
+  await expect(heading).toHaveText(title);
   if (expectFocus) await expect(heading).toBeFocused();
   else await expect(heading).toBeVisible();
   const metrics = await page.evaluate(() => {

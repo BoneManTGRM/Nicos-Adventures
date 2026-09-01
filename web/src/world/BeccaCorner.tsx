@@ -92,7 +92,7 @@ export function BeccaCorner({ language }: { language: Language }) {
         <img className="becca-hero__scene" src={magicWorkshopArt} alt={language === "es-MX" ? "Becca y Lua crean una unicornio en su taller mágico" : "Becca and Lua create a unicorn in their magical workshop"} />
         <div className="becca-hero__copy">
           <small>{language === "es-MX" ? "BECCA + LUA · IMAGINACIÓN · AMISTAD · MAGIA" : "BECCA + LUA · IMAGINATION · FRIENDSHIP · MAGIC"}</small>
-          <h2>{language === "es-MX" ? "El Rincón de Becca" : "Becca’s Corner"}</h2>
+          <h2>{language === "es-MX" ? "El taller mágico de Becca" : "Becca’s Magical Workshop"}</h2>
           <p>{language === "es-MX"
             ? "Becca y Lua tienen un taller mágico de unicornios. Elige a una de ellas, crea una nueva amiga y resuelve una pequeña misión juntas."
             : "Becca and Lua have a magical unicorn workshop. Choose one of them, create a new friend, and solve a little quest together."}</p>
