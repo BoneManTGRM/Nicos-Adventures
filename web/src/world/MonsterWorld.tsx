@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { MonsterStage, useMonsterMotion } from "../FeatureArt";
 import type { LocalProfile, MonsterRecord } from "../types";
-import { fieldLabel, tr, ui } from "../i18n/core";
+import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
-import { MONSTER_OPTIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, makeId } from "./common";
 import { MonsterCreatureStudio } from "./MonsterCreatureStudio";
@@ -80,25 +79,6 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
           selectTrait={setActiveTrait}
           sculpt={(trait, option) => setDraft({ ...draft, [trait]: option })}
         />
-        <details className="monster-precision">
-          <summary>{language === "es-MX" ? "Controles precisos de rasgos" : "Precision trait controls"}</summary>
-          <fieldset className="fw-fieldset-reset">
-            <legend>{tr(ui.formControls, language)}</legend>
-            <div className="fw-form-grid">
-              {Object.entries(MONSTER_OPTIONS).map(([key, values]) => (
-                <label key={key}>
-                  {fieldLabel(key, language)}
-                  <select
-                    value={String(draft[key as keyof MonsterRecord] || values[0])}
-                    onChange={(event) => setDraft({ ...draft, [key]: event.target.value })}
-                  >
-                    {values.map((value) => <option value={value} key={value}>{optionLabel(value, language)}</option>)}
-                  </select>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        </details>
         <div className="fw-action-row">
           <button type="button" onClick={() => {
             setDraft(newMonster());

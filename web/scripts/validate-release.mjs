@@ -38,6 +38,9 @@ const requiredFiles = [
   "src/world/BeccaCorner.tsx",
   "src/world/WildlifeSprite.tsx",
   "src/world/wildlifeAtlas.ts",
+  "src/world/RoboLab.tsx",
+  "src/world/MonsterCreatureStudio.tsx",
+  "src/world/monsterCreatureStudio.ts",
   "src/world/artCutout.ts",
   "src/world/PremiumCutout.tsx",
   "src/world/becca-corner.css",
@@ -55,6 +58,8 @@ const requiredFiles = [
   "src/assets/art/unicorn-generator.webp",
   "src/assets/art/unicorn-prance-strip.webp",
   "src/assets/art/wildlife-premium-clean-atlas.webp",
+  "src/assets/art/polar-bear-premium-v2.webp",
+  "src/assets/art/arctic-fox-premium-v2.webp",
   "src/assets/art/story-rainbow-1.webp",
   "src/assets/art/story-rainbow-2.webp",
   "src/assets/art/story-rainbow-3.webp",
@@ -214,10 +219,15 @@ const becca = read("src/world/BeccaCorner.tsx");
 const cousins = read("src/world/CousinsAdventure.tsx");
 const cousinsStories = read("src/world/cousinsAdventureStories.ts");
 const animalGenerator = read("src/world/AnimalGeneratorGame.tsx");
+const roboLab = read("src/world/RoboLab.tsx");
+const monsterStudio = read("src/world/monsterCreatureStudio.ts");
+const monsterWorld = read("src/world/MonsterWorld.tsx");
 if (!showtime.includes('kind: "animal" as const') || !showtime.includes("WildlifeSprite") || !wildlife.includes("WILDLIFE_IDS")) {
   throw new Error("Premium full-body animals are not available in Showtime");
 }
-if (!wildlife.includes("wildlife-premium-clean-atlas.webp") || wildlife.includes("wildlifeCellBounds") || !wildlife.includes("clipPaleWildlife")) {
+if (!wildlife.includes("wildlife-premium-clean-atlas.webp") || wildlife.includes("wildlifeCellBounds") ||
+    !wildlife.includes("polar-bear-premium-v2.webp") || !wildlife.includes("arctic-fox-premium-v2.webp") ||
+    wildlife.includes("clipPaleWildlife")) {
   throw new Error("Wildlife art is not using the isolated transparent atlas");
 }
 if (!becca.includes("Unicorn Generator") || !becca.includes("becca-unicorn--") || !becca.includes("PremiumCutout") ||
@@ -232,6 +242,12 @@ if (!cousins.includes("NicoCostumeFigure") || !cousins.includes("lua-premium.web
 }
 if (!animalGenerator.includes("Mystery Animal Generator") || !animalGenerator.includes("LocalWildlifeArt") || !animalGenerator.includes("setTokens") || !animalGenerator.includes("getRandomValues")) {
   throw new Error("Token-based random animal generator is incomplete");
+}
+if (roboLab.includes("BoltBotConfigurationGate") || !roboLab.includes("ROBOT_MOVEMENTS") || !roboLab.includes("Continue to the test chamber")) {
+  throw new Error("Robo Lab still exposes retired customization instead of the movement-only experience");
+}
+if (monsterWorld.includes("monster-precision") || monsterStudio.includes('key: "eyes"') || monsterStudio.includes('key: "mouth"') || monsterStudio.includes('key: "horns"')) {
+  throw new Error("Monster Lab still exposes facial controls that are not rendered by the premium body art");
 }
 if (!animalForest.includes("animal-field-station") || !animalForest.includes("animal-field-dashboard") ||
     !animalForest.includes("Wildlife Collection") || !animalForest.includes("Open scene") || !animalForest.includes("animal-field-station__movements")) {

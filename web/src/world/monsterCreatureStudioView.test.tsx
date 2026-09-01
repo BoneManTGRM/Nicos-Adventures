@@ -66,9 +66,9 @@ describe("Monster Lab localized preview", () => {
     expect(html).toContain('class="monster-mouth" transform="translate(0 -205) translate(260 330) scale(0.38)');
     expect(html).toContain('class="monster-core" transform="translate(0 -88) translate(260 387) scale(0.5)');
     expect(html).toContain('data-monster-face-treatment="carved-golem"');
-    expect(html).toContain('rx="22" ry="18"');
+    expect(html).toContain('rx="18" ry="16"');
     expect(html).not.toContain("M238 317Q260 328");
-    expect(html).toContain("M230 319Q260 345 290 319");
+    expect(html).toContain("M236 319Q260 337 284 319");
   });
 
   it("gives a Dragon a readable face without crowding its horns", () => {

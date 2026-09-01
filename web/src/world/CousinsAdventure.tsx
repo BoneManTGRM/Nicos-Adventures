@@ -47,7 +47,7 @@ import "./cousins-adventure.css";
 import "./cousins-height-fix.css";
 
 const leadLabels: Record<CousinLead, string> = { nico: "Nico", becca: "Becca", lua: "Lua" };
-const storyScenes: Record<CousinsDestinationId, [string, string, string, string, string, string]> = {
+export const COUSINS_STORY_SCENES: Record<CousinsDestinationId, [string, string, string, string, string, string]> = {
   "rainbow-forest": [rainbowOne, rainbowTwo, rainbowThree, rainbowFour, rainbowFive, rainbowSix],
   "dino-valley": [dinoOne, dinoTwo, dinoThree, dinoFour, dinoFive, dinoSix],
   "star-harbor": [starOne, starTwo, starThree, starFour, starFive, starSix],
@@ -99,7 +99,7 @@ export function CousinsAdventure({ language }: { language: Language }) {
   };
   const clueResult = interactiveChoices[language].find((item) => item.id === clueChoice)?.result;
   const pathResult = pathChoices[language].find((item) => item.id === pathChoice)?.result;
-  const activeScene = storyScenes[destinationId][pageIndex];
+  const activeScene = COUSINS_STORY_SCENES[destinationId][pageIndex];
 
   return (
     <div className="cousins-adventure">
@@ -236,7 +236,7 @@ export function CousinsAdventure({ language }: { language: Language }) {
         <div className="adventure-library__rail">
           {COUSINS_DESTINATIONS.map((item) => (
             <button type="button" key={item.id} onClick={() => chooseDestination(item.id)} className={item.id === destinationId ? "is-active" : ""}>
-              <span className="adventure-library__thumb" style={{ "--story-art": `url(${storyScenes[item.id][1]})` } as CSSProperties} />
+              <span className="adventure-library__thumb" style={{ "--story-art": `url(${COUSINS_STORY_SCENES[item.id][1]})` } as CSSProperties} />
               <strong>{item.icon} {item.name[language]}</strong>
               <small>{item.beccaOutfit[language]} · {item.luaOutfit[language]}</small>
             </button>

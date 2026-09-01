@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { COUSINS_STORY_SCENES } from "./CousinsAdventure";
 import { buildCousinsStory, COUSINS_DESTINATIONS, type AdventureTheme, type CousinLead } from "./cousinsAdventureStories";
 
 describe("cousins adventure storybooks", () => {
@@ -24,5 +25,13 @@ describe("cousins adventure storybooks", () => {
   it("assigns a complete outfit and unique illustration to every stop", () => {
     expect(new Set(COUSINS_DESTINATIONS.map((item) => item.artIndex)).size).toBe(5);
     expect(COUSINS_DESTINATIONS.every((item) => item.beccaOutfit.en && item.luaOutfit.en)).toBe(true);
+  });
+
+  it("gives every story page its own separate landscape scene", () => {
+    const scenes = Object.values(COUSINS_STORY_SCENES);
+    expect(scenes).toHaveLength(COUSINS_DESTINATIONS.length);
+    expect(scenes.every((story) => story.length === 6)).toBe(true);
+    expect(new Set(scenes.flat()).size).toBe(30);
+    expect(scenes.flat().every((scene) => scene.includes("story-") && scene.includes(".webp"))).toBe(true);
   });
 });

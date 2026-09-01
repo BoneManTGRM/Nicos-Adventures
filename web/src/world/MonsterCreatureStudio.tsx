@@ -4,9 +4,10 @@ import { optionLabel } from "../i18n/display";
 import type { Language, MonsterRecord } from "../types";
 import { MONSTER_OPTIONS } from "./catalogs";
 import {
-  MONSTER_TRAITS,
   monsterColorSwatch,
   monsterTrait,
+  monsterVisualOptions,
+  monsterVisualTraits,
   type MonsterTraitKey,
 } from "./monsterCreatureStudio";
 import "./monster-creature-studio.css";
@@ -15,15 +16,15 @@ const copy = {
   eyebrow: { en: "Monster Lab · Creature sculpting table", "es-MX": "Laboratorio de monstruos · Mesa para esculpir criaturas" },
   title: { en: "Sculpt a creature you can see", "es-MX": "Esculpe una criatura que puedas ver" },
   body: {
-    en: "Choose a trait, then press a specimen tile. Your creature changes instantly and stays private on this device.",
-    "es-MX": "Elige un rasgo y después presiona una muestra. Tu criatura cambia al instante y permanece privada en este dispositivo.",
+    en: "Every control below makes a visible change to the premium creature. Choose a trait, then press a specimen tile.",
+    "es-MX": "Cada control de abajo cambia visiblemente la criatura prémium. Elige un rasgo y presiona una muestra.",
   },
   traits: { en: "Creature traits", "es-MX": "Rasgos de la criatura" },
   specimens: { en: "Specimen drawer", "es-MX": "Cajón de muestras" },
   applied: { en: "Applied", "es-MX": "Aplicado" },
   groups: {
-    en: { form: "Form", features: "Features", style: "Style", story: "Story" },
-    "es-MX": { form: "Forma", features: "Características", style: "Estilo", story: "Historia" },
+    en: { form: "Form", features: "Features", style: "Style" },
+    "es-MX": { form: "Forma", features: "Características", style: "Estilo" },
   },
 } as const;
 
@@ -46,7 +47,8 @@ export function MonsterCreatureStudio({
   sculpt: (trait: MonsterTraitKey, option: string) => void;
 }) {
   const active = monsterTrait(activeTrait);
-  const options = MONSTER_OPTIONS[activeTrait] ?? [];
+  const options = monsterVisualOptions(activeTrait, MONSTER_OPTIONS[activeTrait] ?? []);
+  const visibleTraits = monsterVisualTraits(monster);
   const groupLabels = copy.groups[language];
   return (
     <section className="monster-studio" data-active-group={active.group} aria-labelledby="monster-studio-title">
@@ -62,7 +64,7 @@ export function MonsterCreatureStudio({
           <strong>{groupLabels[active.group]}</strong>
         </div>
         <div className="monster-studio__traits" role="group" aria-label={tr(copy.traits, language)}>
-          {MONSTER_TRAITS.map((trait) => {
+          {visibleTraits.map((trait) => {
             const value = String(monster[trait.key] ?? MONSTER_OPTIONS[trait.key]?.[0] ?? "");
             return (
               <button

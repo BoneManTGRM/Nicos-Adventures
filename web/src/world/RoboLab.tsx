@@ -8,7 +8,6 @@ import { boltBotChamberStage, evaluateBoltBotReadiness } from "../game/boltBot";
 import type { StarBridgeEvent } from "../game/goldenAdventure";
 import { applyStarBridgeEvent } from "../game/goldenAdventureProfile";
 import type { Announce, UpdateProfile } from "./common";
-import { BoltBotConfigurationGate } from "./BoltBotConfigurationGate";
 import "./robo-lab.css";
 
 const BoltBotTestChamber = lazy(() => import("./BoltBotTestChamber").then((module) => ({
@@ -74,9 +73,6 @@ export function RoboLab({
 
   return (
     <>
-      {chamberStage === "configuration" ? (
-        <BoltBotConfigurationGate robot={robot} language={language} configure={configureForAdventure} />
-      ) : null}
       {chamberStage !== "inactive" && chamberStage !== "configuration" ? (
         <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la cámara de pruebas…" : "Preparing the test chamber…"}</div>}>
           <BoltBotTestChamber
@@ -112,6 +108,11 @@ export function RoboLab({
                 </button>
               ))}
             </div>
+            {chamberStage === "configuration" ? (
+              <button type="button" className="fw-primary robo-lab-test-button" onClick={configureForAdventure}>
+                🧪 {language === "es-MX" ? "Continuar a la cámara de pruebas" : "Continue to the test chamber"}
+              </button>
+            ) : null}
           </details>
         </section>
       </div>
