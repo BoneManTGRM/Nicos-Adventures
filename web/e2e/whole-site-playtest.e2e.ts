@@ -203,7 +203,7 @@ test("all destinations keep their main local interactions working", async ({ pag
   const text = copy[language];
   const runtimeErrors: string[] = [];
   const externalRequests: string[] = [];
-  const robotName = `Atlas Bot ${language === "es-MX" ? "MX" : "EN"}`;
+  const robotName = "Nico's BoltBot";
   const monsterName = `Nova ${language === "es-MX" ? "MX" : "EN"}`;
   const petName = `Sparky ${language === "es-MX" ? "MX" : "EN"}`;
   const artworkTitle = language === "es-MX" ? "Póster del sitio" : "Site Adventure Poster";
@@ -229,9 +229,10 @@ test("all destinations keep their main local interactions working", async ({ pag
   await attachVisual(page, testInfo, "world-map");
 
   await openDestination(page, text.world, text.roboLab, `${testInfo.project.name} Robo Lab`);
-  await page.locator(".robo-lab-identity input").fill(robotName);
-  await page.getByRole("button", { name: new RegExp(`${text.saveRobot}$`) }).click();
-  await expect(page.locator(".robo-lab-saved button").filter({ hasText: robotName })).toHaveCount(1);
+  const robotMovements = page.locator(".robot-action-grid button");
+  await expect(robotMovements).toHaveCount(6);
+  await robotMovements.first().click();
+  await expect(robotMovements.first()).toHaveAttribute("aria-pressed", "true");
   await attachVisual(page, testInfo, "robo-lab");
 
   await openDestination(page, text.world, text.animalForest, `${testInfo.project.name} Animal Forest`);
