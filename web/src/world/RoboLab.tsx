@@ -4,7 +4,7 @@ import { RobotStage } from "../RobotStage";
 import type { LocalProfile, SectionId } from "../types";
 import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/options";
-import { boltBotChamberStage, evaluateBoltBotReadiness } from "../game/boltBot";
+import { boltBotChamberStage } from "../game/boltBot";
 import type { StarBridgeEvent } from "../game/goldenAdventure";
 import { applyStarBridgeEvent } from "../game/goldenAdventureProfile";
 import type { Announce, UpdateProfile } from "./common";
@@ -49,7 +49,6 @@ export function RoboLab({
   };
 
   const configureForAdventure = () => {
-    if (!evaluateBoltBotReadiness(robot).ready) return;
     const configured = applyStarBridgeEvent(profile, { type: "CONFIGURE_ROBOT" });
     update(configured);
     play("celebrate");

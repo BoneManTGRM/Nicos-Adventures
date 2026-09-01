@@ -12,3 +12,26 @@
 .nico-premium-wardrobe__empty{padding:28px;border:1px dashed rgba(103,232,249,.35);border-radius:18px;color:#b7c7e5;text-align:center}
 @media(max-width:760px){.nico-premium-wardrobe .nico-profession-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.nico-premium-wardrobe .nico-profession-grid{grid-template-columns:1fr}.nico-premium-wardrobe .nico-profession-grid button{min-height:104px}}
+
+/* Keep each premium outfit fully visible, with its copy in separate rows. */
+.nico-premium-wardrobe .nico-profession-grid button{
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:210px auto auto;
+  align-items:start;
+  min-height:296px;
+  gap:8px;
+}
+.nico-premium-wardrobe .nico-profession-grid button>.nico-profession-grid__art{
+  grid-column:1;
+  grid-row:1!important;
+  width:100%;
+  height:210px;
+}
+.nico-premium-wardrobe .nico-profession-grid button>strong,
+.nico-premium-wardrobe .nico-profession-grid button>small{grid-column:1}
+.nico-premium-wardrobe .nico-profession-grid button>strong{grid-row:2;line-height:1.2}
+.nico-premium-wardrobe .nico-profession-grid button>small{grid-row:3}
+@media(max-width:480px){
+  .nico-premium-wardrobe .nico-profession-grid button{grid-template-rows:230px auto auto;min-height:316px}
+  .nico-premium-wardrobe .nico-profession-grid button>.nico-profession-grid__art{height:230px}
+}

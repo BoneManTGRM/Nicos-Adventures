@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useLayoutEffect, useMemo, useState } from "react";
 import type { LocalProfile } from "../types";
 import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
@@ -16,6 +16,10 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answerIndex, setAnswerIndex] = useState<number | null>(null);
   const [sessionScore, setSessionScore] = useState(0);
+
+  useLayoutEffect(() => {
+    if (activeGame) window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [activeGame]);
 
   const questions = activeGame ? ARCADE_QUESTIONS[activeGame] ?? [] : [];
   const question = questions.length ? questions[questionIndex % questions.length] : null;

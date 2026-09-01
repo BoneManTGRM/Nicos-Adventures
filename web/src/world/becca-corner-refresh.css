@@ -169,7 +169,7 @@
 .becca-team-showcase__portraits { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .becca-team-showcase__portraits article { position: relative; display: grid; justify-items: center; align-content: end; min-height: 540px; padding: 14px 14px 18px; overflow: hidden; border: 1px solid rgba(216, 180, 254, .28); border-radius: 25px; background: radial-gradient(circle at 50% 32%, rgba(255, 255, 255, .22), transparent 32%), linear-gradient(180deg, rgba(99, 102, 241, .36), rgba(4, 10, 32, .92)); transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
 .becca-team-showcase__portraits article.active { border-color: #fde047; box-shadow: inset 0 0 0 2px rgba(253, 224, 71, .15), 0 20px 44px rgba(2, 6, 23, .35); transform: translateY(-4px); }
-.becca-team-showcase__character { position: absolute; inset: 3% 2% 90px; width: 96%; height: calc(100% - 100px); filter: drop-shadow(0 22px 22px rgba(2, 6, 23, .5)); }
+.becca-team-showcase__character { position: absolute; inset: 3% 2% 90px; width: 96%; height: calc(100% - 100px); object-fit: contain; object-position: center bottom; filter: drop-shadow(0 22px 22px rgba(2, 6, 23, .5)); }
 .becca-team-showcase__portraits article > div { position: relative; z-index: 2; display: grid; width: 100%; padding: 12px; border-radius: 16px; background: rgba(4, 10, 32, .82); text-align: center; backdrop-filter: blur(10px); }
 .becca-team-showcase__portraits strong { font-size: 24px; }
 .becca-team-showcase__portraits span { color: #d8ccf7; }
@@ -184,9 +184,23 @@
 .unicorn-lab__stage::after { content: ""; position: absolute; z-index: 0; inset: 0; background: radial-gradient(circle at 50% 37%, rgba(244, 114, 182, .34), transparent 36%); pointer-events: none; }
 .unicorn-lab__stage[data-color="moonlight"]::after { background: radial-gradient(circle at 50% 37%, rgba(103, 232, 249, .42), transparent 38%); }
 .unicorn-lab__stage[data-color="sunset"]::after { background: radial-gradient(circle at 50% 37%, rgba(251, 146, 60, .4), transparent 38%); }
-.unicorn-generator-art { z-index: 1; inset: 7% -8% 8% auto; width: 76%; height: 83%; opacity: .5; filter: saturate(.9) drop-shadow(0 20px 22px rgba(2, 6, 23, .38)); }
-.premium-cutout.unicorn-lab__guide { position: absolute; z-index: 4; left: 2%; bottom: 12%; width: 28%; height: 43%; filter: drop-shadow(0 18px 18px rgba(2, 6, 23, .54)); }
-.becca-unicorn { z-index: 3; left: 27%; top: 9%; width: 52%; aspect-ratio: 543 / 724; }
+.unicorn-portal { position: absolute; z-index: 1; left: 29%; top: 8%; width: 63%; height: 65%; overflow: hidden; border: 7px solid rgba(240, 171, 252, .72); border-radius: 46% 46% 24% 24%; background: radial-gradient(circle at 50% 43%, rgba(255, 255, 255, .34), transparent 17%), radial-gradient(circle at 50% 48%, rgba(34, 211, 238, .38), rgba(88, 28, 135, .28) 46%, rgba(15, 23, 42, .82) 72%); box-shadow: inset 0 0 30px rgba(255, 255, 255, .24), 0 0 0 5px rgba(192, 132, 252, .14), 0 22px 42px rgba(2, 6, 23, .45); pointer-events: none; }
+.unicorn-portal::before { content: ""; position: absolute; inset: 8%; border: 2px solid rgba(255, 255, 255, .3); border-radius: inherit; box-shadow: 0 0 26px rgba(103, 232, 249, .4); }
+.unicorn-portal::after { content: ""; position: absolute; left: 9%; right: 9%; bottom: 5%; height: 15%; border: 3px solid rgba(253, 230, 138, .66); border-radius: 50%; background: radial-gradient(ellipse, rgba(253, 224, 71, .32), rgba(88, 28, 135, .4) 62%, transparent 64%); box-shadow: 0 0 26px rgba(250, 204, 21, .38); }
+.unicorn-portal > span { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: #fff; box-shadow: 0 0 13px #f0abfc; animation: unicorn-portal-sparkle 2.4s ease-in-out infinite; }
+.unicorn-portal > span:nth-child(1) { left: 18%; top: 26%; }
+.unicorn-portal > span:nth-child(2) { right: 18%; top: 18%; animation-delay: -.8s; }
+.unicorn-portal > span:nth-child(3) { right: 12%; top: 52%; animation-delay: -1.6s; }
+.unicorn-lab__guide { position: absolute; z-index: 4; left: 2%; bottom: 12%; width: 28%; height: 43%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 18px 18px rgba(2, 6, 23, .54)); animation: unicorn-guide-arrive .28s ease-out both; }
+.becca-unicorn { z-index: 3; left: 32%; top: 13%; width: 56%; height: 50%; aspect-ratio: 1; object-fit: contain; object-position: center; background: none; filter: hue-rotate(var(--becca-unicorn-hue)) drop-shadow(0 16px 18px rgba(76, 29, 149, .45)); animation: unicorn-pose-arrive .26s ease-out both, unicorn-prance 1.8s ease-in-out .26s infinite; }
+.becca-unicorn--turn { animation: unicorn-pose-arrive .26s ease-out both, unicorn-turn 2s ease-in-out .26s infinite; }
+.becca-unicorn--float { animation: unicorn-pose-arrive .26s ease-out both, unicorn-float 2.2s ease-in-out .26s infinite; }
+.becca-unicorn--rest { animation: unicorn-pose-arrive .26s ease-out both, unicorn-rest 2.8s ease-in-out .26s infinite; }
+.unicorn-lab__stage[data-host="becca"] { box-shadow: inset 0 0 0 2px rgba(250, 204, 21, .18), 0 22px 48px rgba(76, 29, 149, .28); }
+.unicorn-lab__stage[data-host="lua"] { box-shadow: inset 0 0 0 2px rgba(125, 211, 252, .2), 0 22px 48px rgba(14, 116, 144, .3); }
+.unicorn-lab__stage[data-host="lua"]::after { background: radial-gradient(circle at 50% 37%, rgba(125, 211, 252, .4), transparent 38%), radial-gradient(circle at 18% 18%, rgba(196, 181, 253, .3), transparent 24%); }
+.unicorn-host-badge { position: absolute; z-index: 6; top: 22px; left: 22px; display: grid; width: 54px; height: 54px; place-items: center; border: 2px solid rgba(255, 255, 255, .75); border-radius: 50%; background: linear-gradient(145deg, #f59e0b, #db2777); color: #fff; font-size: 27px; box-shadow: 0 10px 25px rgba(2, 6, 23, .35); }
+.unicorn-lab__stage[data-host="lua"] .unicorn-host-badge { background: linear-gradient(145deg, #0ea5e9, #7c3aed); }
 .unicorn-nameplate { z-index: 5; left: 4%; right: 4%; }
 .unicorn-lab__creation-burst { position: absolute; z-index: 4; inset: 0; pointer-events: none; }
 .unicorn-lab__creation-burst i { position: absolute; left: 68%; top: 48%; width: 10px; height: 10px; border-radius: 50%; background: #fff7ed; box-shadow: 0 0 22px #f0abfc; animation: unicorn-burst .85s ease-out both; }
@@ -197,7 +211,13 @@
 .becca-motion-grid button { display: grid; justify-items: center; gap: 3px; }
 .becca-motion-grid button span { font-size: 20px; }
 
+.unicorn-host-status { margin: 12px 0 0 !important; padding: 11px 13px; border: 1px solid rgba(240, 171, 252, .3); border-radius: 14px; background: rgba(76, 29, 149, .2); color: #f5f3ff !important; font-size: 14px !important; font-weight: 850; }
+
 @keyframes unicorn-burst { from { opacity: 1; translate: 0 0; scale: .5; } to { opacity: 0; translate: 75px -95px; scale: 1.8; } }
+@keyframes unicorn-pose-arrive { from { opacity: 0; } to { opacity: 1; } }
+@keyframes unicorn-guide-arrive { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes unicorn-turn { 50% { transform: translateX(7px) rotate(1.5deg); } }
+@keyframes unicorn-portal-sparkle { 50% { opacity: .32; transform: scale(.7); } }
 
 @media (max-width: 900px) {
   .becca-team-showcase { grid-template-columns: 1fr; }
@@ -207,9 +227,9 @@
 
 @media (max-width: 800px) {
   .unicorn-lab__stage { min-height: 620px; }
-  .unicorn-generator-art { right: -10%; width: 80%; }
-  .premium-cutout.unicorn-lab__guide { left: 1%; width: 29%; height: 42%; }
-  .becca-unicorn { left: 25%; top: 8%; width: 55%; }
+  .unicorn-portal { left: 27%; width: 67%; }
+  .unicorn-lab__guide { left: 1%; width: 29%; height: 42%; }
+  .becca-unicorn { left: 30%; top: 12%; width: 60%; }
 }
 
 @media (max-width: 520px) {
@@ -223,13 +243,15 @@
   .becca-team-showcase__portraits button { min-height: 40px; font-size: 11px; }
   .unicorn-generator-steps { grid-template-columns: repeat(4, 1fr); }
   .unicorn-lab__stage { min-height: 540px; }
-  .unicorn-generator-art { right: -16%; width: 88%; height: 82%; }
-  .premium-cutout.unicorn-lab__guide { left: 0; bottom: 12%; width: 30%; height: 39%; }
-  .becca-unicorn { left: 22%; top: 7%; width: 60%; }
+  .unicorn-portal { left: 25%; top: 7%; width: 70%; height: 65%; border-width: 5px; }
+  .unicorn-lab__guide { left: 0; bottom: 12%; width: 30%; height: 39%; }
+  .becca-unicorn { left: 28%; top: 11%; width: 64%; height: 51%; }
   .unicorn-nameplate { bottom: 3%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .becca-team-showcase__portraits article { transition: none; }
   .unicorn-lab__creation-burst i { animation: none; opacity: 0; }
+  .unicorn-portal > span { animation: none; }
+  .becca-unicorn, .unicorn-lab__guide { animation: none !important; }
 }

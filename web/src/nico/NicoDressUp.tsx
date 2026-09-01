@@ -138,7 +138,6 @@ export function NicoDressUp({
                         profession={profession.id}
                         wardrobe={wardrobeForPreset(profession.id, profession.accent)}
                         accentColor={profession.accent}
-                        compact
                         alt=""
                       />
                     </span>
