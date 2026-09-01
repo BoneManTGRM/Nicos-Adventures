@@ -444,6 +444,9 @@ test("all destinations keep their main local interactions working", async ({ pag
   await activateWithKeyboard(page.getByRole("button", { name: text.guide }));
   await page.getByRole("button", { name: new RegExp(`${language === "es-MX" ? "Abrir Casa Club" : "Open Clubhouse"}$`) }).click();
   await expect(page.getByRole("dialog", { name: text.clubhouse, exact: true })).toBeVisible();
+  await page.getByRole("dialog", { name: text.clubhouse, exact: true })
+    .getByRole("button", { name: new RegExp(`${text.wardrobe}$`) }).click();
+  await expect(page.getByRole("heading", { name: text.wardrobeTitle, exact: true })).toBeVisible();
   const persistedOutfit = page.locator(".nico-profession-grid > button").filter({ hasText: selectedOutfitName });
   await expect(persistedOutfit).toHaveAttribute("aria-pressed", "true");
 

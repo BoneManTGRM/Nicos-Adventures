@@ -21,7 +21,27 @@
 .cousins-hero__lua { right: 0; width: 42%; height: 72%; }
 .cousins-map__mobile-list { display: none; }
 
+/* Prevent character art or long bilingual copy from widening the mobile page. */
+.cousins-adventure {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1180px;
+  min-width: 0;
+  padding-inline: 16px;
+  overflow-x: clip;
+}
+.cousins-adventure > *,
+.cousins-hero,
+.cousins-hero__copy,
+.cousins-hero__team {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+.cousins-hero__copy { overflow-wrap: anywhere; }
+
 @media (max-width: 620px) {
+  .cousins-adventure { width: 100%; padding-inline: 9px; }
   .cousins-hero__team { min-height: 315px; }
   .cousins-hero__team .nico-costume {
     left: 1%;
