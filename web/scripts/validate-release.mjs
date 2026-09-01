@@ -51,12 +51,14 @@ const requiredFiles = [
   "src/world/AnimalGeneratorGame.tsx",
   "src/world/animal-generator.css",
   "src/world/animal-forest-premium.css",
-  "src/assets/art/becca-premium.webp",
-  "src/assets/art/lua-premium.webp",
+  "src/assets/art/becca-premium-v2.webp",
+  "src/assets/art/lua-premium-v2.webp",
   "src/assets/art/becca-lua-magic-workshop.webp",
   "src/assets/art/cousins-adventure-map.webp",
-  "src/assets/art/unicorn-generator.webp",
-  "src/assets/art/unicorn-prance-strip.webp",
+  "src/assets/art/unicorn-prance-v2.webp",
+  "src/assets/art/unicorn-turn-v2.webp",
+  "src/assets/art/unicorn-float-v2.webp",
+  "src/assets/art/unicorn-rest-v2.webp",
   "src/assets/art/wildlife-premium-clean-atlas.webp",
   "src/assets/art/polar-bear-premium-v2.webp",
   "src/assets/art/arctic-fox-premium-v2.webp",
@@ -231,10 +233,15 @@ if (!wildlife.includes("wildlife-premium-clean-atlas.webp") || wildlife.includes
   throw new Error("Wildlife art is not using the isolated transparent atlas");
 }
 if (!becca.includes("Unicorn Generator") || !becca.includes("becca-unicorn--") || !becca.includes("PremiumCutout") ||
-    !becca.includes("lua-premium.webp") || !becca.includes("magic-host-picker") || !becca.includes("becca-magic-quest")) {
+    !becca.includes("lua-premium-v2.webp") || !becca.includes("unicorn-turn-v2.webp") ||
+    !becca.includes("data-unicorn-pose") || !becca.includes("chooseHost") ||
+    !becca.includes("magic-host-picker") || !becca.includes("becca-magic-quest") || !becca.includes("unicorn-portal") ||
+    becca.includes("unicorn-generator-art") || becca.includes("generatorArt") ||
+    becca.includes("Becca leads") || becca.includes("Lua leads")) {
   throw new Error("Becca’s Corner unicorn experience is incomplete");
 }
-if (!cousins.includes("NicoCostumeFigure") || !cousins.includes("lua-premium.webp") ||
+if (!cousins.includes("NicoCostumeFigure") || !cousins.includes("lua-premium-v2.webp") ||
+    !cousins.includes("cousins-map__mobile-list") ||
     !cousins.includes("storybook-choice") || !cousins.includes("pathChoices") ||
     !cousins.includes("story-rainbow-6.webp") || !cousinsStories.includes("buildCousinsStory") ||
     !cousinsStories.includes('en: "Science Quest"')) {

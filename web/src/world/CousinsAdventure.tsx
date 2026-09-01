@@ -1,6 +1,6 @@
 import { useMemo, useState, type CSSProperties } from "react";
-import beccaArt from "../assets/art/becca-premium.webp";
-import luaArt from "../assets/art/lua-premium.webp";
+import beccaArt from "../assets/art/becca-premium-v2.webp";
+import luaArt from "../assets/art/lua-premium-v2.webp";
 import mapArt from "../assets/art/cousins-adventure-map.webp";
 import rainbowOne from "../assets/art/story-rainbow-1.webp";
 import rainbowTwo from "../assets/art/story-rainbow-2.webp";
@@ -34,7 +34,6 @@ import moonFive from "../assets/art/story-moon-5.webp";
 import moonSix from "../assets/art/story-moon-6.webp";
 import { NicoCostumeFigure } from "../nico/NicoCostumeFigure";
 import type { Language } from "../types";
-import { PremiumCutout } from "./PremiumCutout";
 import {
   buildCousinsStory,
   COUSINS_DESTINATIONS,
@@ -115,9 +114,9 @@ export function CousinsAdventure({ language }: { language: Language }) {
           </div>
         </div>
         <div className="cousins-hero__team" aria-label={language === "es-MX" ? "Nico, Becca y Lua" : "Nico, Becca, and Lua"}>
-          <NicoCostumeFigure profession="explorer" compact alt="Nico" />
-          <PremiumCutout source={beccaArt} alt="Becca" className="cousins-hero__becca" />
-          <PremiumCutout source={luaArt} alt="Lua" className="cousins-hero__lua" />
+          <NicoCostumeFigure profession="explorer" alt="Nico" />
+          <img src={beccaArt} alt="Becca" className="cousins-hero__becca" />
+          <img src={luaArt} alt="Lua" className="cousins-hero__lua" />
         </div>
       </section>
 
@@ -140,6 +139,13 @@ export function CousinsAdventure({ language }: { language: Language }) {
             >
               <span aria-hidden="true">📖</span>
               <strong>{item.name[language]}</strong>
+            </button>
+          ))}
+        </div>
+        <div className="cousins-map__mobile-list" aria-label={language === "es-MX" ? "Destinos del mapa" : "Map destinations"}>
+          {COUSINS_DESTINATIONS.map((item) => (
+            <button type="button" key={item.id} className={item.id === destinationId ? "is-active" : ""} aria-pressed={item.id === destinationId} onClick={() => chooseDestination(item.id)}>
+              <span aria-hidden="true">{item.icon}</span><strong>{item.name[language]}</strong><small>{language === "es-MX" ? "Abrir cuento" : "Open story"} →</small>
             </button>
           ))}
         </div>

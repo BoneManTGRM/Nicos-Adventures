@@ -7,6 +7,8 @@ const copy = {
     world: "World Map",
     roboLab: "Robo Lab",
     animalForest: "Animal Forest",
+    beccaCorner: "Becca’s Corner",
+    cousinsAdventure: "Cousins’ Adventure Map",
     monsterLab: "Monster Lab",
     monsterHabitats: "Monster Habitats",
     artStudio: "Art Studio",
@@ -37,15 +39,15 @@ const copy = {
     clubhouse: "Nico’s Clubhouse",
     closeClubhouse: "Close Nico’s Clubhouse",
     wardrobe: "Wardrobe",
-    wardrobeTitle: "Nico’s Real Wardrobe",
+    wardrobeTitle: "Nico’s Wardrobe",
     suggestion: "What can I do here?",
-    saveWardrobe: "Save Nico’s wardrobe",
-    wardrobeSaved: "Wardrobe saved",
   },
   "es-MX": {
     world: "Mapa del mundo",
     roboLab: "Laboratorio robot",
     animalForest: "Bosque animal",
+    beccaCorner: "El Rincón de Becca",
+    cousinsAdventure: "Mapa de Aventuras de los Primos",
     monsterLab: "Laboratorio de monstruos",
     monsterHabitats: "Hábitats de monstruos",
     artStudio: "Estudio de arte",
@@ -76,10 +78,8 @@ const copy = {
     clubhouse: "Casa Club de Nico",
     closeClubhouse: "Cerrar la Casa Club de Nico",
     wardrobe: "Guardarropa",
-    wardrobeTitle: "El guardarropa real de Nico",
+    wardrobeTitle: "El guardarropa de Nico",
     suggestion: "¿Qué puedo hacer aquí?",
-    saveWardrobe: "Guardar el guardarropa de Nico",
-    wardrobeSaved: "Guardarropa guardado",
   },
 } as const;
 
@@ -161,10 +161,10 @@ async function attachVisual(page: Page, testInfo: TestInfo, name: string) {
 }
 
 async function assertWardrobeCardLayout(page: Page, label: string) {
-  const cards = page.locator(".wardrobe-garment-grid > button");
+  const cards = page.locator(".nico-profession-grid > button");
   await expect(cards.first()).toBeVisible();
   const overlaps = await cards.evaluateAll((buttons) => buttons.slice(0, 4).flatMap((button, index) => {
-    const art = button.querySelector<HTMLElement>(".wardrobe-garment-art")?.getBoundingClientRect();
+    const art = button.querySelector<HTMLElement>(".nico-profession-grid__art")?.getBoundingClientRect();
     const name = button.querySelector<HTMLElement>("strong")?.getBoundingClientRect();
     const hint = button.querySelector<HTMLElement>("small")?.getBoundingClientRect();
     if (!art || !name || !hint) return [`card ${index + 1} is missing a content region`];
@@ -245,6 +245,34 @@ test("all destinations keep their main local interactions working", async ({ pag
   await expect(firstAnimal.locator(".fw-action-row button").nth(1)).toHaveAttribute("aria-pressed", "true");
   await attachVisual(page, testInfo, "animal-forest");
 
+  await openDestination(page, text.world, text.beccaCorner, `${testInfo.project.name} Becca's Corner`);
+  const unicornStage = page.locator(".unicorn-lab__stage");
+  await expect(unicornStage).toHaveAttribute("data-host", "becca");
+  await expect(unicornStage).toHaveAttribute("data-unicorn-pose", "prance");
+  await expect(unicornStage.locator(".becca-unicorn")).toHaveCount(1);
+  await expect(unicornStage.locator(".unicorn-generator-art")).toHaveCount(0);
+  await expect(unicornStage.locator(".unicorn-portal")).toHaveCount(1);
+  const initialPoseSource = await page.locator(".becca-unicorn").getAttribute("src");
+  const luaButton = page.getByRole("button", { name: language === "es-MX" ? "Elegir a Lua" : "Choose Lua", exact: true }).first();
+  await luaButton.click();
+  await expect(luaButton).toHaveAttribute("aria-pressed", "true");
+  await expect(unicornStage).toHaveAttribute("data-host", "lua");
+  await expect(unicornStage.locator(".unicorn-lab__guide")).toHaveAttribute("alt", /Lua/);
+  await expect(unicornStage.locator(".unicorn-nameplate")).toContainText("Lua");
+  const turnButton = page.getByRole("button", { name: language === "es-MX" ? /Voltear/ : /Turn/ });
+  await turnButton.click();
+  await expect(unicornStage).toHaveAttribute("data-unicorn-pose", "turn");
+  await expect(page.locator(".becca-unicorn")).not.toHaveAttribute("src", initialPoseSource ?? "");
+  await expect(page.locator(".becca-unicorn")).toHaveCSS("background-image", "none");
+  await attachVisual(page, testInfo, "becca-corner-unicorn");
+
+  await openDestination(page, text.world, text.cousinsAdventure, `${testInfo.project.name} Cousins' Adventure Map`);
+  await expect(page.locator(".cousins-hero__team .nico-costume")).not.toHaveClass(/nico-costume--compact/);
+  await expect(page.locator(".cousins-hero__team img")).toHaveCount(2);
+  await expect(page.locator(".cousins-map__mobile-list button")).toHaveCount(5);
+  if (testInfo.project.name.includes("iphone")) await expect(page.locator(".cousins-map__mobile-list")).toBeVisible();
+  await attachVisual(page, testInfo, "cousins-adventure-map");
+
   await openDestination(page, text.world, text.monsterLab, `${testInfo.project.name} Monster Lab`);
   const chooseMonsterOption = async (trait: string, option: string) => {
     await page.locator(`.monster-studio__trait[data-trait="${trait}"]`).click();
@@ -308,8 +336,15 @@ test("all destinations keep their main local interactions working", async ({ pag
   await attachVisual(page, testInfo, "story-castle");
 
   await openDestination(page, text.world, text.arcade, `${testInfo.project.name} Game Arcade`);
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await page.locator(".arcade-featured-duel button").click();
   await expect(page.locator('.friendly-duel[data-duel-status="playing"]')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(2);
+  const duelHeaderPosition = await page.locator(".friendly-duel__header").evaluate((element) => {
+    const header = document.querySelector<HTMLElement>(".fw-topbar")?.getBoundingClientRect();
+    return { top: element.getBoundingClientRect().top, stickyBottom: header?.bottom ?? 0 };
+  });
+  expect(duelHeaderPosition.top).toBeGreaterThanOrEqual(duelHeaderPosition.stickyBottom);
   for (const index of [0, 1, 2, 0, 1, 2]) await page.locator(".friendly-duel__controls button").nth(index).click();
   await expect(page.locator('.friendly-duel[data-duel-status="won"]')).toBeVisible();
   await expect(page.locator(".friendly-duel__finish")).toContainText(language === "es-MX" ? "amigo" : "friend");
@@ -379,16 +414,15 @@ test("all destinations keep their main local interactions working", async ({ pag
 
   await clubhouse.getByRole("button", { name: new RegExp(`${text.wardrobe}$`) }).click();
   await expect(page.getByRole("heading", { name: text.wardrobeTitle, exact: true })).toBeVisible();
-  await expect(clubhouse.locator(".wardrobe-preset-row > button")).toHaveCount(26);
-  await expect(clubhouse.locator('.wardrobe-slot-tabs [role="tab"]')).toHaveCount(9);
+  const outfitChoices = clubhouse.locator(".nico-profession-grid > button");
+  await expect(outfitChoices).toHaveCount(26);
+  await expect(clubhouse.locator(".wardrobe-preset-row, .wardrobe-slot-tabs, .wardrobe-garment-grid")).toHaveCount(0);
   await assertWardrobeCardLayout(page, `${testInfo.project.name}: wardrobe card layout`);
-  await activateWithKeyboard(clubhouse.locator(".wardrobe-preset-row > button").nth(4));
-  const selectedGarment = clubhouse.locator(".wardrobe-garment-grid > button").nth(1);
-  const selectedGarmentName = await selectedGarment.locator("strong").innerText();
-  await selectedGarment.click();
-  await expect(selectedGarment).toHaveAttribute("aria-pressed", "true");
-  await clubhouse.getByRole("button", { name: new RegExp(`${text.saveWardrobe}$`) }).click();
-  await expect(clubhouse.getByRole("button", { name: new RegExp(`${text.wardrobeSaved}$`) })).toBeVisible();
+  const selectedOutfit = outfitChoices.nth(4);
+  const selectedOutfitName = await selectedOutfit.locator("strong").innerText();
+  await activateWithKeyboard(selectedOutfit);
+  await expect(selectedOutfit).toHaveAttribute("aria-pressed", "true");
+  await expect(selectedOutfit.locator('[data-nico-renderer="canonical-2d"]')).toHaveCount(1);
   await attachVisual(page, testInfo, "clubhouse-wardrobe");
   await page.getByRole("button", { name: text.closeClubhouse, exact: true }).click();
   await expect(clubhouse).toBeHidden();
@@ -408,8 +442,8 @@ test("all destinations keep their main local interactions working", async ({ pag
   await activateWithKeyboard(page.getByRole("button", { name: text.guide }));
   await page.getByRole("button", { name: new RegExp(`${language === "es-MX" ? "Abrir Casa Club" : "Open Clubhouse"}$`) }).click();
   await expect(page.getByRole("dialog", { name: text.clubhouse, exact: true })).toBeVisible();
-  const persistedGarment = page.locator(".wardrobe-garment-grid > button").filter({ hasText: selectedGarmentName });
-  await expect(persistedGarment).toHaveAttribute("aria-pressed", "true");
+  const persistedOutfit = page.locator(".nico-profession-grid > button").filter({ hasText: selectedOutfitName });
+  await expect(persistedOutfit).toHaveAttribute("aria-pressed", "true");
 
   expect([...new Set(externalRequests)]).toEqual([]);
   expect(runtimeErrors).toEqual([]);

@@ -20,6 +20,7 @@ const copy = {
     monsterStudio: "Sculpt a creature you can see",
     roboLab: "Robo Lab",
     configure: "Build a bridge-ready BoltBot",
+    continueChamber: "Continue to the test chamber",
     begin: "Begin the adventure",
     arms: "Arms",
     useRobot: "Use this BoltBot",
@@ -76,6 +77,7 @@ const copy = {
     monsterStudio: "Esculpe una criatura que puedas ver",
     roboLab: "Laboratorio robot",
     configure: "Construye un BoltBot listo para el puente",
+    continueChamber: "Continuar a la cámara de pruebas",
     begin: "Comenzar la aventura",
     arms: "Brazos",
     useRobot: "Usar este BoltBot",
@@ -299,7 +301,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await openDestination(page, text.monsterLab);
   await expect(page.getByRole("heading", { name: text.monsterLab, exact: true })).toBeFocused();
   await expect(page.getByRole("heading", { name: text.monsterStudio, exact: true })).toBeVisible();
-  await expect(page.locator(".monster-studio__trait")).toHaveCount(12);
+  await expect(page.locator(".monster-studio__trait")).toHaveCount(6);
   await expect(page.locator('.monster-studio__trait[data-trait="eyes"], .monster-studio__trait[data-trait="mouth"], .monster-studio__trait[data-trait="horns"]')).toHaveCount(0);
   const premiumMonster = page.locator('.monster-v2[data-monster-body-art="Dragon"]');
   await expect(premiumMonster).toBeVisible();
@@ -325,6 +327,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   const alienMonster = page.locator('.monster-v2[data-monster-body-art="Alien"]');
   await expect(alienMonster).toBeVisible();
   await expect(alienMonster).toHaveAttribute("data-monster-face-treatment", "integrated-visor");
+  await expect(page.locator('.monster-studio__trait[data-trait="arms"]')).toHaveCount(1);
+  await expect(page.locator(".monster-studio__trait")).toHaveCount(7);
   const alienFit = await alienMonster.evaluate((element) => {
     const body = element.querySelector<HTMLElement>(".monster-premium-body")!.getBoundingClientRect();
     const face = element.querySelector<SVGGElement>(".monster-face")!.getBoundingClientRect();
@@ -353,10 +357,10 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
 
   await activateWithKeyboard(page, page.getByRole("button", { name: text.begin, exact: true }));
   await expect(page.getByRole("heading", { name: text.roboLab, exact: true })).toBeFocused();
-  await expect(page.getByRole("heading", { name: text.configure, exact: true })).toBeVisible();
-  await expect(page.locator(".boltbot-readiness li")).toHaveCount(4);
-  await expect(page.locator(".boltbot-readiness li.is-ready")).toHaveCount(4);
-  await activateWithKeyboard(page, page.getByRole("button", { name: text.useRobot, exact: true }));
+  await expect(page.locator(".robot-action-grid button")).toHaveCount(6);
+  await expect(page.locator(".boltbot-readiness")).toHaveCount(0);
+  await expect(page.locator(".boltbot-configuration-gate")).toHaveCount(0);
+  await activateWithKeyboard(page, page.getByRole("button", { name: new RegExp(text.continueChamber) }));
   await expect(page.getByRole("heading", { name: text.movement, exact: true })).toBeFocused();
   const illustratedBoltBot = page.locator('.boltbot-illustrated-chamber[data-renderer="premium-2d"]');
   await expect(illustratedBoltBot).toBeVisible();

@@ -11,6 +11,7 @@
     radial-gradient(circle at 50% 28%, rgba(59, 130, 246, .24), transparent 38%),
     linear-gradient(155deg, #102d5c, #050b21 64%, #160b34);
   box-shadow: inset 0 1px rgba(255, 255, 255, .12), 0 24px 60px rgba(0, 0, 0, .32);
+  scroll-margin-top: 130px;
 }
 
 .friendly-duel__header {
