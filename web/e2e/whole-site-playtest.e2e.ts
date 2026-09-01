@@ -271,6 +271,20 @@ test("all destinations keep their main local interactions working", async ({ pag
   await openDestination(page, text.world, text.cousinsAdventure, `${testInfo.project.name} Cousins' Adventure Map`);
   await expect(page.locator(".cousins-hero__team .nico-costume")).not.toHaveClass(/nico-costume--compact/);
   await expect(page.locator(".cousins-hero__team img")).toHaveCount(2);
+  const cousinSizes = await page.locator(".cousins-hero__team").evaluate((team) => {
+    const box = (selector: string) => {
+      const bounds = team.querySelector<HTMLElement>(selector)?.getBoundingClientRect();
+      return bounds ? { width: bounds.width, height: bounds.height } : null;
+    };
+    const nico = box(".nico-costume");
+    const becca = box(".cousins-hero__becca");
+    const lua = box(".cousins-hero__lua");
+    return { nico, becca, lua };
+  });
+  expect(cousinSizes.nico?.height ?? 0).toBeGreaterThan((cousinSizes.becca?.height ?? 0) * 1.02);
+  expect(cousinSizes.nico?.height ?? 0).toBeLessThan((cousinSizes.becca?.height ?? 0) * 1.18);
+  expect(cousinSizes.nico?.width ?? 0).toBeLessThan((cousinSizes.becca?.width ?? 0) * 1.18);
+  expect(cousinSizes.lua?.height ?? 0).toBeLessThan(cousinSizes.nico?.height ?? 0);
   await expect(page.locator(".cousins-map__mobile-list button")).toHaveCount(5);
   if (testInfo.project.name.includes("iphone")) await expect(page.locator(".cousins-map__mobile-list")).toBeVisible();
   await attachVisual(page, testInfo, "cousins-adventure-map");
@@ -379,6 +393,9 @@ test("all destinations keep their main local interactions working", async ({ pag
   const decorationLabel = (await decoration.textContent())?.replace(/^[＋✓]\s*/, "").trim() ?? "";
   await decoration.click();
   await expect(page.locator('.robot-home-decoration-grid button[aria-pressed="true"]').filter({ hasText: decorationLabel })).toHaveCount(1);
+  const stagedDecoration = page.locator(`.robot-home-decoration[aria-label="${decorationLabel}"]`);
+  await expect(stagedDecoration).toBeVisible();
+  await expect(stagedDecoration).not.toContainText(decorationLabel);
   await attachVisual(page, testInfo, "robot-home");
 
   await openDestination(page, text.world, text.museum, `${testInfo.project.name} Memory Museum`);

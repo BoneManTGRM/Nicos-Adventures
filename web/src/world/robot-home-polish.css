@@ -1,0 +1,140 @@
+.robot-home-stage {
+  isolation: isolate;
+  background: linear-gradient(180deg, #173763 0 62%, #5b4227 62% 100%);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .38), inset 0 0 70px rgba(2, 8, 23, .55);
+}
+
+.robot-home-stage::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0 0 38%;
+  background:
+    linear-gradient(90deg, transparent 0 12%, rgba(125, 211, 252, .08) 12% 12.6%, transparent 12.6% 49%, rgba(125, 211, 252, .08) 49% 49.6%, transparent 49.6% 86%, rgba(125, 211, 252, .08) 86% 86.6%, transparent 86.6%),
+    linear-gradient(rgba(255, 255, 255, .035), rgba(255, 255, 255, 0));
+  box-shadow: inset 0 -14px 0 rgba(7, 24, 50, .48);
+}
+
+.robot-home-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: -8%;
+  right: -8%;
+  bottom: -8%;
+  height: 46%;
+  background: repeating-linear-gradient(100deg, rgba(255, 255, 255, .045) 0 2px, transparent 2px 92px), linear-gradient(#684a2b, #2d2118);
+  transform: perspective(460px) rotateX(24deg);
+  transform-origin: bottom;
+}
+
+.robot-home-stage__room {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+}
+
+.robot-home-stage__ceiling-light {
+  position: absolute;
+  left: 50%;
+  top: -18px;
+  width: 170px;
+  height: 74px;
+  transform: translateX(-50%);
+  border-radius: 0 0 80px 80px;
+  background: radial-gradient(ellipse at 50% 10%, #fff7c2, #facc15 28%, #475569 31% 44%, transparent 46%);
+  filter: drop-shadow(0 18px 25px rgba(250, 204, 21, .24));
+}
+
+.robot-home-stage__rug {
+  position: absolute;
+  left: 21%;
+  right: 13%;
+  bottom: 2%;
+  height: 22%;
+  border: 5px solid rgba(103, 232, 249, .28);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #1e3a8a 0 27%, #172554 28% 48%, #0f172a 49% 66%, transparent 67%);
+  transform: perspective(340px) rotateX(52deg);
+}
+
+.robot-home-stage__side-table {
+  position: absolute;
+  right: 6%;
+  bottom: 19%;
+  width: 22%;
+  height: 8%;
+  border-radius: 9px;
+  background: linear-gradient(#a16207, #713f12);
+  box-shadow: 0 9px 0 #3f2b19, 0 16px 22px rgba(0, 0, 0, .32);
+}
+
+.robot-home-stage__sky {
+  z-index: 1;
+  inset: 7% 5% auto auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 24%;
+  height: 25%;
+  padding: 14px;
+  border: 8px solid #263b61;
+  border-radius: 46% 46% 10px 10px;
+  background: radial-gradient(circle at 72% 24%, #fef3c7 0 5%, transparent 6%), linear-gradient(155deg, #101948, #30185c);
+  box-shadow: inset 0 0 25px rgba(96, 165, 250, .34), 0 12px 25px rgba(0, 0, 0, .25);
+}
+
+.robot-home-stage__art,
+.robot-home-stage__robot,
+.robot-home-stage__pet {
+  z-index: 4;
+}
+
+.robot-home-stage__decor {
+  z-index: 3;
+  inset: 0;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+}
+
+.robot-home-stage__decor .robot-home-decoration {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: clamp(58px, 10vw, 92px);
+  height: clamp(58px, 10vw, 92px);
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  font-size: clamp(32px, 5vw, 52px);
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .38));
+}
+
+.robot-home-decoration > span {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.robot-home-decoration--animal-wall { left: 34%; top: 16%; border: 7px solid #d6a951 !important; background: #fff8dc !important; }
+.robot-home-decoration--charging-dock { left: 4%; bottom: 4%; border: 5px solid #0e7490 !important; background: linear-gradient(#082f49, #164e63) !important; }
+.robot-home-decoration--trophy-shelf { left: 42%; top: 34%; width: 108px !important; border-bottom: 9px solid #92400e !important; border-radius: 0 !important; }
+.robot-home-decoration--mecha-banner { left: 3%; top: 7%; height: 112px !important; border-radius: 8px 8px 22px 22px !important; background: linear-gradient(#7c3aed, #312e81) !important; }
+.robot-home-decoration--star-window { right: 6%; top: 8%; opacity: .96; }
+.robot-home-decoration--monster-plush { right: 8%; bottom: 20%; }
+.robot-home-decoration--dino-fossil { right: 31%; top: 18%; width: 105px !important; border: 7px solid #78350f !important; background: rgba(254, 243, 199, .92) !important; }
+.robot-home-decoration--art-gallery { left: 24%; top: 5%; border: 7px solid #be185d !important; background: rgba(253, 242, 248, .92) !important; }
+
+@media (max-width: 700px) {
+  .robot-home-stage__decor .robot-home-decoration { width: 56px; height: 56px; font-size: 31px; }
+  .robot-home-decoration--animal-wall { left: 39%; top: 19%; }
+  .robot-home-decoration--charging-dock { left: 2%; bottom: 3%; }
+  .robot-home-decoration--trophy-shelf { left: 48%; top: 38%; width: 74px !important; }
+  .robot-home-decoration--mecha-banner { left: 2%; top: 8%; height: 84px !important; }
+  .robot-home-decoration--dino-fossil { right: 24%; top: 21%; width: 72px !important; }
+  .robot-home-decoration--art-gallery { left: 24%; top: 7%; }
+}
