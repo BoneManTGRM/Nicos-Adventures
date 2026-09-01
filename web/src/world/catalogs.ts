@@ -43,7 +43,7 @@ export const ROBOT_OPTIONS: Record<string, string[]> = {
 };
 
 export const MONSTER_OPTIONS: Record<string, string[]> = {
-  body: ["Blob", "Dragon", "Jungle Beast", "Stone Golem", "Spirit", "Cosmic", "Aquatic", "Candy", "Mecha", "Royal", "Volcano", "Ice Beast", "Alien", "Dinosaur", "Cloud"],
+  body: ["Blob", "Dragon", "Jungle Beast", "Stone Golem", "Spirit", "Cosmic", "Aquatic", "Candy", "Mecha", "Royal", "Volcano", "Ice Beast", "Alien", "Lizard Alien", "Dinosaur", "Cloud"],
   eyes: ["One eye", "Two eyes", "Three eyes", "Four eyes", "Star eyes", "Sleepy eyes", "Robot visor", "Anime eyes", "Fire eyes", "Galaxy eyes"],
   mouth: ["Friendly smile", "Fang smile", "Big grin", "Tiny mouth", "Beak", "Robot speaker", "Dragon snout"],
   horns: ["No horns", "Tiny horns", "Crystal horns", "Dragon horns", "Antlers", "Unicorn horn", "Mecha antenna", "Flame horns"],

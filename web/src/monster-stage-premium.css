@@ -73,7 +73,7 @@
   z-index: 2;
   top: 0;
   left: 50%;
-  width: 90%;
+  width: var(--monster-body-width, 90%);
   aspect-ratio: var(--monster-body-aspect, 9 / 10);
   transform: translateX(-50%);
   filter: drop-shadow(0 24px 18px rgba(0, 4, 13, .55));
@@ -168,6 +168,11 @@
 .monster-tail { opacity: .9; }
 .monster-ground-shadow { filter: blur(9px); }
 .monster-eye { filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .28)); }
+[data-monster-face-treatment="carved-golem"] .monster-face,
+[data-monster-face-treatment="feral-guardian"] .monster-face { filter: drop-shadow(0 8px 8px rgba(0, 0, 0, .44)); }
+[data-monster-face-treatment="integrated-lizard"] .monster-premium-body__art { filter: contrast(1.08) saturate(1.04); }
+[data-monster-face-treatment="integrated-lizard"] .monster-premium-body__tint { opacity: .38; }
+[data-monster-face-treatment="integrated-lizard"] .monster-premium-body__pattern { opacity: .22; }
 
 .monster-texture--crystal .monster-premium-body__art,
 .monster-texture--metal .monster-premium-body__art { filter: contrast(1.1) saturate(.9); }

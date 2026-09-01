@@ -235,6 +235,7 @@ const es: Record<string, string> = {
   "Volcano": "Volcán",
   "Ice Beast": "Bestia de hielo",
   "Alien": "Alienígena",
+  "Lizard Alien": "Alienígena lagarto",
   "Dinosaur": "Dinosaurio",
   "Cloud": "Nube",
   "One eye": "Un ojo",

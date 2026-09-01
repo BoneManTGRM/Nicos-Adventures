@@ -55,7 +55,7 @@ describe("Monster Lab localized preview", () => {
     expect(html).not.toContain("<canvas");
   });
 
-  it("uses a compact fit for a Stone Golem and keeps its mouth on its face", () => {
+  it("uses a compact fit for a Stone Golem with an angular integrated treatment", () => {
     const golem = { ...monster, id: "golem", body: "Stone Golem" };
     const html = renderToStaticMarkup(<MonsterStage monster={golem} language="en" />);
 
@@ -66,9 +66,22 @@ describe("Monster Lab localized preview", () => {
     expect(html).toContain('class="monster-mouth" transform="translate(0 -205) translate(260 330) scale(0.38)');
     expect(html).toContain('class="monster-core" transform="translate(0 -88) translate(260 387) scale(0.5)');
     expect(html).toContain('data-monster-face-treatment="carved-golem"');
-    expect(html).toContain('rx="18" ry="16"');
-    expect(html).not.toContain("M238 317Q260 328");
-    expect(html).toContain("M236 319Q260 337 284 319");
+    expect(html).toContain("M192 221Q221 193 253 211");
+    expect(html).toContain("M194 213L250 195");
+    expect(html).toContain("M222 315L241 326 260 319");
+    expect(html).not.toContain('rx="18" ry="16"');
+  });
+
+  it("renders the lizard alien as one proportional integrated body", () => {
+    const lizard = { ...monster, id: "lizard", name: "Rexon", body: "Lizard Alien" };
+    const html = renderToStaticMarkup(<MonsterStage monster={lizard} language="en" />);
+
+    expect(html).toContain('data-monster-body-art="Lizard Alien"');
+    expect(html).toContain('data-monster-face-treatment="integrated-lizard"');
+    expect(html).toContain("premium-lizard-alien");
+    expect(html).not.toContain('class="monster-face"');
+    expect(html).not.toContain('class="monster-mouth"');
+    expect(html).not.toContain('class="monster-core"');
   });
 
   it("gives a Dragon a readable face without crowding its horns", () => {

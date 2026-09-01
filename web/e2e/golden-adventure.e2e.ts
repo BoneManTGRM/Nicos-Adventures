@@ -347,8 +347,30 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   expect(alienFit.faceBottom).toBeLessThan(210);
   expect(alienFit.hornWidthRatio).toBeLessThan(0.3);
   expect(alienFit.coreWidthRatio).toBeLessThan(0.2);
+
+  await activateWithKeyboard(page, page.locator('.monster-studio__trait[data-trait="body"]'));
+  const lizardAlien = page.locator('.monster-studio__choice[data-option="Lizard Alien"]');
+  await activateWithKeyboard(page, lizardAlien);
+  const lizardMonster = page.locator('.monster-v2[data-monster-body-art="Lizard Alien"]');
+  await expect(lizardAlien).toHaveAttribute("aria-pressed", "true");
+  await expect(lizardMonster).toHaveAttribute("data-monster-face-treatment", "integrated-lizard");
+  await expect(lizardMonster.locator(".monster-face, .monster-mouth, .monster-core")).toHaveCount(0);
+  await expect(page.locator('.monster-studio__trait[data-trait="arms"], .monster-studio__trait[data-trait="tail"]')).toHaveCount(0);
+  await expect(lizardMonster.locator(".monster-premium-body__art")).toHaveCSS("background-size", "contain");
+  const lizardFit = await lizardMonster.evaluate((element) => {
+    const stage = element.getBoundingClientRect();
+    const body = element.querySelector<HTMLElement>(".monster-premium-body")!.getBoundingClientRect();
+    return {
+      widthRatio: body.width / stage.width,
+      topInset: body.top - stage.top,
+      bottomInset: stage.bottom - body.bottom,
+    };
+  });
+  expect(lizardFit.widthRatio).toBeGreaterThan(0.95);
+  expect(lizardFit.topInset).toBeGreaterThanOrEqual(-1);
+  expect(lizardFit.bottomInset).toBeGreaterThanOrEqual(-1);
   await assertLayout(page, `${testInfo.project.name} Monster Lab`);
-  await testInfo.attach("visual-alien-monster-lab", {
+  await testInfo.attach("visual-lizard-alien-monster-lab", {
     body: await page.screenshot({ fullPage: true, animations: "disabled" }),
     contentType: "image/png",
   });

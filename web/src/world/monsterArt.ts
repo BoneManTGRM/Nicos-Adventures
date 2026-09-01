@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import alienArmsAtlas from "../assets/monsters/premium-alien-arms-atlas.webp";
+import lizardAlienBody from "../assets/monsters/premium-lizard-alien.webp";
 import monsterBodiesAtlas from "../assets/monsters/premium-monster-bodies-atlas.webp";
 
 const MONSTER_BODY_CELLS = {
@@ -20,9 +21,11 @@ const MONSTER_BODY_CELLS = {
   Cloud: { column: 4, row: 2 },
 } as const;
 
-export type PremiumMonsterBody = keyof typeof MONSTER_BODY_CELLS;
+export type PremiumMonsterBody = keyof typeof MONSTER_BODY_CELLS | "Lizard Alien";
 
-export const PREMIUM_MONSTER_BODIES = Object.freeze(Object.keys(MONSTER_BODY_CELLS) as PremiumMonsterBody[]);
+export const PREMIUM_MONSTER_BODIES = Object.freeze([
+  ...Object.keys(MONSTER_BODY_CELLS).flatMap((body) => body === "Dinosaur" ? ["Lizard Alien", body] : [body]),
+] as PremiumMonsterBody[]);
 
 const ALIEN_ARM_CELLS = {
   "Tiny arms": { column: 0, row: 0 },
@@ -104,6 +107,15 @@ const ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
   core: { x: 0, y: -112, scale: 0.42 },
 };
 
+const LIZARD_ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  face: { x: 0, y: -144, scale: 0.3 },
+  mouth: { x: 0, y: -172, scale: 0.3 },
+  horns: { x: 0, y: -76, scale: 0.24 },
+  wings: { x: 0, y: 2, scale: 0.5 },
+  tail: { x: 0, y: 0, scale: 0 },
+  core: { x: 0, y: -104, scale: 0.4 },
+};
+
 const MONSTER_ACCESSORY_LAYOUTS: Record<PremiumMonsterBody, MonsterAccessoryLayout> = {
   Blob: STANDARD_ACCESSORY_LAYOUT,
   Dragon: DRAGON_ACCESSORY_LAYOUT,
@@ -118,6 +130,7 @@ const MONSTER_ACCESSORY_LAYOUTS: Record<PremiumMonsterBody, MonsterAccessoryLayo
   Volcano: COMPACT_ACCESSORY_LAYOUT,
   "Ice Beast": COMPACT_ACCESSORY_LAYOUT,
   Alien: ALIEN_ACCESSORY_LAYOUT,
+  "Lizard Alien": LIZARD_ALIEN_ACCESSORY_LAYOUT,
   Dinosaur: TALL_ACCESSORY_LAYOUT,
   Cloud: COMPACT_ACCESSORY_LAYOUT,
 };
@@ -141,6 +154,17 @@ export function monsterAccessoryTransform(part: keyof MonsterAccessoryLayout, fi
 }
 
 export function monsterBodyArtStyle(body: string, color: string, arms = "Tiny arms"): CSSProperties {
+  if (body === "Lizard Alien") {
+    return {
+      "--monster-body-image": `url("${lizardAlienBody}")`,
+      "--monster-body-position": "center",
+      "--monster-body-size": "contain",
+      "--monster-body-aspect": "1",
+      "--monster-body-width": "100%",
+      "--monster-body-color": color,
+    } as CSSProperties;
+  }
+
   if (body === "Alien") {
     const cell = ALIEN_ARM_CELLS[arms as PremiumAlienArms] ?? ALIEN_ARM_CELLS["Tiny arms"];
     return {
@@ -152,7 +176,7 @@ export function monsterBodyArtStyle(body: string, color: string, arms = "Tiny ar
     } as CSSProperties;
   }
 
-  const cell = MONSTER_BODY_CELLS[body as PremiumMonsterBody] ?? MONSTER_BODY_CELLS.Blob;
+  const cell = MONSTER_BODY_CELLS[body as keyof typeof MONSTER_BODY_CELLS] ?? MONSTER_BODY_CELLS.Blob;
   return {
     "--monster-body-image": `url("${monsterBodiesAtlas}")`,
     "--monster-body-position": `${cell.column * 25}% ${cell.row * 50}%`,

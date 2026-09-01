@@ -32,6 +32,13 @@ describe("Monster Lab visual creature contract", () => {
     expect(monsterVisualTraits({ ...monster, body: "Alien" }).map((trait) => trait.key)).toContain("arms");
   });
 
+  it("keeps the lizard alien's integrated limbs out of accessory controls", () => {
+    const visible = monsterVisualTraits({ ...monster, body: "Lizard Alien" }).map((trait) => trait.key);
+    expect(visible).not.toContain("arms");
+    expect(visible).not.toContain("tail");
+    expect(visible).toContain("wings");
+  });
+
   it("does not offer duplicate wing and tail variants that render identically", () => {
     expect(monsterVisualOptions("wings", MONSTER_OPTIONS.wings)).toEqual(["No wings", "Star wings"]);
     expect(monsterVisualOptions("tail", MONSTER_OPTIONS.tail)).toEqual(["No tail", "Dragon tail"]);

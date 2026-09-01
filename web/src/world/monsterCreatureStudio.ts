@@ -27,7 +27,11 @@ const BINARY_VISUAL_OPTIONS: Partial<Record<MonsterTraitKey, readonly string[]>>
 };
 
 export function monsterVisualTraits(monster: MonsterRecord) {
-  return MONSTER_TRAITS.filter((trait) => trait.key !== "arms" || monster.body === "Alien");
+  return MONSTER_TRAITS.filter((trait) => {
+    if (trait.key === "arms") return monster.body === "Alien";
+    if (trait.key === "tail") return monster.body !== "Lizard Alien";
+    return true;
+  });
 }
 
 export function monsterVisualOptions(key: MonsterTraitKey, options: readonly string[]): readonly string[] {
