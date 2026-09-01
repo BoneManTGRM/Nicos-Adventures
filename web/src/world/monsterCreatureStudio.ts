@@ -5,7 +5,7 @@ export type MonsterTraitKey = Exclude<
   "id" | "name" | "friendship"
 >;
 
-export type MonsterTraitGroup = "form" | "features" | "style" | "story";
+export type MonsterTraitGroup = "form" | "features" | "style";
 
 export const MONSTER_TRAITS: ReadonlyArray<{
   key: MonsterTraitKey;
@@ -15,16 +15,24 @@ export const MONSTER_TRAITS: ReadonlyArray<{
   { key: "body", icon: "◉", group: "form" },
   { key: "wings", icon: "🪽", group: "features" },
   { key: "arms", icon: "✦", group: "features" },
-  { key: "legs", icon: "⌁", group: "features" },
   { key: "tail", icon: "〰", group: "features" },
   { key: "color", icon: "●", group: "style" },
   { key: "pattern", icon: "▧", group: "style" },
   { key: "texture", icon: "✺", group: "style" },
-  { key: "power", icon: "⚡", group: "story" },
-  { key: "personality", icon: "♥", group: "story" },
-  { key: "habitat", icon: "⌂", group: "story" },
-  { key: "animation", icon: "▶", group: "story" },
 ];
+
+const BINARY_VISUAL_OPTIONS: Partial<Record<MonsterTraitKey, readonly string[]>> = {
+  wings: ["No wings", "Star wings"],
+  tail: ["No tail", "Dragon tail"],
+};
+
+export function monsterVisualTraits(monster: MonsterRecord) {
+  return MONSTER_TRAITS.filter((trait) => trait.key !== "arms" || monster.body === "Alien");
+}
+
+export function monsterVisualOptions(key: MonsterTraitKey, options: readonly string[]): readonly string[] {
+  return BINARY_VISUAL_OPTIONS[key] ?? options;
+}
 
 const MONSTER_COLORS: Record<string, string> = {
   Aqua: "#22d3ee",

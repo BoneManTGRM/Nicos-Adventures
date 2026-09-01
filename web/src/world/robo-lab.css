@@ -106,4 +106,5 @@
 .robo-lab-workbench--simple .robo-lab-motion[open]>summary{border-bottom:1px solid rgba(103,232,249,.22)}
 .robo-lab-workbench--simple .robot-action-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .robo-lab-workbench--simple .robot-action-grid button.active{border-color:#67e8f9;background:linear-gradient(135deg,rgba(8,145,178,.72),rgba(37,99,235,.72));box-shadow:0 0 0 2px rgba(103,232,249,.16)}
+.robo-lab-test-button{width:calc(100% - 24px);margin:0 12px 14px}
 @media(max-width:620px){.robo-lab-workbench--simple .robot-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

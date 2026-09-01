@@ -772,11 +772,11 @@ KNOWLEDGE_CATALOG: Final[dict[str, Any]] = {'entries': [{'answer': {'en': 'Nico�
                                      'nube',
                                      'cuenta',
                                      'rastreo']}},
-             {'answer': {'en': 'Open Robo Lab to choose robot parts, colors, powers, '
-                               'personalities, voices, and jobs. Saving a robot earns stars.',
-                         'es-MX': 'Abre el Laboratorio Robot para elegir piezas, colores, poderes, '
-                                  'personalidades, voces y trabajos. Guardar un robot gana '
-                                  'estrellas.'},
+             {'answer': {'en': 'Open Robo Lab to play BoltBot’s six polished movements: wave, fly, '
+                               'scan, repair, flash lights, and celebrate.',
+                         'es-MX': 'Abre el Laboratorio Robot para probar los seis movimientos de '
+                                  'BoltBot: saludar, volar, escanear, reparar, encender luces y '
+                                  'celebrar.'},
               'id': 'robots',
               'keywords': {'en': ['robot', 'robo lab', 'build robot', 'boltbot', 'parts'],
                            'es-MX': ['robot',
@@ -801,12 +801,13 @@ KNOWLEDGE_CATALOG: Final[dict[str, Any]] = {'entries': [{'answer': {'en': 'Nico�
               'id': 'dinosaurs',
               'keywords': {'en': ['dinosaur', 'fossil', 't rex', 'triceratops', 'jurassic'],
                            'es-MX': ['dinosaurio', 'fósil', 't rex', 'triceratops', 'jurásico']}},
-             {'answer': {'en': 'Monster Lab makes friendly creatures from bodies, eyes, horns, '
-                               'wings, colors, powers, and personalities. Visit their habitats to '
-                               'grow friendship.',
-                         'es-MX': 'El Laboratorio de Monstruos crea criaturas amistosas con '
-                                  'cuerpos, ojos, cuernos, alas, colores, poderes y '
-                                  'personalidades. Visita sus hábitats para aumentar la amistad.'},
+             {'answer': {'en': 'Monster Lab uses premium creature bodies with a smaller set of '
+                               'dependable visual controls for color, pattern, texture, wings, and '
+                               'tails. Visit saved monsters in their habitats to grow friendship.',
+                         'es-MX': 'El Laboratorio de Monstruos usa cuerpos prémium con controles '
+                                  'visuales confiables para color, patrón, textura, alas y colas. '
+                                  'Visita los hábitats de tus monstruos guardados para aumentar la '
+                                  'amistad.'},
               'id': 'monsters',
               'keywords': {'en': ['monster', 'monster lab', 'habitat', 'friendship'],
                            'es-MX': ['monstruo',
