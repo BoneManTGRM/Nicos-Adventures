@@ -217,7 +217,7 @@ const animalGenerator = read("src/world/AnimalGeneratorGame.tsx");
 if (!showtime.includes('kind: "animal" as const') || !showtime.includes("WildlifeSprite") || !wildlife.includes("WILDLIFE_IDS")) {
   throw new Error("Premium full-body animals are not available in Showtime");
 }
-if (!wildlife.includes("wildlife-premium-clean-atlas.webp") || wildlife.includes("wildlifeCellBounds")) {
+if (!wildlife.includes("wildlife-premium-clean-atlas.webp") || wildlife.includes("wildlifeCellBounds") || !wildlife.includes("clipPaleWildlife")) {
   throw new Error("Wildlife art is not using the isolated transparent atlas");
 }
 if (!becca.includes("Unicorn Generator") || !becca.includes("becca-unicorn--") || !becca.includes("PremiumCutout") ||
