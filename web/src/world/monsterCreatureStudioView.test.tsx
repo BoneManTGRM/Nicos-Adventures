@@ -62,7 +62,7 @@ describe("Monster Lab localized preview", () => {
 
     expect(html).toContain('class="monster-wings" transform="translate(0 28) translate(260 250) scale(0.54)');
     expect(html).toContain('class="monster-tail" transform="translate(-14 -2) translate(388 398) scale(0.52)');
-    expect(html).not.toContain('class="monster-horns"');
+    expect(html).toContain('class="monster-horns" transform="translate(0 -64) translate(260 158) scale(0.32)');
     expect(html).toContain('class="monster-face" data-monster-face-signature="carved-golem" transform="translate(0 -145) translate(260 246) scale(0.46)');
     expect(html).toContain('class="monster-mouth" data-monster-mouth-signature="carved-golem" transform="translate(0 -205) translate(260 330) scale(0.38)');
     expect(html).toContain('class="monster-core" data-monster-core-signature="carved-golem" transform="translate(0 -88) translate(260 387) scale(0.5)');
@@ -83,6 +83,20 @@ describe("Monster Lab localized preview", () => {
     expect(html).not.toContain('class="monster-face"');
     expect(html).not.toContain('class="monster-mouth"');
     expect(html).not.toContain('class="monster-core"');
+  });
+
+  it("adds and removes the selected horn layer on the same Blob body", () => {
+    const withoutHorns = renderToStaticMarkup(
+      <MonsterStage monster={{ ...monster, id: "blob-no-horns", body: "Blob", horns: "No horns" }} language="en" />,
+    );
+    const withHorns = renderToStaticMarkup(
+      <MonsterStage monster={{ ...monster, id: "blob-horns", body: "Blob", horns: "Crystal horns" }} language="en" />,
+    );
+
+    expect(withoutHorns).toContain('data-monster-horns="off"');
+    expect(withoutHorns).not.toContain('class="monster-horns"');
+    expect(withHorns).toContain('data-monster-horns="on"');
+    expect(withHorns).toContain('class="monster-horns"');
   });
 
   it("gives a Dragon a readable permanent face without crowding its horns", () => {
