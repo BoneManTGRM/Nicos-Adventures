@@ -1,0 +1,157 @@
+/* Compatibility and finish rules for the approved Monster Lab target. */
+
+/* Keep the canonical route heading focusable for keyboard/browser proof while
+   the purpose-built command bar supplies the visible title. */
+.fw-app[data-active-section="monster-lab"] .fw-page-header {
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  left: -10000px;
+  display: flex !important;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.monster-studio--approved .monster-studio__trait-control {
+  display: grid;
+  min-width: 0;
+  min-height: 50px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 5px;
+  align-items: center;
+  padding: 6px;
+  border: 1px solid rgba(196, 181, 253, .2);
+  border-radius: 12px;
+  background: rgba(7, 9, 31, .68);
+  color: #dbeafe;
+}
+
+.monster-studio--approved .monster-studio__trait-control > span:first-child {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(124, 58, 237, .18);
+  color: #d8b4fe;
+  font-size: 13px;
+}
+
+.monster-studio--approved .monster-studio__trait-control > span:last-child {
+  min-width: 0;
+}
+
+.monster-studio--approved .monster-studio__trait-control small,
+.monster-studio--approved .monster-studio__trait-control strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monster-studio--approved .monster-studio__trait-control small {
+  color: #a5b4fc;
+  font-size: 7px;
+  text-transform: uppercase;
+}
+
+.monster-studio--approved .monster-studio__trait-control strong {
+  margin-top: 2px;
+  color: #f8fafc;
+  font-size: 9px;
+}
+
+.monster-studio--approved .monster-studio__trait-control[aria-pressed="true"] {
+  border-color: #c084fc;
+  background: linear-gradient(145deg, rgba(88, 28, 135, .76), rgba(23, 37, 84, .78));
+  box-shadow: inset 0 -2px 0 #f472b6;
+}
+
+.monster-studio--approved .monster-studio__body-trait-link {
+  display: grid;
+  min-width: 118px;
+  min-height: 34px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+  padding: 4px 7px;
+  border: 1px solid rgba(103, 232, 249, .22);
+  border-radius: 10px;
+  background: rgba(7, 12, 38, .72);
+  color: #eef2ff;
+  text-align: left;
+  text-transform: none;
+}
+
+.monster-studio--approved .monster-studio__body-trait-link > span:first-child {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 7px;
+  background: rgba(14, 116, 144, .22);
+  color: #67e8f9;
+  font-size: 11px;
+}
+
+.monster-studio--approved .monster-studio__body-trait-link > span:last-child {
+  min-width: 0;
+}
+
+.monster-studio--approved .monster-studio__body-trait-link small,
+.monster-studio--approved .monster-studio__body-trait-link strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monster-studio--approved .monster-studio__body-trait-link small {
+  color: #a5b4fc;
+  font-size: 6px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.monster-studio--approved .monster-studio__body-trait-link strong {
+  margin-top: 1px;
+  color: #fff;
+  font-size: 9px;
+}
+
+.monster-studio--approved .monster-studio__body-trait-link:hover,
+.monster-studio--approved .monster-studio__body-trait-link:focus-visible {
+  border-color: #67e8f9;
+  background: rgba(14, 116, 144, .18);
+}
+
+@media (max-width: 700px) {
+  .monster-studio--approved .monster-studio__trait-control {
+    min-height: 45px;
+    padding: 5px;
+  }
+
+  .monster-studio--approved .monster-studio__trait-control > span:first-child {
+    width: 23px;
+    height: 23px;
+    font-size: 11px;
+  }
+
+  .monster-studio--approved .monster-studio__body-trait-link {
+    min-width: 100px;
+    min-height: 31px;
+    padding: 3px 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monster-studio--approved .monster-studio__trait-control,
+  .monster-studio--approved .monster-studio__body-trait-link {
+    transition: none;
+  }
+}
