@@ -1,0 +1,30 @@
+/* Cross-browser timing and SVG-safe movement overrides. The outer face and
+   accessory groups retain their authored placement transforms; animated pose
+   changes are applied to their children. */
+
+.monster-lab-preview[data-monster-motion-mass="heavy"] .monster-stage--bounce .monster-v2 { animation-duration: 1.9s; }
+.monster-lab-preview[data-monster-motion-mass="heavy"] .monster-stage--spin .monster-v2 { animation-duration: 2s; }
+.monster-lab-preview[data-monster-motion-mass="heavy"] .monster-stage--roar .monster-v2 { animation-duration: 2.05s; }
+.monster-lab-preview[data-monster-motion-mass="heavy"] .monster-stage--fly .monster-v2 { animation-duration: 2.25s; }
+.monster-lab-preview[data-monster-motion-mass="heavy"] .monster-stage--dance .monster-v2 { animation-duration: 2.25s; }
+.monster-lab-preview[data-monster-motion-mass="heavy"] .monster-stage--sleep .monster-v2 { animation-duration: 2.55s; }
+.monster-lab-preview[data-monster-motion-mass="heavy"] .monster-stage--celebrate .monster-v2 { animation-duration: 2.3s; }
+
+.monster-lab-preview .monster-stage--roar .monster-mouth,
+.monster-lab-preview .monster-stage--fly .monster-wings,
+.monster-lab-preview .monster-stage--dance .monster-tail,
+.monster-lab-preview .monster-stage--dance .monster-face,
+.monster-lab-preview .monster-stage--dance .monster-core,
+.monster-lab-preview .monster-stage--sleep .monster-core,
+.monster-lab-preview .monster-stage--celebrate .monster-core,
+.monster-lab-preview .monster-stage--celebrate .monster-face {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monster-lab-preview .monster-stage .monster-mouth > *,
+  .monster-lab-preview .monster-stage .monster-face > *,
+  .monster-lab-preview .monster-stage .monster-core > *,
+  .monster-lab-preview .monster-stage .monster-wings > *,
+  .monster-lab-preview .monster-stage .monster-tail > * { animation: none !important; }
+}
