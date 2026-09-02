@@ -323,21 +323,21 @@ export function MonsterFaceArt({ body, monsterId, color, layout }: MonsterFaceAr
 
   return <>
     <g
-      className={`monster-face monster-face--${treatment}`}
+      className="monster-face"
       data-monster-face-signature={treatment}
       transform={monsterAccessoryTransform("face", layout.face)}
     >
       {faceEyes(treatment, context)}
     </g>
     <g
-      className={`monster-mouth monster-mouth--${treatment}`}
+      className="monster-mouth"
       data-monster-mouth-signature={treatment}
       transform={monsterAccessoryTransform("mouth", layout.mouth)}
     >
       {mouthArt(treatment, context)}
     </g>
     <g
-      className={`monster-core monster-core--${treatment}`}
+      className="monster-core"
       data-monster-core-signature={treatment}
       transform={monsterAccessoryTransform("core", layout.core)}
       filter={context.glow}
