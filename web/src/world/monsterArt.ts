@@ -104,6 +104,7 @@ const ROYAL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
   ...COMPACT_ACCESSORY_LAYOUT,
   face: { x: 0, y: -90, scale: 0.58 },
   mouth: { x: 0, y: -165, scale: 0.52 },
+  horns: { x: 0, y: 0, scale: 0 },
 };
 
 // The alien atlas uses a large round head and a narrow torso. Its permanent
