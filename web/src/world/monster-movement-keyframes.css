@@ -1,0 +1,101 @@
+/* Final cross-browser pose frames. Avoid CSS multiplication inside calc(),
+   which is not consistently available across the supported WebKit matrix. */
+
+.monster-lab-preview {
+  --monster-hop-mid: -40px;
+  --monster-flight-mid: -62px;
+  --monster-flight-low: -51px;
+  --monster-levitate-a: -56px;
+  --monster-levitate-b: -78px;
+  --monster-levitate-c: -52px;
+  --monster-glide-a: -37px;
+  --monster-glide-b: -67px;
+  --monster-glide-c: -43px;
+  --monster-celebrate-high: -46px;
+  --monster-celebrate-peak: -53px;
+  --monster-celebrate-low: -32px;
+}
+
+.monster-lab-preview[data-monster-motion-mass="light"] {
+  --monster-hop-mid: -49px;
+  --monster-flight-mid: -75px;
+  --monster-flight-low: -62px;
+  --monster-celebrate-high: -56px;
+  --monster-celebrate-peak: -65px;
+  --monster-celebrate-low: -39px;
+}
+
+.monster-lab-preview[data-monster-motion-mass="heavy"] {
+  --monster-hop-mid: -25px;
+  --monster-flight-mid: -46px;
+  --monster-flight-low: -38px;
+  --monster-celebrate-high: -29px;
+  --monster-celebrate-peak: -33px;
+  --monster-celebrate-low: -20px;
+}
+
+.monster-lab-preview[data-monster-motion-locomotion="floating"] {
+  --monster-flight-mid: -86px;
+  --monster-flight-low: -71px;
+  --monster-levitate-a: -78px;
+  --monster-levitate-b: -108px;
+  --monster-levitate-c: -72px;
+}
+
+.monster-lab-preview[data-monster-motion-locomotion="winged"] {
+  --monster-flight-mid: -85px;
+  --monster-flight-low: -70px;
+}
+
+.monster-lab-preview[data-monster-motion-locomotion="swimming"] {
+  --monster-flight-mid: -58px;
+  --monster-flight-low: -47px;
+  --monster-glide-a: -35px;
+  --monster-glide-b: -72px;
+  --monster-glide-c: -40px;
+}
+
+@keyframes premium-monster-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  12% { transform: translateY(12px) scaleX(1.06) scaleY(var(--monster-pose-squash)); }
+  42% { transform: translateY(var(--monster-hop)) scaleX(.96) scaleY(1.05); }
+  61% { transform: translateY(var(--monster-hop-mid)) rotate(-3deg); }
+  82% { transform: translateY(7px) scaleX(1.04) scaleY(.95); }
+}
+
+@keyframes premium-monster-fly {
+  0%, 100% { transform: translateY(0) rotate(0) scale(1); }
+  18% { transform: translateY(9px) scaleX(1.04) scaleY(.96); }
+  42% { transform: translateY(var(--monster-flight)) rotate(-7deg) scale(.96); }
+  68% { transform: translateY(var(--monster-flight-mid)) rotate(7deg) scale(1.02); }
+  86% { transform: translateY(-19px) rotate(-2deg); }
+}
+
+@keyframes premium-monster-levitate {
+  0%, 100% { transform: translateY(0) rotate(0) scale(1); }
+  24% { transform: translateY(var(--monster-levitate-a)) rotate(-4deg) scale(.97); }
+  52% { transform: translateY(var(--monster-levitate-b)) rotate(4deg) scale(1.03); }
+  78% { transform: translateY(var(--monster-levitate-c)) rotate(-2deg); }
+}
+
+@keyframes premium-monster-glide {
+  0%, 100% { transform: translate(0, 0) rotate(0) scale(1); }
+  26% { transform: translate(-28px, var(--monster-glide-a)) rotate(-12deg) scale(.98); }
+  56% { transform: translate(34px, var(--monster-glide-b)) rotate(10deg) scale(1.02); }
+  78% { transform: translate(-8px, var(--monster-glide-c)) rotate(-4deg); }
+}
+
+@keyframes premium-monster-celebrate {
+  0%, 100% { transform: translateY(0) rotate(0) scale(1); }
+  16% { transform: translateY(10px) scaleX(1.04) scaleY(.96); }
+  34% { transform: translateY(var(--monster-celebrate-high)) rotate(-7deg) scale(1.025); }
+  51% { transform: translateY(var(--monster-celebrate-peak)) rotate(7deg) scale(1.04); }
+  69% { transform: translateY(var(--monster-celebrate-low)) rotate(-5deg); }
+  86% { transform: translateY(5px) scaleX(1.03) scaleY(.97); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monster-lab-preview .monster-stage--fly .monster-v2 {
+    transform: translateY(var(--monster-flight-low)) rotate(-5deg) scale(.98);
+  }
+}
