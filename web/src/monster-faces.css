@@ -1,0 +1,73 @@
+/* Permanent, body-specific face polish. The body selector changes the face;
+   legacy eyes/mouth fields do not, so every species keeps a stable identity. */
+.monster-face,
+.monster-mouth,
+.monster-core {
+  pointer-events: none;
+  shape-rendering: geometricPrecision;
+}
+
+.monster-face,
+.monster-mouth {
+  filter: drop-shadow(0 7px 7px rgba(0, 0, 0, .42));
+}
+
+[data-monster-face-treatment="blob-mischief"] .monster-face {
+  filter: drop-shadow(0 7px 10px color-mix(in srgb, var(--monster-main) 32%, rgba(0, 0, 0, .5)));
+}
+
+[data-monster-face-treatment="mystic-spirit"] .monster-face,
+[data-monster-face-treatment="mystic-spirit"] .monster-mouth,
+[data-monster-face-treatment="cosmic-mask"] .monster-face,
+[data-monster-face-treatment="cloud-dreamer"] .monster-face {
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--monster-main) 62%, transparent));
+}
+
+[data-monster-face-treatment="aqua-creature"] .monster-face {
+  filter: drop-shadow(0 0 9px rgba(103, 232, 249, .42)) drop-shadow(0 7px 7px rgba(0, 0, 0, .4));
+}
+
+[data-monster-face-treatment="candy-smile"] .monster-face,
+[data-monster-face-treatment="candy-smile"] .monster-mouth {
+  filter: drop-shadow(0 0 8px rgba(249, 168, 212, .38)) drop-shadow(0 6px 6px rgba(0, 0, 0, .36));
+}
+
+[data-monster-face-treatment="mecha-visor"] .monster-face,
+[data-monster-face-treatment="integrated-visor"] .monster-face {
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--monster-main) 58%, transparent)) drop-shadow(0 8px 7px rgba(0, 0, 0, .5));
+}
+
+[data-monster-face-treatment="royal-crest"] .monster-face,
+[data-monster-face-treatment="royal-crest"] .monster-mouth {
+  filter: drop-shadow(0 0 8px rgba(253, 230, 138, .34)) drop-shadow(0 7px 7px rgba(0, 0, 0, .42));
+}
+
+[data-monster-face-treatment="molten-beast"] .monster-face,
+[data-monster-face-treatment="molten-beast"] .monster-mouth {
+  filter: drop-shadow(0 0 10px rgba(251, 146, 60, .5)) drop-shadow(0 8px 8px rgba(0, 0, 0, .46));
+}
+
+[data-monster-face-treatment="frost-beast"] .monster-face,
+[data-monster-face-treatment="frost-beast"] .monster-mouth {
+  filter: drop-shadow(0 0 10px rgba(186, 230, 253, .52)) drop-shadow(0 7px 7px rgba(0, 0, 0, .42));
+}
+
+[data-monster-face-treatment="dino-predator"] .monster-face,
+[data-monster-face-treatment="dino-predator"] .monster-mouth {
+  filter: drop-shadow(0 0 8px rgba(134, 239, 172, .3)) drop-shadow(0 8px 8px rgba(0, 0, 0, .48));
+}
+
+@media (max-width: 760px) {
+  .monster-face,
+  .monster-mouth {
+    filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .46));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monster-face,
+  .monster-mouth,
+  .monster-core {
+    transition: none !important;
+  }
+}
