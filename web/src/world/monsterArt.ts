@@ -1,252 +1,175 @@
 import type { CSSProperties } from "react";
-import alienArmsAtlas from "../assets/monsters/premium-alien-arms-atlas.webp";
-import lizardAlienBody from "../assets/monsters/premium-lizard-alien.webp";
-import monsterBodiesAtlas from "../assets/monsters/premium-monster-bodies-atlas.webp";
+import approvedMonsterRow1 from "../assets/monsters/reference/reference-monsters-row-1.webp";
+import approvedMonsterRow2 from "../assets/monsters/reference/reference-monsters-row-2.webp";
+import approvedMonsterRow3 from "../assets/monsters/reference/reference-monsters-row-3.webp";
+import approvedMonsterRow4 from "../assets/monsters/reference/reference-monsters-row-4.webp";
 
-const MONSTER_BODY_CELLS = {
-  Blob: { column: 0, row: 0 },
-  Dragon: { column: 1, row: 0 },
-  "Jungle Beast": { column: 2, row: 0 },
-  "Stone Golem": { column: 3, row: 0 },
-  Spirit: { column: 4, row: 0 },
-  Cosmic: { column: 0, row: 1 },
-  Aquatic: { column: 1, row: 1 },
-  Candy: { column: 2, row: 1 },
-  Mecha: { column: 3, row: 1 },
-  Royal: { column: 4, row: 1 },
-  Volcano: { column: 0, row: 2 },
-  "Ice Beast": { column: 1, row: 2 },
-  Alien: { column: 2, row: 2 },
-  Dinosaur: { column: 3, row: 2 },
-  Cloud: { column: 4, row: 2 },
-} as const;
+export const PREMIUM_MONSTER_BODIES = [
+  "Blob",
+  "Dragon",
+  "Jungle Beast",
+  "Stone Golem",
+  "Spirit",
+  "Cosmic",
+  "Aquatic",
+  "Candy",
+  "Mecha",
+  "Royal",
+  "Volcano",
+  "Ice Beast",
+  "Alien",
+  "Lizard Alien",
+  "Dinosaur",
+  "Cloud",
+] as const;
 
-export type PremiumMonsterBody = keyof typeof MONSTER_BODY_CELLS | "Lizard Alien";
+export type PremiumMonsterBody = typeof PREMIUM_MONSTER_BODIES[number];
 
-export const PREMIUM_MONSTER_BODIES = Object.freeze([
-  ...Object.keys(MONSTER_BODY_CELLS).flatMap((body) => body === "Dinosaur" ? ["Lizard Alien", body] : [body]),
-] as PremiumMonsterBody[]);
-
-const ALIEN_ARM_CELLS = {
-  "Tiny arms": { column: 0, row: 0 },
-  "Claw arms": { column: 1, row: 0 },
-  "Four arms": { column: 2, row: 0 },
-  Tentacles: { column: 3, row: 0 },
-  "Giant hands": { column: 0, row: 1 },
-  "Robot arms": { column: 1, row: 1 },
-  "Wing arms": { column: 2, row: 1 },
-} as const;
-
-export type PremiumAlienArms = keyof typeof ALIEN_ARM_CELLS;
-
-export const PREMIUM_ALIEN_ARMS = Object.freeze(Object.keys(ALIEN_ARM_CELLS) as PremiumAlienArms[]);
-
-type AccessoryFit = Readonly<{ x: number; y: number; scale: number }>;
-
-export type MonsterAccessoryLayout = Readonly<{
-  face: AccessoryFit;
-  mouth: AccessoryFit;
-  horns: AccessoryFit;
-  wings: AccessoryFit;
-  tail: AccessoryFit;
-  core: AccessoryFit;
+export type MonsterBodyArtSpec = Readonly<{
+  image: string;
+  portraitImage: string;
+  position: string;
+  size: string;
+  aspect: string;
+  width: string;
+  source: "approved-user-reference";
 }>;
 
-const STANDARD_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -118, scale: 0.42 },
-  mouth: { x: 0, y: -150, scale: 0.38 },
-  horns: { x: 0, y: -60, scale: 0.36 },
-  wings: { x: 0, y: 24, scale: 0.6 },
-  tail: { x: -12, y: -4, scale: 0.58 },
-  core: { x: 0, y: -90, scale: 0.52 },
+const BODY_POSITIONS = ["0% 50%", "33.333333% 50%", "66.666667% 50%", "100% 50%"] as const;
+
+function approvedBody(image: string, column: 0 | 1 | 2 | 3): MonsterBodyArtSpec {
+  return {
+    image,
+    portraitImage: image,
+    position: BODY_POSITIONS[column],
+    size: "400% 100%",
+    aspect: "1 / 1",
+    width: "100%",
+    source: "approved-user-reference",
+  };
+}
+
+export const MONSTER_BODY_ART = {
+  Blob: approvedBody(approvedMonsterRow1, 0),
+  Dragon: approvedBody(approvedMonsterRow1, 1),
+  "Jungle Beast": approvedBody(approvedMonsterRow1, 2),
+  "Stone Golem": approvedBody(approvedMonsterRow1, 3),
+  Spirit: approvedBody(approvedMonsterRow2, 0),
+  Cosmic: approvedBody(approvedMonsterRow2, 1),
+  Aquatic: approvedBody(approvedMonsterRow2, 2),
+  Candy: approvedBody(approvedMonsterRow2, 3),
+  Mecha: approvedBody(approvedMonsterRow3, 0),
+  Royal: approvedBody(approvedMonsterRow3, 1),
+  Volcano: approvedBody(approvedMonsterRow3, 2),
+  "Ice Beast": approvedBody(approvedMonsterRow3, 3),
+  Alien: approvedBody(approvedMonsterRow4, 0),
+  "Lizard Alien": approvedBody(approvedMonsterRow4, 1),
+  Dinosaur: approvedBody(approvedMonsterRow4, 2),
+  Cloud: approvedBody(approvedMonsterRow4, 3),
+} as const satisfies Record<PremiumMonsterBody, MonsterBodyArtSpec>;
+
+const DEFAULT_BODY_ART = MONSTER_BODY_ART.Blob;
+
+export function monsterBodyArt(body: string): MonsterBodyArtSpec {
+  return MONSTER_BODY_ART[body as PremiumMonsterBody] ?? DEFAULT_BODY_ART;
+}
+
+export const PREMIUM_ALIEN_ARMS = ["Tiny arms", "Claw arms", "Tentacle arms", "Robot arms"] as const;
+export type PremiumAlienArms = typeof PREMIUM_ALIEN_ARMS[number];
+
+export type MonsterAlienArmArtSpec = Readonly<{
+  image: string;
+  position: string;
+  size: string;
+  aspect: string;
+  width: string;
+}>;
+
+export const MONSTER_ALIEN_ARM_ART = {
+  "Tiny arms": { image: approvedMonsterRow4, position: BODY_POSITIONS[0], size: "400% 100%", aspect: "1 / 1", width: "100%" },
+  "Claw arms": { image: approvedMonsterRow4, position: BODY_POSITIONS[0], size: "400% 100%", aspect: "1 / 1", width: "100%" },
+  "Tentacle arms": { image: approvedMonsterRow4, position: BODY_POSITIONS[0], size: "400% 100%", aspect: "1 / 1", width: "100%" },
+  "Robot arms": { image: approvedMonsterRow4, position: BODY_POSITIONS[0], size: "400% 100%", aspect: "1 / 1", width: "100%" },
+} as const satisfies Record<PremiumAlienArms, MonsterAlienArmArtSpec>;
+
+const DEFAULT_ALIEN_ARM_ART = MONSTER_ALIEN_ARM_ART["Tiny arms"];
+
+export function monsterAlienArmArt(arms: string): MonsterAlienArmArtSpec {
+  return MONSTER_ALIEN_ARM_ART[arms as PremiumAlienArms] ?? DEFAULT_ALIEN_ARM_ART;
+}
+
+export type MonsterAccessoryPlacement = Readonly<{
+  x: number;
+  y: number;
+  scale: number;
+  rotate?: number;
+}>;
+
+export type MonsterAccessoryLayout = Readonly<{
+  face: MonsterAccessoryPlacement;
+  mouth: MonsterAccessoryPlacement;
+  core: MonsterAccessoryPlacement;
+  horns: MonsterAccessoryPlacement;
+  wings: MonsterAccessoryPlacement;
+  tail: MonsterAccessoryPlacement;
+}>;
+
+const DEFAULT_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  face: { x: 0, y: 0, scale: 1 },
+  mouth: { x: 0, y: 0, scale: 1 },
+  core: { x: 0, y: 0, scale: 1 },
+  horns: { x: 0, y: 0, scale: 1 },
+  wings: { x: 0, y: 0, scale: 1 },
+  tail: { x: 0, y: 0, scale: 1 },
 };
 
-const COMPACT_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -120, scale: 0.38 },
-  mouth: { x: 0, y: -154, scale: 0.36 },
-  horns: { x: 0, y: -64, scale: 0.32 },
-  wings: { x: 0, y: 28, scale: 0.54 },
-  tail: { x: -14, y: -2, scale: 0.52 },
-  core: { x: 0, y: -88, scale: 0.5 },
-};
+export const MONSTER_ACCESSORY_LAYOUT = Object.fromEntries(
+  PREMIUM_MONSTER_BODIES.map((body) => [body, DEFAULT_ACCESSORY_LAYOUT]),
+) as Record<PremiumMonsterBody, MonsterAccessoryLayout>;
 
-const TALL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -126, scale: 0.38 },
-  mouth: { x: 0, y: -158, scale: 0.36 },
-  horns: { x: 0, y: -68, scale: 0.32 },
-  wings: { x: 0, y: 22, scale: 0.56 },
-  tail: { x: -14, y: -6, scale: 0.54 },
-  core: { x: 0, y: -94, scale: 0.5 },
-};
-
-// These atlas cells have different head proportions even though their bodies
-// use the same broad sizing families. Keep their permanent faces independent.
-const DRAGON_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...TALL_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -124, scale: 0.42 },
-  mouth: { x: 0, y: -184, scale: 0.36 },
-  horns: { x: 0, y: -72, scale: 0.3 },
-};
-
-const JUNGLE_BEAST_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -90, scale: 0.62 },
-  mouth: { x: 0, y: -145, scale: 0.56 },
-};
-
-const STONE_GOLEM_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -145, scale: 0.46 },
-  mouth: { x: 0, y: -205, scale: 0.38 },
-};
-
-const ROYAL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -88, scale: 0.6 },
-  mouth: { x: 0, y: -158, scale: 0.52 },
-  horns: { x: 0, y: 0, scale: 0 },
-};
-
-const SPIRIT_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...STANDARD_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -98, scale: 0.55 },
-  mouth: { x: 0, y: -150, scale: 0.46 },
-};
-
-const COSMIC_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...STANDARD_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -92, scale: 0.56 },
-  mouth: { x: 0, y: -148, scale: 0.48 },
-};
-
-const AQUATIC_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...TALL_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -104, scale: 0.54 },
-  mouth: { x: 0, y: -155, scale: 0.46 },
-};
-
-const CANDY_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -92, scale: 0.56 },
-  mouth: { x: 0, y: -150, scale: 0.5 },
-};
-
-const MECHA_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...TALL_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -110, scale: 0.46 },
-  mouth: { x: 0, y: -158, scale: 0.42 },
-};
-
-const VOLCANO_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -93, scale: 0.58 },
-  mouth: { x: 0, y: -150, scale: 0.52 },
-};
-
-const ICE_BEAST_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -93, scale: 0.58 },
-  mouth: { x: 0, y: -150, scale: 0.52 },
-};
-
-const DINOSAUR_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...TALL_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -105, scale: 0.56 },
-  mouth: { x: 0, y: -158, scale: 0.5 },
-};
-
-const CLOUD_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -88, scale: 0.6 },
-  mouth: { x: 0, y: -148, scale: 0.48 },
-};
-
-// The alien atlas uses a large round head and a narrow torso. Its permanent
-// visor and speaker need to fill the head instead of reading as tiny stickers.
-const ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -105, scale: 0.46 },
-  mouth: { x: 0, y: -155, scale: 0.5 },
-  horns: { x: 0, y: -72, scale: 0.22 },
-  wings: { x: 0, y: 16, scale: 0.46 },
-  tail: { x: -18, y: -8, scale: 0.42 },
-  core: { x: 0, y: -112, scale: 0.42 },
-};
-
-const LIZARD_ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -144, scale: 0.3 },
-  mouth: { x: 0, y: -172, scale: 0.3 },
-  horns: { x: 0, y: -76, scale: 0.24 },
-  wings: { x: 0, y: 2, scale: 0.5 },
-  tail: { x: 0, y: 0, scale: 0 },
-  core: { x: 0, y: -104, scale: 0.4 },
-};
-
-const MONSTER_ACCESSORY_LAYOUTS: Record<PremiumMonsterBody, MonsterAccessoryLayout> = {
-  Blob: STANDARD_ACCESSORY_LAYOUT,
-  Dragon: DRAGON_ACCESSORY_LAYOUT,
-  "Jungle Beast": JUNGLE_BEAST_ACCESSORY_LAYOUT,
-  "Stone Golem": STONE_GOLEM_ACCESSORY_LAYOUT,
-  Spirit: SPIRIT_ACCESSORY_LAYOUT,
-  Cosmic: COSMIC_ACCESSORY_LAYOUT,
-  Aquatic: AQUATIC_ACCESSORY_LAYOUT,
-  Candy: CANDY_ACCESSORY_LAYOUT,
-  Mecha: MECHA_ACCESSORY_LAYOUT,
-  Royal: ROYAL_ACCESSORY_LAYOUT,
-  Volcano: VOLCANO_ACCESSORY_LAYOUT,
-  "Ice Beast": ICE_BEAST_ACCESSORY_LAYOUT,
-  Alien: ALIEN_ACCESSORY_LAYOUT,
-  "Lizard Alien": LIZARD_ALIEN_ACCESSORY_LAYOUT,
-  Dinosaur: DINOSAUR_ACCESSORY_LAYOUT,
-  Cloud: CLOUD_ACCESSORY_LAYOUT,
-};
+export type MonsterAccessoryKind = keyof MonsterAccessoryLayout;
 
 export function monsterAccessoryLayout(body: string): MonsterAccessoryLayout {
-  return MONSTER_ACCESSORY_LAYOUTS[body as PremiumMonsterBody] ?? STANDARD_ACCESSORY_LAYOUT;
+  return MONSTER_ACCESSORY_LAYOUT[body as PremiumMonsterBody] ?? DEFAULT_ACCESSORY_LAYOUT;
 }
 
-const ACCESSORY_ORIGINS = {
-  face: [260, 246],
-  mouth: [260, 330],
-  horns: [260, 158],
-  wings: [260, 250],
-  tail: [388, 398],
-  core: [260, 387],
-} as const;
-
-export function monsterAccessoryTransform(part: keyof MonsterAccessoryLayout, fit: AccessoryFit): string {
-  const [originX, originY] = ACCESSORY_ORIGINS[part];
-  return `translate(${fit.x} ${fit.y}) translate(${originX} ${originY}) scale(${fit.scale}) translate(${-originX} ${-originY})`;
+export function monsterAccessoryTransform(
+  kind: MonsterAccessoryKind,
+  placement: MonsterAccessoryPlacement,
+): string {
+  const anchors: Record<MonsterAccessoryKind, Readonly<{ x: number; y: number }>> = {
+    face: { x: 260, y: 226 },
+    mouth: { x: 260, y: 322 },
+    core: { x: 260, y: 387 },
+    horns: { x: 260, y: 160 },
+    wings: { x: 260, y: 270 },
+    tail: { x: 380, y: 390 },
+  };
+  const anchor = anchors[kind];
+  const rotation = placement.rotate ?? 0;
+  return [
+    `translate(${placement.x} ${placement.y})`,
+    `translate(${anchor.x} ${anchor.y})`,
+    `rotate(${rotation})`,
+    `scale(${placement.scale})`,
+    `translate(${-anchor.x} ${-anchor.y})`,
+  ].join(" ");
 }
 
-export function monsterBodyArtStyle(body: string, color: string, arms = "Tiny arms"): CSSProperties {
-  if (body === "Lizard Alien") {
-    return {
-      "--monster-body-image": `url("${lizardAlienBody}")`,
-      "--monster-body-position": "center",
-      "--monster-body-size": "contain",
-      "--monster-body-aspect": "1",
-      "--monster-body-width": "100%",
-      "--monster-body-color": color,
-    } as CSSProperties;
-  }
-
-  if (body === "Alien") {
-    const cell = ALIEN_ARM_CELLS[arms as PremiumAlienArms] ?? ALIEN_ARM_CELLS["Tiny arms"];
-    return {
-      "--monster-body-image": `url("${alienArmsAtlas}")`,
-      "--monster-body-position": `${cell.column * (100 / 3)}% ${cell.row * 100}%`,
-      "--monster-body-size": "400% 200%",
-      "--monster-body-aspect": "1",
-      "--monster-body-color": color,
-    } as CSSProperties;
-  }
-
-  const cell = MONSTER_BODY_CELLS[body as keyof typeof MONSTER_BODY_CELLS] ?? MONSTER_BODY_CELLS.Blob;
+export function monsterBodyArtStyle(
+  body: string,
+  color: string,
+  _arms = "Tiny arms",
+): CSSProperties {
+  const art = monsterBodyArt(body);
   return {
-    "--monster-body-image": `url("${monsterBodiesAtlas}")`,
-    "--monster-body-position": `${cell.column * 25}% ${cell.row * 50}%`,
-    "--monster-body-size": "500% 300%",
-    "--monster-body-aspect": "9 / 10",
+    "--monster-body-image": `url(${art.image})`,
+    "--monster-portrait-image": `url(${art.portraitImage})`,
+    "--monster-body-position": art.position,
+    "--monster-body-size": art.size,
+    "--monster-body-aspect": art.aspect,
+    "--monster-body-width": art.width,
     "--monster-body-color": color,
+    "--monster-reference-source": art.source,
   } as CSSProperties;
 }
