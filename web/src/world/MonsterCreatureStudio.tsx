@@ -12,7 +12,6 @@ import {
   type MonsterTraitKey,
 } from "./monsterCreatureStudio";
 import "./monster-creature-studio.css";
-import "./monster-lab-approved-layout.css";
 
 const copy = {
   eyebrow: { en: "Monster Lab · Creature sculpting table", "es-MX": "Laboratorio de monstruos · Mesa para esculpir criaturas" },
