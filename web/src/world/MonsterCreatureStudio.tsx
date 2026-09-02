@@ -17,6 +17,7 @@ import "./monster-creature-studio.css";
 const copy = {
   eyebrow: { en: "Monster Lab · Creature builder", "es-MX": "Laboratorio de monstruos · Constructor de criaturas" },
   title: { en: "Build your monster", "es-MX": "Construye tu monstruo" },
+  accessibleTitle: { en: "Sculpt a creature you can see", "es-MX": "Esculpe una criatura que puedas ver" },
   body: {
     en: "Choose a creature, then change its color and traits. Its permanent premium face always stays with its body.",
     "es-MX": "Elige una criatura y luego cambia su color y sus rasgos. Su cara prémium permanente siempre se queda con su cuerpo.",
@@ -95,7 +96,9 @@ export function MonsterCreatureStudio({
     >
       <header className="monster-studio__header">
         <small>{tr(copy.eyebrow, language)}</small>
-        <h2 id="monster-studio-title">{tr(copy.title, language)}</h2>
+        <h2 id="monster-studio-title" aria-label={tr(copy.accessibleTitle, language)}>
+          {tr(copy.title, language)}
+        </h2>
         <p>{tr(copy.body, language)}</p>
       </header>
 
