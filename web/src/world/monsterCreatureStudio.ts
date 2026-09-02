@@ -13,22 +13,27 @@ export const MONSTER_TRAITS: ReadonlyArray<{
   group: MonsterTraitGroup;
 }> = [
   { key: "body", icon: "◉", group: "form" },
-  { key: "wings", icon: "🪽", group: "features" },
-  { key: "arms", icon: "✦", group: "features" },
-  { key: "tail", icon: "〰", group: "features" },
-  { key: "color", icon: "●", group: "style" },
+  { key: "color", icon: "🎨", group: "style" },
   { key: "pattern", icon: "▧", group: "style" },
   { key: "texture", icon: "✺", group: "style" },
+  { key: "wings", icon: "🪽", group: "features" },
+  { key: "horns", icon: "♨", group: "features" },
+  { key: "tail", icon: "〰", group: "features" },
+  { key: "arms", icon: "✦", group: "features" },
 ];
 
 const BINARY_VISUAL_OPTIONS: Partial<Record<MonsterTraitKey, readonly string[]>> = {
   wings: ["No wings", "Star wings"],
+  horns: ["No horns", "Crystal horns"],
   tail: ["No tail", "Dragon tail"],
 };
+
+const HORNED_BODIES = new Set(["Dragon", "Royal", "Volcano"]);
 
 export function monsterVisualTraits(monster: MonsterRecord) {
   return MONSTER_TRAITS.filter((trait) => {
     if (trait.key === "arms") return monster.body === "Alien";
+    if (trait.key === "horns") return HORNED_BODIES.has(monster.body);
     if (trait.key === "tail") return monster.body !== "Lizard Alien";
     return true;
   });
