@@ -14,26 +14,41 @@ import {
 import "./monster-creature-studio.css";
 
 const copy = {
-  eyebrow: { en: "Monster Lab · Creature sculpting table", "es-MX": "Laboratorio de monstruos · Mesa para esculpir criaturas" },
+  eyebrow: { en: "Creature designer", "es-MX": "Diseñador de criaturas" },
   title: { en: "Sculpt a creature you can see", "es-MX": "Esculpe una criatura que puedas ver" },
   body: {
-    en: "Choose a creature, then change its color and traits. Its permanent premium face always stays with its body.",
-    "es-MX": "Elige una criatura y luego cambia su color y sus rasgos. Su cara prémium permanente siempre se queda con su cuerpo.",
+    en: "Choose a body, then shape its color, pattern, texture, and accessories.",
+    "es-MX": "Elige un cuerpo y luego cambia su color, patrón, textura y accesorios.",
   },
   chooseBody: { en: "1 · Choose body", "es-MX": "1 · Elige el cuerpo" },
   customize: { en: "2 · Customize traits", "es-MX": "2 · Personaliza los rasgos" },
   chooseOption: { en: "Choose an option", "es-MX": "Elige una opción" },
   bodyGallery: { en: "Monster body gallery", "es-MX": "Galería de cuerpos de monstruos" },
   applied: { en: "Selected", "es-MX": "Seleccionado" },
-  bodyHint: {
-    en: "The complete body gallery stays above so changing traits never hides your monsters.",
-    "es-MX": "La galería completa permanece arriba para que los rasgos nunca oculten tus monstruos.",
-  },
   groups: {
     en: { form: "Form", features: "Features", style: "Style" },
     "es-MX": { form: "Forma", features: "Características", style: "Estilo" },
   },
 } as const;
+
+const bodyPreviewColors: Record<string, string> = {
+  Blob: "Aqua",
+  Dragon: "Orange",
+  "Jungle Beast": "Lime",
+  "Stone Golem": "Pearl",
+  Spirit: "Purple",
+  Cosmic: "Midnight",
+  Aquatic: "Blue",
+  Candy: "Pink",
+  Mecha: "Pearl",
+  Royal: "Purple",
+  Volcano: "Crimson",
+  "Ice Beast": "Aqua",
+  Alien: "Emerald",
+  "Lizard Alien": "Pearl",
+  Dinosaur: "Gold",
+  Cloud: "Pearl",
+};
 
 function choiceStyle(trait: MonsterTraitKey, option: string): CSSProperties | undefined {
   if (trait !== "color") return undefined;
@@ -53,7 +68,7 @@ export function MonsterCreatureStudio({
   selectTrait: (trait: MonsterTraitKey) => void;
   sculpt: (trait: MonsterTraitKey, option: string) => void;
 }) {
-  const visibleTraits = monsterVisualTraits(monster);
+  const visibleTraits = monsterVisualTraits(monster).filter((trait) => trait.key !== "body");
   const resolvedActiveTrait = visibleTraits.some((trait) => trait.key === activeTrait)
     ? activeTrait
     : "color";
@@ -78,7 +93,20 @@ export function MonsterCreatureStudio({
       <section className="monster-studio__body-panel" aria-labelledby="monster-body-gallery-title">
         <div className="monster-studio__panel-label">
           <span id="monster-body-gallery-title">{tr(copy.chooseBody, language)}</span>
-          <strong>{optionLabel(monster.body, language)}</strong>
+          <button
+            type="button"
+            className="monster-studio__trait monster-studio__body-trait-link"
+            data-trait="body"
+            aria-pressed="false"
+            aria-label={`${fieldLabel("body", language)}: ${optionLabel(monster.body, language)}`}
+            onClick={() => selectTrait("body")}
+          >
+            <span aria-hidden="true">◉</span>
+            <span>
+              <small>{fieldLabel("body", language)}</small>
+              <strong>{optionLabel(monster.body, language)}</strong>
+            </span>
+          </button>
         </div>
         <div className="monster-studio__body-grid" role="group" aria-label={tr(copy.bodyGallery, language)}>
           {bodyOptions.map((option) => {
@@ -96,13 +124,13 @@ export function MonsterCreatureStudio({
               >
                 <MonsterPortrait
                   body={option}
-                  color={monster.color}
+                  color={selected ? monster.color : bodyPreviewColors[option] ?? monster.color}
                   arms={option === monster.body ? monster.arms : "Tiny arms"}
                   label={language === "es-MX" ? `Vista de ${optionName}` : `${optionName} preview`}
                 />
                 <span className="monster-studio__body-copy">
                   <strong>{optionName}</strong>
-                  <small>{selected ? tr(copy.applied, language) : groupLabels.form}</small>
+                  <small>{selected ? tr(copy.applied, language) : ""}</small>
                 </span>
               </button>
             );
@@ -118,10 +146,13 @@ export function MonsterCreatureStudio({
         <div className="monster-studio__traits" role="group" aria-label={tr(copy.customize, language)}>
           {visibleTraits.map((trait) => {
             const value = String(monster[trait.key] ?? MONSTER_OPTIONS[trait.key]?.[0] ?? "");
+            const className = trait.key === "horns"
+              ? "monster-studio__trait-control monster-studio__trait-control--horns"
+              : "monster-studio__trait";
             return (
               <button
                 type="button"
-                className="monster-studio__trait"
+                className={className}
                 data-trait={trait.key}
                 aria-pressed={trait.key === resolvedActiveTrait}
                 aria-label={`${fieldLabel(trait.key, language)}: ${optionLabel(value, language)}`}
@@ -138,41 +169,37 @@ export function MonsterCreatureStudio({
           })}
         </div>
 
-        {resolvedActiveTrait === "body" ? (
-          <p className="monster-studio__body-hint">{tr(copy.bodyHint, language)}</p>
-        ) : (
-          <div className="monster-studio__choice-panel">
-            <div className="monster-studio__panel-label monster-studio__panel-label--choices">
-              <span>{tr(copy.chooseOption, language)}</span>
-              <strong>{groupLabels[active.group]}</strong>
-            </div>
-            <div
-              className="monster-studio__choices"
-              role="group"
-              aria-label={`${tr(copy.chooseOption, language)}: ${fieldLabel(resolvedActiveTrait, language)}`}
-            >
-              {options.map((option) => {
-                const selected = monster[resolvedActiveTrait] === option;
-                return (
-                  <button
-                    type="button"
-                    className={`monster-studio__choice monster-studio__choice--${resolvedActiveTrait}`}
-                    data-option={option}
-                    style={choiceStyle(resolvedActiveTrait, option)}
-                    aria-pressed={selected}
-                    aria-label={`${optionLabel(option, language)}${selected ? ` · ${tr(copy.applied, language)}` : ""}`}
-                    key={option}
-                    onClick={() => sculpt(resolvedActiveTrait, option)}
-                  >
-                    <span className="monster-studio__sample" aria-hidden="true">{active.icon}</span>
-                    <strong>{optionLabel(option, language)}</strong>
-                    <small>{selected ? tr(copy.applied, language) : groupLabels[active.group]}</small>
-                  </button>
-                );
-              })}
-            </div>
+        <div className="monster-studio__choice-panel">
+          <div className="monster-studio__panel-label monster-studio__panel-label--choices">
+            <span>{tr(copy.chooseOption, language)}</span>
+            <strong>{groupLabels[active.group]}</strong>
           </div>
-        )}
+          <div
+            className="monster-studio__choices"
+            role="group"
+            aria-label={`${tr(copy.chooseOption, language)}: ${fieldLabel(resolvedActiveTrait, language)}`}
+          >
+            {options.map((option) => {
+              const selected = monster[resolvedActiveTrait] === option;
+              return (
+                <button
+                  type="button"
+                  className={`monster-studio__choice monster-studio__choice--${resolvedActiveTrait}`}
+                  data-option={option}
+                  style={choiceStyle(resolvedActiveTrait, option)}
+                  aria-pressed={selected}
+                  aria-label={`${optionLabel(option, language)}${selected ? ` · ${tr(copy.applied, language)}` : ""}`}
+                  key={option}
+                  onClick={() => sculpt(resolvedActiveTrait, option)}
+                >
+                  <span className="monster-studio__sample" aria-hidden="true">{active.icon}</span>
+                  <strong>{optionLabel(option, language)}</strong>
+                  <small>{selected ? tr(copy.applied, language) : groupLabels[active.group]}</small>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </section>
     </section>
   );
