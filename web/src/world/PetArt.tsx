@@ -2,7 +2,20 @@ import { useId } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import type { Language, PetRecord } from "../types";
 import { optionLabel } from "../i18n/display";
+import sparkyFetchTool from "../assets/pets/sparky-fetch-tool-v2.webp";
+import sparkyHighFive from "../assets/pets/sparky-high-five-v2.webp";
+import sparkyIdle from "../assets/pets/sparky-idle-v2.webp";
+import sparkySit from "../assets/pets/sparky-sit-v2.webp";
 import "./pet-art.css";
+
+export type PetAction = "Sit" | "Spin" | "Fetch Tool" | "High Five" | "Scout" | "Dance";
+
+const SPARKY_POSES: Record<"idle" | "sit" | "high-five" | "fetch-tool", string> = {
+  idle: sparkyIdle,
+  sit: sparkySit,
+  "high-five": sparkyHighFive,
+  "fetch-tool": sparkyFetchTool,
+};
 
 const PET_COLORS: Record<string, string> = {
   Blue: "#38bdf8",
@@ -76,10 +89,41 @@ function SpaceOrb() {
   </>;
 }
 
-export function PetArt({ pet, language = "en", decorative = false }: { pet: PetRecord; language?: Language; decorative?: boolean }) {
+function SparkyArt({
+  action,
+  decorative,
+  label,
+  rawId,
+}: {
+  action?: PetAction;
+  decorative: boolean;
+  label: string;
+  rawId: string;
+}) {
+  const pose = action === "Sit" ? "sit" : action === "High Five" || action === "Dance" ? "high-five" : action === "Fetch Tool" ? "fetch-tool" : "idle";
+  const actionClass = action ? ` pet-art--action-${action.toLowerCase().replace(/\s+/g, "-")}` : "";
+  return <span
+    className={`pet-art pet-art--premium-sparky pet-art--pose-${pose}${actionClass}`}
+    role={decorative ? undefined : "img"}
+    aria-hidden={decorative || undefined}
+    aria-label={decorative ? undefined : label}
+    data-pet-species-art="Robot Dog"
+    data-pet-renderer="premium-sparky"
+    data-pet-pose={pose}
+    data-pet-art-id={rawId}
+  >
+    <img src={SPARKY_POSES[pose]} alt="" draggable={false} />
+  </span>;
+}
+
+export function PetArt({ pet, language = "en", decorative = false, action }: { pet: PetRecord; language?: Language; decorative?: boolean; action?: PetAction }) {
   const rawId = useId();
   const label = `${pet.name}, ${optionLabel(pet.species, language)}`;
   const style = { "--pet-main": PET_COLORS[pet.color] ?? PET_COLORS.Blue } as CSSProperties;
+  const isPremiumSparky = pet.species === "Robot Dog" && pet.color === "Blue" && pet.accessory === "Explorer Scarf";
+  if (isPremiumSparky) {
+    return <SparkyArt action={action} decorative={decorative} label={label} rawId={rawId.replace(/:/g, "")} />;
+  }
   return <svg
     className={`pet-art pet-art--${pet.species.toLowerCase().replace(/\s+/g, "-")}`}
     viewBox="0 0 420 340"

@@ -1,0 +1,13 @@
+{
+  "asset": "Sparky premium robot puppy pose set v2",
+  "mode": "image generation followed by transparent-background extraction and lossless pose splitting",
+  "source": "/workspace/scratch/01ec87460872/generated_images/exec-9f818e64-00c2-42d1-8209-9cdb5da2c82c.png",
+  "outputs": [
+    "sparky-idle-v2.webp",
+    "sparky-sit-v2.webp",
+    "sparky-high-five-v2.webp",
+    "sparky-fetch-tool-v2.webp"
+  ],
+  "prompt": "Create a production-ready 2D game sprite atlas for Nico's World featuring Sparky, a friendly robotic puppy companion, in four consistent full-body poses: idle, sit, high five, and fetch tool. Keep compact puppy proportions, warm amber-brown eyes, cyan-blue enamel armor, navy flexible joints, brushed-silver muzzle and paws, turquoise energy accents, softly rounded robot ears, a curled segmented tail, and a vivid coral-red explorer scarf. Render premium polished dimensional 2D family-game character art with crisp silhouettes, tactile materials, clean alpha, and no text, UI, borders, backgrounds, extra animals, extra limbs, or cropped anatomy.",
+  "cleanup": "Preserved the generated characters while extracting the supplied alpha silhouettes, removing low-alpha backdrop glow, splitting the 2x2 sheet, and encoding production WebP files."
+}
