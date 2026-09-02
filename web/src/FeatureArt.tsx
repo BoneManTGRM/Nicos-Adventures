@@ -79,7 +79,7 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
   const pattern = String(monster.pattern || "solid").toLowerCase().replace(/\s+/g,"-");
   const faceTreatment = monsterFaceTreatment(monster.body);
   const hasWings = !monster.wings.toLowerCase().includes("no ");
-  const hasHorns = ["Dragon", "Royal", "Volcano"].includes(monster.body);
+  const hasHorns = !String(monster.horns || "No horns").toLowerCase().includes("no ");
   const hasTail = monster.body !== "Lizard Alien" && !String(monster.tail || "No tail").toLowerCase().includes("no ");
   const accessoryLayout = monsterAccessoryLayout(monster.body);
   return <article className={`monster-stage monster-stage--${action}`} style={{ "--monster-main": color } as CSSProperties}>
@@ -90,6 +90,7 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
       data-monster-body-art={monster.body}
       data-monster-arms-art={monster.arms}
       data-monster-pattern={pattern}
+      data-monster-horns={hasHorns ? "on" : "off"}
       data-monster-face-treatment={faceTreatment}
       style={monsterBodyArtStyle(monster.body, color, monster.arms)}
       role="img"
