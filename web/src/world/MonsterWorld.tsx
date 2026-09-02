@@ -7,27 +7,28 @@ import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, makeId } from "./common";
 import { MonsterCreatureStudio } from "./MonsterCreatureStudio";
 import type { MonsterTraitKey } from "./monsterCreatureStudio";
+import { applyMonsterFamilyPreset } from "./monsterFamily";
 import { completeOnce, hasCompleted, monsterFriendshipMission } from "./progression";
 
 function newMonster(): MonsterRecord {
   return {
     id: makeId("monster"),
     name: "Glimmer",
-    body: "Dragon",
-    eyes: "Three eyes",
-    horns: "Crystal horns",
-    wings: "Star wings",
+    body: "Lizard Alien",
+    eyes: "Two eyes",
+    horns: "No horns",
+    wings: "No wings",
     color: "Aqua",
-    pattern: "Galaxy",
+    pattern: "Solid",
     power: "Rainbow shield",
     personality: "Curious",
     friendship: 1,
     habitat: "Crystal Cave",
-    mouth: "Fang smile",
+    mouth: "Dragon snout",
     arms: "Claw arms",
     legs: "Dinosaur legs",
-    tail: "Dragon tail",
-    texture: "Crystal",
+    tail: "No tail",
+    texture: "Smooth",
     animation: "Bounce",
   };
 }
@@ -41,11 +42,12 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
   const motion = useMonsterMotion();
 
   useEffect(() => {
-    setDraft(profile.monsters.at(-1) ? { ...profile.monsters.at(-1)! } : newMonster());
+    const saved = profile.monsters.at(-1);
+    setDraft(saved ? { ...saved, body: "Lizard Alien" } : newMonster());
   }, [profile.id]);
 
   const save = () => {
-    const monster = { ...draft, id: draft.id || makeId("monster"), name: draft.name.trim() || (language === "es-MX" ? "Monstruo" : "Monster") };
+    const monster = { ...draft, body: "Lizard Alien", id: draft.id || makeId("monster"), name: draft.name.trim() || (language === "es-MX" ? "Monstruo" : "Monster") };
     const exists = profile.monsters.some((item) => item.id === monster.id);
     const monsters = exists
       ? profile.monsters.map((item) => item.id === monster.id ? monster : item)
@@ -77,12 +79,18 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
           language={language}
           activeTrait={activeTrait}
           selectTrait={setActiveTrait}
-          sculpt={(trait, option) => setDraft({ ...draft, [trait]: option })}
+          sculpt={(trait, option) => setDraft({ ...draft, [trait]: option, body: "Lizard Alien" })}
+          choosePreset={(preset) => {
+            setDraft((current) => applyMonsterFamilyPreset({ ...current, id: makeId("monster") }, preset));
+            setActiveTrait("color");
+            announce(language === "es-MX" ? `${preset.name} listo para personalizar.` : `${preset.name} ready to customize.`);
+          }}
         />
         <div className="fw-action-row">
           <button type="button" onClick={() => {
             setDraft(newMonster());
-            announce(language === "es-MX" ? "Nuevo monstruo listo para personalizar." : "New monster ready to customize.");
+            setActiveTrait("body");
+            announce(language === "es-MX" ? "Nuevo monstruo Lizard Alien listo para personalizar." : "New Lizard Alien monster ready to customize.");
           }}>＋ {language === "es-MX" ? "Nuevo monstruo" : "New monster"}</button>
           <button type="button" className="fw-primary" onClick={save}>👾 {tr(ui.saveMonster, language)}</button>
         </div>
@@ -96,11 +104,11 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
                   aria-pressed={draft.id === monster.id}
                   key={monster.id}
                   onClick={() => {
-                    setDraft({ ...monster });
+                    setDraft({ ...monster, body: "Lizard Alien" });
                     announce(`${monster.name}: ${tr(ui.selected, language)}`);
                   }}
                 >
-                  👾 {monster.name} · {optionLabel(monster.body, language)}
+                  👾 {monster.name} · {optionLabel("Lizard Alien", language)}
                 </button>
               ))}
             </div>
@@ -145,7 +153,7 @@ export function MonsterHabitats({ profile, update, announce }: { profile: LocalP
     <div className="fw-card-grid">
       {profile.monsters.map((monster) => (
         <article className="fw-creature-card monster-habitat-card" key={monster.id}>
-          <MonsterStage monster={monster} language={language} />
+          <MonsterStage monster={{ ...monster, body: "Lizard Alien" }} language={language} />
           <h3>{monster.name}</h3>
           <p>{optionLabel(monster.habitat, language)} · {optionLabel(monster.personality, language)}</p>
           <label>
