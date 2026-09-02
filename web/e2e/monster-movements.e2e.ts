@@ -73,7 +73,7 @@ async function playMovement(page: Page, movement: typeof movements[number]) {
   await expect(page.locator(".monster-lab-preview")).toHaveAttribute("data-monster-motion-pose", movement);
   await expect(page.locator(".monster-stage")).toHaveClass(new RegExp(`monster-stage--${movement}`));
   await expect.poll(async () => page.locator(".monster-v2").evaluate((element) => getComputedStyle(element).animationName))
-    .toMatch(/^premium-monster-(bounce|spin|roar|fly|levitate|glide|dance|sleep|celebrate)$/);
+    .toMatch(/^ml(Bounce|Spin|Roar|Fly|Levitate|Glide|Dance|Sleep|Celebrate)$/);
 }
 
 function slug(value: string) {
