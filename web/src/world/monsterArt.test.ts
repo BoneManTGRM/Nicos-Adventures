@@ -65,18 +65,26 @@ describe("premium illustrated monster body atlas", () => {
     const alien = monsterAccessoryLayout("Alien");
     const lizard = monsterAccessoryLayout("Lizard Alien");
 
-    expect(jungle.face).toEqual({ x: 0, y: -95, scale: 0.6 });
-    expect(jungle.mouth).toEqual({ x: 0, y: -145, scale: 0.55 });
+    expect(jungle.face).toEqual({ x: 0, y: -90, scale: 0.62 });
+    expect(jungle.mouth).toEqual({ x: 0, y: -145, scale: 0.56 });
     expect(stone.face).toEqual({ x: 0, y: -145, scale: 0.46 });
     expect(stone.horns.scale).toBeLessThan(0.4);
     expect(stone.wings.scale).toBeLessThan(0.6);
-    expect(royal.face).toEqual({ x: 0, y: -90, scale: 0.58 });
-    expect(royal.mouth).toEqual({ x: 0, y: -165, scale: 0.52 });
+    expect(royal.face).toEqual({ x: 0, y: -88, scale: 0.6 });
+    expect(royal.mouth).toEqual({ x: 0, y: -158, scale: 0.52 });
     expect(royal.horns.scale).toBe(0);
-    expect(alien.face).toEqual({ x: 0, y: -105, scale: 0.45 });
-    expect(alien.mouth).toEqual({ x: 0, y: -162, scale: 0.48 });
+    expect(alien.face).toEqual({ x: 0, y: -105, scale: 0.46 });
+    expect(alien.mouth).toEqual({ x: 0, y: -155, scale: 0.5 });
     expect(alien.horns).toEqual({ x: 0, y: -72, scale: 0.22 });
     expect(alien.core.y).toBeLessThan(-100);
+    expect(monsterAccessoryLayout("Spirit").face.scale).toBeGreaterThan(0.5);
+    expect(monsterAccessoryLayout("Cosmic").face.scale).toBeGreaterThan(0.5);
+    expect(monsterAccessoryLayout("Aquatic").face.scale).toBeGreaterThan(0.5);
+    expect(monsterAccessoryLayout("Candy").face.scale).toBeGreaterThan(0.5);
+    expect(monsterAccessoryLayout("Volcano").face.scale).toBeGreaterThan(0.5);
+    expect(monsterAccessoryLayout("Ice Beast").face.scale).toBeGreaterThan(0.5);
+    expect(monsterAccessoryLayout("Dinosaur").face.scale).toBeGreaterThan(0.5);
+    expect(monsterAccessoryLayout("Cloud").face.scale).toBeGreaterThan(0.5);
     expect(lizard.tail.scale).toBe(0);
     expect(monsterAccessoryTransform("face", stone.face)).toBe(
       "translate(0 -145) translate(260 246) scale(0.46) translate(-260 -246)",
