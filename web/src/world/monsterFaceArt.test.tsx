@@ -38,7 +38,7 @@ describe("permanent body-specific monster faces", () => {
     expect(new Set(Object.values(MONSTER_FACE_TREATMENTS)).size).toBe(MONSTER_OPTIONS.body.length);
   });
 
-  it.each(MONSTER_OPTIONS.body)("renders %s with its permanent face signature", (body) => {
+  it.each(MONSTER_OPTIONS.body)("renders %s with its permanent integrated face identity", (body) => {
     const monster = { ...baseMonster, id: `face-${body}`, body };
     const treatment = monsterFaceTreatment(body);
     const html = renderToStaticMarkup(<MonsterStage monster={monster} language="en" />);
@@ -48,12 +48,19 @@ describe("permanent body-specific monster faces", () => {
 
     if (monsterHasIntegratedFace(body)) {
       expect(body).toBe("Lizard Alien");
+      expect(html).toContain("premium-lizard-alien");
       expect(html).not.toContain('class="monster-face');
       expect(html).not.toContain('class="monster-mouth');
       expect(html).not.toContain('class="monster-core');
       return;
     }
 
+    expect(html).toContain('class="monster-face monster-face--integrated"');
+    expect(html).toContain('data-monster-face-integration="sculpted-shell"');
+    expect(html).toContain('class="monster-mouth monster-mouth--integrated"');
+    expect(html).toContain('class="monster-core monster-core--subtle"');
+    expect(html).toContain("monster-face-shell monster-face-shell--");
+    expect(html).toContain("monster-snout monster-snout--");
     expect(html).toContain(`data-monster-face-signature="${treatment}"`);
     expect(html).toContain(`data-monster-mouth-signature="${treatment}"`);
     expect(html).toContain(`data-monster-core-signature="${treatment}"`);
@@ -75,6 +82,18 @@ describe("permanent body-specific monster faces", () => {
       );
 
       expect(second).toBe(first);
+    }
+  });
+
+  it("gives every non-lizard body a large shell and a separate integrated snout", () => {
+    for (const body of MONSTER_OPTIONS.body.filter((option) => option !== "Lizard Alien")) {
+      const html = renderToStaticMarkup(
+        <MonsterStage monster={{ ...baseMonster, id: `anatomy-${body}`, body }} language="en" />,
+      );
+
+      expect(html).toContain('data-monster-face-integration="sculpted-shell"');
+      expect(html).toMatch(/monster-face-shell--(blob|dragon|guardian|golem|spirit|cosmic|aqua|candy|mecha|royal|molten|frost|alien|dino|cloud)/);
+      expect(html).toMatch(/monster-snout--(blob|dragon|guardian|golem|spirit|cosmic|aqua|candy|mecha|royal|molten|frost|alien|dino|cloud)/);
     }
   });
 
