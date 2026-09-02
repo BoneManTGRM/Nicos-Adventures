@@ -1,5 +1,22 @@
 /* Compatibility and finish rules for the approved Monster Lab target. */
 
+/* Keep the canonical route heading focusable for keyboard/browser proof while
+   the purpose-built command bar supplies the visible title. */
+.fw-app[data-active-section="monster-lab"] .fw-page-header {
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  left: -10000px;
+  display: flex !important;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .monster-studio--approved .monster-studio__trait-control {
   display: grid;
   min-width: 0;
