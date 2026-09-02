@@ -93,7 +93,20 @@ export function MonsterCreatureStudio({
       <section className="monster-studio__body-panel" aria-labelledby="monster-body-gallery-title">
         <div className="monster-studio__panel-label">
           <span id="monster-body-gallery-title">{tr(copy.chooseBody, language)}</span>
-          <strong>{optionLabel(monster.body, language)}</strong>
+          <button
+            type="button"
+            className="monster-studio__trait monster-studio__body-trait-link"
+            data-trait="body"
+            aria-pressed="false"
+            aria-label={`${fieldLabel("body", language)}: ${optionLabel(monster.body, language)}`}
+            onClick={() => selectTrait("body")}
+          >
+            <span aria-hidden="true">◉</span>
+            <span>
+              <small>{fieldLabel("body", language)}</small>
+              <strong>{optionLabel(monster.body, language)}</strong>
+            </span>
+          </button>
         </div>
         <div className="monster-studio__body-grid" role="group" aria-label={tr(copy.bodyGallery, language)}>
           {bodyOptions.map((option) => {
@@ -133,10 +146,13 @@ export function MonsterCreatureStudio({
         <div className="monster-studio__traits" role="group" aria-label={tr(copy.customize, language)}>
           {visibleTraits.map((trait) => {
             const value = String(monster[trait.key] ?? MONSTER_OPTIONS[trait.key]?.[0] ?? "");
+            const className = trait.key === "horns"
+              ? "monster-studio__trait-control monster-studio__trait-control--horns"
+              : "monster-studio__trait";
             return (
               <button
                 type="button"
-                className="monster-studio__trait"
+                className={className}
                 data-trait={trait.key}
                 aria-pressed={trait.key === resolvedActiveTrait}
                 aria-label={`${fieldLabel(trait.key, language)}: ${optionLabel(value, language)}`}
