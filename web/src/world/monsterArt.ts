@@ -104,7 +104,7 @@ const ROYAL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
   ...COMPACT_ACCESSORY_LAYOUT,
   face: { x: 0, y: -88, scale: 0.6 },
   mouth: { x: 0, y: -158, scale: 0.52 },
-  horns: { x: 0, y: 0, scale: 0 },
+  horns: { x: 0, y: -64, scale: 0.3 },
 };
 
 const SPIRIT_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
