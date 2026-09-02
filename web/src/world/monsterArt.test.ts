@@ -72,6 +72,7 @@ describe("premium illustrated monster body atlas", () => {
     expect(stone.wings.scale).toBeLessThan(0.6);
     expect(royal.face).toEqual({ x: 0, y: -90, scale: 0.58 });
     expect(royal.mouth).toEqual({ x: 0, y: -165, scale: 0.52 });
+    expect(royal.horns.scale).toBe(0);
     expect(alien.face).toEqual({ x: 0, y: -105, scale: 0.45 });
     expect(alien.mouth).toEqual({ x: 0, y: -162, scale: 0.48 });
     expect(alien.horns).toEqual({ x: 0, y: -72, scale: 0.22 });
