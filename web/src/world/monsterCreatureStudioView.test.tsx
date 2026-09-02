@@ -33,7 +33,7 @@ describe("Monster Lab localized preview", () => {
     expect(html).toContain("monster-ground-shadow");
     expect(html).toContain('data-monster-body-art="Dragon"');
     expect(html).toContain('data-monster-pattern="galaxy"');
-    expect(html).toContain("premium-monster-bodies-atlas");
+    expect(html).toContain("dragon.webp");
     expect(html).toContain("monster-premium-body__pattern");
     expect(html).toContain('data-monster-face-treatment="sculpted-dragon"');
     expect(html).toContain("monster-texture--crystal");
@@ -43,7 +43,7 @@ describe("Monster Lab localized preview", () => {
     expect(monster).toMatchObject({ body: "Dragon", pattern: "Galaxy", power: "Rainbow shield" });
   });
 
-  it("renders an alien's saved arm choice with the dedicated 2D atlas", () => {
+  it("keeps an alien's saved arm choice with the approved 2D artwork", () => {
     const alien = { ...monster, id: "orbit", name: "Orbit", body: "Alien", arms: "Four arms" };
     const html = renderToStaticMarkup(<MonsterStage monster={alien} language="en" />);
 
@@ -51,8 +51,8 @@ describe("Monster Lab localized preview", () => {
     expect(html).toContain('data-monster-arms-art="Four arms"');
     expect(html).toContain('data-monster-face-treatment="integrated-visor"');
     expect(html).toContain('data-monster-face-signature="integrated-visor"');
-    expect(html).toContain("premium-alien-arms-atlas");
-    expect(html).toContain("400% 200%");
+    expect(html).toContain("alien.webp");
+    expect(html).toContain("contain");
     expect(html).not.toContain("<canvas");
   });
 
@@ -79,7 +79,7 @@ describe("Monster Lab localized preview", () => {
 
     expect(html).toContain('data-monster-body-art="Lizard Alien"');
     expect(html).toContain('data-monster-face-treatment="integrated-lizard"');
-    expect(html).toContain("premium-lizard-alien");
+    expect(html).toContain("lizard-alien.webp");
     expect(html).not.toContain('class="monster-face"');
     expect(html).not.toContain('class="monster-mouth"');
     expect(html).not.toContain('class="monster-core"');

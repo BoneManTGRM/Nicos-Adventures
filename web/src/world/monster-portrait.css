@@ -48,7 +48,7 @@
 .monster-portrait__tint {
   background: var(--monster-body-color);
   mix-blend-mode: color;
-  opacity: .45;
+  opacity: .12;
   -webkit-mask-image: var(--monster-body-image);
   mask-image: var(--monster-body-image);
   -webkit-mask-position: var(--monster-body-position);
@@ -69,6 +69,10 @@
   overflow: visible;
   pointer-events: none;
 }
+
+.monster-portrait__traits .monster-face,
+.monster-portrait__traits .monster-mouth,
+.monster-portrait__traits .monster-core { display: none; }
 
 .monster-portrait .monster-face,
 .monster-portrait .monster-mouth,

@@ -1,31 +1,43 @@
 import type { CSSProperties } from "react";
-import alienArmsAtlas from "../assets/monsters/premium-alien-arms-atlas.webp";
-import lizardAlienBody from "../assets/monsters/premium-lizard-alien.webp";
-import monsterBodiesAtlas from "../assets/monsters/premium-monster-bodies-atlas.webp";
+import alienBody from "../assets/monsters/reference/alien.webp";
+import aquaticBody from "../assets/monsters/reference/aquatic.webp";
+import blobBody from "../assets/monsters/reference/blob.webp";
+import candyBody from "../assets/monsters/reference/candy.webp";
+import cloudBody from "../assets/monsters/reference/cloud.webp";
+import cosmicBody from "../assets/monsters/reference/cosmic.webp";
+import dinosaurBody from "../assets/monsters/reference/dinosaur.webp";
+import dragonBody from "../assets/monsters/reference/dragon.webp";
+import iceBeastBody from "../assets/monsters/reference/ice-beast.webp";
+import jungleBeastBody from "../assets/monsters/reference/jungle-beast.webp";
+import lizardAlienBody from "../assets/monsters/reference/lizard-alien.webp";
+import mechaBody from "../assets/monsters/reference/mecha.webp";
+import royalBody from "../assets/monsters/reference/royal.webp";
+import spiritBody from "../assets/monsters/reference/spirit.webp";
+import stoneGolemBody from "../assets/monsters/reference/stone-golem.webp";
+import volcanoBody from "../assets/monsters/reference/volcano.webp";
 
-const MONSTER_BODY_CELLS = {
-  Blob: { column: 0, row: 0 },
-  Dragon: { column: 1, row: 0 },
-  "Jungle Beast": { column: 2, row: 0 },
-  "Stone Golem": { column: 3, row: 0 },
-  Spirit: { column: 4, row: 0 },
-  Cosmic: { column: 0, row: 1 },
-  Aquatic: { column: 1, row: 1 },
-  Candy: { column: 2, row: 1 },
-  Mecha: { column: 3, row: 1 },
-  Royal: { column: 4, row: 1 },
-  Volcano: { column: 0, row: 2 },
-  "Ice Beast": { column: 1, row: 2 },
-  Alien: { column: 2, row: 2 },
-  Dinosaur: { column: 3, row: 2 },
-  Cloud: { column: 4, row: 2 },
+const MONSTER_BODY_ART = {
+  Blob: blobBody,
+  Dragon: dragonBody,
+  "Jungle Beast": jungleBeastBody,
+  "Stone Golem": stoneGolemBody,
+  Spirit: spiritBody,
+  Cosmic: cosmicBody,
+  Aquatic: aquaticBody,
+  Candy: candyBody,
+  Mecha: mechaBody,
+  Royal: royalBody,
+  Volcano: volcanoBody,
+  "Ice Beast": iceBeastBody,
+  Alien: alienBody,
+  "Lizard Alien": lizardAlienBody,
+  Dinosaur: dinosaurBody,
+  Cloud: cloudBody,
 } as const;
 
-export type PremiumMonsterBody = keyof typeof MONSTER_BODY_CELLS | "Lizard Alien";
+export type PremiumMonsterBody = keyof typeof MONSTER_BODY_ART;
 
-export const PREMIUM_MONSTER_BODIES = Object.freeze([
-  ...Object.keys(MONSTER_BODY_CELLS).flatMap((body) => body === "Dinosaur" ? ["Lizard Alien", body] : [body]),
-] as PremiumMonsterBody[]);
+export const PREMIUM_MONSTER_BODIES = Object.freeze(Object.keys(MONSTER_BODY_ART) as PremiumMonsterBody[]);
 
 const ALIEN_ARM_CELLS = {
   "Tiny arms": { column: 0, row: 0 },
@@ -218,35 +230,14 @@ export function monsterAccessoryTransform(part: keyof MonsterAccessoryLayout, fi
   return `translate(${fit.x} ${fit.y}) translate(${originX} ${originY}) scale(${fit.scale}) translate(${-originX} ${-originY})`;
 }
 
-export function monsterBodyArtStyle(body: string, color: string, arms = "Tiny arms"): CSSProperties {
-  if (body === "Lizard Alien") {
-    return {
-      "--monster-body-image": `url("${lizardAlienBody}")`,
-      "--monster-body-position": "center",
-      "--monster-body-size": "contain",
-      "--monster-body-aspect": "1",
-      "--monster-body-width": "100%",
-      "--monster-body-color": color,
-    } as CSSProperties;
-  }
-
-  if (body === "Alien") {
-    const cell = ALIEN_ARM_CELLS[arms as PremiumAlienArms] ?? ALIEN_ARM_CELLS["Tiny arms"];
-    return {
-      "--monster-body-image": `url("${alienArmsAtlas}")`,
-      "--monster-body-position": `${cell.column * (100 / 3)}% ${cell.row * 100}%`,
-      "--monster-body-size": "400% 200%",
-      "--monster-body-aspect": "1",
-      "--monster-body-color": color,
-    } as CSSProperties;
-  }
-
-  const cell = MONSTER_BODY_CELLS[body as keyof typeof MONSTER_BODY_CELLS] ?? MONSTER_BODY_CELLS.Blob;
+export function monsterBodyArtStyle(body: string, color: string, _arms = "Tiny arms"): CSSProperties {
+  const artwork = MONSTER_BODY_ART[body as PremiumMonsterBody] ?? MONSTER_BODY_ART.Blob;
   return {
-    "--monster-body-image": `url("${monsterBodiesAtlas}")`,
-    "--monster-body-position": `${cell.column * 25}% ${cell.row * 50}%`,
-    "--monster-body-size": "500% 300%",
-    "--monster-body-aspect": "9 / 10",
+    "--monster-body-image": `url("${artwork}")`,
+    "--monster-body-position": "center",
+    "--monster-body-size": "contain",
+    "--monster-body-aspect": "1",
+    "--monster-body-width": "100%",
     "--monster-body-color": color,
   } as CSSProperties;
 }

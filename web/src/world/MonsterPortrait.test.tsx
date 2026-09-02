@@ -9,26 +9,26 @@ function render(body: string) {
 }
 
 describe("Monster Lab premium body portraits", () => {
-  it("renders an atlas body with its permanent face treatment", () => {
+  it("renders the approved Dragon artwork with its permanent face treatment", () => {
     const html = render("Dragon");
     expect(html).toContain('data-monster-portrait-body="Dragon"');
     expect(html).toContain('data-monster-face-treatment="sculpted-dragon"');
     expect(html).toContain('data-monster-face-signature="sculpted-dragon"');
-    expect(html).toContain("premium-monster-bodies-atlas");
+    expect(html).toContain("dragon.webp");
   });
 
   it("keeps the Lizard Alien's face integrated into its body art", () => {
     const html = render("Lizard Alien");
     expect(html).toContain('data-monster-face-treatment="integrated-lizard"');
-    expect(html).toContain("premium-lizard-alien");
+    expect(html).toContain("lizard-alien.webp");
     expect(html).not.toContain('class="monster-portrait__face"');
   });
 
-  it("uses the dedicated alien arm atlas without losing the visor", () => {
+  it("keeps saved alien arm data while using the approved Alien artwork", () => {
     const html = renderToStaticMarkup(
       <MonsterPortrait body="Alien" color="Electric Blue" arms="Four arms" label="Alien preview" />,
     );
-    expect(html).toContain("premium-alien-arms-atlas");
+    expect(html).toContain("alien.webp");
     expect(html).toContain('data-monster-face-treatment="integrated-visor"');
     expect(html).toContain('data-monster-face-signature="integrated-visor"');
   });

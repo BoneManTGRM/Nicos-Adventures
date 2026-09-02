@@ -15,7 +15,7 @@ import "./monster-creature-studio.css";
 
 const copy = {
   eyebrow: { en: "Monster Lab · Creature sculpting table", "es-MX": "Laboratorio de monstruos · Mesa para esculpir criaturas" },
-  title: { en: "Sculpt a creature you can see", "es-MX": "Esculpe una criatura que puedas ver" },
+  title: { en: "Build your monster", "es-MX": "Construye tu monstruo" },
   body: {
     en: "Choose a creature, then change its color and traits. Its permanent premium face always stays with its body.",
     "es-MX": "Elige una criatura y luego cambia su color y sus rasgos. Su cara prémium permanente siempre se queda con su cuerpo.",
