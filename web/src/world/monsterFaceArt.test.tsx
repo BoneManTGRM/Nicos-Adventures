@@ -63,13 +63,13 @@ describe("permanent body-specific monster faces", () => {
     for (const body of MONSTER_OPTIONS.body) {
       const first = renderToStaticMarkup(
         <MonsterStage
-          monster={{ ...baseMonster, id: `permanent-${body}`, body, eyes: "One eye", mouth: "Tiny mouth", horns: "No horns" }}
+          monster={{ ...baseMonster, id: `permanent-${body}`, body, eyes: "One eye", mouth: "Tiny mouth" }}
           language="en"
         />,
       );
       const second = renderToStaticMarkup(
         <MonsterStage
-          monster={{ ...baseMonster, id: `permanent-${body}`, body, eyes: "Galaxy eyes", mouth: "Dragon snout", horns: "Flame horns" }}
+          monster={{ ...baseMonster, id: `permanent-${body}`, body, eyes: "Galaxy eyes", mouth: "Dragon snout" }}
           language="en"
         />,
       );
