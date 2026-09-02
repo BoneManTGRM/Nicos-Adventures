@@ -7,19 +7,28 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "generate:reference-monsters": "node scripts/generate-reference-monsters.mjs",
+    "predev": "npm run generate:reference-monsters",
     "dev": "vite",
+    "pretest": "npm run generate:reference-monsters",
     "test": "vitest run",
+    "pretest:watch": "npm run generate:reference-monsters",
     "test:watch": "vitest",
+    "pretest:e2e": "npm run generate:reference-monsters",
     "test:e2e": "playwright test",
     "preview": "vite preview",
+    "pretypecheck": "npm run generate:reference-monsters",
     "typecheck": "tsc --noEmit",
+    "pretypecheck:e2e": "npm run generate:reference-monsters",
     "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
     "generate:boltbot-3d": "node scripts/generate-boltbot.mjs",
     "generate:nico-3d": "node scripts/generate-canonical-nico.mjs",
     "validate:boltbot-3d": "node scripts/validate-boltbot.mjs",
     "validate:nico-3d": "node scripts/validate-canonical-nico.mjs",
     "validate:cloudflare": "node scripts/validate-cloudflare-routing.mjs",
+    "prevalidate:release": "npm run generate:reference-monsters",
     "validate:release": "node scripts/validate-release.mjs && node scripts/validate-system-parity.mjs && node scripts/validate-interactive-progression.mjs && node scripts/validate-creative-memory.mjs && node scripts/validate-local-media-art.mjs && node scripts/validate-layered-wardrobe.mjs && npm run validate:nico-3d && npm run validate:boltbot-3d",
+    "prebuild": "npm run generate:reference-monsters",
     "build": "npm run validate:cloudflare && npm run validate:release && npm run typecheck && npm run typecheck:e2e && vite build --emptyOutDir && node scripts/generate-offline-manifest.mjs && node scripts/validate-performance-budget.mjs && node scripts/generate-release-manifest.mjs && node scripts/generate-release-manifest.mjs --verify"
   },
   "dependencies": {
