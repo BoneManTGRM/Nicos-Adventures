@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { MonsterRecord } from "../types";
-import { MonsterCreatureStudio } from "./MonsterCreatureStudio";
+import { MonsterCreatureStudio, monsterBodyPreviewColor } from "./MonsterCreatureStudio";
 import { PREMIUM_MONSTER_BODIES } from "./monsterArt";
 
 const monster: MonsterRecord = {
@@ -37,10 +37,12 @@ describe("approved compact Monster Lab layout", () => {
       />,
     );
 
+    expect(html).toContain("Build your monster");
     expect(html).toContain("1 · Choose body");
     expect(html).toContain("2 · Customize traits");
     expect(html).toContain('data-active-trait="color"');
     expect(html.match(/data-monster-portrait-body=/g)).toHaveLength(PREMIUM_MONSTER_BODIES.length);
+    expect(html.match(/data-monster-preview-color=/g)).toHaveLength(PREMIUM_MONSTER_BODIES.length);
     for (const body of PREMIUM_MONSTER_BODIES) {
       expect(html).toContain(`data-monster-portrait-body="${body}"`);
       expect(html).toContain(`data-option="${body}"`);
@@ -48,6 +50,25 @@ describe("approved compact Monster Lab layout", () => {
     expect(html).toContain('data-monster-face-treatment="sculpted-dragon"');
     expect(html).toContain('data-monster-face-treatment="integrated-lizard"');
     expect(html).toContain('data-option="Aqua"');
+  });
+
+  it("uses a distinct curated preview palette while preserving the selected color", () => {
+    const html = renderToStaticMarkup(
+      <MonsterCreatureStudio
+        monster={monster}
+        language="en"
+        activeTrait="color"
+        selectTrait={() => undefined}
+        sculpt={() => undefined}
+      />,
+    );
+    const previewColors = [...html.matchAll(/data-monster-preview-color="([^"]+)"/g)].map((match) => match[1]);
+
+    expect(previewColors).toHaveLength(PREMIUM_MONSTER_BODIES.length);
+    expect(new Set(previewColors).size).toBeGreaterThanOrEqual(15);
+    expect(html).toContain(`data-option="Blob" data-monster-preview-color="${monsterBodyPreviewColor("Blob")}"`);
+    expect(html).toContain(`data-option="Dinosaur" data-monster-preview-color="${monsterBodyPreviewColor("Dinosaur")}"`);
+    expect(html).toContain(`data-option="Cloud" data-monster-preview-color="${monsterBodyPreviewColor("Cloud")}"`);
   });
 
   it("keeps the body gallery visible while a different trait is selected", () => {
@@ -61,6 +82,7 @@ describe("approved compact Monster Lab layout", () => {
       />,
     );
 
+    expect(html).toContain("Construye tu monstruo");
     expect(html).toContain("1 · Elige el cuerpo");
     expect(html).toContain("2 · Personaliza los rasgos");
     expect(html).toContain('data-active-trait="texture"');
