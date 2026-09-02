@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { MonsterStage } from "../FeatureArt";
 import type { LocalProfile, MonsterRecord } from "../types";
 import { tr, ui } from "../i18n/core";
@@ -14,7 +14,8 @@ import {
   type MonsterPose,
 } from "./monsterMovement";
 import { completeOnce, hasCompleted, monsterFriendshipMission } from "./progression";
-import "./monster-movement-poses.css";
+
+const MonsterLabVisuals = lazy(() => import("./MonsterLabVisuals"));
 
 function newMonster(): MonsterRecord {
   return {
@@ -77,6 +78,7 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
   useEffect(() => {
     clearMotionTimer();
     setPose("idle");
+    setActiveTrait("color");
     setDraft(profile.monsters.at(-1) ? { ...profile.monsters.at(-1)! } : newMonster());
   }, [profile.id]);
 
@@ -99,88 +101,93 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
     : (language === "es-MX" ? "Listo" : "Ready");
 
   return (
-    <div className="fw-builder-layout monster-lab-layout">
-      <section
-        className="monster-lab-preview"
-        aria-label={language === "es-MX" ? "Vista previa del monstruo" : "Monster preview"}
-        data-monster-motion-pose={pose}
-        data-monster-motion-mass={motionProfile.mass}
-        data-monster-motion-locomotion={motionProfile.locomotion}
-        data-monster-motion-temperament={motionProfile.temperament}
-      >
-        <MonsterStage monster={draft} action={pose} language={language} />
-        <div className="monster-action-row" role="group" aria-label={language === "es-MX" ? "Imágenes de movimiento del monstruo" : "Monster movement images"}>
-          {MONSTER_MOVEMENTS.map((movement) => (
-            <button
-              type="button"
-              key={movement.pose}
-              data-monster-motion={movement.pose}
-              aria-pressed={pose === movement.pose}
-              className={pose === movement.pose ? "active" : ""}
-              onClick={() => play(movement.pose)}
-            >
-              <span aria-hidden="true">{movement.icon}</span>
-              {language === "es-MX" ? movement.es : movement.en}
-            </button>
-          ))}
-        </div>
-        <div className="monster-pose-readout" role="status" aria-live="polite">
-          <span aria-hidden="true">{activeMovement?.icon ?? "✦"}</span>
-          <strong>{poseLabel}</strong>
-          <small>
-            {language === "es-MX"
-              ? "Cada botón muestra una pose ilustrada distinta y conserva el cuerpo, el color y la cara permanente."
-              : "Each button shows a distinct illustrated pose while preserving the body, color, and permanent face."}
-          </small>
-        </div>
-      </section>
-
-      <section className="fw-panel" aria-label={tr(ui.formControls, language)}>
-        <label className="monster-lab-name">
-          {tr(ui.monsterName, language)}
-          <input value={draft.name} maxLength={32} onChange={(event) => setDraft({ ...draft, name: event.target.value })} />
-        </label>
-        <MonsterCreatureStudio
-          monster={draft}
-          language={language}
-          activeTrait={activeTrait}
-          selectTrait={setActiveTrait}
-          sculpt={(trait, option) => {
-            setDraft((current) => ({ ...current, [trait]: option }));
-            if (trait === "body") returnToIdle();
-          }}
-        />
-        <div className="fw-action-row">
-          <button type="button" onClick={() => {
-            returnToIdle();
-            setDraft(newMonster());
-            announce(language === "es-MX" ? "Nuevo monstruo listo para personalizar." : "New monster ready to customize.");
-          }}>＋ {language === "es-MX" ? "Nuevo monstruo" : "New monster"}</button>
-          <button type="button" className="fw-primary" onClick={save}>👾 {tr(ui.saveMonster, language)}</button>
-        </div>
-        <section aria-labelledby="saved-monsters-heading">
-          <h2 id="saved-monsters-heading" className="fw-subheading">{tr(ui.savedMonsters, language)}</h2>
-          {!profile.monsters.length ? <EmptyState emoji="👾">{tr(ui.createMonsterFirst, language)}</EmptyState> : (
-            <div className="monster-collection">
-              {profile.monsters.map((monster) => (
-                <button
-                  type="button"
-                  aria-pressed={draft.id === monster.id}
-                  key={monster.id}
-                  onClick={() => {
-                    returnToIdle();
-                    setDraft({ ...monster });
-                    announce(`${monster.name}: ${tr(ui.selected, language)}`);
-                  }}
-                >
-                  👾 {monster.name} · {optionLabel(monster.body, language)}
-                </button>
-              ))}
-            </div>
-          )}
+    <>
+      <Suspense fallback={null}><MonsterLabVisuals /></Suspense>
+      <div className="fw-builder-layout monster-lab-layout">
+        <section
+          className="monster-lab-preview"
+          aria-label={language === "es-MX" ? "Vista previa del monstruo" : "Monster preview"}
+          data-monster-motion-pose={pose}
+          data-monster-motion-mass={motionProfile.mass}
+          data-monster-motion-locomotion={motionProfile.locomotion}
+          data-monster-motion-temperament={motionProfile.temperament}
+        >
+          <MonsterStage monster={draft} action={pose} language={language} />
+          <div className="monster-action-row" role="group" aria-label={language === "es-MX" ? "Imágenes de movimiento del monstruo" : "Monster movement images"}>
+            {MONSTER_MOVEMENTS.map((movement) => (
+              <button
+                type="button"
+                key={movement.pose}
+                data-monster-motion={movement.pose}
+                aria-pressed={pose === movement.pose}
+                className={pose === movement.pose ? "active" : ""}
+                onClick={() => play(movement.pose)}
+              >
+                <span aria-hidden="true">{movement.icon}</span>
+                {language === "es-MX" ? movement.es : movement.en}
+              </button>
+            ))}
+          </div>
+          <div className="monster-pose-readout" role="status" aria-live="polite">
+            <span aria-hidden="true">{activeMovement?.icon ?? "✦"}</span>
+            <strong>{poseLabel}</strong>
+            <small>
+              {language === "es-MX"
+                ? "Cada botón muestra una pose ilustrada distinta y conserva el cuerpo, el color y la cara permanente."
+                : "Each button shows a distinct illustrated pose while preserving the body, color, and permanent face."}
+            </small>
+          </div>
         </section>
-      </section>
-    </div>
+
+        <section className="fw-panel" aria-label={tr(ui.formControls, language)}>
+          <label className="monster-lab-name">
+            {tr(ui.monsterName, language)}
+            <input value={draft.name} maxLength={32} onChange={(event) => setDraft({ ...draft, name: event.target.value })} />
+          </label>
+          <MonsterCreatureStudio
+            monster={draft}
+            language={language}
+            activeTrait={activeTrait}
+            selectTrait={setActiveTrait}
+            sculpt={(trait, option) => {
+              setDraft((current) => ({ ...current, [trait]: option }));
+              if (trait === "body") returnToIdle();
+            }}
+          />
+          <div className="fw-action-row">
+            <button type="button" onClick={() => {
+              returnToIdle();
+              setActiveTrait("color");
+              setDraft(newMonster());
+              announce(language === "es-MX" ? "Nuevo monstruo listo para personalizar." : "New monster ready to customize.");
+            }}>＋ {language === "es-MX" ? "Nuevo monstruo" : "New monster"}</button>
+            <button type="button" className="fw-primary" onClick={save}>👾 {tr(ui.saveMonster, language)}</button>
+          </div>
+          <section aria-labelledby="saved-monsters-heading">
+            <h2 id="saved-monsters-heading" className="fw-subheading">{tr(ui.savedMonsters, language)}</h2>
+            {!profile.monsters.length ? <EmptyState emoji="👾">{tr(ui.createMonsterFirst, language)}</EmptyState> : (
+              <div className="monster-collection">
+                {profile.monsters.map((monster) => (
+                  <button
+                    type="button"
+                    aria-pressed={draft.id === monster.id}
+                    key={monster.id}
+                    onClick={() => {
+                      returnToIdle();
+                      setActiveTrait("color");
+                      setDraft({ ...monster });
+                      announce(`${monster.name}: ${tr(ui.selected, language)}`);
+                    }}
+                  >
+                    👾 {monster.name} · {optionLabel(monster.body, language)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+        </section>
+      </div>
+    </>
   );
 }
 
