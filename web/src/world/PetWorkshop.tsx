@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { LocalProfile, PetRecord } from "../types";
 import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
@@ -7,6 +7,7 @@ import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, LocalizedSelect, makeId } from "./common";
 import { completeOnce, hasCompleted, petTrickMission } from "./progression";
 import { PetArt } from "./PetArt";
+import type { PetAction } from "./PetArt";
 
 type Trick = {
   id: string;
@@ -44,6 +45,18 @@ export function PetWorkshop({ profile, update, announce }: { profile: LocalProfi
   });
   const savedPet = profile.pets.find((pet) => pet.id === draft.id) ?? null;
   const learned = useMemo(() => new Set(savedPet?.tricks ?? draft.tricks), [draft.tricks, savedPet?.tricks]);
+  const [performance, setPerformance] = useState<{ action: PetAction; run: number } | null>(null);
+  const performanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (performanceTimer.current) clearTimeout(performanceTimer.current);
+  }, []);
+
+  const perform = (action: PetAction) => {
+    if (performanceTimer.current) clearTimeout(performanceTimer.current);
+    setPerformance({ action, run: Date.now() });
+    performanceTimer.current = setTimeout(() => setPerformance(null), 1600);
+  };
 
   const save = () => {
     const pet = {
@@ -90,6 +103,7 @@ export function PetWorkshop({ profile, update, announce }: { profile: LocalProfi
     }
     update(nextProfile);
     setDraft(nextPet);
+    perform(trick.id as PetAction);
     announce(language === "es-MX"
       ? `${pet.name} aprendió ${trick.name[language]}. Vínculo ${nextPet.bond}/100.${earned.length ? " Ganaste estrellas por un hito de entrenamiento." : ""}`
       : `${pet.name} learned ${trick.name[language]}. Bond ${nextPet.bond}/100.${earned.length ? " You earned stars for a training milestone." : ""}`);
@@ -99,7 +113,7 @@ export function PetWorkshop({ profile, update, announce }: { profile: LocalProfi
     <div className="pet-workshop-layout">
       <section className="fw-builder-layout">
         <article className="fw-pet-stage pet-training-stage" aria-label={draft.name}>
-          <PetArt pet={draft} language={language} />
+          <PetArt key={`${draft.id}-${performance?.run ?? "idle"}`} pet={draft} language={language} action={performance?.action} />
           <h2>{draft.name}</h2>
           <p>{optionLabel(draft.species, language)} · {optionLabel(draft.accessory, language)}</p>
           <label>
@@ -167,11 +181,23 @@ export function PetWorkshop({ profile, update, announce }: { profile: LocalProfi
             {TRICKS.map((trick) => {
               const known = savedPet.tricks.includes(trick.id);
               return (
-                <button type="button" className={known ? "learned" : ""} key={trick.id} disabled={known} onClick={() => train(trick)}>
+                <button
+                  type="button"
+                  className={known ? "learned" : ""}
+                  key={trick.id}
+                  onClick={() => {
+                    if (known) {
+                      perform(trick.id as PetAction);
+                      announce(language === "es-MX" ? `${draft.name} practica ${trick.name[language]}.` : `${draft.name} practices ${trick.name[language]}.`);
+                    } else {
+                      train(trick);
+                    }
+                  }}
+                >
                   <span aria-hidden="true">{trick.emoji}</span>
                   <strong>{trick.name[language]}</strong>
                   <small>{known
-                    ? (language === "es-MX" ? "Aprendido" : "Learned")
+                    ? (language === "es-MX" ? "Practicar" : "Practice")
                     : (language === "es-MX" ? "+12 de vínculo" : "+12 bond")}</small>
                 </button>
               );
