@@ -1,5 +1,6 @@
-/* Permanent, body-specific face polish. The body selector changes the face;
-   legacy eyes/mouth fields do not, so every species keeps a stable identity. */
+/* Permanent, body-specific face art.
+   Faces are sculpted as large color-matched shells, sockets, brows, and snouts
+   so they read as creature anatomy instead of generic eyes pasted on a body. */
 .monster-face,
 .monster-mouth,
 .monster-core {
@@ -7,61 +8,157 @@
   shape-rendering: geometricPrecision;
 }
 
-.monster-face,
-.monster-mouth {
-  filter: drop-shadow(0 7px 7px rgba(0, 0, 0, .42));
+.monster-face--integrated,
+.monster-mouth--integrated {
+  filter:
+    drop-shadow(0 11px 8px rgba(0, 0, 0, .5))
+    drop-shadow(0 0 8px color-mix(in srgb, var(--monster-main) 22%, transparent));
 }
 
-[data-monster-face-treatment="blob-mischief"] .monster-face {
-  filter: drop-shadow(0 7px 10px color-mix(in srgb, var(--monster-main) 32%, rgba(0, 0, 0, .5)));
+.monster-face-shell,
+.monster-snout {
+  paint-order: stroke fill;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-[data-monster-face-treatment="mystic-spirit"] .monster-face,
-[data-monster-face-treatment="mystic-spirit"] .monster-mouth,
-[data-monster-face-treatment="cosmic-mask"] .monster-face,
-[data-monster-face-treatment="cloud-dreamer"] .monster-face {
-  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--monster-main) 62%, transparent));
+.monster-face-shell {
+  filter: saturate(1.06) contrast(1.04);
 }
 
-[data-monster-face-treatment="aqua-creature"] .monster-face {
-  filter: drop-shadow(0 0 9px rgba(103, 232, 249, .42)) drop-shadow(0 7px 7px rgba(0, 0, 0, .4));
+.monster-snout {
+  filter: drop-shadow(0 6px 5px rgba(0, 0, 0, .38));
 }
 
-[data-monster-face-treatment="candy-smile"] .monster-face,
-[data-monster-face-treatment="candy-smile"] .monster-mouth {
-  filter: drop-shadow(0 0 8px rgba(249, 168, 212, .38)) drop-shadow(0 6px 6px rgba(0, 0, 0, .36));
+.monster-core--subtle {
+  opacity: .7;
+  filter: saturate(.94);
 }
 
-[data-monster-face-treatment="mecha-visor"] .monster-face,
-[data-monster-face-treatment="integrated-visor"] .monster-face {
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--monster-main) 58%, transparent)) drop-shadow(0 8px 7px rgba(0, 0, 0, .5));
+/* The integrated shell should remain visually connected to its underlying
+   body rather than floating above it. */
+.monster-v2:not([data-monster-face-treatment="integrated-lizard"]) .monster-premium-body__tint {
+  opacity: .55;
 }
 
-[data-monster-face-treatment="royal-crest"] .monster-face,
-[data-monster-face-treatment="royal-crest"] .monster-mouth {
-  filter: drop-shadow(0 0 8px rgba(253, 230, 138, .34)) drop-shadow(0 7px 7px rgba(0, 0, 0, .42));
+[data-monster-face-treatment="blob-mischief"] .monster-face--integrated {
+  filter:
+    drop-shadow(0 12px 9px rgba(0, 0, 0, .48))
+    drop-shadow(0 0 11px color-mix(in srgb, var(--monster-main) 32%, #8b5cf6 18%));
 }
 
-[data-monster-face-treatment="molten-beast"] .monster-face,
-[data-monster-face-treatment="molten-beast"] .monster-mouth {
-  filter: drop-shadow(0 0 10px rgba(251, 146, 60, .5)) drop-shadow(0 8px 8px rgba(0, 0, 0, .46));
+[data-monster-face-treatment="sculpted-dragon"] .monster-face-shell,
+[data-monster-face-treatment="dino-predator"] .monster-face-shell,
+[data-monster-face-treatment="feral-guardian"] .monster-face-shell {
+  filter: saturate(1.12) contrast(1.1) drop-shadow(0 3px 2px rgba(255, 255, 255, .08));
 }
 
-[data-monster-face-treatment="frost-beast"] .monster-face,
-[data-monster-face-treatment="frost-beast"] .monster-mouth {
-  filter: drop-shadow(0 0 10px rgba(186, 230, 253, .52)) drop-shadow(0 7px 7px rgba(0, 0, 0, .42));
+[data-monster-face-treatment="sculpted-dragon"] .monster-mouth--integrated,
+[data-monster-face-treatment="dino-predator"] .monster-mouth--integrated,
+[data-monster-face-treatment="feral-guardian"] .monster-mouth--integrated {
+  filter:
+    drop-shadow(0 8px 6px rgba(0, 0, 0, .58))
+    drop-shadow(0 0 6px color-mix(in srgb, var(--monster-main) 23%, transparent));
 }
 
-[data-monster-face-treatment="dino-predator"] .monster-face,
-[data-monster-face-treatment="dino-predator"] .monster-mouth {
-  filter: drop-shadow(0 0 8px rgba(134, 239, 172, .3)) drop-shadow(0 8px 8px rgba(0, 0, 0, .48));
+[data-monster-face-treatment="carved-golem"] .monster-face--integrated,
+[data-monster-face-treatment="carved-golem"] .monster-mouth--integrated {
+  filter: drop-shadow(0 12px 4px rgba(0, 0, 0, .58));
+}
+
+[data-monster-face-treatment="carved-golem"] .monster-face-shell,
+[data-monster-face-treatment="carved-golem"] .monster-snout {
+  filter: saturate(.7) contrast(1.2);
+}
+
+[data-monster-face-treatment="mystic-spirit"] .monster-face--integrated,
+[data-monster-face-treatment="mystic-spirit"] .monster-mouth--integrated {
+  filter:
+    drop-shadow(0 0 15px color-mix(in srgb, var(--monster-main) 68%, transparent))
+    drop-shadow(0 9px 7px rgba(0, 0, 0, .4));
+}
+
+[data-monster-face-treatment="cosmic-mask"] .monster-face--integrated,
+[data-monster-face-treatment="cosmic-mask"] .monster-mouth--integrated {
+  filter:
+    drop-shadow(0 0 15px rgba(167, 139, 250, .52))
+    drop-shadow(0 10px 8px rgba(0, 0, 0, .55));
+}
+
+[data-monster-face-treatment="aqua-creature"] .monster-face--integrated,
+[data-monster-face-treatment="aqua-creature"] .monster-mouth--integrated {
+  filter:
+    drop-shadow(0 0 10px rgba(103, 232, 249, .44))
+    drop-shadow(0 10px 8px rgba(0, 0, 0, .46));
+}
+
+[data-monster-face-treatment="candy-smile"] .monster-face--integrated,
+[data-monster-face-treatment="candy-smile"] .monster-mouth--integrated {
+  filter:
+    drop-shadow(0 0 10px rgba(249, 168, 212, .38))
+    drop-shadow(0 9px 7px rgba(0, 0, 0, .42));
+}
+
+[data-monster-face-treatment="mecha-visor"] .monster-face--integrated,
+[data-monster-face-treatment="integrated-visor"] .monster-face--integrated {
+  filter:
+    drop-shadow(0 0 11px color-mix(in srgb, var(--monster-main) 62%, transparent))
+    drop-shadow(0 11px 8px rgba(0, 0, 0, .58));
+}
+
+[data-monster-face-treatment="mecha-visor"] .monster-face-shell,
+[data-monster-face-treatment="integrated-visor"] .monster-face-shell,
+[data-monster-face-treatment="mecha-visor"] .monster-snout,
+[data-monster-face-treatment="integrated-visor"] .monster-snout {
+  filter: saturate(1.04) contrast(1.16);
+}
+
+[data-monster-face-treatment="royal-crest"] .monster-face--integrated,
+[data-monster-face-treatment="royal-crest"] .monster-mouth--integrated {
+  filter:
+    drop-shadow(0 0 10px rgba(253, 230, 138, .38))
+    drop-shadow(0 10px 8px rgba(0, 0, 0, .48));
+}
+
+[data-monster-face-treatment="molten-beast"] .monster-face--integrated,
+[data-monster-face-treatment="molten-beast"] .monster-mouth--integrated {
+  filter:
+    drop-shadow(0 0 14px rgba(251, 146, 60, .58))
+    drop-shadow(0 11px 8px rgba(0, 0, 0, .54));
+}
+
+[data-monster-face-treatment="molten-beast"] .monster-face-shell,
+[data-monster-face-treatment="molten-beast"] .monster-snout {
+  filter: saturate(1.18) contrast(1.12);
+}
+
+[data-monster-face-treatment="frost-beast"] .monster-face--integrated,
+[data-monster-face-treatment="frost-beast"] .monster-mouth--integrated {
+  filter:
+    drop-shadow(0 0 14px rgba(186, 230, 253, .58))
+    drop-shadow(0 10px 8px rgba(0, 0, 0, .46));
+}
+
+[data-monster-face-treatment="cloud-dreamer"] .monster-face--integrated,
+[data-monster-face-treatment="cloud-dreamer"] .monster-mouth--integrated {
+  filter:
+    drop-shadow(0 0 14px rgba(224, 242, 254, .46))
+    drop-shadow(0 8px 7px rgba(0, 0, 0, .38));
+}
+
+/* The Lizard Alien remains the approved benchmark raster with its original
+   face fully integrated into the body image. */
+[data-monster-face-treatment="integrated-lizard"] .monster-premium-body__art {
+  filter: contrast(1.08) saturate(1.04);
 }
 
 @media (max-width: 760px) {
-  .monster-face,
-  .monster-mouth {
-    filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .46));
+  .monster-face--integrated,
+  .monster-mouth--integrated {
+    filter: drop-shadow(0 7px 6px rgba(0, 0, 0, .5));
   }
+
+  .monster-core--subtle { opacity: .76; }
 }
 
 @media (prefers-reduced-motion: reduce) {
