@@ -60,8 +60,8 @@ function slug(value: string) {
   return value.toLowerCase().replace(/\s+/g, "-");
 }
 
-test("every original monster keeps a permanent premium body-specific face", async ({ page }, testInfo) => {
-  test.setTimeout(240_000);
+test("every original monster has a permanent integrated premium face", async ({ page }, testInfo) => {
+  test.setTimeout(260_000);
   const language = testInfo.project.metadata.language as Language;
   const text = copy[language];
   const runtimeErrors: string[] = [];
@@ -78,6 +78,21 @@ test("every original monster keeps a permanent premium body-specific face", asyn
   await expect(page.getByRole("heading", { name: text.world, exact: true })).toBeVisible();
   await openDestination(page, text.monsterLab);
   await expect(page.locator(".monster-lab-preview")).toBeVisible();
+  await expect(page.locator(".monster-studio__body-choice")).toHaveCount(monsterFaces.length);
+
+  const previewColors = await page.locator(".monster-studio__body-choice").evaluateAll((buttons) =>
+    buttons.map((button) => button.getAttribute("data-monster-preview-color")),
+  );
+  expect(previewColors.every(Boolean)).toBe(true);
+  expect(new Set(previewColors).size).toBeGreaterThanOrEqual(15);
+
+  if (["chromium-desktop-en", "webkit-iphone-es"].includes(testInfo.project.name)) {
+    await testInfo.attach("monster-lab-integrated-gallery", {
+      body: await page.screenshot({ fullPage: true, animations: "disabled" }),
+      contentType: "image/png",
+    });
+  }
+
   await activateWithKeyboard(page.locator('.monster-studio__trait[data-trait="body"]'));
 
   for (const [body, treatment] of monsterFaces) {
@@ -92,6 +107,7 @@ test("every original monster keeps a permanent premium body-specific face", asyn
 
     if (body === "Lizard Alien") {
       await expect(stage.locator(".monster-face, .monster-mouth, .monster-core")).toHaveCount(0);
+      await expect(stage.locator(".monster-premium-body__art")).toBeVisible();
     } else {
       const face = stage.locator(".monster-face");
       const mouth = stage.locator(".monster-mouth");
@@ -99,8 +115,14 @@ test("every original monster keeps a permanent premium body-specific face", asyn
       await expect(face).toHaveCount(1);
       await expect(mouth).toHaveCount(1);
       await expect(core).toHaveCount(1);
+      await expect(face).toHaveClass(/monster-face--integrated/);
       await expect(face).toHaveAttribute("data-monster-face-signature", treatment);
+      await expect(face).toHaveAttribute("data-monster-face-integration", "sculpted-shell");
+      await expect(face.locator(".monster-face-shell")).toHaveCount(1);
+      await expect(mouth).toHaveClass(/monster-mouth--integrated/);
       await expect(mouth).toHaveAttribute("data-monster-mouth-signature", treatment);
+      await expect(mouth.locator(".monster-snout")).toHaveCount(1);
+      await expect(core).toHaveClass(/monster-core--subtle/);
       await expect(core).toHaveAttribute("data-monster-core-signature", treatment);
 
       const fit = await stage.evaluate((element) => {
@@ -113,6 +135,8 @@ test("every original monster keeps a permanent premium body-specific face", asyn
           stageHeight: stageBox.height,
           faceWidth: faceBox.width,
           faceHeight: faceBox.height,
+          mouthWidth: mouthBox.width,
+          mouthHeight: mouthBox.height,
           faceLeft: faceBox.left - stageBox.left,
           faceRight: faceBox.right - stageBox.left,
           faceTop: faceBox.top - stageBox.top,
@@ -124,21 +148,23 @@ test("every original monster keeps a permanent premium body-specific face", asyn
         };
       });
 
-      expect(fit.faceWidth, `${body}: face width`).toBeGreaterThan(fit.stageWidth * 0.045);
-      expect(fit.faceWidth, `${body}: face width`).toBeLessThan(fit.stageWidth * 0.58);
-      expect(fit.faceHeight, `${body}: face height`).toBeGreaterThan(5);
-      expect(fit.faceLeft, `${body}: face left`).toBeGreaterThanOrEqual(-4);
-      expect(fit.faceRight, `${body}: face right`).toBeLessThanOrEqual(fit.stageWidth + 4);
-      expect(fit.faceTop, `${body}: face top`).toBeGreaterThanOrEqual(-4);
-      expect(fit.faceBottom, `${body}: face bottom`).toBeLessThan(fit.stageHeight * 0.64);
+      expect(fit.faceWidth, `${body}: integrated face width`).toBeGreaterThan(fit.stageWidth * 0.09);
+      expect(fit.faceWidth, `${body}: integrated face width`).toBeLessThan(fit.stageWidth * 0.66);
+      expect(fit.faceHeight, `${body}: integrated face height`).toBeGreaterThan(fit.stageHeight * 0.045);
+      expect(fit.mouthWidth, `${body}: integrated snout width`).toBeGreaterThan(fit.stageWidth * 0.065);
+      expect(fit.mouthHeight, `${body}: integrated snout height`).toBeGreaterThan(4);
+      expect(fit.faceLeft, `${body}: face left`).toBeGreaterThanOrEqual(-5);
+      expect(fit.faceRight, `${body}: face right`).toBeLessThanOrEqual(fit.stageWidth + 5);
+      expect(fit.faceTop, `${body}: face top`).toBeGreaterThanOrEqual(-5);
+      expect(fit.faceBottom, `${body}: face bottom`).toBeLessThan(fit.stageHeight * 0.66);
       expect(fit.mouthTop, `${body}: mouth top`).toBeGreaterThan(fit.faceTop);
-      expect(fit.mouthBottom, `${body}: mouth bottom`).toBeLessThan(fit.stageHeight * 0.76);
+      expect(fit.mouthBottom, `${body}: mouth bottom`).toBeLessThan(fit.stageHeight * 0.78);
       expect(fit.coreTop, `${body}: core top`).toBeGreaterThan(fit.mouthTop);
       expect(fit.coreBottom, `${body}: core bottom`).toBeLessThan(fit.stageHeight * 0.9);
     }
 
     if (["chromium-desktop-en", "webkit-iphone-es"].includes(testInfo.project.name)) {
-      await testInfo.attach(`monster-face-${slug(body)}`, {
+      await testInfo.attach(`monster-integrated-face-${slug(body)}`, {
         body: await page.locator(".monster-stage").screenshot({ animations: "disabled" }),
         contentType: "image/png",
       });
@@ -150,14 +176,18 @@ test("every original monster keeps a permanent premium body-specific face", asyn
   await page.locator(".monster-lab-name input").fill(savedName);
   await page.locator(".fw-panel > .fw-action-row .fw-primary").click();
   await expect(page.locator(".monster-collection button").filter({ hasText: savedName })).toHaveCount(1);
-  await expect(page.locator('.monster-v2[data-monster-body-art="Royal"]')).toHaveAttribute("data-monster-face-treatment", "royal-crest");
+  const savedRoyal = page.locator('.monster-v2[data-monster-body-art="Royal"]');
+  await expect(savedRoyal).toHaveAttribute("data-monster-face-treatment", "royal-crest");
+  await expect(savedRoyal.locator(".monster-face")).toHaveAttribute("data-monster-face-integration", "sculpted-shell");
 
   await activateWithKeyboard(page.locator(".fw-brand"));
   await expect(page.getByRole("heading", { name: text.world, exact: true })).toBeVisible();
   await openDestination(page, text.monsterHabitats);
   const habitat = page.locator(".monster-habitat-card").filter({ hasText: savedName });
   await expect(habitat).toHaveCount(1);
-  await expect(habitat.locator('.monster-v2[data-monster-body-art="Royal"]')).toHaveAttribute("data-monster-face-treatment", "royal-crest");
+  const habitatRoyal = habitat.locator('.monster-v2[data-monster-body-art="Royal"]');
+  await expect(habitatRoyal).toHaveAttribute("data-monster-face-treatment", "royal-crest");
+  await expect(habitatRoyal.locator(".monster-face")).toHaveAttribute("data-monster-face-integration", "sculpted-shell");
 
   const layout = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
