@@ -58,7 +58,7 @@ describe("premium illustrated monster body atlas", () => {
     expect(PREMIUM_MONSTER_BODIES).toContain("Lizard Alien");
   });
 
-  it("fits permanent faces to the monster bodies that need custom proportions", () => {
+  it("fits accessories to broad bodies with permanent face proportions", () => {
     const jungle = monsterAccessoryLayout("Jungle Beast");
     const stone = monsterAccessoryLayout("Stone Golem");
     const royal = monsterAccessoryLayout("Royal");
