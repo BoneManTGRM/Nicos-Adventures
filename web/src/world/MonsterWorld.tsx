@@ -122,21 +122,21 @@ function newMonster(): MonsterRecord {
   return {
     id: makeId("monster"),
     name: "Glimmer",
-    body: "Blob",
-    eyes: "Two eyes",
-    horns: "No horns",
-    wings: "No wings",
+    body: "Dragon",
+    eyes: "Three eyes",
+    horns: "Crystal horns",
+    wings: "Star wings",
     color: "Aqua",
     pattern: "Galaxy",
     power: "Rainbow shield",
-    personality: "Mischievous",
+    personality: "Curious",
     friendship: 1,
     habitat: "Crystal Cave",
     mouth: "Fang smile",
-    arms: "Tiny arms",
-    legs: "Tiny feet",
-    tail: "No tail",
-    texture: "Slime",
+    arms: "Claw arms",
+    legs: "Dinosaur legs",
+    tail: "Dragon tail",
+    texture: "Crystal",
     animation: "Bounce",
   };
 }
@@ -287,7 +287,7 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
     : labCopy.ready[language];
 
   return (
-    <section className="monster-lab-experience" aria-labelledby="monster-lab-command-title">
+    <section className="monster-lab-experience" aria-labelledby="page-title">
       <Suspense fallback={null}><MonsterLabVisuals /></Suspense>
 
       <header className="monster-lab-commandbar">
@@ -302,7 +302,7 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
         <div className="monster-lab-commandbar__identity">
           <div className="monster-lab-commandbar__badge">
             <span aria-hidden="true">🧪</span>
-            <h2 id="monster-lab-command-title">{labCopy.title[language]}</h2>
+            <h2 aria-hidden="true">{labCopy.title[language]}</h2>
           </div>
           <p>{labCopy.description[language]}</p>
         </div>
