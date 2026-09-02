@@ -3,7 +3,6 @@ import type { MonsterRecord } from "../types";
 import { monsterAccessoryLayout, monsterBodyArtStyle } from "./monsterArt";
 import { MonsterFaceArt, monsterFaceTreatment } from "./monsterFaceArt";
 import { monsterColorSwatch } from "./monsterCreatureStudio";
-import "./monster-portrait.css";
 
 export function MonsterPortrait({
   body,
