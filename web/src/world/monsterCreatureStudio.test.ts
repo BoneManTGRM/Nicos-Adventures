@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { MONSTER_OPTIONS } from "./catalogs";
-import { MONSTER_FAMILY_PRESETS, applyMonsterFamilyPreset } from "./monsterFamily";
 import {
   MONSTER_TRAITS,
   monsterColorSwatch,
@@ -11,56 +10,38 @@ import {
 import type { MonsterRecord } from "../types";
 
 const monster = {
-  id: "test",
-  name: "Glimmer",
-  body: "Lizard Alien",
-  eyes: "Two eyes",
-  horns: "No horns",
-  wings: "No wings",
-  color: "Aqua",
-  pattern: "Solid",
-  power: "Rainbow shield",
-  personality: "Curious",
-  friendship: 1,
-  habitat: "Crystal Cave",
-  mouth: "Dragon snout",
-  arms: "Claw arms",
-  legs: "Dinosaur legs",
-  tail: "No tail",
-  texture: "Smooth",
-  animation: "Bounce",
+  body: "Dragon",
 } as MonsterRecord;
 
-describe("Monster Lab permanent-face creature contract", () => {
-  it("exposes only the two dependable simple controls", () => {
+describe("Monster Lab visual creature contract", () => {
+  it("offers only controls that have a dependable visual result", () => {
     const keys = MONSTER_TRAITS.map((trait) => trait.key);
-    expect(keys).toEqual(["body", "color"]);
-    expect(monsterVisualTraits(monster).map((trait) => trait.key)).toEqual(keys);
+    expect(keys).toEqual(["body", "wings", "arms", "tail", "color", "pattern", "texture"]);
+    expect(new Set(keys).size).toBe(keys.length);
+    expect(keys.every((key) => key in MONSTER_OPTIONS)).toBe(true);
   });
 
-  it("locks the body selector to the premium Lizard Alien family", () => {
+  it("routes traits to stable visual groups", () => {
     expect(monsterTrait("body")).toMatchObject({ icon: "◉", group: "form" });
-    expect(monsterTrait("color")).toMatchObject({ icon: "●", group: "style" });
-    expect(monsterVisualOptions("body", MONSTER_OPTIONS.body)).toEqual(["Lizard Alien"]);
+    expect(monsterTrait("wings")).toMatchObject({ icon: "🪽", group: "features" });
+    expect(monsterTrait("texture")).toMatchObject({ icon: "✺", group: "style" });
   });
 
-  it("ships a large family of permanent-face monsters", () => {
-    expect(MONSTER_FAMILY_PRESETS.length).toBeGreaterThanOrEqual(18);
-    expect(new Set(MONSTER_FAMILY_PRESETS.map((preset) => preset.id)).size).toBe(MONSTER_FAMILY_PRESETS.length);
-    expect(new Set(MONSTER_FAMILY_PRESETS.map((preset) => preset.name)).size).toBe(MONSTER_FAMILY_PRESETS.length);
+  it("shows arm variants only for the body atlas that supports them", () => {
+    expect(monsterVisualTraits(monster).map((trait) => trait.key)).not.toContain("arms");
+    expect(monsterVisualTraits({ ...monster, body: "Alien" }).map((trait) => trait.key)).toContain("arms");
   });
 
-  it("applies a family preset without replacing the permanent face species", () => {
-    const preset = MONSTER_FAMILY_PRESETS.find((item) => item.name === "Ember")!;
-    expect(applyMonsterFamilyPreset(monster, preset)).toMatchObject({
-      name: "Ember",
-      body: "Lizard Alien",
-      color: "Orange",
-      wings: "No wings",
-      tail: "No tail",
-      pattern: "Solid",
-      texture: "Smooth",
-    });
+  it("keeps the lizard alien's integrated limbs out of accessory controls", () => {
+    const visible = monsterVisualTraits({ ...monster, body: "Lizard Alien" }).map((trait) => trait.key);
+    expect(visible).not.toContain("arms");
+    expect(visible).not.toContain("tail");
+    expect(visible).toContain("wings");
+  });
+
+  it("does not offer duplicate wing and tail variants that render identically", () => {
+    expect(monsterVisualOptions("wings", MONSTER_OPTIONS.wings)).toEqual(["No wings", "Star wings"]);
+    expect(monsterVisualOptions("tail", MONSTER_OPTIONS.tail)).toEqual(["No tail", "Dragon tail"]);
   });
 
   it("gives every catalog color a distinct visible swatch", () => {
