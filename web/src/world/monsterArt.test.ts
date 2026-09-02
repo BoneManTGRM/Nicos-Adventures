@@ -1,99 +1,67 @@
 import { describe, expect, it } from "vitest";
 import { MONSTER_OPTIONS } from "./catalogs";
 import {
-  PREMIUM_ALIEN_ARMS,
+  MONSTER_BODY_ART,
   PREMIUM_MONSTER_BODIES,
   monsterAccessoryLayout,
   monsterAccessoryTransform,
+  monsterBodyArt,
   monsterBodyArtStyle,
 } from "./monsterArt";
 
-describe("premium illustrated monster body atlas", () => {
-  it("maps every schema-v4 monster body to exactly one atlas cell", () => {
+describe("approved Monster Lab character artwork", () => {
+  it("maps every schema-v4 body to one of the 16 actual reference monsters", () => {
     expect(PREMIUM_MONSTER_BODIES).toEqual(MONSTER_OPTIONS.body);
-    expect(new Set(PREMIUM_MONSTER_BODIES).size).toBe(MONSTER_OPTIONS.body.length);
+    expect(Object.keys(MONSTER_BODY_ART)).toEqual(PREMIUM_MONSTER_BODIES);
+    expect(new Set(PREMIUM_MONSTER_BODIES).size).toBe(16);
+    expect(Object.values(MONSTER_BODY_ART).every((art) => art.source === "approved-user-reference")).toBe(true);
   });
 
-  it("keeps stable atlas registration with a safe legacy fallback", () => {
+  it("uses the four checksum-generated reference rows and exact cell positions", () => {
+    const images = new Set(Object.values(MONSTER_BODY_ART).map((art) => art.image));
+    expect(images.size).toBe(4);
+    for (const image of images) expect(image).toContain("reference-monsters-row-");
+
     expect(monsterBodyArtStyle("Blob", "#22d3ee")).toMatchObject({
-      "--monster-body-position": "0% 0%",
+      "--monster-body-position": "0% 50%",
+      "--monster-body-size": "400% 100%",
+      "--monster-body-aspect": "1 / 1",
+      "--monster-body-width": "100%",
       "--monster-body-color": "#22d3ee",
+      "--monster-reference-source": "approved-user-reference",
     });
-    expect(monsterBodyArtStyle("Mecha", "#8b5cf6")).toMatchObject({
-      "--monster-body-position": "75% 50%",
+    expect(monsterBodyArtStyle("Stone Golem", "#8b5cf6")).toMatchObject({
+      "--monster-body-position": "100% 50%",
+    });
+    expect(monsterBodyArtStyle("Spirit", "#e2e8f0")).toMatchObject({
+      "--monster-body-position": "0% 50%",
     });
     expect(monsterBodyArtStyle("Cloud", "#e2e8f0")).toMatchObject({
-      "--monster-body-position": "100% 100%",
+      "--monster-body-position": "100% 50%",
     });
+  });
+
+  it("keeps a safe Blob fallback for old or malformed saved records", () => {
+    expect(monsterBodyArt("Unknown legacy body")).toBe(MONSTER_BODY_ART.Blob);
     expect(monsterBodyArtStyle("Unknown legacy body", "#22d3ee")).toMatchObject({
-      "--monster-body-position": "0% 0%",
+      "--monster-body-position": "0% 50%",
+      "--monster-reference-source": "approved-user-reference",
     });
   });
 
-  it("gives every saved alien arm choice a distinct premium body", () => {
-    expect(PREMIUM_ALIEN_ARMS).toEqual(MONSTER_OPTIONS.arms);
-    expect(monsterBodyArtStyle("Alien", "#a3e635", "Tiny arms")).toMatchObject({
-      "--monster-body-position": "0% 0%",
-      "--monster-body-size": "400% 200%",
-      "--monster-body-color": "#a3e635",
-    });
-    expect(monsterBodyArtStyle("Alien", "#a3e635", "Tentacles")).toMatchObject({
-      "--monster-body-position": "100% 0%",
-    });
-    expect(monsterBodyArtStyle("Alien", "#a3e635", "Wing arms")).toMatchObject({
-      "--monster-body-position": `${2 * (100 / 3)}% 100%`,
-    });
-    expect(monsterBodyArtStyle("Alien", "#a3e635", "Unknown legacy arms")).toMatchObject({
-      "--monster-body-position": "0% 0%",
-    });
+  it("does not replace the approved body when legacy arm data changes", () => {
+    const tiny = monsterBodyArtStyle("Alien", "#84cc16", "Tiny arms");
+    const wing = monsterBodyArtStyle("Alien", "#84cc16", "Wing arms");
+    const legacy = monsterBodyArtStyle("Alien", "#84cc16", "Unknown legacy arms");
+    expect(wing).toEqual(tiny);
+    expect(legacy).toEqual(tiny);
   });
 
-  it("uses standalone full-body art for the lizard alien", () => {
-    expect(monsterBodyArtStyle("Lizard Alien", "#22d3ee")).toMatchObject({
-      "--monster-body-position": "center",
-      "--monster-body-size": "contain",
-      "--monster-body-aspect": "1",
-      "--monster-body-width": "100%",
-    });
-    expect(PREMIUM_MONSTER_BODIES).toContain("Lizard Alien");
-  });
-
-  it("fits accessories to broad bodies with permanent face proportions", () => {
-    const jungle = monsterAccessoryLayout("Jungle Beast");
-    const stone = monsterAccessoryLayout("Stone Golem");
-    const royal = monsterAccessoryLayout("Royal");
-    const alien = monsterAccessoryLayout("Alien");
-    const lizard = monsterAccessoryLayout("Lizard Alien");
-
-    expect(jungle.face).toEqual({ x: 0, y: -90, scale: 0.62 });
-    expect(jungle.mouth).toEqual({ x: 0, y: -145, scale: 0.56 });
-    expect(stone.face).toEqual({ x: 0, y: -145, scale: 0.46 });
-    expect(stone.horns.scale).toBeLessThan(0.4);
-    expect(stone.wings.scale).toBeLessThan(0.6);
-    expect(royal.face).toEqual({ x: 0, y: -88, scale: 0.6 });
-    expect(royal.mouth).toEqual({ x: 0, y: -158, scale: 0.52 });
-    expect(royal.horns.scale).toBe(0);
-    expect(alien.face).toEqual({ x: 0, y: -105, scale: 0.46 });
-    expect(alien.mouth).toEqual({ x: 0, y: -155, scale: 0.5 });
-    expect(alien.horns).toEqual({ x: 0, y: -72, scale: 0.22 });
-    expect(alien.core.y).toBeLessThan(-100);
-    expect(monsterAccessoryLayout("Spirit").face.scale).toBeGreaterThan(0.5);
-    expect(monsterAccessoryLayout("Cosmic").face.scale).toBeGreaterThan(0.5);
-    expect(monsterAccessoryLayout("Aquatic").face.scale).toBeGreaterThan(0.5);
-    expect(monsterAccessoryLayout("Candy").face.scale).toBeGreaterThan(0.5);
-    expect(monsterAccessoryLayout("Volcano").face.scale).toBeGreaterThan(0.5);
-    expect(monsterAccessoryLayout("Ice Beast").face.scale).toBeGreaterThan(0.5);
-    expect(monsterAccessoryLayout("Dinosaur").face.scale).toBeGreaterThan(0.5);
-    expect(monsterAccessoryLayout("Cloud").face.scale).toBeGreaterThan(0.5);
-    expect(lizard.tail.scale).toBe(0);
-    expect(monsterAccessoryTransform("face", stone.face)).toBe(
-      "translate(0 -145) translate(260 246) scale(0.46) translate(-260 -246)",
+  it("retains deterministic accessory helpers for old saved data without drawing overlays", () => {
+    const layout = monsterAccessoryLayout("Stone Golem");
+    expect(layout.face).toEqual({ x: 0, y: 0, scale: 1 });
+    expect(monsterAccessoryTransform("face", layout.face)).toBe(
+      "translate(0 0) translate(260 226) rotate(0) scale(1) translate(-260 -226)",
     );
-    expect(monsterAccessoryTransform("mouth", stone.mouth)).toBe(
-      "translate(0 -205) translate(260 330) scale(0.38) translate(-260 -330)",
-    );
-    expect(monsterBodyArtStyle("Stone Golem", "#22d3ee")).toMatchObject({
-      "--monster-body-position": "75% 0%",
-    });
   });
 });
