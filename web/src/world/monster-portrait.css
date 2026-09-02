@@ -70,10 +70,19 @@
   pointer-events: none;
 }
 
-.monster-portrait .monster-face,
-.monster-portrait .monster-mouth,
-.monster-portrait .monster-core {
-  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .5));
+.monster-portrait .monster-face--integrated,
+.monster-portrait .monster-mouth--integrated {
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .62));
+}
+
+.monster-portrait .monster-face-shell,
+.monster-portrait .monster-snout {
+  filter: saturate(1.08) contrast(1.08);
+}
+
+.monster-portrait .monster-core--subtle {
+  opacity: .42;
+  filter: none;
 }
 
 .monster-portrait[data-monster-face-treatment="integrated-lizard"] .monster-portrait__body {
