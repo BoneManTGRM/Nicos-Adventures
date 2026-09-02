@@ -15,7 +15,6 @@ import {
 } from "./monsterMovement";
 import { completeOnce, hasCompleted, monsterFriendshipMission } from "./progression";
 import "./monster-movement-poses.css";
-import "./monster-movement-runtime.css";
 
 function newMonster(): MonsterRecord {
   return {
