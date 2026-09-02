@@ -7,56 +7,54 @@ export type MonsterTraitKey = Exclude<
 
 export type MonsterTraitGroup = "form" | "features" | "style";
 
+/**
+ * The approved monsters are finished character illustrations. Monster Lab now
+ * exposes only controls that can change those assets without replacing their
+ * anatomy or permanent faces.
+ */
 export const MONSTER_TRAITS: ReadonlyArray<{
   key: MonsterTraitKey;
   icon: string;
   group: MonsterTraitGroup;
 }> = [
   { key: "body", icon: "◉", group: "form" },
-  { key: "wings", icon: "🪽", group: "features" },
-  { key: "arms", icon: "✦", group: "features" },
-  { key: "tail", icon: "〰", group: "features" },
   { key: "color", icon: "●", group: "style" },
   { key: "pattern", icon: "▧", group: "style" },
   { key: "texture", icon: "✺", group: "style" },
 ];
 
-const BINARY_VISUAL_OPTIONS: Partial<Record<MonsterTraitKey, readonly string[]>> = {
-  wings: ["No wings", "Star wings"],
-  tail: ["No tail", "Dragon tail"],
-};
-
-export function monsterVisualTraits(monster: MonsterRecord) {
-  return MONSTER_TRAITS.filter((trait) => {
-    if (trait.key === "arms") return monster.body === "Alien";
-    if (trait.key === "tail") return monster.body !== "Lizard Alien";
-    return true;
-  });
-}
-
-export function monsterVisualOptions(key: MonsterTraitKey, options: readonly string[]): readonly string[] {
-  return BINARY_VISUAL_OPTIONS[key] ?? options;
-}
-
-const MONSTER_COLORS: Record<string, string> = {
+export const MONSTER_COLOR_SWATCHES: Readonly<Record<string, string>> = Object.freeze({
   Aqua: "#22d3ee",
   Purple: "#8b5cf6",
   Lime: "#84cc16",
-  Orange: "#fb923c",
-  Pink: "#f472b6",
-  Blue: "#3b82f6",
+  Pink: "#ec4899",
+  Orange: "#f97316",
+  Silver: "#cbd5e1",
+  "Midnight blue": "#1e3a8a",
   Red: "#ef4444",
-  Gold: "#facc15",
-  Midnight: "#172554",
-  Pearl: "#e2e8f0",
-  Emerald: "#10b981",
-  Crimson: "#be123c",
-};
+  White: "#f8fafc",
+  "Black and chrome": "#94a3b8",
+});
+
+const OPTION_CAPS: Readonly<Partial<Record<MonsterTraitKey, number>>> = Object.freeze({
+  body: 16,
+  color: 10,
+  pattern: 8,
+  texture: 8,
+});
 
 export function monsterTrait(key: MonsterTraitKey) {
   return MONSTER_TRAITS.find((trait) => trait.key === key) ?? MONSTER_TRAITS[0];
 }
 
+export function monsterVisualTraits(_monster: Pick<MonsterRecord, "body">) {
+  return MONSTER_TRAITS;
+}
+
+export function monsterVisualOptions(key: MonsterTraitKey, options: readonly string[]) {
+  return options.slice(0, OPTION_CAPS[key] ?? options.length);
+}
+
 export function monsterColorSwatch(color: string) {
-  return MONSTER_COLORS[color] ?? (color || "#22d3ee");
+  return MONSTER_COLOR_SWATCHES[color] ?? MONSTER_COLOR_SWATCHES.Aqua;
 }
