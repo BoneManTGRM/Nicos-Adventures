@@ -20,3 +20,6 @@ venv/
 # Browser quality evidence
 web/playwright-report/
 web/test-results/
+
+# Generated from the checked-in, checksum-verified approved Monster Lab source
+web/src/assets/monsters/reference/*.webp
