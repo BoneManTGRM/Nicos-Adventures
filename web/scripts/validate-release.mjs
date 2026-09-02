@@ -254,8 +254,13 @@ if (roboLab.includes("BoltBotConfigurationGate") || roboLab.includes("evaluateBo
     !roboLab.includes("ROBOT_MOVEMENTS") || !roboLab.includes("Continue to the test chamber")) {
   throw new Error("Robo Lab still exposes retired customization instead of the movement-only experience");
 }
-if (monsterWorld.includes("monster-precision") || monsterStudio.includes('key: "eyes"') || monsterStudio.includes('key: "mouth"') || monsterStudio.includes('key: "horns"')) {
+if (monsterWorld.includes("monster-precision") || monsterStudio.includes('key: "eyes"') || monsterStudio.includes('key: "mouth"')) {
   throw new Error("Monster Lab still exposes facial controls that are not rendered by the premium body art");
+}
+if (!monsterStudio.includes('key: "horns"') ||
+    !featureArt.includes('const hasHorns = !String(monster.horns || "No horns").toLowerCase().includes("no ");') ||
+    !featureArt.includes('data-monster-horns={hasHorns ? "on" : "off"}')) {
+  throw new Error("Monster Lab horn controls are not connected to the visible creature layer");
 }
 if (!animalForest.includes("animal-field-station") || !animalForest.includes("animal-field-dashboard") ||
     !animalForest.includes("Wildlife Collection") || !animalForest.includes("Open scene") || !animalForest.includes("animal-field-station__movements")) {
