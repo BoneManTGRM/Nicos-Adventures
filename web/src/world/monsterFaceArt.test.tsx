@@ -31,35 +31,29 @@ const baseMonster: MonsterRecord = {
   animation: "Bounce",
 };
 
-describe("permanent body-specific monster faces", () => {
-  it("covers every original monster body with one unique face treatment", () => {
+describe("painted-in permanent monster faces", () => {
+  it("covers all 16 approved bodies with stable identity labels", () => {
     expect(PREMIUM_MONSTER_FACE_BODIES).toEqual(MONSTER_OPTIONS.body);
     expect(Object.keys(MONSTER_FACE_TREATMENTS)).toHaveLength(MONSTER_OPTIONS.body.length);
     expect(new Set(Object.values(MONSTER_FACE_TREATMENTS)).size).toBe(MONSTER_OPTIONS.body.length);
   });
 
-  it.each(MONSTER_OPTIONS.body)("renders %s with its permanent face signature", (body) => {
+  it.each(MONSTER_OPTIONS.body)("renders %s without a generic face overlay", (body) => {
     const monster = { ...baseMonster, id: `face-${body}`, body };
     const treatment = monsterFaceTreatment(body);
     const html = renderToStaticMarkup(<MonsterStage monster={monster} language="en" />);
 
+    expect(monsterHasIntegratedFace(body)).toBe(true);
     expect(html).toContain(`data-monster-body-art="${body}"`);
     expect(html).toContain(`data-monster-face-treatment="${treatment}"`);
-
-    if (monsterHasIntegratedFace(body)) {
-      expect(body).toBe("Lizard Alien");
-      expect(html).not.toContain('class="monster-face');
-      expect(html).not.toContain('class="monster-mouth');
-      expect(html).not.toContain('class="monster-core');
-      return;
-    }
-
-    expect(html).toContain(`data-monster-face-signature="${treatment}"`);
-    expect(html).toContain(`data-monster-mouth-signature="${treatment}"`);
-    expect(html).toContain(`data-monster-core-signature="${treatment}"`);
+    expect(html).not.toContain('class="monster-face');
+    expect(html).not.toContain('class="monster-mouth');
+    expect(html).not.toContain('class="monster-core');
+    expect(html).not.toContain("data-monster-face-signature");
+    expect(html).not.toContain("data-monster-mouth-signature");
   });
 
-  it("keeps each body face unchanged when legacy face fields differ", () => {
+  it("keeps the approved body image unchanged when legacy face fields differ", () => {
     for (const body of MONSTER_OPTIONS.body) {
       const first = renderToStaticMarkup(
         <MonsterStage
@@ -78,7 +72,8 @@ describe("permanent body-specific monster faces", () => {
     }
   });
 
-  it("keeps the established premium treatments stable where compatibility matters", () => {
+  it("retains stable treatment names for saves, tests, and analytics", () => {
+    expect(monsterFaceTreatment("Blob")).toBe("blob-mischief");
     expect(monsterFaceTreatment("Dragon")).toBe("sculpted-dragon");
     expect(monsterFaceTreatment("Jungle Beast")).toBe("feral-guardian");
     expect(monsterFaceTreatment("Stone Golem")).toBe("carved-golem");
