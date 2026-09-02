@@ -68,12 +68,21 @@ async function selectBody(page: Page, body: string) {
 
 async function playMovement(page: Page, movement: typeof movements[number]) {
   const button = page.locator(`[data-monster-motion="${movement}"]`);
+  const creature = page.locator(".monster-v2");
   await activate(button);
   await expect(button).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".monster-lab-preview")).toHaveAttribute("data-monster-motion-pose", movement);
   await expect(page.locator(".monster-stage")).toHaveClass(new RegExp(`monster-stage--${movement}`));
-  await expect.poll(async () => page.locator(".monster-v2").evaluate((element) => getComputedStyle(element).animationName))
-    .toMatch(/^ml(Bounce|Spin|Roar|Fly|Levitate|Glide|Dance|Sleep|Celebrate)$/);
+
+  const reducedMotion = await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if (reducedMotion) {
+    await expect.poll(async () => creature.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
+    const transform = await creature.evaluate((element) => getComputedStyle(element).transform);
+    expect(transform).not.toBe("none");
+  } else {
+    await expect.poll(async () => creature.evaluate((element) => getComputedStyle(element).animationName))
+      .toMatch(/^ml(Bounce|Spin|Roar|Fly|Levitate|Glide|Dance|Sleep|Celebrate)$/);
+  }
 }
 
 function slug(value: string) {
