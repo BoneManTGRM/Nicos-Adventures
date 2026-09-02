@@ -3,6 +3,7 @@ import { fieldLabel, tr } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
 import type { Language, MonsterRecord } from "../types";
 import { MONSTER_OPTIONS } from "./catalogs";
+import type { PremiumMonsterBody } from "./monsterArt";
 import { MonsterPortrait } from "./MonsterPortrait";
 import {
   monsterColorSwatch,
@@ -14,8 +15,8 @@ import {
 import "./monster-creature-studio.css";
 
 const copy = {
-  eyebrow: { en: "Monster Lab · Creature sculpting table", "es-MX": "Laboratorio de monstruos · Mesa para esculpir criaturas" },
-  title: { en: "Sculpt a creature you can see", "es-MX": "Esculpe una criatura que puedas ver" },
+  eyebrow: { en: "Monster Lab · Creature builder", "es-MX": "Laboratorio de monstruos · Constructor de criaturas" },
+  title: { en: "Build your monster", "es-MX": "Construye tu monstruo" },
   body: {
     en: "Choose a creature, then change its color and traits. Its permanent premium face always stays with its body.",
     "es-MX": "Elige una criatura y luego cambia su color y sus rasgos. Su cara prémium permanente siempre se queda con su cuerpo.",
@@ -34,6 +35,29 @@ const copy = {
     "es-MX": { form: "Forma", features: "Características", style: "Estilo" },
   },
 } as const;
+
+const BODY_PREVIEW_COLORS = {
+  Blob: "#19c6e9",
+  Dragon: "#ef5538",
+  "Jungle Beast": "#8eaa28",
+  "Stone Golem": "#7d8a94",
+  Spirit: "#37dcff",
+  Cosmic: "#7250dc",
+  Aquatic: "#1bc9df",
+  Candy: "#e765b0",
+  Mecha: "#5ac9ee",
+  Royal: "#9365df",
+  Volcano: "#e24d26",
+  "Ice Beast": "#7bdcff",
+  Alien: "#47d6a8",
+  "Lizard Alien": "#a7ebff",
+  Dinosaur: "#8c9f2d",
+  Cloud: "#dceeff",
+} as const satisfies Record<PremiumMonsterBody, string>;
+
+export function monsterBodyPreviewColor(body: string): string {
+  return BODY_PREVIEW_COLORS[body as PremiumMonsterBody] ?? BODY_PREVIEW_COLORS.Blob;
+}
 
 function choiceStyle(trait: MonsterTraitKey, option: string): CSSProperties | undefined {
   if (trait !== "color") return undefined;
@@ -84,11 +108,13 @@ export function MonsterCreatureStudio({
           {bodyOptions.map((option) => {
             const selected = monster.body === option;
             const optionName = optionLabel(option, language);
+            const previewColor = selected ? monsterColorSwatch(monster.color) : monsterBodyPreviewColor(option);
             return (
               <button
                 type="button"
                 className="monster-studio__choice monster-studio__body-choice"
                 data-option={option}
+                data-monster-preview-color={previewColor}
                 aria-pressed={selected}
                 aria-label={`${optionName}${selected ? ` · ${tr(copy.applied, language)}` : ""}`}
                 key={option}
@@ -96,7 +122,7 @@ export function MonsterCreatureStudio({
               >
                 <MonsterPortrait
                   body={option}
-                  color={monster.color}
+                  color={previewColor}
                   arms={option === monster.body ? monster.arms : "Tiny arms"}
                   label={language === "es-MX" ? `Vista de ${optionName}` : `${optionName} preview`}
                 />
