@@ -58,16 +58,22 @@ describe("premium illustrated monster body atlas", () => {
     expect(PREMIUM_MONSTER_BODIES).toContain("Lizard Alien");
   });
 
-  it("fits accessories to broad bodies without changing their body art", () => {
+  it("fits permanent faces to the monster bodies that need custom proportions", () => {
+    const jungle = monsterAccessoryLayout("Jungle Beast");
     const stone = monsterAccessoryLayout("Stone Golem");
+    const royal = monsterAccessoryLayout("Royal");
     const alien = monsterAccessoryLayout("Alien");
     const lizard = monsterAccessoryLayout("Lizard Alien");
 
+    expect(jungle.face).toEqual({ x: 0, y: -95, scale: 0.6 });
+    expect(jungle.mouth).toEqual({ x: 0, y: -145, scale: 0.55 });
     expect(stone.face).toEqual({ x: 0, y: -145, scale: 0.46 });
     expect(stone.horns.scale).toBeLessThan(0.4);
     expect(stone.wings.scale).toBeLessThan(0.6);
-    expect(alien.face).toEqual({ x: 0, y: -140, scale: 0.27 });
-    expect(alien.mouth).toEqual({ x: 0, y: -166, scale: 0.3 });
+    expect(royal.face).toEqual({ x: 0, y: -90, scale: 0.58 });
+    expect(royal.mouth).toEqual({ x: 0, y: -165, scale: 0.52 });
+    expect(alien.face).toEqual({ x: 0, y: -105, scale: 0.45 });
+    expect(alien.mouth).toEqual({ x: 0, y: -162, scale: 0.48 });
     expect(alien.horns).toEqual({ x: 0, y: -72, scale: 0.22 });
     expect(alien.core.y).toBeLessThan(-100);
     expect(lizard.tail.scale).toBe(0);
