@@ -117,11 +117,7 @@ test("all original monsters have body-safe movement images", async ({ page }, te
     await expect(page.locator(".monster-lab-preview")).toHaveAttribute("data-monster-motion-mass", /^(light|medium|heavy)$/);
     await expect(page.locator(".monster-lab-preview")).toHaveAttribute("data-monster-motion-locomotion", /^(ground|winged|floating|swimming|slime|mechanical)$/);
 
-    if (body === "Lizard Alien") {
-      await expect(stage.locator(".monster-face, .monster-mouth, .monster-core")).toHaveCount(0);
-    } else {
-      await expect(stage.locator(".monster-face")).toHaveAttribute("data-monster-face-signature", treatment);
-    }
+    await expect(stage.locator(".monster-face, .monster-mouth, .monster-core")).toHaveCount(0);
   }
 
   const representativeBodies = ["Blob", "Dragon", "Spirit", "Aquatic", "Mecha", "Lizard Alien", "Cloud"] as const;

@@ -163,9 +163,6 @@
 
 .monster-traits--rear { z-index: 1; }
 .monster-traits--front { z-index: 4; }
-.monster-traits--front .monster-face,
-.monster-traits--front .monster-mouth,
-.monster-traits--front .monster-core { display: none; }
 .monster-anatomy { transform-origin: 50% 78%; }
 .monster-wings { opacity: .78; }
 .monster-tail { opacity: .9; }

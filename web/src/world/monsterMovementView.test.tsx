@@ -35,7 +35,7 @@ describe("Monster Lab movement images", () => {
       expect(html).toContain(`monster-stage monster-stage--${movement.pose}`);
       expect(html).toContain('data-monster-body-art="Dragon"');
       expect(html).toContain('data-monster-face-treatment="sculpted-dragon"');
-      expect(html).toContain('data-monster-face-signature="sculpted-dragon"');
+      expect(html).not.toContain('class="monster-face"');
       expect(html).toContain("dragon.webp");
     }
   });
@@ -79,7 +79,7 @@ describe("Monster Lab movement images", () => {
 
       expect(html).toContain(`data-monster-body-art="${body}"`);
       expect(html).toContain(`data-monster-face-treatment="${treatment}"`);
-      expect(html).toContain(`data-monster-face-signature="${treatment}"`);
+      expect(html).not.toContain('class="monster-face"');
       expect(html).toContain("monster-stage--celebrate");
     }
   });

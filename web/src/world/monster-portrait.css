@@ -70,10 +70,6 @@
   pointer-events: none;
 }
 
-.monster-portrait__traits .monster-face,
-.monster-portrait__traits .monster-mouth,
-.monster-portrait__traits .monster-core { display: none; }
-
 .monster-portrait .monster-face,
 .monster-portrait .monster-mouth,
 .monster-portrait .monster-core {

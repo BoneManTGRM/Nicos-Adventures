@@ -13,7 +13,7 @@ describe("Monster Lab premium body portraits", () => {
     const html = render("Dragon");
     expect(html).toContain('data-monster-portrait-body="Dragon"');
     expect(html).toContain('data-monster-face-treatment="sculpted-dragon"');
-    expect(html).toContain('data-monster-face-signature="sculpted-dragon"');
+    expect(html).not.toContain('class="monster-face"');
     expect(html).toContain("dragon.webp");
   });
 
@@ -30,6 +30,6 @@ describe("Monster Lab premium body portraits", () => {
     );
     expect(html).toContain("alien.webp");
     expect(html).toContain('data-monster-face-treatment="integrated-visor"');
-    expect(html).toContain('data-monster-face-signature="integrated-visor"');
+    expect(html).not.toContain('class="monster-face"');
   });
 });

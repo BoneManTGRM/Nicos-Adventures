@@ -36,7 +36,7 @@ export function monsterFaceTreatment(body: string): MonsterFaceTreatment {
 }
 
 export function monsterHasIntegratedFace(body: string): boolean {
-  return monsterFaceTreatment(body) === "integrated-lizard";
+  return Object.prototype.hasOwnProperty.call(MONSTER_FACE_TREATMENTS, body);
 }
 
 type MonsterFaceArtProps = Readonly<{
@@ -312,7 +312,7 @@ function coreGlyph(treatment: MonsterFaceTreatment, { color, coreFill }: FaceRen
 
 export function MonsterFaceArt({ body, monsterId, color, layout }: MonsterFaceArtProps) {
   const treatment = monsterFaceTreatment(body);
-  if (treatment === "integrated-lizard") return null;
+  if (monsterHasIntegratedFace(body)) return null;
 
   const context: FaceRenderContext = {
     color,
