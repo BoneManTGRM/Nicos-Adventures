@@ -90,8 +90,8 @@ const DRAGON_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
 
 const JUNGLE_BEAST_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
   ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -95, scale: 0.6 },
-  mouth: { x: 0, y: -145, scale: 0.55 },
+  face: { x: 0, y: -90, scale: 0.62 },
+  mouth: { x: 0, y: -145, scale: 0.56 },
 };
 
 const STONE_GOLEM_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
@@ -102,16 +102,70 @@ const STONE_GOLEM_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
 
 const ROYAL_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
   ...COMPACT_ACCESSORY_LAYOUT,
-  face: { x: 0, y: -90, scale: 0.58 },
-  mouth: { x: 0, y: -165, scale: 0.52 },
+  face: { x: 0, y: -88, scale: 0.6 },
+  mouth: { x: 0, y: -158, scale: 0.52 },
   horns: { x: 0, y: 0, scale: 0 },
+};
+
+const SPIRIT_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...STANDARD_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -98, scale: 0.55 },
+  mouth: { x: 0, y: -150, scale: 0.46 },
+};
+
+const COSMIC_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...STANDARD_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -92, scale: 0.56 },
+  mouth: { x: 0, y: -148, scale: 0.48 },
+};
+
+const AQUATIC_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...TALL_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -104, scale: 0.54 },
+  mouth: { x: 0, y: -155, scale: 0.46 },
+};
+
+const CANDY_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...COMPACT_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -92, scale: 0.56 },
+  mouth: { x: 0, y: -150, scale: 0.5 },
+};
+
+const MECHA_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...TALL_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -110, scale: 0.46 },
+  mouth: { x: 0, y: -158, scale: 0.42 },
+};
+
+const VOLCANO_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...COMPACT_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -93, scale: 0.58 },
+  mouth: { x: 0, y: -150, scale: 0.52 },
+};
+
+const ICE_BEAST_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...COMPACT_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -93, scale: 0.58 },
+  mouth: { x: 0, y: -150, scale: 0.52 },
+};
+
+const DINOSAUR_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...TALL_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -105, scale: 0.56 },
+  mouth: { x: 0, y: -158, scale: 0.5 },
+};
+
+const CLOUD_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
+  ...COMPACT_ACCESSORY_LAYOUT,
+  face: { x: 0, y: -88, scale: 0.6 },
+  mouth: { x: 0, y: -148, scale: 0.48 },
 };
 
 // The alien atlas uses a large round head and a narrow torso. Its permanent
 // visor and speaker need to fill the head instead of reading as tiny stickers.
 const ALIEN_ACCESSORY_LAYOUT: MonsterAccessoryLayout = {
-  face: { x: 0, y: -105, scale: 0.45 },
-  mouth: { x: 0, y: -162, scale: 0.48 },
+  face: { x: 0, y: -105, scale: 0.46 },
+  mouth: { x: 0, y: -155, scale: 0.5 },
   horns: { x: 0, y: -72, scale: 0.22 },
   wings: { x: 0, y: 16, scale: 0.46 },
   tail: { x: -18, y: -8, scale: 0.42 },
@@ -132,18 +186,18 @@ const MONSTER_ACCESSORY_LAYOUTS: Record<PremiumMonsterBody, MonsterAccessoryLayo
   Dragon: DRAGON_ACCESSORY_LAYOUT,
   "Jungle Beast": JUNGLE_BEAST_ACCESSORY_LAYOUT,
   "Stone Golem": STONE_GOLEM_ACCESSORY_LAYOUT,
-  Spirit: STANDARD_ACCESSORY_LAYOUT,
-  Cosmic: STANDARD_ACCESSORY_LAYOUT,
-  Aquatic: TALL_ACCESSORY_LAYOUT,
-  Candy: COMPACT_ACCESSORY_LAYOUT,
-  Mecha: TALL_ACCESSORY_LAYOUT,
+  Spirit: SPIRIT_ACCESSORY_LAYOUT,
+  Cosmic: COSMIC_ACCESSORY_LAYOUT,
+  Aquatic: AQUATIC_ACCESSORY_LAYOUT,
+  Candy: CANDY_ACCESSORY_LAYOUT,
+  Mecha: MECHA_ACCESSORY_LAYOUT,
   Royal: ROYAL_ACCESSORY_LAYOUT,
-  Volcano: COMPACT_ACCESSORY_LAYOUT,
-  "Ice Beast": COMPACT_ACCESSORY_LAYOUT,
+  Volcano: VOLCANO_ACCESSORY_LAYOUT,
+  "Ice Beast": ICE_BEAST_ACCESSORY_LAYOUT,
   Alien: ALIEN_ACCESSORY_LAYOUT,
   "Lizard Alien": LIZARD_ALIEN_ACCESSORY_LAYOUT,
-  Dinosaur: TALL_ACCESSORY_LAYOUT,
-  Cloud: COMPACT_ACCESSORY_LAYOUT,
+  Dinosaur: DINOSAUR_ACCESSORY_LAYOUT,
+  Cloud: CLOUD_ACCESSORY_LAYOUT,
 };
 
 export function monsterAccessoryLayout(body: string): MonsterAccessoryLayout {
