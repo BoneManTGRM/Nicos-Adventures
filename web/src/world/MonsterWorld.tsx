@@ -43,7 +43,7 @@ function newMonster(): MonsterRecord {
 export function MonsterLab({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
   const [draft, setDraft] = useState<MonsterRecord>(newMonster);
-  const [activeTrait, setActiveTrait] = useState<MonsterTraitKey>("body");
+  const [activeTrait, setActiveTrait] = useState<MonsterTraitKey>("color");
   const [pose, setPose] = useState<MonsterPose>("idle");
   const motionTimer = useRef<number | null>(null);
   const motionProfile = monsterMotionProfile(draft.body);
@@ -100,7 +100,7 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
     : (language === "es-MX" ? "Listo" : "Ready");
 
   return (
-    <div className="fw-builder-layout">
+    <div className="fw-builder-layout monster-lab-layout">
       <section
         className="monster-lab-preview"
         aria-label={language === "es-MX" ? "Vista previa del monstruo" : "Monster preview"}
