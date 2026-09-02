@@ -1,0 +1,421 @@
+/* Approved Monster Lab direction: compact body gallery on the left, large
+   creature preview and movement controls on the right, with mobile carousels. */
+
+.monster-lab-layout {
+  width: min(1500px, 100%);
+  margin: 0 auto;
+  grid-template-columns: minmax(470px, .92fr) minmax(540px, 1.08fr);
+  grid-template-areas: "controls preview";
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.monster-lab-layout > .fw-panel {
+  grid-area: controls;
+  min-width: 0;
+  padding: clamp(14px, 1.8vw, 20px);
+  border-color: rgba(192, 132, 252, .34);
+  background:
+    radial-gradient(circle at 90% 4%, rgba(244, 114, 182, .14), transparent 28%),
+    linear-gradient(155deg, rgba(43, 17, 77, .97), rgba(8, 14, 42, .98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 24px 70px rgba(0, 0, 0, .32);
+}
+
+.monster-lab-layout > .monster-lab-preview {
+  grid-area: preview;
+  position: sticky;
+  top: 84px;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  grid-template-rows: auto auto;
+  gap: 12px;
+  min-width: 0;
+  align-self: start;
+  padding: 12px;
+  border: 1px solid rgba(103, 232, 249, .28);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 50% 15%, rgba(29, 78, 216, .24), transparent 48%),
+    linear-gradient(155deg, rgba(5, 19, 52, .96), rgba(3, 8, 25, .98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 24px 70px rgba(0, 0, 0, .34);
+}
+
+.monster-lab-layout .monster-lab-preview > .monster-stage {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 600px;
+  margin: 0;
+}
+
+.monster-lab-layout .monster-lab-preview > .monster-action-row {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  grid-template-columns: 1fr;
+  margin: 0;
+}
+
+.monster-lab-layout .monster-lab-preview > .monster-pose-readout {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+}
+
+.monster-lab-layout .monster-lab-name {
+  margin: 0 0 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(196, 181, 253, .22);
+  border-radius: 16px;
+  background: rgba(7, 9, 31, .58);
+  color: #ddd6fe;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .05em;
+}
+
+.monster-lab-layout .monster-lab-name input {
+  min-height: 43px;
+  margin-top: 5px;
+  border-color: rgba(153, 246, 228, .3);
+  background: rgba(3, 8, 27, .86);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.monster-studio--approved {
+  gap: 14px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.monster-studio--approved .monster-studio__header {
+  padding: 4px 4px 0;
+}
+
+.monster-studio--approved .monster-studio__header h2 {
+  margin: 5px 0 6px;
+  font-size: clamp(25px, 3vw, 34px);
+}
+
+.monster-studio--approved .monster-studio__header p {
+  font-size: 13px;
+  line-height: 1.42;
+}
+
+.monster-studio__body-panel,
+.monster-studio__customize-panel {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(196, 181, 253, .2);
+  border-radius: 20px;
+  background: rgba(4, 8, 28, .52);
+}
+
+.monster-studio__body-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.monster-studio--approved .monster-studio__body-choice {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  gap: 6px;
+  min-height: 0;
+  padding: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(196, 181, 253, .24);
+  border-radius: 16px;
+  background: linear-gradient(155deg, rgba(44, 30, 80, .92), rgba(7, 12, 38, .96));
+  text-align: center;
+}
+
+.monster-studio--approved .monster-studio__body-choice:hover,
+.monster-studio--approved .monster-studio__body-choice:focus-visible {
+  border-color: rgba(103, 232, 249, .72);
+  transform: translateY(-2px);
+}
+
+.monster-studio--approved .monster-studio__body-choice[aria-pressed="true"] {
+  border-color: #f0abfc;
+  background: linear-gradient(155deg, rgba(107, 33, 168, .72), rgba(8, 83, 99, .72));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12), 0 0 20px rgba(192, 132, 252, .24);
+}
+
+.monster-studio__body-copy {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+  padding: 0 2px 3px;
+}
+
+.monster-studio__body-copy strong {
+  overflow: hidden;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monster-studio__body-copy small {
+  color: #a7a3c4;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.monster-studio--approved .monster-studio__traits {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.monster-studio--approved .monster-studio__trait {
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 53px;
+  padding: 7px 8px;
+  border-radius: 13px;
+}
+
+.monster-studio--approved .monster-studio__trait > span:first-child {
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  font-size: 14px;
+}
+
+.monster-studio--approved .monster-studio__trait small { font-size: 8px; }
+.monster-studio--approved .monster-studio__trait strong { font-size: 10px; }
+
+.monster-studio--approved .monster-studio__choice-panel {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid rgba(196, 181, 253, .15);
+  border-radius: 16px;
+  background: rgba(2, 6, 23, .34);
+}
+
+.monster-studio__panel-label--choices { margin-bottom: 8px; }
+
+.monster-studio--approved .monster-studio__choices {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.monster-studio--approved .monster-studio__choice:not(.monster-studio__body-choice) {
+  min-height: 58px;
+  padding: 8px 9px;
+  border-radius: 13px;
+}
+
+.monster-studio--approved .monster-studio__sample {
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+}
+
+.monster-studio--approved[data-active-trait="color"] .monster-studio__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.monster-studio--approved .monster-studio__choice--color {
+  display: grid;
+  flex: 1 1 66px;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  justify-items: center;
+  min-width: 62px;
+  max-width: 92px;
+  padding: 7px 5px 6px;
+  text-align: center;
+}
+
+.monster-studio--approved .monster-studio__choice--color .monster-studio__sample {
+  grid-row: 1;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: transparent;
+}
+
+.monster-studio--approved .monster-studio__choice--color strong {
+  max-width: 100%;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monster-studio--approved .monster-studio__choice--color small { display: none; }
+
+.monster-studio__body-hint {
+  margin: 10px 2px 0;
+  padding: 10px 12px;
+  border-radius: 13px;
+  background: rgba(13, 148, 136, .11);
+  color: #b8e7e2;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.monster-lab-layout > .fw-panel > .fw-action-row {
+  display: grid;
+  grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+  margin: 12px 0 0;
+}
+
+.monster-lab-layout > .fw-panel > .fw-action-row button {
+  min-height: 47px;
+}
+
+.monster-lab-layout .fw-subheading {
+  margin: 16px 0 8px;
+  font-size: 14px;
+}
+
+.monster-lab-layout .monster-collection {
+  display: flex;
+  gap: 8px;
+  max-width: 100%;
+  padding: 2px 1px 5px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.monster-lab-layout .monster-collection button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 8px 11px;
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .monster-lab-layout {
+    grid-template-columns: minmax(430px, .9fr) minmax(480px, 1.1fr);
+  }
+
+  .monster-studio__body-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .monster-studio--approved .monster-studio__traits { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 980px) {
+  .monster-lab-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas: "preview" "controls";
+  }
+
+  .monster-lab-layout > .monster-lab-preview {
+    position: relative;
+    top: auto;
+    grid-template-columns: minmax(0, 1fr) 146px;
+  }
+
+  .monster-lab-layout .monster-lab-preview > .monster-stage { min-height: 540px; }
+  .monster-studio__body-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .monster-studio--approved .monster-studio__traits { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .monster-lab-layout > .monster-lab-preview {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 8px;
+    border-radius: 24px;
+  }
+
+  .monster-lab-layout .monster-lab-preview > .monster-stage {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 490px;
+  }
+
+  .monster-lab-layout .monster-lab-preview > .monster-action-row {
+    grid-column: 1;
+    grid-row: 2;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .monster-lab-layout .monster-lab-preview > .monster-pose-readout {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .monster-studio__body-grid {
+    grid-auto-columns: 118px;
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-template-rows: repeat(2, auto);
+    gap: 8px;
+    padding: 1px 1px 8px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .monster-studio--approved .monster-studio__body-choice {
+    width: 118px;
+    scroll-snap-align: start;
+  }
+
+  .monster-studio--approved .monster-studio__traits {
+    display: flex;
+    gap: 7px;
+    padding: 1px 1px 7px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  .monster-studio--approved .monster-studio__trait {
+    flex: 0 0 128px;
+  }
+
+  .monster-studio--approved .monster-studio__choices {
+    display: flex;
+    gap: 7px;
+    padding-bottom: 5px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  .monster-studio--approved .monster-studio__choice:not(.monster-studio__body-choice) {
+    flex: 0 0 145px;
+  }
+
+  .monster-studio--approved[data-active-trait="color"] .monster-studio__choices {
+    flex-wrap: nowrap;
+  }
+
+  .monster-studio--approved .monster-studio__choice--color {
+    flex: 0 0 70px;
+  }
+}
+
+@media (max-width: 460px) {
+  .monster-lab-layout .monster-lab-preview > .monster-action-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .monster-lab-layout .monster-lab-preview > .monster-stage { min-height: 455px; }
+  .monster-studio__body-panel,
+  .monster-studio__customize-panel { padding: 10px; }
+  .monster-studio__body-grid { grid-auto-columns: 108px; }
+  .monster-studio--approved .monster-studio__body-choice { width: 108px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monster-studio--approved .monster-studio__body-choice {
+    transition: none;
+  }
+}
