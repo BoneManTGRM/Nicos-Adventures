@@ -170,6 +170,10 @@
 .monster-eye { filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .28)); }
 [data-monster-face-treatment="carved-golem"] .monster-face,
 [data-monster-face-treatment="feral-guardian"] .monster-face { filter: drop-shadow(0 8px 8px rgba(0, 0, 0, .44)); }
+[data-monster-face-treatment="integrated-lizard"] .monster-premium-body {
+  width: 100%;
+  max-width: none;
+}
 [data-monster-face-treatment="integrated-lizard"] .monster-premium-body__art { filter: contrast(1.08) saturate(1.04); }
 [data-monster-face-treatment="integrated-lizard"] .monster-premium-body__tint { opacity: .38; }
 [data-monster-face-treatment="integrated-lizard"] .monster-premium-body__pattern { opacity: .22; }

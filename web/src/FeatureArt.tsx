@@ -3,8 +3,10 @@ import type { CSSProperties } from "react";
 import { optionLabel } from "./i18n/display";
 import type { AnimalRecord, Language, MonsterRecord } from "./types";
 import { monsterAccessoryLayout, monsterAccessoryTransform, monsterBodyArtStyle } from "./world/monsterArt";
+import { MonsterFaceArt, monsterFaceTreatment } from "./world/monsterFaceArt";
 import { monsterColorSwatch } from "./world/monsterCreatureStudio";
 import "./monster-stage-premium.css";
+import "./monster-faces.css";
 
 export type RobotPose = "idle" | "wave" | "launch" | "celebrate" | "dance" | "spin" | "blink" | "scan" | "charge" | "hover" | "stomp" | "salute" | "repair" | "shield" | "lights";
 
@@ -75,26 +77,10 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
   const family = monster.body.toLowerCase().replace(/\s+/g,"-");
   const texture = String(monster.texture || "smooth").toLowerCase().replace(/\s+/g,"-");
   const pattern = String(monster.pattern || "solid").toLowerCase().replace(/\s+/g,"-");
-  const faceTreatment = monster.body === "Stone Golem"
-    ? "carved-golem"
-    : monster.body === "Lizard Alien"
-      ? "integrated-lizard"
-    : ["Alien", "Mecha", "Cosmic"].includes(monster.body)
-      ? "integrated-visor"
-      : ["Jungle Beast", "Volcano", "Ice Beast", "Dinosaur"].includes(monster.body)
-        ? "feral-guardian"
-      : monster.body === "Dragon"
-        ? "sculpted-dragon"
-        : "soft-creature";
+  const faceTreatment = monsterFaceTreatment(monster.body);
   const hasWings = !monster.wings.toLowerCase().includes("no ");
   const hasHorns = ["Dragon", "Royal", "Volcano"].includes(monster.body);
   const hasTail = monster.body !== "Lizard Alien" && !String(monster.tail || "No tail").toLowerCase().includes("no ");
-  const robotVisor = faceTreatment === "integrated-visor";
-  const carvedGolem = faceTreatment === "carved-golem";
-  const feralGuardian = faceTreatment === "feral-guardian";
-  const integratedBodyFace = faceTreatment === "integrated-lizard";
-  const eyes = robotVisor && monster.body === "Alien" ? 3 : 2;
-  const eyePositions = eyes === 3 ? [210, 260, 310] : [226, 294];
   const accessoryLayout = monsterAccessoryLayout(monster.body);
   return <article className={`monster-stage monster-stage--${action}`} style={{ "--monster-main": color } as CSSProperties}>
     <div className="monster-stage__environment" aria-hidden="true"><i/><i/><i/></div>
@@ -134,27 +120,7 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
         </defs>
         <g className="monster-anatomy monster-anatomy--front">
         {hasHorns && <g className="monster-horns" transform={monsterAccessoryTransform("horns", accessoryLayout.horns)} fill={`url(#horn-${monster.id})`} stroke="#071426" strokeWidth="6" strokeLinejoin="round" filter={`url(#monster-glow-${monster.id})`}><path d="M205 164l-25-67q34 19 56 51z"/><path d="M315 164l25-67q-34 19-56 51z"/><path d="M191 116l29 37m109-37-29 37" stroke="#fff" strokeOpacity=".3" strokeWidth="3"/></g>}
-        {!integratedBodyFace && <g className="monster-face" transform={monsterAccessoryTransform("face", accessoryLayout.face)}>
-          {robotVisor
-            ? <g className="monster-eye monster-eye--visor" filter={`url(#monster-glow-${monster.id})`}><rect x="190" y="207" width="140" height="55" rx="25" fill="#06111f" stroke={color} strokeWidth="6"/><rect x="200" y="217" width="120" height="35" rx="16" fill={`url(#eye-${monster.id})`}/>{eyePositions.map((position) => <g key={position}><ellipse cx={position} cy="235" rx="7" ry="10" fill="#dffcff"/><circle cx={position-2} cy="232" r="2.5" fill="#fff"/></g>)}</g>
-            : carvedGolem
-              ? <g className="monster-eye monster-eye--carved" filter={`url(#monster-glow-${monster.id})`}><path d="M192 221Q221 193 253 211L241 246Q215 252 194 234Z" fill="#07131b" stroke="#173947" strokeWidth="7" strokeLinejoin="round"/><path d="M328 221Q299 193 267 211L279 246Q305 252 326 234Z" fill="#07131b" stroke="#173947" strokeWidth="7" strokeLinejoin="round"/><path d="M211 226L239 219 231 239 215 241Z" fill={`url(#eye-${monster.id})`}/><path d="M309 226L281 219 289 239 305 241Z" fill={`url(#eye-${monster.id})`}/><path d="M194 213L250 195M326 213L270 195" fill="none" stroke="#0a2530" strokeWidth="11" strokeLinecap="round"/></g>
-              : feralGuardian
-                ? <g className="monster-eye monster-eye--feral" filter={`url(#monster-glow-${monster.id})`}><path d="M194 218Q222 197 251 214L239 248Q213 248 197 234Z" fill="#07131b" stroke={color} strokeWidth="5"/><path d="M326 218Q298 197 269 214L281 248Q307 248 323 234Z" fill="#07131b" stroke={color} strokeWidth="5"/><path d="M222 219L233 241M298 219L287 241" stroke="#e6fbff" strokeWidth="7" strokeLinecap="round"/><path d="M194 208L248 197M326 208L272 197" stroke="#102f3c" strokeWidth="9" strokeLinecap="round"/></g>
-              : eyePositions.map((position) => <g className="monster-eye monster-eye--sculpted" key={position}><ellipse cx={position} cy="233" rx="21" ry="24" fill="#061923" fillOpacity=".88" stroke="#dff7fb" strokeOpacity=".38" strokeWidth="4"/><ellipse cx={position} cy="236" rx="10" ry="15" fill={`url(#eye-${monster.id})`}/><ellipse cx={position} cy="239" rx="4.5" ry="8" fill="#01040a"/><circle cx={position-5} cy="227" r="3.5" fill="#fff"/><path d={`M${position-18} 211Q${position} 202 ${position+18} 211`} fill="none" stroke="#153746" strokeWidth="5" strokeLinecap="round"/></g>)}
-        </g>}
-        {!integratedBodyFace && <g className="monster-mouth" transform={monsterAccessoryTransform("mouth", accessoryLayout.mouth)}>
-          {faceTreatment === "sculpted-dragon"
-            ? <><path d="M224 316Q260 344 296 316Q290 347 260 352Q230 347 224 316Z" fill="#20151d" stroke="#153746" strokeWidth="5"/><path d="m234 320 10 20 9-16m33-4-10 20-9-16" fill="#fff7e8" stroke="#d9e3e8" strokeWidth="1.5" strokeLinejoin="round"/><path d="M243 344q17-8 34 0" fill="none" stroke={color} strokeWidth="5" strokeLinecap="round"/></>
-            : faceTreatment === "carved-golem"
-              ? <><path d="M222 315L241 326 260 319 279 326 298 315" fill="none" stroke="#071820" strokeWidth="11" strokeLinecap="round" strokeLinejoin="round"/><path d="M238 330H282" stroke="#74d7df" strokeOpacity=".46" strokeWidth="4" strokeLinecap="round"/></>
-              : faceTreatment === "feral-guardian"
-                ? <><path d="M222 315Q260 335 298 315Q291 345 260 349Q229 345 222 315Z" fill="#101018" stroke="#102f3c" strokeWidth="5"/><path d="M232 319L243 338 252 322M288 319L277 338 268 322" fill="#fff7e8" stroke="#cbd5e1" strokeWidth="1.5" strokeLinejoin="round"/><path d="M245 342Q260 336 275 342" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round"/></>
-              : robotVisor
-                ? <g><rect x="238" y="318" width="44" height="17" rx="8" fill="#071426" stroke={color} strokeWidth="3"/><path d="M246 326h4m5 0h4m5 0h4m5 0h2" stroke="#dffcff" strokeWidth="2" strokeLinecap="round"/></g>
-                : <><path d="M236 318Q260 338 284 318" fill="none" stroke="#0b2632" strokeWidth="7" strokeLinecap="round"/><path d="M241 320Q260 333 279 320" fill="none" stroke={color} strokeOpacity=".72" strokeWidth="3" strokeLinecap="round"/></>}
-        </g>}
-        {!integratedBodyFace && <g className="monster-core" transform={monsterAccessoryTransform("core", accessoryLayout.core)} filter={`url(#monster-glow-${monster.id})`}><circle cx="260" cy="387" r="36" fill="#051525" stroke="#a5f3fc" strokeOpacity=".65" strokeWidth="4"/><circle cx="260" cy="387" r="25" fill={`url(#core-${monster.id})`}/><circle cx="251" cy="378" r="7" fill="#fff" opacity=".78"/></g>}
+        <MonsterFaceArt body={monster.body} monsterId={monster.id} color={color} layout={accessoryLayout} />
         </g>
       </svg>
     </div>
