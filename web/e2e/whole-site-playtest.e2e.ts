@@ -384,7 +384,9 @@ test("all destinations keep their main local interactions working", async ({ pag
   await expect(page.locator(".fw-collection-row button").filter({ hasText: petName })).toHaveCount(1);
   const firstTrick = page.locator(".pet-trick-grid button").first();
   await firstTrick.click();
-  await expect(firstTrick).toBeDisabled();
+  await expect(firstTrick).toBeEnabled();
+  await expect(firstTrick.locator("small")).toHaveText(language === "es-MX" ? "Practicar" : "Practice");
+  await expect(page.locator('.pet-art[data-pet-renderer="premium-sparky"]')).toHaveAttribute("data-pet-pose", "sit");
   await attachVisual(page, testInfo, "pet-workshop");
 
   await openDestination(page, text.world, text.robotHome, `${testInfo.project.name} Robot Home`);
