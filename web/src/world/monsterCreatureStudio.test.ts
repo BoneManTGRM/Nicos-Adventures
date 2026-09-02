@@ -16,7 +16,7 @@ const monster = {
 describe("Monster Lab visual creature contract", () => {
   it("offers only controls that have a dependable visual result", () => {
     const keys = MONSTER_TRAITS.map((trait) => trait.key);
-    expect(keys).toEqual(["body", "wings", "arms", "tail", "color", "pattern", "texture"]);
+    expect(keys).toEqual(["body", "color", "pattern", "texture", "wings", "horns", "tail", "arms"]);
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys.every((key) => key in MONSTER_OPTIONS)).toBe(true);
   });
@@ -30,6 +30,13 @@ describe("Monster Lab visual creature contract", () => {
   it("shows arm variants only for the body atlas that supports them", () => {
     expect(monsterVisualTraits(monster).map((trait) => trait.key)).not.toContain("arms");
     expect(monsterVisualTraits({ ...monster, body: "Alien" }).map((trait) => trait.key)).toContain("arms");
+  });
+
+  it("offers a working horn layer for every body", () => {
+    for (const body of MONSTER_OPTIONS.body) {
+      expect(monsterVisualTraits({ ...monster, body }).map((trait) => trait.key)).toContain("horns");
+    }
+    expect(monsterVisualOptions("horns", MONSTER_OPTIONS.horns)).toEqual(["No horns", "Crystal horns"]);
   });
 
   it("keeps the lizard alien's integrated limbs out of accessory controls", () => {
