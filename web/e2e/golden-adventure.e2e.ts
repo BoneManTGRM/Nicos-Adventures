@@ -17,7 +17,7 @@ const copy = {
     animalTrail: "Choose a living habitat trail",
     animalUnavailable: "The illustrated forest is unavailable. Choose a habitat below.",
     monsterLab: "Monster Lab",
-    monsterStudio: "Sculpt a creature you can see",
+    monsterStudio: "Build your monster",
     roboLab: "Robo Lab",
     configure: "Build a bridge-ready BoltBot",
     continueChamber: "Continue to the test chamber",
@@ -74,7 +74,7 @@ const copy = {
     animalTrail: "Elige un sendero de hábitat viviente",
     animalUnavailable: "El bosque ilustrado no está disponible. Elige un hábitat abajo.",
     monsterLab: "Laboratorio de monstruos",
-    monsterStudio: "Esculpe una criatura que puedas ver",
+    monsterStudio: "Construye tu monstruo",
     roboLab: "Laboratorio robot",
     configure: "Construye un BoltBot listo para el puente",
     continueChamber: "Continuar a la cámara de pruebas",
@@ -331,22 +331,13 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await expect(page.locator(".monster-studio__trait")).toHaveCount(7);
   const alienFit = await alienMonster.evaluate((element) => {
     const body = element.querySelector<HTMLElement>(".monster-premium-body")!.getBoundingClientRect();
-    const face = element.querySelector<SVGGElement>(".monster-face")!.getBoundingClientRect();
     const horns = element.querySelector<SVGGElement>(".monster-horns")?.getBoundingClientRect();
-    const core = element.querySelector<SVGGElement>(".monster-core")!.getBoundingClientRect();
     return {
-      faceWidthRatio: face.width / body.width,
-      faceTop: face.top - body.top,
-      faceBottom: face.bottom - body.top,
       hornWidthRatio: horns ? horns.width / body.width : 0,
-      coreWidthRatio: core.width / body.width,
     };
   });
-  expect(alienFit.faceWidthRatio).toBeLessThan(0.35);
-  expect(alienFit.faceTop).toBeGreaterThanOrEqual(0);
-  expect(alienFit.faceBottom).toBeLessThan(210);
   expect(alienFit.hornWidthRatio).toBeLessThan(0.3);
-  expect(alienFit.coreWidthRatio).toBeLessThan(0.2);
+  await expect(alienMonster.locator(".monster-face, .monster-mouth, .monster-core")).toHaveCount(0);
 
   await activateWithKeyboard(page, page.locator('.monster-studio__trait[data-trait="body"]'));
   const lizardAlien = page.locator('.monster-studio__choice[data-option="Lizard Alien"]');

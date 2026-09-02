@@ -48,7 +48,7 @@
 .monster-portrait__tint {
   background: var(--monster-body-color);
   mix-blend-mode: color;
-  opacity: .45;
+  opacity: .12;
   -webkit-mask-image: var(--monster-body-image);
   mask-image: var(--monster-body-image);
   -webkit-mask-position: var(--monster-body-position);

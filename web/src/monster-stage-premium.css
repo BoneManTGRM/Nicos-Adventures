@@ -107,7 +107,7 @@
 .monster-premium-body__tint {
   background: var(--monster-body-color);
   mix-blend-mode: color;
-  opacity: .62;
+  opacity: .34;
 }
 
 .monster-premium-body__pattern {

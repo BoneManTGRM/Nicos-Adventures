@@ -53,7 +53,7 @@ describe("approved Monster Lab", () => {
       <MonsterPortrait body="Lizard Alien" color="Aqua" label="Lizard Alien preview" />,
     );
     expect(html).toContain('data-monster-face-treatment="integrated-lizard"');
-    expect(html).toContain("premium-lizard-alien");
+    expect(html).toContain("lizard-alien.webp");
     expect(html).not.toContain('class="monster-portrait__face"');
   });
 

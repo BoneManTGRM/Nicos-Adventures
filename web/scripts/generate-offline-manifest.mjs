@@ -15,8 +15,7 @@ const bundleUrls = readdirSync(assets, { withFileTypes: true })
     || /^nico-(?:explorer-atlas|professions(?:-[a-z]+)?-atlas|librarian)-.*\.webp$/.test(entry.name)
     || /^boltbot-premium-poses-atlas-.*\.webp$/.test(entry.name)
     || /^animal-forest-premium-habitats-atlas-.*\.webp$/.test(entry.name)
-    || /^premium-monster-bodies-atlas-.*\.webp$/.test(entry.name)
-    || /^premium-(?:alien-arms-atlas|lizard-alien)-.*\.webp$/.test(entry.name)
+    || /^(?:alien|aquatic|blob|candy|cloud|cosmic|dinosaur|dragon|ice-beast|jungle-beast|lizard-alien|mecha|royal|spirit|stone-golem|volcano)-.*\.webp$/.test(entry.name)
   ))
   .map((entry) => `/assets/${entry.name}`);
 const canonicalAssets = [

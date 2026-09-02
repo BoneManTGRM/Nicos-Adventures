@@ -8,43 +8,44 @@ import {
   monsterBodyArtStyle,
 } from "./monsterArt";
 
-describe("premium illustrated monster body atlas", () => {
-  it("maps every schema-v4 monster body to exactly one atlas cell", () => {
+describe("approved illustrated monster body collection", () => {
+  it("maps every schema-v4 monster body to exactly one standalone artwork", () => {
     expect(PREMIUM_MONSTER_BODIES).toEqual(MONSTER_OPTIONS.body);
     expect(new Set(PREMIUM_MONSTER_BODIES).size).toBe(MONSTER_OPTIONS.body.length);
   });
 
-  it("keeps stable atlas registration with a safe legacy fallback", () => {
+  it("keeps stable standalone registration with a safe legacy fallback", () => {
     expect(monsterBodyArtStyle("Blob", "#22d3ee")).toMatchObject({
-      "--monster-body-position": "0% 0%",
+      "--monster-body-position": "center",
+      "--monster-body-size": "contain",
       "--monster-body-color": "#22d3ee",
     });
     expect(monsterBodyArtStyle("Mecha", "#8b5cf6")).toMatchObject({
-      "--monster-body-position": "75% 50%",
+      "--monster-body-position": "center",
     });
     expect(monsterBodyArtStyle("Cloud", "#e2e8f0")).toMatchObject({
-      "--monster-body-position": "100% 100%",
+      "--monster-body-position": "center",
     });
     expect(monsterBodyArtStyle("Unknown legacy body", "#22d3ee")).toMatchObject({
-      "--monster-body-position": "0% 0%",
+      "--monster-body-position": "center",
     });
   });
 
-  it("gives every saved alien arm choice a distinct premium body", () => {
+  it("keeps every saved alien arm choice compatible with the approved Alien", () => {
     expect(PREMIUM_ALIEN_ARMS).toEqual(MONSTER_OPTIONS.arms);
     expect(monsterBodyArtStyle("Alien", "#a3e635", "Tiny arms")).toMatchObject({
-      "--monster-body-position": "0% 0%",
-      "--monster-body-size": "400% 200%",
+      "--monster-body-position": "center",
+      "--monster-body-size": "contain",
       "--monster-body-color": "#a3e635",
     });
     expect(monsterBodyArtStyle("Alien", "#a3e635", "Tentacles")).toMatchObject({
-      "--monster-body-position": "100% 0%",
+      "--monster-body-position": "center",
     });
     expect(monsterBodyArtStyle("Alien", "#a3e635", "Wing arms")).toMatchObject({
-      "--monster-body-position": `${2 * (100 / 3)}% 100%`,
+      "--monster-body-position": "center",
     });
     expect(monsterBodyArtStyle("Alien", "#a3e635", "Unknown legacy arms")).toMatchObject({
-      "--monster-body-position": "0% 0%",
+      "--monster-body-position": "center",
     });
   });
 
@@ -93,7 +94,7 @@ describe("premium illustrated monster body atlas", () => {
       "translate(0 -205) translate(260 330) scale(0.38) translate(-260 -330)",
     );
     expect(monsterBodyArtStyle("Stone Golem", "#22d3ee")).toMatchObject({
-      "--monster-body-position": "75% 0%",
+      "--monster-body-position": "center",
     });
   });
 });

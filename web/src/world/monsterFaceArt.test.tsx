@@ -46,17 +46,10 @@ describe("permanent body-specific monster faces", () => {
     expect(html).toContain(`data-monster-body-art="${body}"`);
     expect(html).toContain(`data-monster-face-treatment="${treatment}"`);
 
-    if (monsterHasIntegratedFace(body)) {
-      expect(body).toBe("Lizard Alien");
-      expect(html).not.toContain('class="monster-face');
-      expect(html).not.toContain('class="monster-mouth');
-      expect(html).not.toContain('class="monster-core');
-      return;
-    }
-
-    expect(html).toContain(`data-monster-face-signature="${treatment}"`);
-    expect(html).toContain(`data-monster-mouth-signature="${treatment}"`);
-    expect(html).toContain(`data-monster-core-signature="${treatment}"`);
+    expect(monsterHasIntegratedFace(body)).toBe(true);
+    expect(html).not.toContain('class="monster-face');
+    expect(html).not.toContain('class="monster-mouth');
+    expect(html).not.toContain('class="monster-core');
   });
 
   it("keeps each body face unchanged when legacy face fields differ", () => {

@@ -35,8 +35,8 @@ describe("Monster Lab movement images", () => {
       expect(html).toContain(`monster-stage monster-stage--${movement.pose}`);
       expect(html).toContain('data-monster-body-art="Dragon"');
       expect(html).toContain('data-monster-face-treatment="sculpted-dragon"');
-      expect(html).toContain('data-monster-face-signature="sculpted-dragon"');
-      expect(html).toContain("premium-monster-bodies-atlas");
+      expect(html).not.toContain('class="monster-face"');
+      expect(html).toContain("dragon.webp");
     }
   });
 
@@ -56,7 +56,7 @@ describe("Monster Lab movement images", () => {
       expect(html).toContain(`monster-stage monster-stage--${movement.pose}`);
       expect(html).toContain('data-monster-body-art="Lizard Alien"');
       expect(html).toContain('data-monster-face-treatment="integrated-lizard"');
-      expect(html).toContain("premium-lizard-alien");
+      expect(html).toContain("lizard-alien.webp");
       expect(html).not.toContain('class="monster-face"');
       expect(html).not.toContain('class="monster-mouth"');
     }
@@ -79,7 +79,7 @@ describe("Monster Lab movement images", () => {
 
       expect(html).toContain(`data-monster-body-art="${body}"`);
       expect(html).toContain(`data-monster-face-treatment="${treatment}"`);
-      expect(html).toContain(`data-monster-face-signature="${treatment}"`);
+      expect(html).not.toContain('class="monster-face"');
       expect(html).toContain("monster-stage--celebrate");
     }
   });
