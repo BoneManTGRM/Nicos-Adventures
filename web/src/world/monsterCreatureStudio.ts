@@ -28,12 +28,10 @@ const BINARY_VISUAL_OPTIONS: Partial<Record<MonsterTraitKey, readonly string[]>>
   tail: ["No tail", "Dragon tail"],
 };
 
-const HORNED_BODIES = new Set(["Dragon", "Royal", "Volcano"]);
 
 export function monsterVisualTraits(monster: MonsterRecord) {
   return MONSTER_TRAITS.filter((trait) => {
     if (trait.key === "arms") return monster.body === "Alien";
-    if (trait.key === "horns") return HORNED_BODIES.has(monster.body);
     if (trait.key === "tail") return monster.body !== "Lizard Alien";
     return true;
   });
