@@ -11,7 +11,7 @@ const copy = {
   en: {
     eyebrow: "A moment with Nico",
     title: "Watch Nico play",
-    body: "A quick real-life clip from Nico’s adventures.",
+    body: "A quick clip from Nico’s adventures.",
     play: "Play Nico’s video",
     loading: "Loading Nico’s video…",
     fallback: "Your browser cannot play this video.",
@@ -19,7 +19,7 @@ const copy = {
   "es-MX": {
     eyebrow: "Un momento con Nico",
     title: "Mira a Nico jugar",
-    body: "Un clip corto de la vida real de las aventuras de Nico.",
+    body: "Un clip corto de las aventuras de Nico.",
     play: "Reproducir el video de Nico",
     loading: "Cargando el video de Nico…",
     fallback: "Tu navegador no puede reproducir este video.",
@@ -49,7 +49,6 @@ export function NicoVideoCard({ language }: { language: LocalProfile["language"]
   useEffect(() => {
     const controller = new AbortController();
     let createdVideoUrl = "";
-    let createdPosterUrl = "";
     const load = async () => {
       try {
         const [videoParts, poster] = await Promise.all([
@@ -58,9 +57,8 @@ export function NicoVideoCard({ language }: { language: LocalProfile["language"]
         ]);
         if (controller.signal.aborted) return;
         createdVideoUrl = base64ToBlobUrl(videoParts.join(""), "video/mp4");
-        createdPosterUrl = `data:image/jpeg;base64,${poster}`;
         setVideoUrl(createdVideoUrl);
-        setPosterUrl(createdPosterUrl);
+        setPosterUrl(`data:image/jpeg;base64,${poster}`);
       } catch {
         if (!controller.signal.aborted) {
           setVideoUrl("");
