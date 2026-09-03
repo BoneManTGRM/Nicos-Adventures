@@ -6,6 +6,7 @@ import { RobotStage } from "../RobotStage";
 import type { LocalProfile, SectionId } from "../types";
 import { tr, ui } from "../i18n/core";
 import { WORLD_SECTIONS } from "./catalogs";
+import { NicoVideoCard } from "./NicoVideoCard";
 import { StarBridgeMap } from "./StarBridgeMap";
 
 const BrokenStarBridge = lazy(() => import("./BrokenStarBridge").then((module) => ({
@@ -56,6 +57,7 @@ export function WorldMap({
         openBridge={() => setBridgeOpen(true)}
         openDinosaurValley={() => open("dinosaur-valley")}
       />
+      <NicoVideoCard language={language} />
       <article className="fw-hero-card" aria-label={language === "es-MX" ? "Equipo de aventura" : "Adventure team"}>
         <RobotStage
           robot={profile.robot}
