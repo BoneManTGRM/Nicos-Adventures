@@ -17,12 +17,26 @@ export const NICO_BASKETBALL_MEDIA = {
   posterSha256: "930dbe4bf93e409f86984d3408cfd77aa290469d8ecba8603bb7692c26f67c63",
 } as const;
 
+let videoStylesPromise: Promise<unknown> | null = null;
+
+function loadNicoVideoStyles(): Promise<unknown> {
+  if (!videoStylesPromise) {
+    videoStylesPromise = import("../nico-video.css").catch((error: unknown) => {
+      videoStylesPromise = null;
+      throw error;
+    });
+  }
+  return videoStylesPromise;
+}
+
 export async function loadBase64Media(
   paths: readonly string[],
   mimeType: string,
   expectedBytes: number,
   signal: AbortSignal,
 ): Promise<Blob> {
+  await loadNicoVideoStyles();
+
   const responses = await Promise.all(paths.map((path) => fetch(path, {
     cache: "force-cache",
     credentials: "same-origin",
