@@ -11,7 +11,7 @@ const copy = {
   en: {
     eyebrow: "A moment with Nico",
     title: "Watch Nico play",
-    body: "A quick clip from Nico’s adventures.",
+    body: "A fun clip of Nico playing basketball.",
     play: "Play Nico’s video",
     loading: "Loading Nico’s video…",
     fallback: "Your browser cannot play this video.",
@@ -19,7 +19,7 @@ const copy = {
   "es-MX": {
     eyebrow: "Un momento con Nico",
     title: "Mira a Nico jugar",
-    body: "Un clip corto de las aventuras de Nico.",
+    body: "Un divertido clip de Nico jugando básquetbol.",
     play: "Reproducir el video de Nico",
     loading: "Cargando el video de Nico…",
     fallback: "Tu navegador no puede reproducir este video.",
