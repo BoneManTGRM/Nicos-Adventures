@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Language } from "../types";
+import type { LocalProfile } from "../types";
 import "./nico-video-card.css";
 
 const VIDEO_URL = "/assets/nico/nico-basketball.mp4?v=1";
@@ -22,7 +22,7 @@ const copy = {
   },
 } as const;
 
-export function NicoVideoCard({ language }: { language: Language }) {
+export function NicoVideoCard({ language }: { language: LocalProfile["language"] }) {
   const text = copy[language];
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
