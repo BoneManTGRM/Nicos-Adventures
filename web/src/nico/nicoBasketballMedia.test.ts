@@ -1,3 +1,4 @@
+// @ts-nocheck -- Vitest executes this integrity test in Node while the browser app's tsconfig intentionally omits Node ambient types.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
