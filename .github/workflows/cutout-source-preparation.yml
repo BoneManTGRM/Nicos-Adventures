@@ -1,0 +1,50 @@
+name: Prepare Reviewed Cutout Assets
+on:
+  push:
+    branches: [fix/transparent-character-edges]
+    paths: ['web/scripts/repair-cutouts.py', 'web/scripts/cutout-source-pins.json', '.github/workflows/cutout-source-preparation.yml']
+permissions:
+  contents: read
+jobs:
+  prepare-assets:
+    if: github.ref == 'refs/heads/fix/transparent-character-edges' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned image tooling
+        run: python -m pip install Pillow==12.3.0 numpy==2.3.5 scipy==1.17.0
+      - name: Repair pinned originals and prove protected pixel preservation
+        run: python web/scripts/repair-cutouts.py --root web/src/assets --output cutout-output --pins web/scripts/cutout-source-pins.json
+      - name: Store immutable reviewed asset blobs without changing any branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64, json, os, urllib.request
+          from pathlib import Path
+          report = json.loads(Path('cutout-output/cutout-repair.provenance.json').read_text())
+          paths = [r['path'] for r in report['records']] + ['web/src/assets/cutout-repair.provenance.json']
+          entries = []
+          for path in paths:
+              assert path.startswith('web/src/assets/') and '..' not in path
+              content = (Path('cutout-output') / path.removeprefix('web/src/assets/')).read_bytes()
+              request = urllib.request.Request('https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/blobs', data=json.dumps({'encoding':'base64','content':base64.b64encode(content).decode()}).encode(), headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json','User-Agent':'reviewed-cutout-preparation'})
+              with urllib.request.urlopen(request,timeout=60) as response:
+                  blob = json.load(response)
+              entries.append({'path':path,'mode':'100644','type':'blob','sha':blob['sha']})
+          Path('cutout-output/asset-blobs.json').write_text(json.dumps(entries,indent=2)+'\n')
+          print('Prepared',len(entries),'immutable blobs. No branch or deployment was changed.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-cutout-assets
+          path: cutout-output
+          retention-days: 7
