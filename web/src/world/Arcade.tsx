@@ -1,4 +1,6 @@
 import { lazy, Suspense, useLayoutEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
+import mapPreview from "../assets/world/nicos-world-map-restored-960.webp";
 import type { LocalProfile } from "../types";
 import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
@@ -8,11 +10,14 @@ import { ARCADE_QUESTIONS } from "./arcadeChallenges";
 import { FRIENDLY_DUEL_ID } from "./friendlyDuel";
 import { arcadeMissionId, completeOnce, hasCompleted } from "./progression";
 import './playable-world.css';
+import './friends-map.css';
+const FriendsMap = lazy(() => import('./FriendsMap').then(module => ({ default: module.FriendsMap })));
 const FriendlyDuel = lazy(() => import("./FriendlyDuel").then(module => ({ default: module.FriendlyDuel })));
 const StarTagArcade = lazy(() => import("./StarTagArcade").then(module => ({ default: module.StarTagArcade })));
 export function Arcade({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
   const [activeGame, setActiveGame] = useState<string | null>(null);
+  const [legacyOpen, setLegacyOpen] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answerIndex, setAnswerIndex] = useState<number | null>(null);
   const [sessionScore, setSessionScore] = useState(0);
@@ -36,6 +41,7 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
     announce(language === "es-MX" ? `Respuesta correcta. ${question.explanation[language]}${completion.awarded ? " Ganaste una estrella." : ""}` : `Correct. ${question.explanation[language]}${completion.awarded ? " You earned one star." : ""}`);
   };
   const nextQuestion = () => { setQuestionIndex(current => current + 1); setAnswerIndex(null); };
+  if (activeGame === 'friends-map') return <Suspense fallback={<div className="fw-empty" role="status">{language === 'es-MX' ? 'Preparando el mapa…' : 'Preparing the map…'}</div>}><FriendsMap key={profile.id} profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
   if (activeGame === 'star-tag-adventure') return <Suspense fallback={<div className="fw-empty" role="status">{language === 'es-MX' ? 'Cargando la aventura…' : 'Loading the adventure…'}</div>}><StarTagArcade profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
   if (activeGame === FRIENDLY_DUEL_ID) return <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la arena…" : "Preparing the arena…"}</div>}><FriendlyDuel profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
   if (activeGame && question) return <div className="arcade-challenge-layout">
@@ -51,12 +57,17 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
     <aside className="arcade-progress-card"><span aria-hidden="true">🏆</span><h3>{language === "es-MX" ? "Progreso del juego" : "Game progress"}</h3><p>{language === "es-MX" ? "Preguntas resueltas" : "Questions solved"}: {solvedCount}/{questions.length}</p><p>{tr(ui.bestScore, language)}: {profile.arcadeScores[activeGame] ?? 0}</p><small>{language === "es-MX" ? "Cada pregunta correcta otorga una estrella solo la primera vez." : "Each correct question awards one star only the first time."}</small></aside>
   </div>;
   return <div className="arcade-hub">
+    <article className="arcade-friends-feature">
+      <div className="arcade-friends-feature__art" role="img" aria-label={language === 'es-MX' ? 'Isla para explorar con amigos' : 'Island to explore with friends'} style={{ '--friends-preview': `url("${mapPreview}")` } as CSSProperties} />
+      <div className="arcade-friends-feature__copy"><small>{language === 'es-MX' ? 'NUEVO · EXPLORACIÓN 2D' : 'NEW · 2D EXPLORATION'}</small><h2>{language === 'es-MX' ? 'Nico y sus amigos' : 'Nico & Friends'}</h2><p>{language === 'es-MX' ? 'Camina con Becca, Lua, BoltBot y Sparky. Explora la isla, ayuda en cinco lugares y encuentra estrellas. Tres modos en un mapa ligero.' : 'Walk with Becca, Lua, BoltBot and Sparky. Explore the island, help at five places, and find stars. Three modes on one lightweight map.'}</p><button type="button" data-testid="open-friends-map" onClick={() => openGame('friends-map')}>▶ {language === 'es-MX' ? 'Jugar en el mapa' : 'Play on the map'}</button></div>
+    </article>
     <article className="arcade-star-feature"><span aria-hidden="true">✦</span><div><small>{language === 'es-MX' ? 'NUEVO · ACCIÓN 3D EN TIEMPO REAL' : 'NEW · REAL-TIME 3D ACTION'}</small><h2>{language === 'es-MX' ? 'Aventura de Estrellas' : 'Star Tag Adventure'}</h2><p>{language === 'es-MX' ? 'Explora como Nico con BoltBot y Sparky. Muévete, apunta, lanza estrellas y esquiva burbujas en tres rondas de aliens juguetones.' : 'Explore as Nico with BoltBot and Sparky. Move, aim, launch stars and dodge bubbles through three waves of playful aliens.'}</p></div><button type="button" className="fw-primary" data-testid="open-star-tag" onClick={() => openGame('star-tag-adventure')}>▶ {language === 'es-MX' ? 'Entrar a la arena' : 'Enter the arena'}</button></article>
+    <details className="arcade-legacy" open={legacyOpen} onToggle={event => setLegacyOpen(event.currentTarget.open)}><summary>{language === 'es-MX' ? 'Juegos anteriores y progreso guardado' : 'Earlier games & saved progress'}</summary><p>{language === 'es-MX' ? 'Tus puntuaciones anteriores siguen aquí. Los nuevos juegos están arriba.' : 'Your earlier scores are still here. The new games are above.'}</p>
     <article className="arcade-featured-duel"><span aria-hidden="true">🥊</span><div><small>{language === "es-MX" ? "DUELO AMISTOSO" : "FRIENDLY DUEL"}</small><h2>{language === "es-MX" ? "Duelo de amistad de Nico" : "Nico's Friendship Duel"}</h2><p>{language === "es-MX" ? "Uno contra uno, tranquilo y sin violencia gráfica. Convierte al rival en amigo." : "A gentle one-on-one match with no graphic violence. Turn the rival into a friend."}</p></div><button type="button" className="fw-primary" onClick={() => openGame(FRIENDLY_DUEL_ID)}>▶ {tr(ui.play, language)}</button></article>
     <div className="fw-card-grid arcade-game-grid">{ARCADE_GAMES.map((game, index) => {
       const gameQuestions = ARCADE_QUESTIONS[game] ?? [];
       const solved = gameQuestions.filter(item => hasCompleted(profile, arcadeMissionId(game, item.id))).length;
       return <article className="fw-game-card" key={game}><div aria-hidden="true">{ARCADE_ICONS[index]}</div><h3>{optionLabel(game, language)}</h3><p>{tr(ui.bestScore, language)}: {profile.arcadeScores[game] ?? 0}</p><progress max={gameQuestions.length || 1} value={solved}>{solved}/{gameQuestions.length}</progress><small>{language === "es-MX" ? "Desafíos resueltos" : "Challenges solved"}: {solved}/{gameQuestions.length}</small><button type="button" onClick={() => openGame(game)}>▶ {tr(ui.play, language)}</button></article>;
-    })}</div>
+    })}</div></details>
   </div>;
 }
