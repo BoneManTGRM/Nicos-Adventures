@@ -1,0 +1,56 @@
+name: Playable World Acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: playable-world-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  playable-world:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Unit tests
+        run: npm test
+      - name: Build and release validation
+        run: npm run build
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Desktop and mobile gameplay acceptance
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: npx playwright test --config playwright.playable.config.ts
+      - name: Preserve source, build and visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playable-world-${{ github.sha }}
+          retention-days: 7
+          path: |
+            web/src
+            web/public
+            web/scripts
+            web/package.json
+            web/package-lock.json
+            web/tsconfig*.json
+            web/playwright*.ts
+            web/e2e
+            web/index.html
+            web/vite.config.ts
+            web/dist
+            web/playwright-report
+            web/test-results
