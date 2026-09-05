@@ -1,0 +1,39 @@
+name: Creative Studio Acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: creative-studio-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  creative-studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Prepare exact source and locked test dependencies
+        run: tar -czf /tmp/creative-source.tgz --exclude=.git --exclude=.env --exclude='*.log' -C .. web .github package.json package-lock.json wrangler.jsonc
+      - name: Preserve development evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: creative-source-${{ github.sha }}
+          path: /tmp/creative-source.tgz
+          retention-days: 3
+      - name: Unit tests
+        run: npm test
+      - name: Production build and existing budgets
+        run: npm run build
