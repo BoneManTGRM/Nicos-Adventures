@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useReducer, useRef, useState, type CSSProperties } from "react";
 import { PremiumBoltBotSprite } from "../boltbot/PremiumBoltBotSprite";
 import {
   BOLT_BOT_LOGIC_ANSWER,
@@ -8,13 +8,14 @@ import {
   boltBotChamberStage,
   boltBotRoutePose,
   passesLogicTest,
-  passesMovementTest,
   passesScannerTest,
   type MovementCommand,
 } from "../game/boltBot";
 import type { StarBridgeEvent, StarBridgeState } from "../game/goldenAdventure";
 import { tr, type Localized } from "../i18n/core";
 import type { Language, Robot } from "../types";
+import { movementRouteReducer, newMovementRoute } from "../game/boltBotRoute";
+import { BoltBotRouteControls } from "./BoltBotRouteControls";
 import "./boltbot-test-chamber.css";
 
 const copy = {
@@ -40,13 +41,6 @@ const copy = {
     "es-MX": "Los sistemas de movimiento, escáner y lógica aprobaron. Vuelve al Mapa Mundial para la misión del puente.",
   },
   returnMap: { en: "Return to World Map", "es-MX": "Volver al Mapa Mundial" },
-  forward: { en: "Forward", "es-MX": "Adelante" },
-  left: { en: "Left", "es-MX": "Izquierda" },
-  right: { en: "Right", "es-MX": "Derecha" },
-  runRoute: { en: "Pass movement test", "es-MX": "Aprobar prueba de movimiento" },
-  resetRoute: { en: "Try the route again", "es-MX": "Intentar la ruta de nuevo" },
-  routeCorrect: { en: "Route complete!", "es-MX": "¡Ruta completa!" },
-  routeWrong: { en: "That route missed a pad. Try again.", "es-MX": "Esa ruta no pasó por una plataforma. Inténtalo de nuevo." },
   confirmScan: { en: "Pass scanner test", "es-MX": "Aprobar prueba del escáner" },
   scanCorrect: { en: "Strongest signal found!", "es-MX": "¡Encontraste la señal más intensa!" },
   scanWrong: { en: "That is not the strongest signal yet.", "es-MX": "Esa todavía no es la señal más intensa." },
@@ -160,13 +154,16 @@ export function BoltBotTestChamber({
   returnToMap: () => void;
 }) {
   const stage = boltBotChamberStage(state.step);
-  const [commands, setCommands] = useState<MovementCommand[]>([]);
+  const [route, dispatchRoute] = useReducer(movementRouteReducer, undefined, newMovementRoute);
+  const commands = route.commands;
   const [selectedScan, setSelectedScan] = useState<string | null>(null);
   const [logicAnswer, setLogicAnswer] = useState<string | null>(null);
   const [animation, setAnimation] = useState("Idle");
   const [routeMotion, setRouteMotion] = useState<"programmed" | "moving" | "settled" | "reduced">("settled");
   const timer = useRef<number | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => { dispatchRoute({ type: "reset" }); }, [robot.id]);
 
   useEffect(() => () => {
     if (timer.current !== null) window.clearTimeout(timer.current);
@@ -191,18 +188,12 @@ export function BoltBotTestChamber({
 
   if (stage === "inactive" || stage === "configuration") return null;
 
-  const routeComplete = commands.length === BOLT_BOT_MOVEMENT_SEQUENCE.length;
-  const routePassed = routeComplete && passesMovementTest(commands);
   const scanPassed = selectedScan !== null && passesScannerTest(selectedScan);
   const logicPassed = logicAnswer !== null && passesLogicTest(logicAnswer);
   const visualCommands = stage === "movement" ? commands : BOLT_BOT_MOVEMENT_SEQUENCE;
   const title = stage === "movement" ? copy.movement : stage === "scanner" ? copy.scanner : stage === "logic" ? copy.logic : copy.complete;
   const body = stage === "movement" ? copy.movementBody : stage === "scanner" ? copy.scannerBody : stage === "logic" ? copy.logicBody : copy.completeBody;
 
-  const selectMovement = (command: MovementCommand) => {
-    if (routeComplete) return;
-    setCommands((current) => [...current, command]);
-  };
 
   return (
     <section className="boltbot-mission" data-route-motion={routeMotion} aria-labelledby="boltbot-mission-title">
@@ -223,19 +214,10 @@ export function BoltBotTestChamber({
         />
         <div className="boltbot-test-controls">
           {stage === "movement" ? (
-            <>
-              <div className="boltbot-command-route" aria-label={language === "es-MX" ? "Ruta programada" : "Programmed route"}>
-                {[0, 1, 2].map((index) => <span key={index}>{commands[index] ? tr(copy[commands[index]], language) : index + 1}</span>)}
-              </div>
-              <div className="boltbot-choice-grid" role="group" aria-label={tr(copy.movement, language)}>
-                {(["forward", "left", "right"] as const).map((command) => (
-                  <button type="button" key={command} disabled={routeComplete} onClick={() => selectMovement(command)}>{tr(copy[command], language)}</button>
-                ))}
-              </div>
-              {routeComplete ? <p className={routePassed ? "test-feedback is-correct" : "test-feedback is-wrong"} role="status">{tr(routePassed ? copy.routeCorrect : copy.routeWrong, language)}</p> : null}
-              {routePassed ? <button type="button" className="fw-primary" onClick={() => advance({ type: "PASS_MOVEMENT_TEST" })}>{tr(copy.runRoute, language)}</button> : null}
-              {routeComplete && !routePassed ? <button type="button" onClick={() => { setCommands([]); play("Idle", 0); }}>{tr(copy.resetRoute, language)}</button> : null}
-            </>
+            <BoltBotRouteControls
+              route={route} dispatch={dispatchRoute} language={language}
+              onPass={() => advance({ type: "PASS_MOVEMENT_TEST" })}
+            />
           ) : null}
           {stage === "scanner" ? (
             <>
