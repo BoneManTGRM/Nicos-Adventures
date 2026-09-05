@@ -3,10 +3,12 @@ Run against pinned originals with Pillow 12.3.0, numpy 2.3.5 and scipy 1.17.0.
 Outputs are pre-baked WebP files. No color-keying runs on phones.
 """
 from __future__ import annotations
+
 import argparse
 import hashlib
 import json
 from pathlib import Path
+
 import numpy as np
 from PIL import Image
 from scipy import ndimage as ndi
@@ -16,7 +18,6 @@ NAMES = (["art/becca-premium-v2.webp", "art/lua-premium-v2.webp"]
          + ["art/arctic-fox-premium-v2.webp", "art/polar-bear-premium-v2.webp"]
          + [f"pets/sparky-{p}-v2.webp" for p in ["idle", "sit", "high-five", "fetch-tool"]]
          + ["art/wildlife-premium-clean-atlas.webp"])
-# Reviewed lower-ground regions in 320px cells, not the subject's face/body.
 FLOORS = {0:224,1:247,5:238,8:230,9:239,10:219,11:259,16:252,17:185,
           19:233,20:247,22:275,23:270,24:238,25:237,27:258,28:233,29:239,30:241,31:245}
 SEEDS = {0:[(197,255),(145,275)],1:[(143,262)],2:[(184,136),(100,144)],
@@ -54,8 +55,6 @@ def repair_edge(source: np.ndarray, band: float) -> tuple[np.ndarray, np.ndarray
     rgb[contaminated] = reference[contaminated]
     result[:,:,:3] = np.round(rgb).astype(np.uint8)
     result[:,:,3] = np.round(alpha).astype(np.uint8)
-    # Extend adjacent subject RGB under transparency so texture interpolation
-    # cannot reveal an invisible white matte around the 3D companion.
     visible = result[:,:,3] > 0
     _, nearest = ndi.distance_transform_edt(~visible, return_indices=True)
     result[~visible,:3] = result[nearest[0][~visible], nearest[1][~visible], :3]
@@ -67,12 +66,11 @@ def remove_becca_paper(source: np.ndarray) -> np.ndarray:
     rgb = source[:,:,:3].astype(np.int16)
     paper = (rgb.min(2) > 205) & (rgb.max(2) - rgb.min(2) < 32)
     paper[775:] = False
-    protected = [(230,455,330,570), (443,393,642,549)]  # white cuff and collar
+    protected = [(230,455,330,570), (443,393,642,549)]
     for x1,y1,x2,y2 in protected:
         paper[y1:y2,x1:x2] = False
     clear = source[:,:,3] < 8
     exterior = ndi.binary_propagation(clear, mask=clear | paper)
-    # White islands enclosed by dark curls are negative space, not highlights.
     hair = np.zeros(paper.shape, dtype=bool)
     hair[370:775,:440] = True
     hair[390:775,668:] = True
@@ -83,9 +81,21 @@ def remove_becca_paper(source: np.ndarray) -> np.ndarray:
 
 def remove_cell_paper(source: np.ndarray, index: int) -> np.ndarray:
     result = source.copy()
+    rgb = source[:,:,:3].astype(np.int16)
+    # Review-confirmed gray paper in lower-ground negative spaces only.
+    gray_gaps = {
+        14: [(146,274,175,289),(194,275,225,293),(132,287,151,297)],
+        15: [(59,270,146,294),(202,272,264,287)],
+        20: [(76,273,101,299),(140,267,183,294),(235,263,306,280)],
+        23: [(79,267,121,281),(177,264,219,283)],
+    }
+    gray = (rgb.min(2) > 108) & (rgb.max(2) - rgb.min(2) < 43)
+    for x1,y1,x2,y2 in gray_gaps.get(index, []):
+        region = np.zeros(gray.shape, dtype=bool)
+        region[y1:y2,x1:x2] = True
+        result[region & gray,3] = 0
     if index not in FLOORS and index != 2:
         return result
-    rgb = source[:,:,:3].astype(np.int16)
     paper = (rgb.min(2) > 170) & (rgb.max(2) - rgb.min(2) < 22)
     if index == 2:
         region = np.zeros(paper.shape, dtype=bool)
@@ -119,8 +129,6 @@ def run(root: Path, output: Path, pins_path: Path) -> dict:
                 cell = remove_cell_paper(original[y:y+320,x:x+320], index)
                 work[y:y+320,x:x+320], preserved = repair_edge(cell, 2.5)
                 core[y:y+320,x:x+320] = preserved & (cell[:,:,3] == original[y:y+320,x:x+320,3])
-            # Bake the same approved replacements already used at runtime into
-            # the two damaged atlas cells, keeping their inset and scale.
             atlas = Image.fromarray(work)
             for index,replacement in [(12,"polar-bear"),(13,"arctic-fox")]:
                 image = Image.open(output/f"art/{replacement}-premium-v2.webp").convert("RGBA")

@@ -1,14 +1,13 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
-import report from '../src/assets/cutout-repair.provenance.json';
-import points from './cutout-pixel-checkpoints.json';
 import { WORLD_SECTIONS } from '../src/world/catalogs';
 import type { SectionId } from '../src/types';
 const WILDLIFE_IDS=['jaguar','toucan','sloth','poison-dart-frog','blue-whale','giant-pacific-octopus','sea-turtle','manta-ray','lion','african-elephant','giraffe','meerkat','polar-bear','arctic-fox','emperor-penguin','walrus','fennec-fox','camel','roadrunner','gila-monster','red-panda','flying-squirrel','great-horned-owl','beaver','axolotl','capybara','flamingo','platypus','snow-leopard','mountain-goat','andean-condor','yak'];
 type Checkpoint={cell:number;clear:number[]|null;solid:number[];rgba:number[]};
-const checkpoints:Record<string,Checkpoint[]>=points;
+const checkpoints=JSON.parse(readFileSync(resolve('e2e/cutout-pixel-checkpoints.json'),'utf8')) as Record<string,Checkpoint[]>;
+const report=JSON.parse(readFileSync(resolve('src/assets/cutout-repair.provenance.json'),'utf8')) as {records:{path:string;sha256:string;width:number;height:number}[]};
 async function open(page:Page,info:TestInfo,id:SectionId){
   await page.goto('/');await page.locator('.fw-brand').click();
   const es=info.project.metadata.language==='es-MX';
@@ -30,6 +29,7 @@ async function loadedImages(page:Page,selector:string){
 }
 test('shipped cutout bytes retain white details and clear reviewed negative spaces',async({page},info)=>{
   await page.goto('/');const files=readdirSync(resolve('dist/assets'));const receipts=[];
+  expect(report.records).toHaveLength(13);
   for(const record of report.records){
     const stem=basename(record.path,'.webp');
     const file=files.find(name=>name.startsWith(stem+'-')&&name.endsWith('.webp'));
@@ -85,6 +85,7 @@ test('all 32 real wildlife canvases preserve pale material without paper floors'
     let visible=0;for(let i=3;i<data.length;i+=4)if(data[i]>128)visible++;
     return {id,visible,solid:Array.from(ctx.getImageData(map(point.solid[0]),map(point.solid[1]),1,1).data),clear:point.clear?ctx.getImageData(map(point.clear[0]),map(point.clear[1]),1,1).data[3]:null};
   }),{ids:WILDLIFE_IDS,samples:checkpoints['wildlife-premium-clean-atlas']});
+  await info.attach('wildlife-canvas-receipts',{body:Buffer.from(JSON.stringify(measurements,null,2)),contentType:'application/json'});
   expect(new Set(measurements.map(item=>item.id)).size).toBe(32);
   for(const item of measurements){
     expect(item.visible,item.id).toBeGreaterThan(1000);
@@ -93,7 +94,6 @@ test('all 32 real wildlife canvases preserve pale material without paper floors'
     if(checkpoints['wildlife-premium-clean-atlas'][index].rgba.slice(0,3).every(value=>value>226))expect(Math.min(...item.solid.slice(0,3)),item.id+' pale material').toBeGreaterThan(200);
     if(item.clear!==null)expect(item.clear,item.id+' paper gap').toBeLessThan(8);
   }
-  // Evidence uses actual in-app canvases, not a separate source-art reconstruction.
   await page.evaluate(selector=>{
     const panel=document.createElement('div');panel.id='cutout-proof';panel.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px;background:#102139;position:relative;z-index:99999';
     document.querySelectorAll<HTMLCanvasElement>(selector).forEach(canvas=>{
@@ -102,7 +102,6 @@ test('all 32 real wildlife canvases preserve pale material without paper floors'
     });document.body.append(panel);
   },selector);
   await shot(page,info,'all-32-rendered-wildlife','#cutout-proof');
-  await info.attach('wildlife-canvas-receipts',{body:Buffer.from(JSON.stringify(measurements,null,2)),contentType:'application/json'});
   expect(errors).toEqual([]);
 });
 test('cousins portraits and all four Sparky poses keep working with native transparency',async({page},info)=>{
