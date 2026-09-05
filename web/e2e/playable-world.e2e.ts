@@ -14,86 +14,121 @@ async function noOverflow(page: Page) {
   const result = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
   expect(result.scroll).toBeLessThanOrEqual(result.width + 2);
 }
+async function webglAvailable(page: Page) {
+  return page.evaluate(() => {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2');
+    const supported = Boolean(gl);
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    return supported;
+  });
+}
+async function readyArena(page: Page, info: TestInfo) {
+  const supported = await webglAvailable(page);
+  await page.getByTestId('open-star-tag').click();
+  if (!supported) {
+    await expect(page.locator('.star-tag [role="alert"]')).toBeVisible({ timeout: 30000 });
+    await screenshot(page, info, 'verified-no-webgl-fallback');
+    await page.locator('.star-tag__toolbar button').first().click();
+    await expect(page.getByTestId('open-star-tag')).toBeVisible();
+    return false;
+  }
+  // Retry until the assets are ready, rather than sampling isEnabled during loading.
+  await expect(page.getByTestId('tag-start')).toBeEnabled({ timeout: 30000 });
+  await expect(page.locator('.star-tag canvas')).toHaveCount(1);
+  return true;
+}
 test('Nico TV keeps readable copy separate from the video at actual card widths', async ({ page }, info) => {
   await page.goto('/');
   await expect(page.locator('.nico-video-card')).toBeVisible();
-  if (info.project.name.includes('desktop')) await page.setViewportSize({ width: 1024, height: 900 });
-  await page.locator('.nico-video-card').scrollIntoViewIfNeeded();
-  const measure = await page.locator('.nico-video-card').evaluate(card => {
-    const copy = card.querySelector('.nico-video-card__copy')!.getBoundingClientRect();
-    const video = card.querySelector('.nico-video-card__frame')!.getBoundingClientRect();
-    const outer = card.getBoundingClientRect();
-    return { separate: copy.right <= video.left + 1 || video.right <= copy.left + 1 || copy.bottom <= video.top + 1 || video.bottom <= copy.top + 1,
-      copyWidth: copy.width, contained: copy.left >= outer.left && copy.right <= outer.right && video.left >= outer.left && video.right <= outer.right };
-  });
-  expect(measure.separate).toBe(true); expect(measure.contained).toBe(true); expect(measure.copyWidth).toBeGreaterThan(175);
+  const widths = info.project.name.includes('desktop') ? [1024, 1440] : [page.viewportSize()!.width];
+  for (const width of widths) {
+    if (info.project.name.includes('desktop')) await page.setViewportSize({ width, height: 900 });
+    await page.locator('.nico-video-card').scrollIntoViewIfNeeded();
+    const measure = await page.locator('.nico-video-card').evaluate(card => {
+      const copy = card.querySelector('.nico-video-card__copy')!.getBoundingClientRect();
+      const video = card.querySelector('.nico-video-card__frame')!.getBoundingClientRect();
+      const outer = card.getBoundingClientRect();
+      return { separate: copy.right <= video.left + 1 || video.right <= copy.left + 1 || copy.bottom <= video.top + 1 || video.bottom <= copy.top + 1,
+        copyWidth: copy.width, contained: copy.left >= outer.left && copy.right <= outer.right && video.left >= outer.left && video.right <= outer.right };
+    });
+    expect(measure.separate).toBe(true); expect(measure.contained).toBe(true); expect(measure.copyWidth).toBeGreaterThan(175);
+    await noOverflow(page); await screenshot(page, info, `nico-tv-${width}`);
+  }
   await expect(page.locator('.nico-video-card__play')).toBeEnabled({ timeout: 30000 });
   await page.locator('.nico-video-card__play').click();
   await expect.poll(() => page.locator('.nico-video-card video').evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(0);
-  await noOverflow(page); await screenshot(page, info, 'nico-tv-responsive');
 });
 test('Nico TV exposes recovery when a video part fails', async ({ page }) => {
   await page.route('**/nico-basketball.part01.b64*', route => route.fulfill({ status: 503, body: '' }));
-  await page.goto('/');
-  await expect(page.locator('.nico-video-card__error')).toBeVisible();
-  await page.unroute('**/nico-basketball.part01.b64*');
-  await page.locator('.nico-video-card__error button').click();
+  await page.goto('/'); await expect(page.locator('.nico-video-card__error')).toBeVisible();
+  await page.unroute('**/nico-basketball.part01.b64*'); await page.locator('.nico-video-card__error button').click();
   await expect(page.locator('.nico-video-card__play')).toBeEnabled({ timeout: 30000 });
 });
-test('home characters walk, interact, retain rewards and never use the old nested preview', async ({ page }, info) => {
-  await open(page, info, 'home');
-  const room = page.locator('.living-home__room');
+test('home characters walk, perform all activities and retain one-time rewards', async ({ page }, info) => {
+  await open(page, info, 'home'); const room = page.locator('.living-home__room');
   await expect(room).toBeVisible(); await expect(page.locator('.living-home .robot-readout')).toHaveCount(0);
+  await expect(room.locator('.nico-costume')).not.toHaveClass(/nico-costume--compact/);
   await page.locator('[data-home-select="robot"]').click();
   const start = Number(await room.getAttribute('data-home-x'));
   if (info.project.use.isMobile) {
-    const right = page.locator('[data-home-direction="right"]'); const box = await right.boundingBox();
+    const right = page.locator('[data-home-direction="right"]'); await right.scrollIntoViewIfNeeded();
+    const box = await right.boundingBox();
     await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2); await page.mouse.down(); await page.waitForTimeout(550); await page.mouse.up();
   } else { await room.focus(); await page.keyboard.down('ArrowRight'); await page.waitForTimeout(550); await page.keyboard.up('ArrowRight'); }
   await expect.poll(async () => Number(await room.getAttribute('data-home-x'))).toBeGreaterThan(start + 4);
-  await page.locator('[data-home-activity="dance"]').click();
-  await expect(room).toHaveAttribute('data-home-action', 'dance', { timeout: 15000 });
-  await expect(page.locator('[data-home-activity="dance"] small')).toHaveText('✓');
-  await page.locator('.living-home__room').scrollIntoViewIfNeeded(); await screenshot(page, info, 'living-home-dance');
-  await page.locator('[data-home-select="nico"]').click(); await page.locator('[data-home-activity="repair"]').click();
-  await expect(room).toHaveAttribute('data-home-action', 'repair', { timeout: 15000 });
-  await page.reload(); await expect(page.locator('[data-home-activity="dance"] small')).toHaveText('✓');
-  await expect(page.locator('[data-home-activity="repair"] small')).toHaveText('✓');
+  await page.locator('[data-home-select="nico"]').click();
+  for (const activity of ['dance', 'repair', 'rest', 'charge', 'snack']) {
+    await page.locator(`[data-home-activity="${activity}"]`).click();
+    await expect(room).toHaveAttribute('data-home-action', activity, { timeout: 15000 });
+    await expect(page.locator(`[data-home-activity="${activity}"] small`)).toHaveText('✓');
+    if (activity === 'dance') { await room.scrollIntoViewIfNeeded(); await screenshot(page, info, 'living-home-dance'); }
+  }
+  const stars = await page.locator('.fw-star-pill').first().textContent().catch(() => null);
+  await page.locator('[data-home-activity="snack"]').click();
+  await expect(room).toHaveAttribute('data-home-action', 'snack');
+  if (stars) await expect(page.locator('.fw-star-pill').first()).toHaveText(stars);
+  await page.reload();
+  for (const activity of ['dance', 'repair', 'rest', 'charge', 'snack']) await expect(page.locator(`[data-home-activity="${activity}"] small`)).toHaveText('✓');
   await noOverflow(page);
 });
-test('3D arena responds to movement and fire, freezes on pause and resets cleanly', async ({ page, browserName }, info) => {
-  const es = await open(page, info, 'arcade');
-  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
-  await page.getByTestId('open-star-tag').click();
-  // Linux WebKit does not always expose WebGL; it must fail visibly and leave navigation usable.
-  if (browserName === 'webkit') {
-    const ready = await page.getByTestId('tag-start').isEnabled({ timeout: 20000 }).catch(() => false);
-    if (!ready) {
-      await expect(page.locator('.star-tag [role="alert"]')).toBeVisible({ timeout: 30000 });
-      await screenshot(page, info, 'webkit-3d-capability-fallback');
-      await page.locator('.star-tag__toolbar button').first().click(); await expect(page.getByTestId('open-star-tag')).toBeVisible(); return;
-    }
-  }
-  await expect(page.getByTestId('tag-start')).toBeEnabled({ timeout: 30000 });
-  await page.getByTestId('tag-start').click();
-  const game = page.locator('.star-tag'); await expect(game).toHaveAttribute('data-tag-status', 'playing');
+test('3D arena moves, fires from touch, freezes on pause and resets cleanly', async ({ page }, info) => {
+  const es = await open(page, info, 'arcade'); const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  if (!(await readyArena(page, info))) return;
+  await page.locator('.star-tag__toolbar button').filter({ hasText: es ? 'Pantalla grande' : 'Big screen' }).click();
+  await page.getByTestId('tag-start').click(); const game = page.locator('.star-tag');
+  await expect(game).toHaveAttribute('data-tag-status', 'playing');
   await game.focus(); await page.keyboard.down('KeyW'); await page.keyboard.down('Space');
-  await page.waitForTimeout(900); await page.keyboard.up('KeyW'); await page.keyboard.up('Space');
   await expect.poll(async () => Number(await game.getAttribute('data-tag-distance'))).toBeGreaterThan(1);
   await expect.poll(async () => Number(await game.getAttribute('data-tag-shots'))).toBeGreaterThan(1);
-  await page.locator('.star-tag__toolbar button').filter({ hasText: es ? 'Pantalla grande' : 'Big screen' }).click();
+  await page.keyboard.up('KeyW'); await page.keyboard.up('Space');
   await screenshot(page, info, 'star-tag-live-arena'); await noOverflow(page);
-  await page.locator('.star-tag__toolbar button').filter({ hasText: es ? 'Pausa' : 'Pause' }).click();
+  const pause = page.locator('.star-tag__toolbar button').filter({ hasText: es ? 'Pausa' : 'Pause' });
+  await pause.focus(); await page.keyboard.press('Space');
   await expect(game).toHaveAttribute('data-tag-status', 'paused');
   const distance = await game.getAttribute('data-tag-distance'), shots = await game.getAttribute('data-tag-shots');
   await page.waitForTimeout(450); expect(await game.getAttribute('data-tag-distance')).toBe(distance); expect(await game.getAttribute('data-tag-shots')).toBe(shots);
   await page.getByTestId('tag-start').click();
   const pad = page.getByTestId('tag-move'); const box = await pad.boundingBox();
-  await page.mouse.move(box!.x + box!.width / 2, box!.y + 12); await page.mouse.down(); await page.waitForTimeout(450); await page.mouse.up();
-  await expect.poll(async () => Number(await game.getAttribute('data-tag-distance'))).toBeGreaterThan(Number(distance));
+  await page.mouse.move(box!.x + box!.width / 2, box!.y + 12); await page.mouse.down();
+  await expect.poll(async () => Number(await game.getAttribute('data-tag-distance'))).toBeGreaterThan(Number(distance) + .2);
+  await page.mouse.up();
+  const beforeTap = Number(await game.getAttribute('data-tag-shots'));
+  if (info.project.use.hasTouch) await page.getByTestId('tag-fire').tap(); else await page.getByTestId('tag-fire').click();
+  await expect.poll(async () => Number(await game.getAttribute('data-tag-shots'))).toBeGreaterThan(beforeTap);
   await game.focus(); await page.keyboard.press('Escape'); await expect(game).toHaveAttribute('data-tag-status', 'paused');
   await page.getByRole('button', { name: es ? 'Nueva aventura' : 'New adventure', exact: true }).click();
   await expect(game).toHaveAttribute('data-tag-shots', '0'); await expect(game).toHaveAttribute('data-tag-shield', '100');
   await page.locator('.star-tag__toolbar button').first().click(); await expect(page.getByTestId('open-star-tag')).toBeVisible();
   expect(errors).toEqual([]);
+});
+test('3D context loss offers recovery instead of trapping the player', async ({ page }, info) => {
+  await open(page, info, 'arcade'); if (!(await readyArena(page, info))) return;
+  await page.getByTestId('tag-start').click();
+  await page.locator('.star-tag canvas').evaluate((canvas: HTMLCanvasElement) => canvas.dispatchEvent(new Event('webglcontextlost')));
+  await expect(page.locator('.star-tag [role="alert"]')).toBeVisible();
+  await page.locator('.star-tag__overlay button').click();
+  await expect(page.getByTestId('tag-start')).toBeEnabled({ timeout: 30000 });
+  await page.locator('.star-tag__toolbar button').first().click(); await expect(page.getByTestId('open-star-tag')).toBeVisible();
 });
