@@ -3,7 +3,7 @@ import type { LocalProfile } from '../types';
 import type { Announce, UpdateProfile } from './common';
 import { completeOnce } from './progression';
 import { useDialogFocusTrap } from '../hooks/useDialogFocusTrap';
-import { busy, cameraFor, createMapState, destination, FRAME_MS, missionIds, nearbyStop, pauseMap, progress, ROSTER, score, screenToWorld, selectFriend, STOPS, stepMap, TOKENS } from '../game/friendsMap/simulation';
+import { busy, cameraFor, createMapState, destination, frameDue, FRAME_MS, missionIds, nearbyStop, pauseMap, progress, ROSTER, score, screenToWorld, selectFriend, STOPS, stepMap, TOKENS } from '../game/friendsMap/simulation';
 import type { Friend, Input, MapState, Mode, Point, Viewport } from '../game/friendsMap/simulation';
 import { drawMap, FRIEND_NAMES, loadMapAssets } from '../game/friendsMap/renderer';
 import type { MapAssets } from '../game/friendsMap/renderer';
@@ -60,15 +60,17 @@ export function FriendsMap({ profile, update, announce, close }: { profile: Loca
     };
     const wake = () => {
       if (!alive || !assets || !ctx || document.hidden || timer || raf) return;
-      timer = window.setTimeout(() => { timer = 0; raf = requestAnimationFrame(frame); }, Math.max(0, FRAME_MS - (performance.now() - lastFrame)));
+      timer = window.setTimeout(() => { timer = 0; raf = requestAnimationFrame(frame); }, Math.max(1, Math.ceil(FRAME_MS - (performance.now() - lastFrame))));
     };
-    const frame = (now: number) => {
+    const frame = () => {
+      const now = performance.now();
       raf = 0; if (!alive || document.hidden || !assets || !ctx) return;
-      const start = performance.now(), previousAction = s.action?.id;
+      if (!frameDue(now, lastFrame)) { wake(); return; }
+      const start = performance.now(), previousAction = s.action?.id, previousRevision = s.revision;
       stepMap(s, input.current, lastFrame ? (now - lastFrame) / 1000 : 1 / 30); lastFrame = now;
       camera.current = cameraFor(s.player, bufferedWidth, bufferedHeight, overviewRef.current);
       drawMap(ctx, assets, s, camera.current); frames++;
-      if (previousAction && !s.action && s.completed.includes(previousAction)) {
+      if (previousAction && !s.action && s.revision !== previousRevision && s.completed.includes(previousAction)) {
         const stop = STOPS.find(p => p.id === previousAction)!;
         const message = latest.current.profile.language === 'es-MX' ? stop.resultado : stop.result;
         setNotice(message); latest.current.announce(message);

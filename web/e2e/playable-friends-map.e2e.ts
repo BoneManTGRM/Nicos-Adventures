@@ -1,5 +1,5 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
-import { STOPS, TOKENS } from '../src/game/friendsMap/simulation';
+import { cameraFor, STOPS, TOKENS } from '../src/game/friendsMap/simulation';
 async function open(page: Page, info: TestInfo) {
   await page.goto('/'); await page.locator('.fw-brand').click();
   const es = info.project.metadata.language === 'es-MX';
@@ -54,7 +54,12 @@ test('walking is capped, becomes idle, pauses and releases cancelled touch input
   const elapsed = (Date.now() - now) / 1000, rendered = Number(await canvas.getAttribute('data-frames')) - before;
   expect(rendered / elapsed).toBeLessThanOrEqual(32); expect(rendered).toBeGreaterThan(3);
   expect(Number(await canvas.getAttribute('data-traveled'))).toBeGreaterThan(5);
-  await up.dispatchEvent('pointercancel', { pointerId: 1 });
+  // Cancellation must release a still-held pointer, not an already released one.
+  await up.evaluate(node => node.addEventListener('pointerdown', event => node.setAttribute('data-last-pointer', String((event as PointerEvent).pointerId)), { once: true }));
+  await page.mouse.down(); await page.waitForTimeout(100);
+  const heldId = Number(await up.getAttribute('data-last-pointer'));
+  await up.dispatchEvent('pointercancel', { pointerId: heldId });
+  await page.mouse.up();
   await page.waitForTimeout(150); const stopped = await canvas.getAttribute('data-frames');
   await page.waitForTimeout(450); expect(await canvas.getAttribute('data-frames')).toBe(stopped);
   await canvas.focus(); await page.keyboard.down('KeyD'); await page.waitForTimeout(150); await page.getByTestId('map-pause').click(); await page.keyboard.up('KeyD');
@@ -102,4 +107,29 @@ test('a missing character asset can be retried without trapping the player', asy
   await page.unroute('**/becca-premium-v2-*.webp'); await page.getByRole('button', { name: 'Try again', exact: true }).click();
   await expect(page.getByTestId('map-start')).toBeEnabled({ timeout: 25000 });
   await photo(page, info, 'map-asset-recovery');
+});
+test('tap-to-walk uses the illustrated map and switches the camera without scrolling', async ({ page, isMobile }, info) => {
+  await open(page, info);
+  const canvas = page.getByTestId('friends-map-canvas');
+  const beforeOverview = Number(await canvas.getAttribute('data-frames'));
+  await page.locator('.friends-map__overview').click();
+  await expect(page.locator('.friends-map__overview')).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(async () => Number(await canvas.getAttribute('data-frames'))).toBeGreaterThan(beforeOverview);
+  const current = await canvas.evaluate((node: HTMLCanvasElement) => ({ x: Number(node.dataset.x), y: Number(node.dataset.y), width: node.width, height: node.height }));
+  const camera = cameraFor(current, current.width, current.height, true);
+  const target = STOPS[1], rect = (await canvas.boundingBox())!;
+  const x = rect.x + (target.x - camera.x) * camera.scale / current.width * rect.width;
+  const y = rect.y + (target.y - camera.y) * camera.scale / current.height * rect.height;
+  if (isMobile) await page.touchscreen.tap(x, y); else await page.mouse.click(x, y);
+  await expect.poll(() => canvas.evaluate((node: HTMLCanvasElement, point) => Math.hypot(Number(node.dataset.x) - point.x, Number(node.dataset.y) - point.y), target), { timeout: 20000 }).toBeLessThan(12);
+  await expect(canvas).toHaveAttribute('data-path', '0');
+  await expect(page.getByTestId('map-action')).toBeEnabled();
+  await photo(page, info, 'tap-to-walk-whole-island');
+  await page.locator('.friends-map__overview').click();
+  await expect(page.locator('.friends-map__overview')).toHaveAttribute('aria-pressed', 'false');
+  await photo(page, info, 'tap-to-walk-follow-camera');
+  await page.locator('.friends-map__status button').click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.locator('.friends-map')).toHaveAttribute('data-map-status', 'paused');
 });

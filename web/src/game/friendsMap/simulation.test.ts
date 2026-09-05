@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { busy, cameraFor, companionPositions, createMapState, destination, distance, findPath, FRAME_MS, missionIds, pauseMap, progress, ROSTER, screenToWorld, selectFriend, STOPS, stepMap, TOKENS, walkable } from './simulation';
+import { busy, cameraFor, companionPositions, createMapState, destination, distance, findPath, frameDue, FRAME_MS, missionIds, pauseMap, progress, ROSTER, screenToWorld, selectFriend, STOPS, stepMap, TOKENS, walkable } from './simulation';
 const idle = () => ({ x: 0, y: 0, interact: false });
 function walkTo(s: ReturnType<typeof createMapState>, p: { x: number; y: number }) {
   destination(s, p); let frames = 0;
@@ -7,6 +7,18 @@ function walkTo(s: ReturnType<typeof createMapState>, p: { x: number; y: number 
   expect(s.path).toHaveLength(0); expect(distance(s.player, p)).toBeLessThan(12);
 }
 describe('lightweight Nico and friends map', () => {
+  it('never renders above the cap on 60, 90, 120 or 144 Hz callbacks', () => {
+    for (const hz of [60, 90, 120, 144]) {
+      let last = 0, frames = 0;
+      for (let tick = 1; tick <= hz * 10; tick++) { const now = tick * 1000 / hz; if (frameDue(now, last)) { frames++; last = now; } }
+      expect(frames).toBeLessThanOrEqual(301);
+    }
+    expect(walkable({ x: 645, y: 555 })).toBe(false);
+    expect(walkable({ x: 524, y: 620 })).toBe(false);
+    const team = companionPositions(createMapState());
+    expect(team.every(p => walkable(p))).toBe(true);
+    expect(distance(team[0], team[1])).toBeGreaterThan(40);
+  });
   it('is idle on start, pauses without advancing, and has a 30 FPS cap', () => {
     const s = createMapState(), before = JSON.stringify(s);
     stepMap(s, { x: 1, y: 0, interact: true }, 1); expect(JSON.stringify(s)).toBe(before);

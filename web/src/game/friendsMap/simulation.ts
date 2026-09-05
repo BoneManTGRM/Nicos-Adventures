@@ -3,6 +3,7 @@ export type Point = { x: number; y: number };
 export const MAP_WIDTH = 1672;
 export const MAP_HEIGHT = 941;
 export const FRAME_MS = 1000 / 30;
+export const frameDue = (now: number, previous: number) => previous === 0 || now - previous + .05 >= FRAME_MS;
 export const ROSTER = ['nico', 'becca', 'lua', 'boltbot', 'sparky'] as const;
 export type Friend = typeof ROSTER[number];
 export type Mode = 'explore' | 'stars' | 'parade';
@@ -19,15 +20,16 @@ export const STOPS: readonly Stop[] = [
 ];
 // Authored corridors trace the illustration's paths, not roofs or open water.
 export const TRAILS: readonly (readonly Point[])[] = [
-  [{ x: 622, y: 816 }, { x: 577, y: 780 }, { x: 525, y: 718 }, { x: 480, y: 688 }, { x: 558, y: 665 }, { x: 607, y: 610 }, { x: 645, y: 555 }, { x: 625, y: 485 }],
-  [{ x: 480, y: 688 }, { x: 503, y: 637 }, { x: 524, y: 577 }, { x: 520, y: 526 }, { x: 551, y: 486 }, { x: 509, y: 450 }, { x: 477, y: 410 }, { x: 442, y: 382 }, { x: 402, y: 363 }],
-  [{ x: 551, y: 486 }, { x: 630, y: 463 }, { x: 706, y: 451 }, { x: 786, y: 451 }, { x: 866, y: 451 }, { x: 937, y: 463 }, { x: 1017, y: 486 }, { x: 1091, y: 520 }, { x: 1157, y: 529 }],
-  [{ x: 937, y: 463 }, { x: 980, y: 426 }, { x: 1003, y: 388 }, { x: 1043, y: 352 }, { x: 1080, y: 369 }],
+  [{ x: 577, y: 780 }, { x: 558, y: 761 }, { x: 537, y: 734 }, { x: 537, y: 712 }, { x: 480, y: 688 }],
+  [{ x: 537, y: 712 }, { x: 572, y: 697 }, { x: 605, y: 675 }, { x: 622, y: 650 }, { x: 625, y: 622 }, { x: 605, y: 600 }, { x: 575, y: 577 }, { x: 540, y: 560 }, { x: 520, y: 540 }, { x: 515, y: 512 }, { x: 518, y: 494 }, { x: 551, y: 486 }],
+  [{ x: 551, y: 486 }, { x: 509, y: 450 }, { x: 477, y: 410 }, { x: 442, y: 382 }, { x: 402, y: 363 }],
+  [{ x: 551, y: 486 }, { x: 630, y: 482 }, { x: 706, y: 468 }, { x: 786, y: 466 }, { x: 866, y: 470 }, { x: 937, y: 481 }, { x: 1017, y: 503 }, { x: 1091, y: 520 }, { x: 1157, y: 529 }],
+  [{ x: 937, y: 481 }, { x: 957, y: 451 }, { x: 980, y: 426 }, { x: 1003, y: 388 }, { x: 1043, y: 352 }, { x: 1080, y: 369 }],
   [{ x: 1003, y: 388 }, { x: 955, y: 350 }, { x: 892, y: 345 }, { x: 839, y: 366 }, { x: 778, y: 365 }],
   [{ x: 1157, y: 529 }, { x: 1127, y: 586 }, { x: 1114, y: 646 }, { x: 1176, y: 685 }, { x: 1230, y: 694 }, { x: 1286, y: 716 }, { x: 1340, y: 692 }],
-  [{ x: 1157, y: 529 }, { x: 1210, y: 469 }, { x: 1274, y: 445 }, { x: 1346, y: 414 }, { x: 1407, y: 367 }],
+  [{ x: 1157, y: 529 }, { x: 1185, y: 496 }, { x: 1201, y: 477 }],
 ];
-const SPAWN = { x: 528, y: 720 };
+const SPAWN = { x: 520, y: 540 };
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 const finite = (n: number) => Number.isFinite(n) ? n : 0;
 export const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -73,10 +75,10 @@ export function findPath(start: Point, target: Point): Point[] {
   return route;
 }
 export const TOKENS: readonly (Point & { id: string })[] = [
-  { id: 'dock', x: 577, y: 780 }, { id: 'garden', x: 558, y: 665 },
-  { id: 'lab', x: 477, y: 410 }, { id: 'bridge', x: 706, y: 451 },
+  { id: 'dock', x: 577, y: 780 }, { id: 'garden', x: 605, y: 675 },
+  { id: 'lab', x: 477, y: 410 }, { id: 'bridge', x: 706, y: 468 },
   { id: 'tree', x: 839, y: 366 }, { id: 'castle', x: 980, y: 426 },
-  { id: 'sky', x: 1274, y: 445 }, { id: 'stars', x: 1114, y: 646 },
+  { id: 'sky', x: 1201, y: 477 }, { id: 'stars', x: 1114, y: 646 },
 ];
 export type MapState = {
   status: Status; mode: Mode; leader: Friend; player: Point; facing: number;
@@ -84,9 +86,19 @@ export type MapState = {
   completed: StopId[]; collected: string[]; greeted: Friend[]; time: number;
   traveled: number; moving: boolean; celebration: number; revision: number;
 };
+function initialTrail(): Point[] {
+  const trail = [...TRAILS[1]].reverse().filter(p => p.y >= SPAWN.y);
+  const result: Point[] = [{ ...SPAWN }];
+  for (let i = 1; i < trail.length; i++) {
+    const a = trail[i - 1], b = trail[i], length = distance(a, b);
+    for (let t = 4; t <= length; t += 4) result.push({ x: a.x + (b.x - a.x) * t / length, y: a.y + (b.y - a.y) * t / length });
+  }
+  while (result.length < 90) result.push({ ...result[result.length - 1] });
+  return result.slice(0, 90);
+}
 export function createMapState(missions: readonly string[] = []): MapState {
   return { status: 'ready', mode: 'explore', leader: 'nico', player: { ...SPAWN }, facing: 1,
-    trail: Array.from({ length: 70 }, (_, i) => ({ x: SPAWN.x + i * .7, y: SPAWN.y + i * .8 })), path: [], action: null,
+    trail: initialTrail(), path: [], action: null,
     completed: STOPS.filter(s => missions.includes(`friends-map:stop:${s.id}`)).map(s => s.id),
     collected: TOKENS.filter(t => missions.includes(`friends-map:star:${t.id}`)).map(t => t.id),
     greeted: ROSTER.filter(f => missions.includes(`friends-map:friend:${f}`)),
@@ -126,10 +138,9 @@ export function stepMap(s: MapState, input: Input, delta: number): void {
   s.celebration = Math.max(0, s.celebration - dt);
   let x = clamp(finite(input.x), -1, 1), y = clamp(finite(input.y), -1, 1);
   if (x || y) { s.path = []; s.action = null; }
-  else if (s.path.length) {
-    const target = s.path[0], d = distance(s.player, target);
-    if (d < 2) s.path.shift();
-    else { x = (target.x - s.player.x) / d; y = (target.y - s.player.y) / d; }
+  else {
+    while (s.path.length && distance(s.player, s.path[0]) < 2) s.path.shift();
+    if (s.path.length) { const target = s.path[0], d = distance(s.player, target); x = (target.x - s.player.x) / d; y = (target.y - s.player.y) / d; }
   }
   if (x || y) {
     const d = s.path.length ? distance(s.player, s.path[0]) : Infinity;
