@@ -1,0 +1,64 @@
+name: Enterable Buildings Acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: enterable-rooms-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  buildings:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Unit tests
+        run: npm test
+      - name: Build and unchanged code and artwork budgets
+        run: npm run build && node scripts/validate-friends-map.mjs
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Rooms and challenges on desktop and phones
+        if: github.event_name == 'pull_request'
+        run: npx playwright test --config playwright.rooms.config.ts
+      - name: Preserve preview evidence
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rooms-preview-${{ github.sha }}
+          retention-days: 7
+          path: |
+            web/rooms-report
+            web/rooms-test-results
+            web/rooms-results.json
+      - name: Bind to exact live Cloudflare commit
+        if: github.event_name == 'push'
+        run: node scripts/wait-for-cutout-release.mjs
+      # The same nine cases run on the deployed site after merge, rather than
+      # spending another pass repeating the already-verified local PR build.
+      - name: Verify the live buildings and all five challenges
+        if: github.event_name == 'push'
+        env:
+          NICO_PRODUCTION_URL: https://nicos-world.com
+        run: npx playwright test --config playwright.rooms.config.ts
+      - name: Preserve live evidence
+        if: always() && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rooms-production-${{ github.sha }}
+          retention-days: 14
+          path: |
+            web/rooms-report
+            web/rooms-test-results
+            web/rooms-results.json
+            web/cutout-production-release.json
