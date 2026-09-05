@@ -1,0 +1,65 @@
+name: Nico Friends Map Acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: friends-map-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  friends-map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Unit tests
+        run: npm test
+      - name: Build and existing budgets
+        run: npm run build && node scripts/validate-friends-map.mjs
+      - name: Install desktop and phone engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Walking, activities, saved progress and idle CPU gates
+        run: npx playwright test --config playwright.friends.config.ts
+      - name: Preserve preview evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: friends-map-preview-${{ github.sha }}
+          retention-days: 7
+          path: |
+            web/friends-report
+            web/friends-test-results
+            web/friends-results.json
+            web/src/game/friendsMap
+            web/src/world/FriendsMap.tsx
+            web/src/world/friends-map.css
+      - name: Bind to the exact Cloudflare release
+        if: github.event_name == 'push'
+        run: node scripts/wait-for-cutout-release.mjs
+      - name: Verify real Cloudflare site
+        if: github.event_name == 'push'
+        env:
+          NICO_PRODUCTION_URL: https://nicos-world.com
+        run: npx playwright test --config playwright.friends.config.ts
+      - name: Preserve production evidence
+        if: always() && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: friends-map-production-${{ github.sha }}
+          retention-days: 14
+          path: |
+            web/friends-report
+            web/friends-test-results
+            web/friends-results.json
+            web/cutout-production-release.json

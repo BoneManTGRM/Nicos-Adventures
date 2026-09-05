@@ -359,6 +359,7 @@ test("all destinations keep their main local interactions working", async ({ pag
 
   await openDestination(page, text.world, text.arcade, `${testInfo.project.name} Game Arcade`);
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.locator(".arcade-legacy > summary").click();
   await page.locator(".arcade-featured-duel button").click();
   await expect(page.locator('.friendly-duel[data-duel-status="playing"]')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(2);
