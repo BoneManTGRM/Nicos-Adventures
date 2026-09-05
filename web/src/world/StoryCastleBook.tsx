@@ -1,0 +1,63 @@
+import { useEffect, useMemo, useState } from 'react';
+import type { Language, LocalProfile, StoryRecord } from '../types';
+import type { Announce, UpdateProfile } from './common';
+import { EmptyState, makeId } from './common';
+import { completeCreativeMilestones } from './creativeProgression';
+import { defaultStoryTitle, STORY_OPTIONS, storyCombinationCount, storyPages } from './storyBook';
+import { buildAdventurePages, CHAPTER_NAMES, readingPrompt, STORY_DECISIONS, storyImage } from './storyAdventure';
+import { NarrationControls, readingChunks, useNarration } from '../nico/Narration';
+import './story-reader.css';
+function newBook(profile:LocalProfile,language:Language):StoryRecord{return{id:makeId('story'),title:defaultStoryTitle(language),hero:'Nico',companion:'Becca',place:STORY_OPTIONS.place[language][0],problem:STORY_OPTIONS.problem[language][0],ending:STORY_OPTIONS.ending[language][0],theme:STORY_OPTIONS.theme[language][0],magicItem:STORY_OPTIONS.magicItem[language][0],specialDetail:'',language};}
+export function StoryCastle({profile,update,announce}:{profile:LocalProfile;update:UpdateProfile;announce:Announce}){
+ const language=profile.language,es=language==='es-MX';
+ const heroes=useMemo(()=>['Nico','Becca','Lua',profile.robot.name,...profile.monsters.map(m=>m.name),...profile.pets.map(p=>p.name)].filter((name,i,a)=>name&&a.indexOf(name)===i),[profile.monsters,profile.pets,profile.robot.name]);
+ const [draft,setDraft]=useState(()=>newBook(profile,language)),[editingId,setEditingId]=useState<string|null>(null),[pageIndex,setPageIndex]=useState(0);
+ const [choices,setChoices]=useState<number[]>([0,0]),[big,setBig]=useState(false),[readingMode,setReadingMode]=useState(false);
+ const narrator=useNarration(draft.language,profile.nico.speechEnabled),bookEs=draft.language==='es-MX';
+ const pages=useMemo(()=>draft.pages?.length?draft.pages:buildAdventurePages(draft,choices),[draft,choices]);
+ const safePageIndex=Math.max(0,Math.min(pageIndex,pages.length-1)),sentences=readingChunks([{text:pages[safePageIndex],page:safePageIndex}]);
+ useEffect(()=>{narrator.stop();setDraft(newBook(profile,profile.language));setEditingId(null);setChoices([0,0]);setPageIndex(0);},[profile.id]);
+ useEffect(()=>{if(narrator.current?.page!==undefined)setPageIndex(narrator.current.page);},[narrator.current?.page]);
+ const change=(patch:Partial<StoryRecord>)=>{narrator.stop();setDraft(old=>({...old,...patch,pages:undefined}));};
+ const turn=(index:number)=>{narrator.stop();setPageIndex(index);};
+ const startNew=()=>{narrator.stop();setEditingId(null);setDraft(newBook(profile,draft.language));setChoices([0,0]);setPageIndex(0);announce(es?'Libro nuevo listo.':'New storybook ready.');};
+ const surprise=()=>{narrator.stop();const pick=<T,>(a:readonly T[]):T=>a[Math.floor(Math.random()*a.length)];const l=draft.language,hero=pick(heroes),friend=pick(heroes.filter(h=>h!==hero));setEditingId(null);setDraft({...newBook(profile,l),title:pick(l==='es-MX'?['La linterna que estornudó','El misterio del caracol con sombrero','La carta que aprendió a saltar','Una huella entre las estrellas']:['The Lantern That Sneezed','The Mystery of the Snail’s Hat','The Letter That Learned to Hop','A Footprint Among the Stars']),hero,companion:friend,place:pick(STORY_OPTIONS.place[l]),problem:pick(STORY_OPTIONS.problem[l]),ending:pick(STORY_OPTIONS.ending[l]),theme:pick(STORY_OPTIONS.theme[l]),magicItem:pick(STORY_OPTIONS.magicItem[l])});setChoices([0,0]);setPageIndex(0);announce(es?'Se creó una aventura sorpresa de seis páginas.':'A surprise six-page adventure was created.');};
+ const save=()=>{const story:StoryRecord={...draft,id:editingId??draft.id,title:draft.title.trim()||(bookEs?'Cuento sin título':'Untitled Story'),specialDetail:draft.specialDetail?.trim(),pages:[...pages]};const exists=profile.stories.some(s=>s.id===story.id),previous=profile.stories.length;const stories=exists?profile.stories.map(s=>s.id===story.id?story:s):[...profile.stories,story].slice(-60);const base={...profile,stories,stars:profile.stars+(exists?0:2)};update(completeCreativeMilestones(base,'story',previous,stories.length).profile);setEditingId(story.id);setDraft(story);announce(es?`${story.title} guardado con ${pages.length} páginas.`:`${story.title} saved with ${pages.length} pages.`);};
+ const edit=(story:StoryRecord)=>{narrator.stop();setDraft({...newBook(profile,story.language),...story,pages:storyPages(story)});setEditingId(story.id);setChoices([0,0]);setPageIndex(0);};
+ const remove=(story:StoryRecord)=>{if(!window.confirm(es?`¿Eliminar ${story.title}?`:`Delete ${story.title}?`))return;update({...profile,stories:profile.stories.filter(s=>s.id!==story.id)});if(editingId===story.id)startNew();};
+ const setLanguage=(l:Language)=>{narrator.stop();setDraft({...newBook(profile,l),hero:draft.hero,companion:draft.companion});setEditingId(null);setChoices([0,0]);setPageIndex(0);};
+ const decision=safePageIndex===1?0:safePageIndex===3?1:null;
+ const selectChoice=(value:number)=>{narrator.stop();setDraft(old=>({...old,pages:undefined}));setChoices(old=>{const next=[...old];next[decision!]=value;return next;});announce(bookEs?'Tu elección cambió las páginas siguientes.':'Your choice changed the following pages.');};
+ return <div className={`story-studio-layout story-reader${readingMode?' is-reading-mode':''}${big?' is-large-text':''}`}>
+  <section className="story-book-preview" aria-labelledby="story-preview-heading" data-page={`${safePageIndex+1}-of-${pages.length}`}>
+   <div className="story-book-spine" aria-hidden="true"/><article>
+    <div className="story-page-kicker"><small>{bookEs?'TU AVENTURA ILUSTRADA':'YOUR ILLUSTRATED ADVENTURE'}</small><span>{safePageIndex+1} / {pages.length}</span></div>
+    <div className="story-scene"><img key={`${draft.place}-${safePageIndex}`} src={storyImage(draft,safePageIndex)} alt={bookEs?'Escena ilustrada del mundo de aventuras':'Illustrated scene from the adventure world'} loading="lazy" onError={e=>{e.currentTarget.hidden=true;}}/><span>{CHAPTER_NAMES[draft.language][Math.min(5,safePageIndex)]}</span></div>
+    <h2 id="story-preview-heading">{draft.title}</h2>
+    <p className="story-reader__text">{sentences.map((part,i)=><span key={i} className={`story-sentence${narrator.current?.page===safePageIndex&&narrator.current?.text===part.text?' is-reading':''}`}>{part.text}{' '}</span>)}</p>
+    {decision!==null&&<div className="story-reader__choices" role="group" aria-label={bookEs?'Tu decisión cambia el cuento':'Your decision changes the story'}><strong>{bookEs?'Tú eliges lo que pasa después':'You choose what happens next'}</strong>{STORY_DECISIONS[draft.language][decision].map((text,i)=><button type="button" key={text} data-story-choice={`${decision}-${i}`} aria-pressed={!draft.pages&&choices[decision]===i} onClick={()=>selectChoice(i)}>{text}</button>)}</div>}
+    <details className="story-reader__wonder"><summary>{bookEs?'Pausa para imaginar':'Pause to wonder'}</summary><p>{readingPrompt(Math.min(5,safePageIndex),draft.language)}</p></details>
+    <div className="story-page-turner" aria-label={bookEs?'Páginas del cuento':'Story pages'}><button type="button" onClick={()=>turn(Math.max(0,safePageIndex-1))} disabled={safePageIndex===0}>← {bookEs?'Anterior':'Back'}</button><div aria-hidden="true">{pages.map((_,i)=><span key={i} className={i===safePageIndex?'active':''}/>)}</div><button type="button" onClick={()=>turn(Math.min(pages.length-1,safePageIndex+1))} disabled={safePageIndex===pages.length-1}>{bookEs?'Siguiente':'Next'} →</button></div>
+    <div className="story-preview-actions"><button type="button" onClick={()=>narrator.speak([{text:pages[safePageIndex],page:safePageIndex}])} disabled={!profile.nico.speechEnabled}>{bookEs?'Leer página':'Read page'}</button><button type="button" onClick={()=>narrator.speak(pages.map((text,page)=>({text,page})))} disabled={!profile.nico.speechEnabled}>{bookEs?'Leer libro':'Read book'}</button><button type="button" onClick={surprise}>{bookEs?'Sorpresa':'Surprise'}</button></div>
+    <div className="story-reader__tools"><button type="button" aria-pressed={big} onClick={()=>setBig(v=>!v)}>{bookEs?'Letra grande':'Bigger text'}</button><button type="button" aria-pressed={readingMode} onClick={()=>setReadingMode(v=>!v)}>{readingMode?(bookEs?'Mostrar taller':'Show workshop'):(bookEs?'Solo lectura':'Reading mode')}</button><button type="button" onClick={()=>{narrator.stop();window.print();}}>{bookEs?'Imprimir libro':'Print book'}</button></div>
+    <NarrationControls narrator={narrator} language={draft.language}/>
+   </article>
+  </section>
+  <section className="fw-panel story-controls" aria-label={es?'Controles del cuento':'Story controls'}><header className="story-controls__header"><div><small>{es?'TALLER DE HISTORIAS':'STORY WORKSHOP'}</small><h2>{es?'Inventa tu libro':'Build your book'}</h2></div><strong>{storyCombinationCount.toLocaleString()}+</strong><span>{es?'combinaciones':'combinations'}</span></header>
+   <div className="story-choice-grid">
+    <label>{bookEs?'Idioma':'Language'}<select value={draft.language} onChange={e=>setLanguage(e.target.value as Language)}><option value="en">English</option><option value="es-MX">Español de México</option></select></label>
+    <label>{bookEs?'Título':'Title'}<input value={draft.title} maxLength={60} onChange={e=>change({title:e.target.value})}/></label>
+    <label>{bookEs?'Protagonista':'Hero'}<input list="story-heroes" value={draft.hero} maxLength={40} onChange={e=>change({hero:e.target.value})}/><datalist id="story-heroes">{heroes.map(hero=><option key={hero} value={hero}/>)}</datalist></label>
+    <label>{bookEs?'Compañero':'Companion'}<select value={draft.companion} onChange={e=>change({companion:e.target.value})}>{Array.from(new Set([draft.companion||'BoltBot',...heroes])).map(hero=><option key={hero}>{hero}</option>)}</select></label>
+    <label>{bookEs?'Tema':'Theme'}<select value={draft.theme} onChange={e=>change({theme:e.target.value})}>{STORY_OPTIONS.theme[draft.language].map(v=><option key={v}>{v}</option>)}</select></label>
+    <label>{bookEs?'Lugar':'Place'}<select value={draft.place} onChange={e=>change({place:e.target.value})}>{STORY_OPTIONS.place[draft.language].map(v=><option key={v}>{v}</option>)}</select></label>
+    <label>{bookEs?'Desafío':'Challenge'}<select value={draft.problem} onChange={e=>change({problem:e.target.value})}>{STORY_OPTIONS.problem[draft.language].map(v=><option key={v}>{v}</option>)}</select></label>
+    <label>{bookEs?'Objeto especial':'Special item'}<select value={draft.magicItem} onChange={e=>change({magicItem:e.target.value})}>{STORY_OPTIONS.magicItem[draft.language].map(v=><option key={v}>{v}</option>)}</select></label>
+    <label className="story-choice-grid__wide">{bookEs?'Tu detalle secreto (opcional)':'Your secret detail (optional)'}<input value={draft.specialDetail??''} maxLength={120} onChange={e=>change({specialDetail:e.target.value})}/></label>
+    <label className="story-choice-grid__wide">{bookEs?'Final':'Ending'}<select value={draft.ending} onChange={e=>change({ending:e.target.value})}>{STORY_OPTIONS.ending[draft.language].map(v=><option key={v}>{v}</option>)}</select></label>
+   </div><div className="fw-action-row"><button type="button" onClick={startNew}>＋ {es?'Libro nuevo':'New book'}</button><button type="button" className="fw-primary" onClick={save}>{editingId?(es?'Actualizar cuento':'Update story'):(es?'Guardar cuento':'Save story')}</button></div>
+  </section>
+  <section className="creative-library" aria-labelledby="story-library-heading"><header><div><small>{es?'BIBLIOTECA PRIVADA EN ESTE DISPOSITIVO':'PRIVATE ON-DEVICE LIBRARY'}</small><h2 id="story-library-heading">{es?'Mis libros':'My storybooks'}</h2></div><strong>{profile.stories.length}/60</strong></header>{!profile.stories.length?<EmptyState emoji="📚">{es?'Tu primer libro de seis páginas aparecerá aquí.':'Your first six-page book will appear here.'}</EmptyState>:<div className="creative-library-grid">{[...profile.stories].reverse().map(story=><article className={editingId===story.id?'selected':''} key={story.id}><span aria-hidden="true">📖</span><div><h3>{story.title}</h3><p>{story.hero} · {storyPages(story).length} {story.language==='es-MX'?'páginas':'pages'}</p></div><button type="button" onClick={()=>edit(story)}>{es?'Abrir':'Open'}</button><button type="button" className="danger" aria-label={`${es?'Eliminar':'Delete'}: ${story.title}`} onClick={()=>remove(story)}>×</button></article>)}</div>}</section>
+  <div className="story-print-only"><h1>{draft.title}</h1>{pages.map((page,i)=><section key={i}><h2>{i+1}. {CHAPTER_NAMES[draft.language][Math.min(5,i)]}</h2><p>{page}</p></section>)}</div>
+ </div>;
+}
