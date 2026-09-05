@@ -11,6 +11,7 @@ import type { PetAction } from './PetArt';
 import { completeOnce } from './progression';
 import { optionLabel } from '../i18n/display';
 import './playable-world.css';
+import './playable-world-hardening.css';
 
 type Actor = 'nico' | 'robot' | 'pet';
 type Activity = 'charge' | 'rest' | 'repair' | 'snack' | 'dance';
@@ -81,14 +82,15 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
     if (!pet && state.current.selected === 'pet') choose('nico');
   }, [pet?.id]);
   useEffect(() => {
-    let frame = 0, previous = 0, paint = 0;
+    let frame = 0, previous = 0, paint = 0, dirty = false;
     const tick = (now: number) => {
       const dt = Math.min((now - (previous || now)) / 1000, .05); previous = now;
       const s = state.current;
       if (!document.hidden) {
         for (const actor of Object.values(s.residents)) {
+          if (actor.moving) dirty = true;
           actor.moving = false;
-          if (actor.timer > 0) { actor.timer -= dt; if (actor.timer <= 0) actor.action = null; }
+          if (actor.timer > 0) { actor.timer -= dt; if (actor.timer <= 0) { actor.action = null; dirty = true; } }
         }
         const actor = s.residents[s.selected], keys = controls.current;
         let x = Number(keys.has('ArrowRight') || keys.has('KeyD')) - Number(keys.has('ArrowLeft') || keys.has('KeyA')) + touch.current.x;
@@ -96,7 +98,7 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
         if (x || z) { s.path = []; s.pending = null; actor.action = null; }
         else if (s.path.length) {
           const next = s.path[0], d = distance(next, actor);
-          if (d < .6) s.path.shift();
+          if (d < .6) { s.path.shift(); dirty = true; }
           else { x = (next.x - actor.x) / d; z = (next.z - actor.z) / d; }
         }
         if (x || z) {
@@ -104,15 +106,16 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
           const next = moveHome(actor, x * scale, z * scale);
           actor.moving = distance(actor, next) > .001;
           if (Math.abs(x) > .05) actor.facing = x < 0 ? -1 : 1;
-          actor.x = next.x; actor.z = next.z;
+          actor.x = next.x; actor.z = next.z; dirty = true;
         }
         if (!s.path.length && s.pending) {
           const target = STATIONS.find(item => item.id === s.pending)!;
           if (distance(actor, target.target) < 6) perform(s.pending);
           else s.pending = null;
+          dirty = true;
         }
       }
-      if (now - paint > 33) { paint = now; setView(copyHome(s)); }
+      if (dirty && now - paint > 33) { paint = now; dirty = false; setView(copyHome(s)); }
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
@@ -129,7 +132,8 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
   }, [interact, perform]);
   const actors: Actor[] = pet ? ['nico', 'robot', 'pet'] : ['nico', 'robot'];
   const selected = view.residents[view.selected];
-  return <section className="living-home" aria-label={es ? 'Casa Robot interactiva' : 'Interactive Robot Home'} data-home-activities={view.completed}>
+  // Preserve the public room/decor selectors used by the whole-site acceptance suite.
+  return <section className="living-home robot-home-stage" aria-label={es ? 'Casa Robot interactiva' : 'Interactive Robot Home'} data-home-activities={view.completed}>
     <header className="living-home__header"><div><small>{es ? 'TU EQUIPO, TU CASA' : 'YOUR TEAM, YOUR HOME'}</small><h2>{es ? 'Una casa llena de vida' : 'Make yourself at home'}</h2></div><span>✦ {es ? 'Explora y juega' : 'Explore & play'}</span></header>
     <div className="living-home__select" role="group" aria-label={es ? 'Personaje para mover' : 'Character to move'}>
       {actors.map(actor => <button type="button" key={actor} aria-pressed={view.selected === actor} onClick={() => choose(actor)} data-home-select={actor}>{actor === 'nico' ? '🧭' : actor === 'robot' ? '⚡' : '🐾'} {names[actor]}</button>)}
@@ -151,7 +155,7 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
       <div className="living-home__dock" aria-hidden="true">ϟ</div>
       <div className="living-home__rug" aria-hidden="true">✦</div>
       <div className="living-home__art" title={artwork?.title}><span aria-hidden="true">{artwork ? '🎨' : '☀'}</span>{artwork && <small>{artwork.title}</small>}</div>
-      <div className="living-home__decor" aria-label={es ? 'Decoraciones activas' : 'Active decorations'}>{profile.decorations.map(item => <span key={item} role="img" aria-label={optionLabel(item, profile.language)} title={optionLabel(item, profile.language)}>{DECOR_ICONS[item] ?? '✦'}</span>)}</div>
+      <div className="living-home__decor" aria-label={es ? 'Decoraciones activas' : 'Active decorations'}>{profile.decorations.map(item => <span className="robot-home-decoration" key={item} role="img" aria-label={optionLabel(item, profile.language)} title={optionLabel(item, profile.language)}>{DECOR_ICONS[item] ?? '✦'}</span>)}</div>
       {actors.map(actor => {
         const resident = view.residents[actor];
         const petAction: PetAction | undefined = resident.action === 'rest' ? 'Sit' : resident.action === 'repair' ? 'Fetch Tool' : resident.action === 'dance' ? 'Dance' : resident.action ? 'High Five' : undefined;
@@ -159,7 +163,7 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
           style={{ left: `${resident.x}%`, top: `${resident.z}%`, zIndex: Math.round(resident.z), '--home-facing': resident.facing } as CSSProperties}
           onClick={() => choose(actor)} aria-label={`${es ? 'Mover a' : 'Move'} ${names[actor]}`} aria-pressed={view.selected === actor}>
           <span className="living-home__actor-art">
-            {actor === 'nico' ? <NicoCostumeFigure profession={profile.nico.profession} compact alt="" /> : actor === 'robot' ? <PremiumBoltBotSprite robot={profile.robot} action={resident.moving ? 'drive' : resident.action ?? 'idle'} /> : pet ? <PetArt pet={pet} language={profile.language} action={petAction} decorative /> : null}
+            {actor === 'nico' ? <NicoCostumeFigure profession={profile.nico.profession} alt="" /> : actor === 'robot' ? <PremiumBoltBotSprite robot={profile.robot} action={resident.moving ? 'drive' : resident.action ?? 'idle'} /> : pet ? <PetArt pet={pet} language={profile.language} action={petAction} decorative /> : null}
           </span>
           {resident.action && <span className="living-home__action-bubble" aria-hidden="true">{STATIONS.find(station => station.id === resident.action)?.icon}</span>}
           <small>{names[actor]}</small>
