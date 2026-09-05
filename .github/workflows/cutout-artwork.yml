@@ -1,0 +1,62 @@
+name: Cutout Artwork Acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: cutout-artwork-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  cutout-artwork:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Unit tests and reviewed asset hashes
+        run: npm test
+      - name: Production build and unchanged performance budgets
+        run: npm run build
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Desktop, phone and WebKit artwork acceptance
+        run: npx playwright test --config playwright.cutouts.config.ts
+      - name: Preserve local browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cutout-browser-${{ github.sha }}
+          retention-days: 7
+          path: |
+            web/cutout-report
+            web/cutout-test-results
+            web/src/assets/cutout-repair.provenance.json
+      - name: Wait for the exact production commit
+        if: github.ref == 'refs/heads/main'
+        run: node scripts/wait-for-cutout-release.mjs
+      - name: Verify the live site on all three browser configurations
+        if: github.ref == 'refs/heads/main'
+        env:
+          NICO_PRODUCTION_URL: https://nicos-world.com
+        run: npx playwright test --config playwright.cutouts.config.ts
+      - name: Preserve exact live release and browser evidence
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cutout-production-${{ github.sha }}
+          retention-days: 7
+          path: |
+            web/cutout-production-release.json
+            web/cutout-report
+            web/cutout-test-results

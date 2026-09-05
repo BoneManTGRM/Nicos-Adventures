@@ -1,5 +1,4 @@
 type CutoutSource = HTMLImageElement | HTMLCanvasElement;
-
 const cutoutCache = new Map<string, Promise<HTMLCanvasElement>>();
 
 function loadImage(source: string): Promise<HTMLImageElement> {
@@ -11,99 +10,31 @@ function loadImage(source: string): Promise<HTMLImageElement> {
   });
 }
 
-function isLightBackdrop(data: Uint8ClampedArray, offset: number): boolean {
-  const red = data[offset];
-  const green = data[offset + 1];
-  const blue = data[offset + 2];
-  const alpha = data[offset + 3];
-  const brightest = Math.max(red, green, blue);
-  const darkest = Math.min(red, green, blue);
-  return alpha > 0 && darkest > 226 && brightest - darkest < 18;
-}
-
-/**
- * The original wildlife sheet was exported with opaque white guide bars and a
- * white matte around several silhouettes. Those pixels are not connected to
- * the outside of the atlas, so a normal edge flood-fill cannot reach them.
- * Keep this calculation exported and deterministic so the cutout policy can
- * be regression-tested without a browser canvas.
- */
-export function wildlifeMatteOpacity(red: number, green: number, blue: number): number {
-  const darkest = Math.min(red, green, blue);
-  const brightest = Math.max(red, green, blue);
-  const chroma = brightest - darkest;
-  if (darkest < 232 || chroma > 24) return 1;
-  return Math.max(0, Math.min(1, (250 - darkest) / 18));
-}
-
-function removeConnectedBackdrop(image: HTMLImageElement, removeInternalWhiteMatte = false): HTMLCanvasElement {
+/** Assets carry their reviewed alpha masks. Never infer transparency from white:
+ * fur, eyes, feathers, clothing and highlights must keep their original pixels. */
+export function copyNativeCutout(image: HTMLImageElement): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
-  const context = canvas.getContext("2d", { willReadFrequently: true });
+  const context = canvas.getContext("2d");
   if (!context) throw new Error("Premium local artwork could not be composed.");
   context.drawImage(image, 0, 0);
-  const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
-  const total = canvas.width * canvas.height;
-  const visited = new Uint8Array(total);
-  const queue = new Int32Array(total);
-  let head = 0;
-  let tail = 0;
-
-  const enqueue = (index: number) => {
-    if (visited[index] || !isLightBackdrop(pixels.data, index * 4)) return;
-    visited[index] = 1;
-    queue[tail++] = index;
-  };
-
-  for (let x = 0; x < canvas.width; x += 1) {
-    enqueue(x);
-    enqueue((canvas.height - 1) * canvas.width + x);
-  }
-  for (let y = 0; y < canvas.height; y += 1) {
-    enqueue(y * canvas.width);
-    enqueue(y * canvas.width + canvas.width - 1);
-  }
-
-  while (head < tail) {
-    const index = queue[head++];
-    pixels.data[index * 4 + 3] = 0;
-    const x = index % canvas.width;
-    const y = Math.floor(index / canvas.width);
-    if (x > 0) enqueue(index - 1);
-    if (x + 1 < canvas.width) enqueue(index + 1);
-    if (y > 0) enqueue(index - canvas.width);
-    if (y + 1 < canvas.height) enqueue(index + canvas.width);
-  }
-
-  if (removeInternalWhiteMatte) {
-    for (let offset = 0; offset < pixels.data.length; offset += 4) {
-      const alpha = pixels.data[offset + 3];
-      if (!alpha) continue;
-      const opacity = wildlifeMatteOpacity(pixels.data[offset], pixels.data[offset + 1], pixels.data[offset + 2]);
-      pixels.data[offset + 3] = Math.round(alpha * opacity);
-    }
-  }
-
-  context.putImageData(pixels, 0, 0);
   return canvas;
 }
 
-export function loadPremiumCutout(source: string, removeInternalWhiteMatte = false): Promise<HTMLCanvasElement> {
-  const cacheKey = `${source}::${removeInternalWhiteMatte ? "wildlife-matte" : "edge"}`;
-  const cached = cutoutCache.get(cacheKey);
+export function loadPremiumCutout(source: string): Promise<HTMLCanvasElement> {
+  const cached = cutoutCache.get(source);
   if (cached) return cached;
-  const pending = loadImage(source).then((image) => removeConnectedBackdrop(image, removeInternalWhiteMatte));
-  cutoutCache.set(cacheKey, pending);
+  const pending = loadImage(source).then(copyNativeCutout).catch((error: unknown) => {
+    cutoutCache.delete(source);
+    throw error;
+  });
+  cutoutCache.set(source, pending);
   return pending;
 }
 
-export function drawContained(
-  context: CanvasRenderingContext2D,
-  source: CutoutSource,
-  targetWidth: number,
-  targetHeight: number,
-): void {
+export function drawContained(context: CanvasRenderingContext2D, source: CutoutSource,
+  targetWidth: number, targetHeight: number): void {
   const sourceWidth = source instanceof HTMLImageElement ? source.naturalWidth : source.width;
   const sourceHeight = source instanceof HTMLImageElement ? source.naturalHeight : source.height;
   const scale = Math.min(targetWidth / sourceWidth, targetHeight / sourceHeight);
