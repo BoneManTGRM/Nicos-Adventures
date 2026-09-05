@@ -1,0 +1,40 @@
+name: Playable World Production Verification
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: playable-production
+  cancel-in-progress: true
+jobs:
+  production-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install locked verification dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify exact production release and playable interactions
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: node scripts/verify-playable-production.mjs
+      - name: Upload production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playable-production-${{ github.sha }}
+          path: web/production-proof
+          if-no-files-found: warn
+          retention-days: 14

@@ -33,7 +33,6 @@ async function readyArena(page: Page, info: TestInfo) {
     await expect(page.getByTestId('open-star-tag')).toBeVisible();
     return false;
   }
-  // Retry until the assets are ready, rather than sampling isEnabled during loading.
   await expect(page.getByTestId('tag-start')).toBeEnabled({ timeout: 30000 });
   await expect(page.locator('.star-tag canvas')).toHaveCount(1);
   return true;
@@ -72,11 +71,24 @@ test('home characters walk, perform all activities and retain one-time rewards',
   await page.locator('[data-home-select="robot"]').click();
   const start = Number(await room.getAttribute('data-home-x'));
   if (info.project.use.isMobile) {
-    const right = page.locator('[data-home-direction="right"]'); await right.scrollIntoViewIfNeeded();
+    const right = page.locator('[data-home-direction="right"]');
+    // Center explicitly: scrollIntoViewIfNeeded can leave a visible button
+    // underneath the persistent site navigation on a phone.
+    await right.evaluate(button => button.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await expect.poll(() => right.evaluate(button => {
+      const r = button.getBoundingClientRect(), top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      return top === button || button.contains(top);
+    })).toBe(true);
     const box = await right.boundingBox();
-    await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2); await page.mouse.down(); await page.waitForTimeout(550); await page.mouse.up();
-  } else { await room.focus(); await page.keyboard.down('ArrowRight'); await page.waitForTimeout(550); await page.keyboard.up('ArrowRight'); }
-  await expect.poll(async () => Number(await room.getAttribute('data-home-x'))).toBeGreaterThan(start + 4);
+    await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+    await page.mouse.down();
+    try { await expect.poll(async () => Number(await room.getAttribute('data-home-x'))).toBeGreaterThan(start + 4); }
+    finally { await page.mouse.up(); }
+  } else {
+    await room.focus(); await page.keyboard.down('ArrowRight');
+    try { await expect.poll(async () => Number(await room.getAttribute('data-home-x'))).toBeGreaterThan(start + 4); }
+    finally { await page.keyboard.up('ArrowRight'); }
+  }
   await page.locator('[data-home-select="nico"]').click();
   for (const activity of ['dance', 'repair', 'rest', 'charge', 'snack']) {
     await page.locator(`[data-home-activity="${activity}"]`).click();

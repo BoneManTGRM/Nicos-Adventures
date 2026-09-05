@@ -17,5 +17,8 @@
 .living-home__room, .living-home__command-bar, .living-home__activities { scroll-margin-block: 110px 120px; }
 .star-tag__touch [aria-disabled="true"] { opacity: .55; }
 @media (max-width: 600px) {
-  .living-home__command-bar > button { min-width: 100px; }
+  .living-home__command-bar { display: grid; grid-template-columns: 138px minmax(0, 1fr); }
+  .living-home__command-bar p { grid-column: 1 / -1; grid-row: 1; font-size: .85rem; }
+  .living-home__command-bar .living-home__dpad { grid-column: 1; grid-row: 2; }
+  .living-home__command-bar > button { grid-column: 2; grid-row: 2; min-width: 100px; justify-self: end; }
 }
