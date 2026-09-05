@@ -3,3 +3,7 @@
 @media(max-height:500px) and (orientation:landscape){.friends-map__action-stack{pointer-events:auto;margin-left:auto;width:140px}.room-puzzle{max-width:760px;padding:12px}.room-puzzle__plants,.room-puzzle__dials,.room-puzzle__choices{margin:7px 0}.room-puzzle__animal{font-size:2rem}.room-puzzle__sky{height:145px}.room-puzzle__victory>span{font-size:1.7rem}.room-puzzle__sequence{min-height:40px;font-size:1.4rem}}
 /* Responsive UI transitions otherwise keep resizing the canvas while paused. */
 .friends-map,.friends-map *,.friends-map *::before,.friends-map *::after{transition:none!important}
+/* Constellation lines are decoration, never a pointer target over the stars. */
+.room-puzzle__sky{isolation:isolate}
+.room-puzzle__sky svg{z-index:0;pointer-events:none}
+.room-puzzle__sky button{z-index:1}
