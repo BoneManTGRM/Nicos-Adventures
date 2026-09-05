@@ -29,9 +29,10 @@ jobs:
         run: npm run build && node scripts/validate-friends-map.mjs
       - run: npx playwright install --with-deps chromium webkit
       - name: Rooms and challenges on desktop and phones
+        if: github.event_name == 'pull_request'
         run: npx playwright test --config playwright.rooms.config.ts
       - name: Preserve preview evidence
-        if: always()
+        if: always() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: rooms-preview-${{ github.sha }}
@@ -43,6 +44,8 @@ jobs:
       - name: Bind to exact live Cloudflare commit
         if: github.event_name == 'push'
         run: node scripts/wait-for-cutout-release.mjs
+      # The same nine cases run on the deployed site after merge, rather than
+      # spending another pass repeating the already-verified local PR build.
       - name: Verify the live buildings and all five challenges
         if: github.event_name == 'push'
         env:
