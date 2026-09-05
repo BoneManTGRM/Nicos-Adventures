@@ -3,7 +3,7 @@
 .monster-stage .monster-stage__environment,.monster-stage .monster-atmosphere,.monster-portrait .monster-portrait__halo{display:none!important}
 .monster-stage .monster-v2::before{content:none!important;display:none!important}
 /* Explicit geometry avoids a collapsed absolutely positioned image on narrow screens. */
-.monster-stage .monster-v2{display:block;position:relative;flex:0 0 auto;width:min(100%,520px);height:auto;aspect-ratio:1;min-height:0;filter:none;will-change:auto}
+.monster-stage .monster-v2{display:block;position:relative;flex:0 0 auto;aspect-ratio:1;min-height:0;filter:none;will-change:auto}
 .monster-stage .monster-premium-body{display:block;position:absolute;inset:0;width:100%;height:100%;aspect-ratio:1;transform:none;filter:none}
 .monster-stage .monster-premium-body>span{display:block;position:absolute;inset:0;width:100%;height:100%;background-size:contain;background-position:center}
 .monster-portrait .monster-portrait__body{display:block;height:100%;width:100%;aspect-ratio:1}

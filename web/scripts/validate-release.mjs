@@ -199,21 +199,22 @@ const figure = read("src/nico/NicoCostumeFigure.tsx");
 if (!figure.includes("canonicalNicoPresetArt") || !figure.includes('"canonical-2d"') || figure.includes("wardrobeForDisplay")) {
   throw new Error("Shared Nico surfaces are not locked to canonical premium art");
 }
-const askNico = read("src/nico/AskNico.tsx");
+const askNico = read("src/nico/AskNico.tsx") + read("src/nico/AskNicoClub.tsx");
 if (!askNico.includes("NicoCostumeFigure")) throw new Error("Ask Nico is not using canonical Nico art");
 
-const showtime = read("src/showtime/ShowtimeStudio.tsx");
+const showtime = read("src/showtime/ShowtimeStudio.tsx") + read("src/showtime/DirectorStudio.tsx");
+const directorArt = read("src/showtime/directorArt.ts");
 const compositor = read("src/showtime/composeNicoImage.ts");
 const recorder = read("src/showtime/recordMovie.ts");
 if (!recorder.includes("captureStream") || !recorder.includes("MediaRecorder")) throw new Error("Showtime client-side recording is incomplete");
 if (showtime.includes("localStorage") || recorder.includes("localStorage")) throw new Error("Showtime must not write video data to localStorage");
-if (!showtime.includes("parentConfirmed") || !showtime.includes("composeNicoImage(profile.nico.profession)")) {
+if (!showtime.includes("parentConfirmed") || !directorArt.includes("composeNicoImage(profession)")) {
   throw new Error("Showtime parental confirmation or canonical Nico composition is missing");
 }
 if (!compositor.includes("loadCanonicalNicoImage") || compositor.includes("loadNicoWardrobeImage")) {
   throw new Error("Showtime does not use canonical Nico art");
 }
-if (!showtime.includes('showtime-character--nico') || !showtime.includes('data-character-count') || showtime.includes('                        compact\n')) {
+if (!showtime.includes("drawDirectorFrame") || !directorArt.includes("trimArt") || !directorArt.includes("composeNicoImage")) {
   throw new Error("Showtime live preview is not using the full-body responsive composition");
 }
 const wildlife = read("src/world/wildlifeAtlas.ts");
@@ -223,8 +224,8 @@ const cousinsStories = read("src/world/cousinsAdventureStories.ts");
 const animalGenerator = read("src/world/AnimalGeneratorGame.tsx");
 const roboLab = read("src/world/RoboLab.tsx");
 const monsterStudio = read("src/world/monsterCreatureStudio.ts");
-const monsterWorld = read("src/world/MonsterWorld.tsx");
-if (!showtime.includes('kind: "animal" as const') || !showtime.includes("WildlifeSprite") || !wildlife.includes("WILDLIFE_IDS")) {
+const monsterWorld = read("src/world/MonsterWorld.tsx") + read("src/world/MonsterWorkshop.tsx");
+if (!(/kind\s*:\s*['"]animal['"]\s+as const/.test(showtime)) || !directorArt.includes("drawWildlifeCell") || !wildlife.includes("WILDLIFE_IDS")) {
   throw new Error("Premium full-body animals are not available in Showtime");
 }
 if (!wildlife.includes("wildlife-premium-clean-atlas.webp") || wildlife.includes("wildlifeCellBounds") ||

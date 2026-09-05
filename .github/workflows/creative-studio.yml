@@ -25,15 +25,31 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci --no-audit --no-fund
-      - name: Prepare exact source and locked test dependencies
-        run: tar -czf /tmp/creative-source.tgz --exclude=.git --exclude=.env --exclude='*.log' -C .. web .github package.json package-lock.json wrangler.jsonc
-      - name: Preserve development evidence
-        uses: actions/upload-artifact@v4
-        with:
-          name: creative-source-${{ github.sha }}
-          path: /tmp/creative-source.tgz
-          retention-days: 3
       - name: Unit tests
         run: npm test
-      - name: Production build and existing budgets
-        run: npm run build
+      - name: Production build and unchanged performance budgets
+        run: npm run build && node scripts/validate-creative-budgets.mjs
+      - name: Install desktop and phone browsers
+        run: npx playwright install --with-deps chromium webkit
+      - name: Creative studio desktop and phone playtests
+        if: github.event_name == 'pull_request'
+        run: npx playwright test --config playwright.creative.config.ts
+      - name: Bind to exact Cloudflare release
+        if: github.event_name == 'push'
+        run: node scripts/wait-for-cutout-release.mjs
+      - name: Verify published creative studio
+        if: github.event_name == 'push'
+        env:
+          NICO_PRODUCTION_URL: https://nicos-world.com
+        run: npx playwright test --config playwright.creative.config.ts
+      - name: Preserve verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: creative-studio-${{ github.sha }}
+          retention-days: 7
+          path: |
+            web/creative-report
+            web/creative-test-results
+            web/creative-results.json
+            web/cutout-production-release.json

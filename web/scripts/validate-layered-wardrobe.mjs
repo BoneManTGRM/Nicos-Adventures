@@ -27,7 +27,7 @@ const clubhouse = read("src/nico/NicoWorldExperience.tsx");
 const wardrobe = read("src/nico/NicoDressUp.tsx");
 const route = read("src/nico/nicoHubRoute.ts");
 const canonical = read("src/nico/canonicalNicoArt.ts");
-const showtime = read("src/showtime/ShowtimeStudio.tsx");
+const showtime = read("src/showtime/ShowtimeStudio.tsx") + read("src/showtime/DirectorStudio.tsx") + read("src/showtime/directorArt.ts");
 const compositor = read("src/showtime/composeNicoImage.ts");
 
 if (!figure.includes("canonicalNicoPresetArt") || !figure.includes('data-art-state="canonical-2d"') || figure.includes("wardrobeForDisplay")) {
@@ -42,7 +42,7 @@ if (!wardrobe.includes("NicoCostumeFigure") || !wardrobe.includes("wardrobeForPr
 if (!route.includes('NicoHubTab = "ask" | "dress" | "showtime" | "movies"') || !route.includes("ask|dress|showtime|movies")) {
   throw new Error("Nico Clubhouse route does not include the premium Wardrobe");
 }
-if (!canonical.includes("loadCanonicalNicoImage") || !showtime.includes("composeNicoImage(profile.nico.profession)") || !compositor.includes("loadCanonicalNicoImage")) {
+if (!canonical.includes("loadCanonicalNicoImage") || !showtime.includes("composeNicoImage(profession)") || !compositor.includes("loadCanonicalNicoImage")) {
   throw new Error("Showtime is not recording the same canonical Nico art shown on screen");
 }
 for (const source of [figure, clubhouse, canonical, showtime, compositor]) {
