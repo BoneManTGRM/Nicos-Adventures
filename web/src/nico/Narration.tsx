@@ -31,6 +31,7 @@ export function useNarration(language: Language, enabled = true) {
   const stop = useCallback(() => { session.current++; queue.current=[]; if(active.current) { active.current.onend=null; active.current.onerror=null; if(available) window.speechSynthesis.cancel(); } active.current=null; if(mounted.current){setStatus('idle');setCurrent(null);} },[available]);
   useEffect(() => {
     mounted.current=true;
+    setStatus('idle'); setCurrent(null); setError('');
     if(!available)return;
     const load=()=>setVoices(localVoices(window.speechSynthesis.getVoices(),language)); load();
     window.speechSynthesis.addEventListener('voiceschanged',load);

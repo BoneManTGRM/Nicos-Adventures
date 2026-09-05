@@ -25,4 +25,15 @@ export function movieTemplate(id:typeof MOVIE_TEMPLATES[number],l:Language):{tit
  if(id==='forest-friends')return{title:es?'El sendero secreto':'The Secret Trail',shots:[{pose:'idle',durationMs:2500,background:'jungle',caption:es?'Algo se movió entre las hojas…':'Something moved among the leaves…'},{pose:'wave',durationMs:2500,background:'dinosaur-valley',caption:es?'¡Era un nuevo amigo!':'It was a new friend!'},{pose:'dance',durationMs:2500,background:'jungle',camera:'close',caption:es?'¡Bienvenido al equipo!':'Welcome to the team!'},{pose:'celebrate',durationMs:2500,background:'star-stage',caption:es?'Mañana hay más por descubrir.':'Tomorrow brings another discovery.'}]};
  return{title:es?'La fiesta monstruosa':'The Monster Party',shots:[{pose:'roar',durationMs:2000,background:'castle',caption:es?'¿Quién invitó a los monstruos?':'Who invited the monsters?'},{pose:'spin',durationMs:2000,background:'star-stage',caption:es?'¡Nosotros!':'We did!'},{pose:'dance',durationMs:3000,background:'star-stage',camera:'close',caption:es?'La pista es de todos.':'Everyone belongs on the dance floor.'},{pose:'sleep',durationMs:2000,background:'robot-home',caption:es?'Hasta los héroes descansan.':'Even heroes need a rest.'}]};
 }
-export function projectShots(project?:MovieProject|null):Shot[]{const shots=project?normalizeShots(project.poseSequence,project.background):[];return shots.length?shots:freshShots();}
+export function projectShots(project?:MovieProject|null):Shot[]{
+ const shots=project?normalizeShots(project.poseSequence,project.background):[];
+ if(!shots.length)return freshShots();
+ // Older movies used a separate overall playback length. Preserve that duration
+ // when opening them in the per-shot editor rather than silently shortening them.
+ if(project && project.directorVersion!==1 && Number.isFinite(project.durationMs)){
+  const total=shots.reduce((n,s)=>n+s.durationMs,0),target=Math.max(4000,Math.min(8000,project.durationMs));
+  let remaining=target;
+  return shots.flatMap((shot,i)=>{const count=shots.length-i-1;const durationMs=i===shots.length-1?remaining:Math.min(remaining-count*500,Math.max(500,Math.round(shot.durationMs/total*target)));remaining-=durationMs;return durationMs>6000?[{...shot,durationMs:durationMs-2000},{...shot,durationMs:2000}]:[{...shot,durationMs}];});
+ }
+ return shots;
+}

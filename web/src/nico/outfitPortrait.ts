@@ -7,5 +7,5 @@ export async function saveOutfitPortrait(profession:NicoProfessionId,name:string
  const scale=Math.min(600/image.naturalWidth,740/image.naturalHeight);c.drawImage(image,(720-image.naturalWidth*scale)/2,100,image.naturalWidth*scale,image.naturalHeight*scale);
  c.fillStyle='#15243c';c.fillRect(54,840,612,76);c.fillStyle='#fff0c6';c.textAlign='center';c.font='700 30px system-ui';c.fillText(`${name} Nico`,360,885,570);
  const blob=await new Promise<Blob>((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Portrait unavailable')),'image/png'));
- const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`nico-${profession}-portrait.png`;a.click();window.setTimeout(()=>URL.revokeObjectURL(url),30000);canvas.width=canvas.height=1;
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`nico-${profession}-portrait.png`;document.body.appendChild(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),30000);canvas.width=canvas.height=1;
 }
