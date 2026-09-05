@@ -1,0 +1,189 @@
+import { Component, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import type { PointerEvent, ReactNode } from 'react';
+import type { LocalProfile } from '../types';
+import type { Announce, UpdateProfile } from './common';
+import { NicoCostumeFigure } from '../nico/NicoCostumeFigure';
+import { createTagState, emptyArenaInput } from '../game/starTag';
+import { completeOnce } from './progression';
+import StarTagScene, { snapshotTag } from './StarTagScene';
+import './playable-world.css';
+
+const labels = {
+  en: {
+    title: 'Star Tag Adventure', back: 'All games', start: 'Start adventure', resume: 'Resume', restart: 'New adventure',
+    pause: 'Pause', paused: 'Adventure paused', expand: 'Big screen', shrink: 'Window view', shield: 'Shield', wave: 'Wave', score: 'Score',
+    fire: 'Star blaster', dash: 'Dash', move: 'Move', look: 'Turn', best: 'Best run', ready: 'Preparing the arena…',
+    mission: 'Play as Nico. Explore the arena, dodge bubbles and tag the playful aliens with stars. Clear 3 waves!',
+    help: 'WASD / arrows: move · drag the arena or Q/E: turn · Space: fire · Shift: dash · Esc: pause. On a phone, use both thumb pads and the star button.',
+    won: 'The whole team wins!', rest: 'Time for a breather', again: 'Everyone is safe. Recharge and try again.',
+    next: 'Next wave…', loading: 'Loading the 3D arena…', error: 'The 3D arena could not start on this device. Try again, or return to the other arcade games.',
+    retry: 'Try 3D again', allies: 'Nico + BoltBot + Sparky', crystal: 'Green crystals recharge your shield.',
+  },
+  'es-MX': {
+    title: 'Aventura de Estrellas', back: 'Todos los juegos', start: 'Iniciar aventura', resume: 'Continuar', restart: 'Nueva aventura',
+    pause: 'Pausa', paused: 'Aventura en pausa', expand: 'Pantalla grande', shrink: 'Vista de ventana', shield: 'Escudo', wave: 'Ronda', score: 'Puntos',
+    fire: 'Lanzador de estrellas', dash: 'Impulso', move: 'Mover', look: 'Girar', best: 'Mejor partida', ready: 'Preparando la arena…',
+    mission: 'Juega como Nico. Explora la arena, esquiva burbujas y alcanza a los aliens juguetones con estrellas. ¡Completa 3 rondas!',
+    help: 'WASD / flechas: mover · arrastrar la arena o Q/E: girar · Espacio: lanzar · Mayús: impulso · Esc: pausa. En celular, usa los dos controles y el botón de estrella.',
+    won: '¡Todo el equipo gana!', rest: 'Hora de descansar', again: 'Todos están a salvo. Recarga e inténtalo de nuevo.',
+    next: 'Siguiente ronda…', loading: 'Cargando la arena 3D…', error: 'No se pudo iniciar la arena 3D en este dispositivo. Intenta de nuevo o regresa a los otros juegos.',
+    retry: 'Probar 3D otra vez', allies: 'Nico + BoltBot + Sparky', crystal: 'Los cristales verdes recargan tu escudo.',
+  },
+} as const;
+class SceneBoundary extends Component<{ children: ReactNode; fail: () => void }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch() { this.props.fail(); }
+  render() { return this.state.failed ? null : this.props.children; }
+}
+function ThumbPad({ label, testId, change }: { label: string; testId: string; change: (x: number, y: number) => void }) {
+  const [point, setPoint] = useState({ x: 0, y: 0 });
+  const pointer = useRef<number | null>(null);
+  const update = (e: PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(-1, Math.min(1, (e.clientX - rect.left - rect.width / 2) / (rect.width * .36)));
+    const y = Math.max(-1, Math.min(1, (e.clientY - rect.top - rect.height / 2) / (rect.height * .36)));
+    setPoint({ x, y }); change(x, y);
+  };
+  const release = () => { pointer.current = null; setPoint({ x: 0, y: 0 }); change(0, 0); };
+  return <div className="star-tag__pad" data-testid={testId} role="group" aria-label={label}
+    onPointerDown={e => { if (pointer.current !== null) return; e.preventDefault(); pointer.current = e.pointerId; e.currentTarget.setPointerCapture(e.pointerId); update(e); }}
+    onPointerMove={e => { if (pointer.current === e.pointerId) update(e); }}
+    onPointerUp={release} onPointerCancel={release} onLostPointerCapture={release}>
+    <span className="star-tag__pad-ring" aria-hidden="true"><i style={{ transform: `translate(${point.x * 24}px, ${point.y * 24}px)` }} /></span><small>{label}</small>
+  </div>;
+}
+export function StarTagArcade({ profile, update, announce, close }: {
+  profile: LocalProfile; update: UpdateProfile; announce: Announce; close: () => void;
+}) {
+  const text = labels[profile.language];
+  const runtime = useRef(createTagState());
+  const input = useRef(emptyArenaInput());
+  const keys = useRef(new Set<string>());
+  const touch = useRef({ forward: 0, side: 0, turn: 0, fire: false, dash: false });
+  const latest = useRef({ profile, update, announce }); latest.current = { profile, update, announce };
+  const [snapshot, setSnapshot] = useState(() => snapshotTag(runtime.current));
+  const [expanded, setExpanded] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [generation, setGeneration] = useState(0);
+  const [help, setHelp] = useState(false);
+  const region = useRef<HTMLElement>(null);
+  const saved = useRef(false);
+  const drag = useRef<{ id: number; x: number } | null>(null);
+  const sync = useCallback(() => {
+    const k = keys.current, t = touch.current;
+    input.current = {
+      forward: Number(k.has('KeyW') || k.has('ArrowUp')) - Number(k.has('KeyS') || k.has('ArrowDown')) + t.forward,
+      side: Number(k.has('KeyD') || k.has('ArrowRight')) - Number(k.has('KeyA') || k.has('ArrowLeft')) + t.side,
+      turn: Number(k.has('KeyE')) - Number(k.has('KeyQ')) + t.turn,
+      fire: k.has('Space') || t.fire, dash: k.has('ShiftLeft') || k.has('ShiftRight') || t.dash,
+    };
+  }, []);
+  const clear = useCallback(() => {
+    keys.current.clear(); touch.current = { forward: 0, side: 0, turn: 0, fire: false, dash: false };
+    input.current = emptyArenaInput(); drag.current = null;
+  }, []);
+  const pause = useCallback(() => {
+    clear();
+    if (runtime.current.status === 'playing') { runtime.current.status = 'paused'; setSnapshot(snapshotTag(runtime.current)); }
+  }, [clear]);
+  const failure = useCallback(() => { pause(); setFailed(true); }, [pause]);
+  const ready = useCallback(() => setLoaded(true), []);
+  const saveResult = useCallback(() => {
+    const s = runtime.current;
+    if (saved.current || s.tags === 0) return;
+    saved.current = true;
+    const { profile: current, update: commit } = latest.current;
+    let next = { ...current, arcadeScores: { ...current.arcadeScores, 'star-tag-adventure': Math.max(current.arcadeScores['star-tag-adventure'] ?? 0, s.score) } };
+    if (s.status === 'won') next = completeOnce(next, 'arcade:star-tag-adventure:complete', 3).profile;
+    commit(next);
+  }, []);
+  useEffect(() => {
+    if (snapshot.status === 'won' || snapshot.status === 'rest') { clear(); saveResult(); latest.current.announce(snapshot.status === 'won' ? text.won : text.rest); }
+  }, [snapshot.status, clear, saveResult, text.won, text.rest]);
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (!region.current?.contains(document.activeElement)) return;
+      if ((e.target as HTMLElement)?.matches('input,textarea,select,[contenteditable="true"]')) return;
+      if (e.code === 'Escape') { e.preventDefault(); pause(); return; }
+      if (['KeyW','KeyA','KeyS','KeyD','KeyQ','KeyE','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ShiftLeft','ShiftRight'].includes(e.code) && runtime.current.status === 'playing') {
+        e.preventDefault(); keys.current.add(e.code); sync();
+      }
+    };
+    const up = (e: KeyboardEvent) => { keys.current.delete(e.code); sync(); };
+    const hidden = () => { if (document.hidden) pause(); };
+    window.addEventListener('keydown', down); window.addEventListener('keyup', up);
+    window.addEventListener('blur', pause); document.addEventListener('visibilitychange', hidden);
+    return () => { clear(); window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); window.removeEventListener('blur', pause); document.removeEventListener('visibilitychange', hidden); };
+  }, [clear, pause, sync]);
+  useEffect(() => {
+    if (!expanded) return;
+    const previous = document.body.style.overflow; document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previous; };
+  }, [expanded]);
+  const start = (reset = false) => {
+    clear();
+    if (reset || ['won', 'rest'].includes(runtime.current.status)) { runtime.current = createTagState(); saved.current = false; }
+    runtime.current.status = 'playing'; setSnapshot(snapshotTag(runtime.current));
+    region.current?.focus({ preventScroll: true });
+  };
+  const leave = () => { saveResult(); clear(); close(); };
+  const active = snapshot.status === 'playing';
+  const hold = (field: 'fire' | 'dash', value: boolean) => { touch.current[field] = value; sync(); };
+  return <section ref={region} tabIndex={0} className={`star-tag${expanded ? ' is-expanded' : ''}`}
+    aria-label={text.title} data-tag-status={snapshot.status} data-tag-shots={snapshot.shotsFired}
+    data-tag-distance={snapshot.distance.toFixed(2)} data-tag-score={snapshot.score} data-tag-shield={snapshot.shield}>
+    <header className="star-tag__toolbar">
+      <button type="button" onClick={leave}>← {text.back}</button>
+      <strong>{text.title}</strong>
+      <div><button type="button" onClick={() => setExpanded(v => !v)}>{expanded ? text.shrink : text.expand}</button><button type="button" disabled={!active} onClick={pause}>Ⅱ {text.pause}</button></div>
+    </header>
+    <div className="star-tag__viewport"
+      onPointerDown={e => {
+        if ((e.target as HTMLElement).closest('button,[role="group"],.star-tag__overlay')) return;
+        if (!active) return;
+        region.current?.focus({ preventScroll: true }); drag.current = { id: e.pointerId, x: e.clientX }; e.currentTarget.setPointerCapture(e.pointerId);
+      }}
+      onPointerMove={e => { if (drag.current?.id === e.pointerId && active) { runtime.current.yaw += (e.clientX - drag.current.x) * .006; drag.current.x = e.clientX; } }}
+      onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}>
+      {!failed && <SceneBoundary key={generation} fail={failure}><Suspense fallback={<div className="star-tag__loading" role="status">{text.loading}</div>}>
+        <StarTagScene runtime={runtime} input={input} snapshot={snapshot} notify={setSnapshot} ready={ready} failed={failure} pausedLabel={text.error} />
+      </Suspense></SceneBoundary>}
+      <div className="star-tag__hud" aria-label={text.score}>
+        <span>♥ {text.shield} <b>{Math.round(snapshot.shield)}</b></span><span>{text.wave} <b>{snapshot.wave}/3</b></span><span>★ <b>{snapshot.score}</b></span>
+      </div>
+      {active && !failed && <>
+        <div className="star-tag__crosshair" aria-hidden="true">＋</div>
+        {snapshot.nextWave > 0 && <div className="star-tag__wave" role="status">{text.next}</div>}
+        <div className="star-tag__touch">
+          <ThumbPad label={text.move} testId="tag-move" change={(x, y) => { touch.current.side = x; touch.current.forward = -y; sync(); }} />
+          <div className="star-tag__actions">
+            <button type="button" className="star-tag__fire" aria-label={text.fire} data-testid="tag-fire"
+              onPointerDown={e => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); hold('fire', true); }}
+              onPointerUp={() => hold('fire', false)} onPointerCancel={() => hold('fire', false)} onLostPointerCapture={() => hold('fire', false)}
+              onClick={e => { if (e.detail === 0) { runtime.current.cooldown = 0; input.current.fire = true; requestAnimationFrame(() => hold('fire', false)); } }}>✦</button>
+            <button type="button" disabled={snapshot.dashCooldown > 0} aria-label={text.dash}
+              onPointerDown={e => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); hold('dash', true); }}
+              onPointerUp={() => hold('dash', false)} onPointerCancel={() => hold('dash', false)} onLostPointerCapture={() => hold('dash', false)}
+              onClick={e => { if (e.detail === 0) { input.current.dash = true; requestAnimationFrame(() => hold('dash', false)); } }}>↯</button>
+          </div>
+          <ThumbPad label={text.look} testId="tag-look" change={x => { touch.current.turn = x; sync(); }} />
+        </div>
+      </>}
+      {(!active || failed) && <div className="star-tag__overlay">
+        {failed ? <><h2>{text.title}</h2><p role="alert">{text.error}</p><button type="button" onClick={() => { setFailed(false); setLoaded(false); setGeneration(v => v + 1); }}>{text.retry}</button></> : <>
+          <div className="star-tag__portrait"><NicoCostumeFigure profession={profile.nico.profession} compact alt="Nico" /></div>
+          <small>{text.allies}</small>
+          <h2>{snapshot.status === 'won' ? text.won : snapshot.status === 'rest' ? text.rest : snapshot.status === 'paused' ? text.paused : text.title}</h2>
+          <p>{snapshot.status === 'rest' ? text.again : text.mission}</p>
+          <p className="star-tag__best">🏆 {text.best}: {profile.arcadeScores['star-tag-adventure'] ?? 0}</p>
+          <button type="button" className="fw-primary" disabled={!loaded} data-testid="tag-start" onClick={() => start()}>{!loaded ? text.ready : snapshot.status === 'paused' ? text.resume : ['won','rest'].includes(snapshot.status) ? text.restart : text.start}</button>
+          {snapshot.status === 'paused' && <button type="button" onClick={() => start(true)}>{text.restart}</button>}
+          <small>{text.crystal}</small>
+        </>}
+      </div>}
+    </div>
+    <footer className="star-tag__help"><button type="button" aria-expanded={help} onClick={() => setHelp(v => !v)}>⌨ / ☝ {profile.language === 'es-MX' ? 'Controles' : 'Controls'}</button>{help && <p>{text.help}</p>}</footer>
+  </section>;
+}
