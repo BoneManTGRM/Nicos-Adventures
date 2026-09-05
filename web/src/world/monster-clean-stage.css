@@ -1,0 +1,11 @@
+/* The old glass pod, bubbles and duplicate ghost silhouette are not part of a monster. */
+.monster-stage.monster-stage::before,.monster-stage.monster-stage::after{content:none!important;display:none!important}
+.monster-stage .monster-stage__environment,.monster-stage .monster-atmosphere,.monster-portrait .monster-portrait__halo{display:none!important}
+.monster-stage .monster-v2::before{content:none!important;display:none!important}
+/* Explicit geometry avoids a collapsed absolutely positioned image on narrow screens. */
+.monster-stage .monster-v2{display:block;position:relative;flex:0 0 auto;aspect-ratio:1;min-height:0;filter:none;will-change:auto}
+.monster-stage .monster-premium-body{display:block;position:absolute;inset:0;width:100%;height:100%;aspect-ratio:1;transform:none;filter:none}
+.monster-stage .monster-premium-body>span{display:block;position:absolute;inset:0;width:100%;height:100%;background-size:contain;background-position:center}
+.monster-portrait .monster-portrait__body{display:block;height:100%;width:100%;aspect-ratio:1}
+.monster-stage.monster-stage{background:linear-gradient(165deg,#122844,#061021);box-shadow:inset 0 1px #d9efff18}
+.monster-stage .monster-nameplate{backdrop-filter:none}
