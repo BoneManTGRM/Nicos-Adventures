@@ -72,6 +72,8 @@ export function FriendsMap({ profile, update, announce, close }: { profile: Loca
       raf = 0; if (!alive || document.hidden || !assets || !ctx) return;
       if (!frameDue(now, lastFrame)) { wake(); return; }
       const start = performance.now(), previousAction = s.action?.id, previousRevision = s.revision;
+      // Resize and paint in one callback so rotation never exposes a cleared buffer.
+      if (element.width !== bufferedWidth || element.height !== bufferedHeight) { element.width = bufferedWidth; element.height = bufferedHeight; }
       const dt = lastFrame ? (now - lastFrame) / 1000 : 1 / 30;
       if (inside.room) {
         if (s.status === 'playing') stepInterior(inside, input.current, dt);
@@ -99,7 +101,7 @@ export function FriendsMap({ profile, update, announce, close }: { profile: Loca
       const rect = surface.current.getBoundingClientRect();
       const ratio = Math.min(1, 1024 / Math.max(1, rect.width), 640 / Math.max(1, rect.height));
       bufferedWidth = Math.max(1, Math.round(rect.width * ratio)); bufferedHeight = Math.max(1, Math.round(rect.height * ratio));
-      element.width = bufferedWidth; element.height = bufferedHeight; wake();
+      wake();
     };
     const observer = new ResizeObserver(resize); observer.observe(surface.current!); resize();
     control.current = { wake, cancel, save };

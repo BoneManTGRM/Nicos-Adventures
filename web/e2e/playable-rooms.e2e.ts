@@ -27,7 +27,17 @@ async function supplies(page: Page, es: boolean) {
   await expect(canvas).toHaveAttribute('data-room-path','0'); await page.getByTestId('room-action').click(); await expect(page.locator('.room-puzzle')).toBeVisible();
 }
 async function solve(page:Page,id:StopId){for(const n of routes[id])await page.locator(`[data-puzzle-choice="${n}"]`).click();await expect(page.locator('.room-puzzle')).toHaveAttribute('data-puzzle-solved','true');}
-async function shot(page:Page,info:TestInfo,label:string){await info.attach(label,{body:await page.screenshot(),contentType:'image/png'});}
+async function painted(page:Page) {
+  await expect.poll(()=>page.getByTestId('friends-map-canvas').evaluate((c:HTMLCanvasElement)=>{
+    const colors=new Set<string>(),context=c.getContext('2d')!;
+    for(let y=1;y<12;y++)for(let x=1;x<12;x++){
+      const rgba=context.getImageData(Math.floor(c.width*x/12),Math.floor(c.height*y/12),1,1).data;
+      colors.add(`${rgba[0]>>4},${rgba[1]>>4},${rgba[2]>>4},${rgba[3]>>4}`);
+    }
+    return colors.size;
+  })).toBeGreaterThan(8);
+}
+async function shot(page:Page,info:TestInfo,label:string){await painted(page);await info.attach(label,{body:await page.screenshot(),contentType:'image/png'});}
 
 test('five enterable buildings, five different challenges, exact return and saved treasure',async({page},info)=>{
   test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));const es=await boot(page,info);
@@ -60,10 +70,16 @@ test('indoor tap movement, low-power idle, pause, modal focus and phone layout',
   await page.getByTestId('room-action').click();await expect(page.getByTestId('room-action')).toHaveText(es?'Abrir el desafío':'Open challenge');await expect(canvas).toHaveAttribute('data-room-path','0');await page.getByTestId('room-action').click();
   await expect(page.locator('.room-puzzle')).toBeVisible();await page.waitForTimeout(150);const at=await canvas.getAttribute('data-frames');await page.keyboard.press('ArrowRight');await page.waitForTimeout(350);expect(await canvas.getAttribute('data-frames')).toBe(at);
   await page.keyboard.press('Escape');await expect(page.locator('.room-puzzle')).toHaveCount(0);
-  await page.setViewportSize({width:844,height:390});await shot(page,info,'indoor-landscape');
+  await page.setViewportSize({width:844,height:390});
+  await expect.poll(()=>canvas.evaluate((c:HTMLCanvasElement)=>c.width)).toBe(844);
+  await shot(page,info,'indoor-landscape');
   await expect(page.getByTestId('room-exit')).toBeVisible();const over=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);expect(over).toBeLessThanOrEqual(2);
   const metrics=await canvas.evaluate((c:HTMLCanvasElement)=>({...c.dataset,width:c.width,height:c.height}));expect(metrics.width).toBeLessThanOrEqual(1024);expect(metrics.height).toBeLessThanOrEqual(640);
   await info.attach('indoor-performance',{body:Buffer.from(JSON.stringify({...metrics,idleRedraws:0},null,2)),contentType:'application/json'});
+  // A paused room must also survive rotation without becoming an empty canvas.
+  await page.getByTestId('map-pause').click();await page.setViewportSize({width:390,height:780});
+  await expect.poll(()=>canvas.evaluate((c:HTMLCanvasElement)=>c.width)).toBe(390);await painted(page);
+  await page.waitForTimeout(100);const rotated=await canvas.getAttribute('data-frames');await page.waitForTimeout(350);expect(await canvas.getAttribute('data-frames')).toBe(rotated);
   await page.getByTestId('room-exit').click();await expect(page.locator('.friends-map')).toHaveAttribute('data-map-room','island');
 });
 test('rooms remain playable offline and mistakes do not complete a challenge',async({page,context},info)=>{
