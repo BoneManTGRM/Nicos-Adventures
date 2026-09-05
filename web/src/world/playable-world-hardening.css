@@ -1,0 +1,18 @@
+/* Keep the legacy automation hook without the retired display-room layout. */
+.living-home.robot-home-stage { min-height: 0; background: #0b1d32; border: 1px solid #527693; border-radius: 26px; }
+.living-home .living-home__actor .nico-costume[data-art-state="canonical-2d"] {
+  width: auto; max-width: 100%; height: 100%; aspect-ratio: 3 / 4; margin: 0 auto; padding: 0;
+}
+.living-home .living-home__actor .nico-costume[data-art-state="canonical-2d"] .nico-costume__frame {
+  position: relative; width: 100%; height: 100%; aspect-ratio: 3 / 4; min-height: 0;
+  overflow: hidden; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+}
+.living-home .living-home__actor .nico-costume[data-art-state="canonical-2d"] .nico-canonical-sprite {
+  position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: 3 / 4; transform: none;
+}
+.living-home .living-home__dpad { grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(2, 44px); }
+.living-home__room, .living-home__command-bar, .living-home__activities { scroll-margin-block: 110px 120px; }
+.star-tag__touch [aria-disabled="true"] { opacity: .55; }
+@media (max-width: 600px) {
+  .living-home__command-bar > button { min-width: 100px; }
+}
