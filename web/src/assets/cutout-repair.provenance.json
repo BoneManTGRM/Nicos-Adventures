@@ -140,13 +140,13 @@
     {
       "path": "web/src/assets/art/wildlife-premium-clean-atlas.webp",
       "sourceSha256": "15de29067b1ddb9218826d4303a1a8a29be08d5f2d76b6d098c5cc4e157d9249",
-      "sha256": "9eeab9b2766c4dfe5f7da90204593129b4b1c85f33256d7fa734a797f132c3f7",
+      "sha256": "f4c95813f71be4bc3202b1701140b5e25ce08a16595de8fc18ca0368b311d9b2",
       "width": 2560,
       "height": 1280,
-      "preservedInteriorPixels": 932534,
+      "preservedInteriorPixels": 930458,
       "changedProtectedPixels": 0,
-      "removedMattePixels": 88375,
-      "bytes": 1768292
+      "removedMattePixels": 90414,
+      "bytes": 1765292
     }
   ]
 }

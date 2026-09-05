@@ -8,6 +8,11 @@ const WILDLIFE_IDS=['jaguar','toucan','sloth','poison-dart-frog','blue-whale','g
 type Checkpoint={cell:number;clear:number[]|null;solid:number[];rgba:number[]};
 const checkpoints=JSON.parse(readFileSync(resolve('e2e/cutout-pixel-checkpoints.json'),'utf8')) as Record<string,Checkpoint[]>;
 const report=JSON.parse(readFileSync(resolve('src/assets/cutout-repair.provenance.json'),'utf8')) as {records:{path:string;sha256:string;width:number;height:number}[]};
+function assetUrl(stem:string){
+  const file=readdirSync(resolve('dist/assets')).find(name=>name.startsWith(stem+'-')&&name.endsWith('.webp'));
+  if(!file)throw new Error('Missing reviewed asset: '+stem);
+  return '/assets/'+file;
+}
 async function open(page:Page,info:TestInfo,id:SectionId){
   await page.goto('/');await page.locator('.fw-brand').click();
   const es=info.project.metadata.language==='es-MX';
@@ -28,12 +33,9 @@ async function loadedImages(page:Page,selector:string){
   }))).toBe(true);
 }
 test('shipped cutout bytes retain white details and clear reviewed negative spaces',async({page},info)=>{
-  await page.goto('/');const files=readdirSync(resolve('dist/assets'));const receipts=[];
-  expect(report.records).toHaveLength(13);
+  await page.goto('/');const receipts=[];expect(report.records).toHaveLength(13);
   for(const record of report.records){
-    const stem=basename(record.path,'.webp');
-    const file=files.find(name=>name.startsWith(stem+'-')&&name.endsWith('.webp'));
-    expect(file,stem).toBeTruthy();const url='/assets/'+file;
+    const stem=basename(record.path,'.webp'),url=assetUrl(stem);
     const response=await page.request.get(url);expect(response.ok(),stem).toBe(true);
     expect(createHash('sha256').update(await response.body()).digest('hex'),stem).toBe(record.sha256);
     const result=await page.evaluate(async({url,samples,atlas})=>{
@@ -46,7 +48,9 @@ test('shipped cutout bytes retain white details and clear reviewed negative spac
         return {cell:point.cell,solid:read(x+point.solid[0],y+point.solid[1]),clear:point.clear?read(x+point.clear[0],y+point.clear[1])[3]:null};
       })};
     },{url,samples:checkpoints[stem],atlas:stem.includes('atlas')});
-    expect(result.width).toBe(record.width);expect(result.height).toBe(record.height);expect(result.corner).toBe(0);
+    expect(result.width).toBe(record.width);expect(result.height).toBe(record.height);
+    // The approved fox source has 1/255 alpha noise at this corner, not opaque paper.
+    expect(result.corner,stem+' native corner alpha').toBe(stem==='arctic-fox-premium-v2'?1:0);
     for(let i=0;i<result.samples.length;i++){
       const actual=result.samples[i],expected=checkpoints[stem][i];
       if(expected.clear)expect(actual.clear,stem+' gap '+i).toBe(0);
@@ -73,25 +77,40 @@ test('Becca, Lua and every unicorn pose use the corrected native assets',async({
   await expect(page.locator('.unicorn-lab__stage')).toHaveAttribute('data-host','lua');
   await loadedImages(page,'.unicorn-lab__guide');expect(errors).toEqual([]);
 });
-test('all 32 real wildlife canvases preserve pale material without paper floors',async({page},info)=>{
+test('all 32 real wildlife canvases preserve native material without paper floors',async({page},info)=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await open(page,info,'animal-forest');const selector='.animal-field-guide-grid .wildlife-sprite';
   await expect(page.locator(selector)).toHaveCount(32);
   await expect(page.locator(selector+'[data-art-state="ready"]')).toHaveCount(32);
-  const measurements=await page.locator(selector).evaluateAll((nodes,{ids,samples})=>nodes.map(node=>{
-    const canvas=node as HTMLCanvasElement,ctx=canvas.getContext('2d')!;
-    const id=canvas.dataset.animalId!,index=ids.indexOf(id),point=samples[index],map=(n:number)=>Math.round(11.2+n*.93);
-    const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-    let visible=0;for(let i=3;i<data.length;i+=4)if(data[i]>128)visible++;
-    return {id,visible,solid:Array.from(ctx.getImageData(map(point.solid[0]),map(point.solid[1]),1,1).data),clear:point.clear?ctx.getImageData(map(point.clear[0]),map(point.clear[1]),1,1).data[3]:null};
-  }),{ids:WILDLIFE_IDS,samples:checkpoints['wildlife-premium-clean-atlas']});
+  const measurements=await page.locator(selector).evaluateAll(async(nodes,{ids,samples,urls})=>{
+    // Independent native-alpha reference includes the browser's own resampling.
+    // Tiny eye highlights are not incorrectly judged against an arbitrary color threshold.
+    const load=async(url:string)=>{const image=new Image();image.src=url;await image.decode();return image;};
+    const native=await load(urls[0]);const reference=document.createElement('canvas');
+    reference.width=native.naturalWidth;reference.height=native.naturalHeight;
+    const ref=reference.getContext('2d')!;ref.drawImage(native,0,0);
+    for(const [index,url] of [[12,urls[1]],[13,urls[2]]] as const){
+      const image=await load(url);const source=document.createElement('canvas');source.width=image.naturalWidth;source.height=image.naturalHeight;source.getContext('2d')!.drawImage(image,0,0);
+      const scale=Math.min(294.4/source.width,294.4/source.height),w=source.width*scale,h=source.height*scale,x=index%8*320,y=Math.floor(index/8)*320;
+      ref.clearRect(x,y,320,320);ref.drawImage(source,x+(320-w)/2,y+(320-h)/2,w,h);
+    }
+    return nodes.map(node=>{
+      const canvas=node as HTMLCanvasElement,ctx=canvas.getContext('2d')!;
+      const id=canvas.dataset.animalId!,index=ids.indexOf(id),point=samples[index],map=(n:number)=>Math.round(11.2+n*.93);
+      const expected=document.createElement('canvas');expected.width=expected.height=320;const golden=expected.getContext('2d')!;
+      golden.drawImage(reference,index%8*320,Math.floor(index/8)*320,320,320,11.2,11.2,297.6,297.6);
+      const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+      let visible=0;for(let i=3;i<data.length;i+=4)if(data[i]>128)visible++;
+      const read=(context:CanvasRenderingContext2D)=>Array.from(context.getImageData(map(point.solid[0]),map(point.solid[1]),1,1).data);
+      return {id,visible,solid:read(ctx),expected:read(golden),clear:point.clear?ctx.getImageData(map(point.clear[0]),map(point.clear[1]),1,1).data[3]:null};
+    });
+  },{ids:WILDLIFE_IDS,samples:checkpoints['wildlife-premium-clean-atlas'],urls:[assetUrl('wildlife-premium-clean-atlas'),assetUrl('polar-bear-premium-v2'),assetUrl('arctic-fox-premium-v2')]});
   await info.attach('wildlife-canvas-receipts',{body:Buffer.from(JSON.stringify(measurements,null,2)),contentType:'application/json'});
   expect(new Set(measurements.map(item=>item.id)).size).toBe(32);
   for(const item of measurements){
     expect(item.visible,item.id).toBeGreaterThan(1000);
     expect(item.solid[3],item.id+' solid material').toBeGreaterThan(240);
-    const index=WILDLIFE_IDS.indexOf(item.id);
-    if(checkpoints['wildlife-premium-clean-atlas'][index].rgba.slice(0,3).every(value=>value>226))expect(Math.min(...item.solid.slice(0,3)),item.id+' pale material').toBeGreaterThan(200);
+    for(let channel=0;channel<4;channel++)expect(Math.abs(item.solid[channel]-item.expected[channel]),item.id+' native material channel '+channel).toBeLessThanOrEqual(2);
     if(item.clear!==null)expect(item.clear,item.id+' paper gap').toBeLessThan(8);
   }
   await page.evaluate(selector=>{
