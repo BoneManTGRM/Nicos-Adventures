@@ -1,5 +1,8 @@
 /* Keep the legacy automation hook without the retired display-room layout. */
-.living-home.robot-home-stage { min-height: 0; background: #0b1d32; border: 1px solid #527693; border-radius: 26px; }
+.living-home.robot-home-stage {
+  width: min(100%, 1150px); min-width: 0; box-sizing: border-box;
+  min-height: 0; background: #0b1d32; border: 1px solid #527693; border-radius: 26px;
+}
 .living-home .living-home__actor .nico-costume[data-art-state="canonical-2d"] {
   width: auto; max-width: 100%; height: 100%; aspect-ratio: 3 / 4; margin: 0 auto; padding: 0;
 }
