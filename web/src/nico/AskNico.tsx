@@ -1,36 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { answerNicoQuestion, suggestedQuestions, type NicoAnswer } from './knowledge';
-import type { Language, NicoProfessionId, NicoWardrobe } from '../types';
-import { NicoCostumeFigure } from './NicoCostumeFigure';
-import { FACT_QUIZZES, FACT_SOURCES, FACT_TOPICS, FUN_FACTS, TOPIC_NAMES, factText, findFact, nextFact } from './funFacts';
-import type { FactTopic, FunFact } from './funFacts';
-import { NarrationControls, useNarration } from './Narration';
-import './discovery-club.css';
-type Props = { language:Language;speechEnabled:boolean;aboutSource?:string;baseArtSource?:string;outfitArtSource?:string;profession?:NicoProfessionId;wardrobe?:NicoWardrobe;accentColor?:string };
-type Exchange = {id:string;question:string;answer:NicoAnswer;fact?:FunFact};
-const makeId=()=>globalThis.crypto?.randomUUID?.()??Math.random().toString(36).slice(2);
-export function AskNico({language,speechEnabled,profession='explorer',wardrobe,accentColor='#22c55e'}:Props){
- const es=language==='es-MX',narrator=useNarration(language,speechEnabled);
- const [question,setQuestion]=useState(''),[exchanges,setExchanges]=useState<Exchange[]>([]),[topic,setTopic]=useState<FactTopic|'all'>('all');
- const [seen,setSeen]=useState<string[]>([]),[quiz,setQuiz]=useState<number|null>(null),[choice,setChoice]=useState<number|null>(null);
- const inputRef=useRef<HTMLInputElement>(null),suggestions=useMemo(()=>suggestedQuestions(language),[language]);
- const latest=exchanges.at(-1);
- useEffect(()=>{setExchanges([]);setQuestion('');setQuiz(null);setChoice(null);},[language]);
- const add=(prompt:string,answer:NicoAnswer,fact?:FunFact)=>{narrator.stop();setExchanges(old=>[...old.slice(-5),{id:makeId(),question:prompt,answer,fact}]);setQuestion('');};
- const showFact=(fact:FunFact)=>{setSeen(old=>[...old.filter(id=>id!==fact.id),fact.id].slice(-FUN_FACTS.length));add(es?'¡Cuéntame algo increíble!':'Tell me something amazing!',{id:fact.id,text:factText(fact,language),confidence:'exact'},fact);};
- const submit=(raw:string)=>{const text=raw.trim().slice(0,180);if(!text)return;const fact=findFact(text);if(fact){add(text,{id:fact.id,text:factText(fact,language),confidence:'related'},fact);}else add(text,answerNicoQuestion(text,language));};
- const onSubmit=(event:FormEvent<HTMLFormElement>)=>{event.preventDefault();submit(question);};
- const challenge=()=>{setQuiz(old=>old===null?0:(old+1)%FACT_QUIZZES.length);setChoice(null);narrator.stop();};
- return <section className="nico-ask" aria-labelledby="nico-ask-title">
-  <header className="nico-feature-heading"><div><small>{es?'CLUB DE CURIOSOS · PRIVADO':'CURIOSITY CLUB · PRIVATE'}</small><h2 id="nico-ask-title">{es?'Pregúntale a Nico':'Ask Nico'}</h2><p>{es?'Preguntas, descubrimientos y pequeños retos. Las respuestas se buscan en esta app; tus preguntas no se envían a un servidor.':'Questions, discoveries, and little challenges. Answers come from this app’s library; your questions are not sent to a server.'}</p></div></header>
-  <div className="nico-ask-hero"><div className="nico-ask-hero__art"><NicoCostumeFigure profession={profession} wardrobe={wardrobe} accentColor={accentColor} compact alt={es?'Nico, tu compañero de descubrimientos':'Nico, your discovery companion'}/></div><div><h3>{es?'¿Qué descubriremos hoy?':'What will we discover today?'}</h3><p>{es?`${FUN_FACTS.length} datos bilingües sobre el espacio, el océano, dinosaurios, insectos, la Tierra y números.`:`${FUN_FACTS.length} bilingual fact cards about space, oceans, dinosaurs, insects, Earth, and numbers.`}</p><small>{es?'Sin chat con desconocidos ni IA conectada.':'No stranger chat or connected AI.'}</small></div></div>
-  <div className="discovery-topics" role="group" aria-label={es?'Temas de descubrimiento':'Discovery topics'}><button type="button" aria-pressed={topic==='all'} onClick={()=>setTopic('all')}>{es?'Todo':'Everything'}</button>{FACT_TOPICS.map(id=><button type="button" key={id} aria-pressed={topic===id} onClick={()=>setTopic(id)}>{TOPIC_NAMES[id][es?1:0]}</button>)}</div>
-  <div className="discovery-actions"><button type="button" data-testid="nico-surprise-fact" onClick={()=>{setQuiz(null);showFact(nextFact(topic,seen));}}>{es?'Sorpréndeme':'Surprise me'}</button><button type="button" data-testid="nico-quiz" onClick={challenge}>{es?'Reto rápido':'Quick challenge'}</button><small>{seen.length}/{FUN_FACTS.length} {es?'descubiertos en esta visita':'discovered this visit'}</small></div>
-  {quiz!==null&&<section className="discovery-quiz" aria-label={es?'Reto de Nico':'Nico’s challenge'}><h3>{FACT_QUIZZES[quiz].q[es?1:0]}</h3><div>{FACT_QUIZZES[quiz].a.map((answer,i)=><button type="button" key={answer} aria-pressed={choice===i} onClick={()=>setChoice(i)}>{answer}</button>)}</div>{choice!==null&&<p role="status">{choice===FACT_QUIZZES[quiz].correct?(es?'¡Exacto! ':'You got it! '):(es?'Buena idea; probemos otra. ':'Good idea; try another. ')}{choice===FACT_QUIZZES[quiz].correct&&factText(FUN_FACTS.find(f=>f.id===FACT_QUIZZES[quiz].fact)!,language)}</p>}<button type="button" onClick={challenge}>{es?'Otro reto':'Another challenge'}</button></section>}
-  <div className="nico-chat-log" aria-live="polite">{exchanges.length===0?<div className="nico-chat-empty"><strong>{es?'Elige un tema o hazme una pregunta.':'Choose a topic or ask me a question.'}</strong></div>:exchanges.map(exchange=><article className="nico-chat-exchange" key={exchange.id} data-fact-id={exchange.fact?.id}><p className="nico-chat-question"><strong>{es?'Tú':'You'}:</strong> {exchange.question}</p><p className={`nico-chat-answer nico-chat-answer--${exchange.answer.confidence}`}><strong>Nico:</strong> {exchange.answer.text}</p>{exchange.fact&&<details className="discovery-source"><summary>{es?'¿Cómo lo sabemos?':'How do we know?'}</summary>{exchange.fact.source?<a href={FACT_SOURCES[exchange.fact.source].url} target="_blank" rel="noreferrer noopener">{FACT_SOURCES[exchange.fact.source].name} · {es?'Abrir fuente':'Open source'}</a>:<p>{es?'Laboratorio de números: compruébalo contando, dibujando o haciendo la operación.':'Number Lab: check it by counting, drawing, or working out the calculation.'}</p>}</details>}</article>)}</div>
-  <div className="nico-suggestion-grid" aria-label={es?'Preguntas sugeridas':'Suggested questions'}>{suggestions.map(suggestion=><button type="button" key={suggestion} onClick={()=>submit(suggestion)}>{suggestion}</button>)}</div>
-  <form className="nico-question-form" onSubmit={onSubmit}><label htmlFor="nico-question" className="sr-only">{es?'Tu pregunta para Nico':'Your question for Nico'}</label><input id="nico-question" ref={inputRef} value={question} maxLength={180} autoComplete="off" inputMode="text" placeholder={es?'¿Cuántos corazones tiene un pulpo?':'How many hearts does an octopus have?'} onChange={e=>setQuestion(e.target.value)}/><button type="submit" className="nico-primary-action" disabled={!question.trim()}>{es?'Preguntar':'Ask'}</button></form>
-  {latest&&speechEnabled&&<button type="button" className="nico-secondary-action" onClick={()=>narrator.speak([{text:latest.answer.text}])}>{es?'Leer respuesta':'Read answer'}</button>}
-  <NarrationControls narrator={narrator} language={language}/>
- </section>;
+import { lazy, Suspense } from 'react';
+import type { Language,NicoProfessionId,NicoWardrobe } from '../types';
+const Club=lazy(()=>import('./AskNicoClub').then(module=>({default:module.AskNico})));
+export function AskNico(props:{language:Language;speechEnabled:boolean;aboutSource?:string;baseArtSource?:string;outfitArtSource?:string;profession?:NicoProfessionId;wardrobe?:NicoWardrobe;accentColor?:string}){
+ return <Suspense fallback={<div role="status">{props.language==='es-MX'?'Abriendo el club de curiosos…':'Opening the Curiosity Club…'}</div>}><Club {...props}/></Suspense>;
 }
