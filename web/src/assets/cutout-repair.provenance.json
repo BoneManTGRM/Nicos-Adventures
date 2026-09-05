@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "sourceCommit": "70c597b73707a3ca37040c66fd3f19abee643e98",
+  "method": "reviewed negative-space masks plus narrow-edge white-matte decontamination",
+  "regeneratedArtwork": false,
+  "wildlifeSpecies": 32,
+  "records": [
+    {
+      "path": "web/src/assets/art/becca-premium-v2.webp",
+      "sourceSha256": "6014e216d0a15f1be2430b4791bfef2f0816baf22b19445777bfd87f8aa9badd",
+      "sha256": "a6f939aaea4ab8393ef0b86b7c994779110bb831ca4c4b18443fe06b8a323355",
+      "width": 1023,
+      "height": 1537,
+      "preservedInteriorPixels": 394125,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 8820,
+      "bytes": 587134
+    },
+    {
+      "path": "web/src/assets/art/lua-premium-v2.webp",
+      "sourceSha256": "5a68e0b375dd0952273147b8f91f940be9edd99c3118e17be7a1c49d611caf07",
+      "sha256": "4ff9cdd5daf47af6acf09b7d7d97e73ef21f287d86281c7f042359c01e170954",
+      "width": 1024,
+      "height": 1536,
+      "preservedInteriorPixels": 459956,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 20,
+      "bytes": 689228
+    },
+    {
+      "path": "web/src/assets/art/unicorn-prance-v2.webp",
+      "sourceSha256": "091e8daa67e227c6cd5205fb6199b15ce70476792ab64fa805e3ee645576ad8c",
+      "sha256": "46d87740a08379ae10f9e97621c6c53cf34397154ebe29f1d78f0011699520e0",
+      "width": 820,
+      "height": 820,
+      "preservedInteriorPixels": 194093,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 408,
+      "bytes": 329078
+    },
+    {
+      "path": "web/src/assets/art/unicorn-float-v2.webp",
+      "sourceSha256": "a75179a9b329815627b5d53a285c02dc9b2e5728e110dd1cb349c2e23fb46540",
+      "sha256": "60f546eeca786c947b06047f608ad33c909902f36898a8a1643daa5788ab6130",
+      "width": 820,
+      "height": 820,
+      "preservedInteriorPixels": 202832,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 409,
+      "bytes": 336660
+    },
+    {
+      "path": "web/src/assets/art/unicorn-rest-v2.webp",
+      "sourceSha256": "2c6414ba7aebcaba399aeebc5f3f6931263cb381de5bcf954821ea4f889ed862",
+      "sha256": "5dffb65b11d79f310b819ef6c598d7c8ecf5bbd13b9608101e4a3dedf9053503",
+      "width": 820,
+      "height": 820,
+      "preservedInteriorPixels": 200021,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 190,
+      "bytes": 297436
+    },
+    {
+      "path": "web/src/assets/art/unicorn-turn-v2.webp",
+      "sourceSha256": "d789b93a6dfeb3d1e25d0ac43fcd6c29ea60bbc319523e7c14fdfaf708658b66",
+      "sha256": "3161f0168f7863286c63c1eb1250fa13277c2c5cca6c65e203f3dc36b77d5377",
+      "width": 820,
+      "height": 820,
+      "preservedInteriorPixels": 193138,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 411,
+      "bytes": 309202
+    },
+    {
+      "path": "web/src/assets/art/arctic-fox-premium-v2.webp",
+      "sourceSha256": "e0c05267b0902e9d1c36a38c908173321e0579cb71e8a08945fe16ab4c9db560",
+      "sha256": "bb5b11d9eec862f818bf6f4e1b31643baf62b7ef66a861039812711ab385bc23",
+      "width": 1024,
+      "height": 683,
+      "preservedInteriorPixels": 247490,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 28,
+      "bytes": 267680
+    },
+    {
+      "path": "web/src/assets/art/polar-bear-premium-v2.webp",
+      "sourceSha256": "edeccab4e76a867d960e941965d47d6114239a497e3a82db40c08b5e41c22ff8",
+      "sha256": "0e90926149dc0ccb853022e59931868f4f3b491b51e1a074f5f507cbab4308ce",
+      "width": 1024,
+      "height": 683,
+      "preservedInteriorPixels": 245237,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 7,
+      "bytes": 230728
+    },
+    {
+      "path": "web/src/assets/pets/sparky-idle-v2.webp",
+      "sourceSha256": "8c428fa9797949e9cc286dfe8be7b3a0c54404a91d8ce839f186d1aa69262a45",
+      "sha256": "0234ccebb93a31d22522398b19b71d6f0bd4d3d7e1512d962d05d7c06fd29ef5",
+      "width": 705,
+      "height": 480,
+      "preservedInteriorPixels": 93376,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 0,
+      "bytes": 187806
+    },
+    {
+      "path": "web/src/assets/pets/sparky-sit-v2.webp",
+      "sourceSha256": "fdaa51cf6fd60b09ae14287d75f6fbfd4174aa297a0718eccfab343ae12f028a",
+      "sha256": "675da9b91f2467dc5389b9ab0a93da60fe25358d748c24e7b66a4194b05d566f",
+      "width": 715,
+      "height": 504,
+      "preservedInteriorPixels": 91109,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 0,
+      "bytes": 175172
+    },
+    {
+      "path": "web/src/assets/pets/sparky-high-five-v2.webp",
+      "sourceSha256": "d2e5bb56017370f117c0788fc0308710ca078f5538a2cf72e8be9b99e67ddf70",
+      "sha256": "b4dc2b9b1353cf28f8efb7c8bc691473fdc2c5ce30f1e508cb789997f4cd0e5a",
+      "width": 619,
+      "height": 528,
+      "preservedInteriorPixels": 99986,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 0,
+      "bytes": 194742
+    },
+    {
+      "path": "web/src/assets/pets/sparky-fetch-tool-v2.webp",
+      "sourceSha256": "0640adfef4b28b02da555234ce6459dcabfb65daf5d29e137b4ee98df434d17b",
+      "sha256": "33ea98de653b454992712f3cb9933d7e1f53102626cd5c76e62d25b973b38de2",
+      "width": 641,
+      "height": 472,
+      "preservedInteriorPixels": 118822,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 0,
+      "bytes": 232858
+    },
+    {
+      "path": "web/src/assets/art/wildlife-premium-clean-atlas.webp",
+      "sourceSha256": "15de29067b1ddb9218826d4303a1a8a29be08d5f2d76b6d098c5cc4e157d9249",
+      "sha256": "9eeab9b2766c4dfe5f7da90204593129b4b1c85f33256d7fa734a797f132c3f7",
+      "width": 2560,
+      "height": 1280,
+      "preservedInteriorPixels": 932534,
+      "changedProtectedPixels": 0,
+      "removedMattePixels": 88375,
+      "bytes": 1768292
+    }
+  ]
+}

@@ -9,7 +9,6 @@ export const WILDLIFE_IDS = [
   "fennec-fox", "camel", "roadrunner", "gila-monster", "red-panda", "flying-squirrel", "great-horned-owl", "beaver",
   "axolotl", "capybara", "flamingo", "platypus", "snow-leopard", "mountain-goat", "andean-condor", "yak",
 ] as const;
-
 const wildlifeIndex = new Map<string, number>(WILDLIFE_IDS.map((id, index) => [id, index]));
 const COLUMNS = 8;
 const ROWS = 4;
@@ -17,9 +16,7 @@ export const PREMIUM_WILDLIFE_REPLACEMENTS = Object.freeze({
   "polar-bear": polarBearSource,
   "arctic-fox": arcticFoxSource,
 });
-
 let composedAtlas: Promise<HTMLCanvasElement> | null = null;
-
 function replaceCell(atlas: HTMLCanvasElement, animalId: string, source: HTMLCanvasElement): void {
   const index = wildlifeIndex.get(animalId);
   const context = atlas.getContext("2d");
@@ -37,44 +34,30 @@ function replaceCell(atlas: HTMLCanvasElement, animalId: string, source: HTMLCan
   context.clearRect(column * cellWidth, row * cellHeight, cellWidth, cellHeight);
   context.drawImage(source, x, y, width, height);
 }
-
 export function loadPremiumWildlifeAtlas(): Promise<HTMLCanvasElement> {
   if (composedAtlas) return composedAtlas;
   composedAtlas = Promise.all([
-    loadPremiumCutout(wildlifeAtlasSource, true),
+    loadPremiumCutout(wildlifeAtlasSource),
     loadPremiumCutout(PREMIUM_WILDLIFE_REPLACEMENTS["polar-bear"]),
     loadPremiumCutout(PREMIUM_WILDLIFE_REPLACEMENTS["arctic-fox"]),
   ]).then(([atlas, polarBear, arcticFox]) => {
     replaceCell(atlas, "polar-bear", polarBear);
     replaceCell(atlas, "arctic-fox", arcticFox);
     return atlas;
+  }).catch((error: unknown) => {
+    composedAtlas = null;
+    throw error;
   });
   return composedAtlas;
 }
-
-export function drawWildlifeCell(
-  context: CanvasRenderingContext2D,
-  atlas: HTMLCanvasElement,
-  animalId: string,
-  destinationX: number,
-  destinationY: number,
-  destinationSize: number,
-): void {
+export function drawWildlifeCell(context: CanvasRenderingContext2D, atlas: HTMLCanvasElement,
+  animalId: string, destinationX: number, destinationY: number, destinationSize: number): void {
   const index = wildlifeIndex.get(animalId) ?? 0;
   const column = index % COLUMNS;
   const row = Math.floor(index / COLUMNS);
   const sourceWidth = atlas.width / COLUMNS;
   const sourceHeight = atlas.height / ROWS;
   const padding = destinationSize * .035;
-  context.drawImage(
-    atlas,
-    column * sourceWidth,
-    row * sourceHeight,
-    sourceWidth,
-    sourceHeight,
-    destinationX + padding,
-    destinationY + padding,
-    destinationSize - padding * 2,
-    destinationSize - padding * 2,
-  );
+  context.drawImage(atlas,column * sourceWidth,row * sourceHeight,sourceWidth,sourceHeight,
+    destinationX + padding,destinationY + padding,destinationSize - padding * 2,destinationSize - padding * 2);
 }
