@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { MutableRefObject } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Group, Mesh, Sprite, SRGBColorSpace, TextureLoader } from 'three';
@@ -20,7 +20,6 @@ function Character({source,entity,runtime,companion,atlas=false}:{source:string;
   if(!sprite.current)return;const s=runtime.current;
   if(entity){sprite.current.visible=entity.hp>0;sprite.current.position.set(entity.x,1.25+Math.sin(s.time*3+entity.id)*.07,entity.z);sprite.current.material.color.set(entity.flash>0?'#fff5b0':['#ffffff','#a8f6ff','#f2c5ff'][entity.kind]);}
   else{
-   // Actual world positions: companions walk toward the player's flanks, rather than staying invisibly attached behind the camera.
    if(s.status==='playing'){
     const side=companion==='pet'?2.4:-2.4;
     const goal={x:s.player.x+Math.cos(s.yaw)*side+Math.sin(s.yaw)*4,z:s.player.z+Math.sin(s.yaw)*side-Math.cos(s.yaw)*4};
@@ -73,7 +72,20 @@ function Scene({runtime,input,snapshot,notify,ready,failed}:SceneProps){
   {snapshot.shots.map(entity=><Shot key={entity.id} entity={entity}/>)}{snapshot.sparks.map(entity=><Spark key={entity.id} entity={entity}/>)}{snapshot.crystals.map(point=><Crystal key={point.id} point={point}/>)}<Launcher runtime={runtime}/>
  </>;
 }
-function Unsupported({failed}:{failed:()=>void}){useEffect(failed,[failed]);return null;}
+function supportsWebGL2(): boolean {
+ if (typeof document === 'undefined') return true;
+ try {
+  const context = document.createElement('canvas').getContext('webgl2');
+  if (!context) return false;
+  context.getExtension('WEBGL_lose_context')?.loseContext();
+  return true;
+ } catch { return false; }
+}
 export default function StarTagScene(props:SceneProps){
- return <Canvas camera={{position:[0,1.55,7],fov:72,near:.08,far:40}} dpr={[1,1.5]} gl={{antialias:true,powerPreference:'high-performance'}} fallback={<Unsupported failed={props.failed}/>}><Suspense fallback={null}><Scene {...props}/></Suspense></Canvas>;
+ const [supported] = useState(supportsWebGL2);
+ useEffect(() => { if (!supported) props.failed(); }, [supported, props.failed]);
+ if (!supported) return <p role="status">{props.pausedLabel}</p>;
+ // Canvas fallback is mounted inside the native canvas even on supported
+ // browsers. It must be passive text, never an effect that marks startup failed.
+ return <Canvas camera={{position:[0,1.55,7],fov:72,near:.08,far:40}} dpr={[1,1.5]} gl={{antialias:true,powerPreference:'high-performance'}} fallback={<p>{props.pausedLabel}</p>}><Suspense fallback={null}><Scene {...props}/></Suspense></Canvas>;
 }

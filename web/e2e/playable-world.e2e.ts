@@ -84,12 +84,16 @@ test('home characters walk, perform all activities and retain one-time rewards',
     await expect(page.locator(`[data-home-activity="${activity}"] small`)).toHaveText('✓');
     if (activity === 'dance') { await room.scrollIntoViewIfNeeded(); await screenshot(page, info, 'living-home-dance'); }
   }
-  const stars = await page.locator('.fw-star-pill').first().textContent().catch(() => null);
+  const starPill = page.locator('.fw-profile-pill').nth(1);
+  const stars = await starPill.textContent();
+  expect(stars).not.toBeNull();
+  const activities = Number(await page.locator('.living-home').getAttribute('data-home-activities'));
   await page.locator('[data-home-activity="snack"]').click();
-  await expect(room).toHaveAttribute('data-home-action', 'snack');
-  if (stars) await expect(page.locator('.fw-star-pill').first()).toHaveText(stars);
+  await expect(page.locator('.living-home')).toHaveAttribute('data-home-activities', String(activities + 1));
+  await expect(starPill).toHaveText(stars!);
   await page.reload();
   for (const activity of ['dance', 'repair', 'rest', 'charge', 'snack']) await expect(page.locator(`[data-home-activity="${activity}"] small`)).toHaveText('✓');
+  await expect(starPill).toHaveText(stars!);
   await noOverflow(page);
 });
 test('3D arena moves, fires from touch, freezes on pause and resets cleanly', async ({ page }, info) => {
