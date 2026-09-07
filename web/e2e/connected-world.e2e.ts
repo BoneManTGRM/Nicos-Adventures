@@ -12,6 +12,7 @@ test('homecoming artwork, placement, mini game, language and reload', async ({ p
   let profile: LocalProfile = await page.evaluate(() => JSON.parse(localStorage.getItem('nicos-world-local-save-v4')!).profiles[0]);
   profile.language = es ? 'es-MX' : 'en';
   profile.robot.name = 'Azure';
+  profile.robots = profile.robots.map(robot => robot.id === profile.robot.id ? profile.robot : robot);
   profile.artwork = [{ id: 'poster-one', title: 'Our sky', background: 'Starry Space', subject: 'Azure', frame: 'Neon Frame', caption: 'Together among the stars' }];
   profile.displayedArtworkId = 'poster-one';
   for (const type of events) profile = applyStarBridgeEvent(profile, { type });

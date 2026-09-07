@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SectionId } from "./types";
 import type { StarBridgeEvent } from "./game/goldenAdventure";
+import { openNicoWorld } from "./nico/NicoWorldExperience";
 import { tr, ui } from "./i18n/core";
 import { useAppStore } from "./app/AppStoreContext";
 import { applyStarBridgeEvent } from "./game/goldenAdventureProfile";
@@ -119,6 +120,7 @@ export default function FullApp() {
    <button onClick={() => open('art-studio')}>🎨 {profile.language === 'es-MX' ? 'Crear' : 'Create'}</button>
    <button onClick={() => open('robot-home')}>⌂ {profile.language === 'es-MX' ? 'Casa' : 'Home'}</button>
    <button onClick={() => open('parent-settings')}>☰ {profile.language === 'es-MX' ? 'Opciones' : 'Settings'}</button>
+   <button onClick={() => openNicoWorld('ask')}>? {profile.language === 'es-MX' ? 'Ayuda' : 'Help'}</button>
    <small>{profile.language === 'es-MX' ? 'Guardado en este dispositivo' : 'Saved on this device'}</small>
   </nav>}
   <div className="sr-only" aria-live="polite" aria-atomic="true" key={announcement.id}>{announcement.message}</div>

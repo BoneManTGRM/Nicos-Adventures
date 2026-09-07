@@ -58,11 +58,12 @@ test('Nico TV keeps readable copy separate from the video at actual card widths'
   await page.locator('.nico-video-card__play').click();
   await expect.poll(() => page.locator('.nico-video-card video').evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(0);
 });
-test('Nico TV exposes recovery when a video part fails', async ({ page }) => {
-  await page.route('**/nico-basketball.part01.b64*', route => route.fulfill({ status: 503, body: '' }));
-  await page.goto('/'); await expect(page.locator('.nico-video-card__error')).toBeVisible();
-  await page.unroute('**/nico-basketball.part01.b64*'); await page.locator('.nico-video-card__error button').click();
-  await expect(page.locator('.nico-video-card__play')).toBeEnabled({ timeout: 30000 });
+test('Nico TV exposes recovery when the video request fails', async ({ page }) => {
+  await page.route('**/nico-basketball.mp4*', route => route.fulfill({ status: 503, body: '' }));
+  await page.goto('/'); await page.locator('.nico-video-card__play').click();
+  await expect(page.locator('.nico-video-card__error')).toBeVisible();
+  await page.unroute('**/nico-basketball.mp4*'); await page.locator('.nico-video-card__error button').click();
+  await expect.poll(() => page.locator('.nico-video-card video').evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(0);
 });
 test('home characters walk, perform all activities and retain one-time rewards', async ({ page }, info) => {
   await open(page, info, 'home'); const room = page.locator('.living-home__room');

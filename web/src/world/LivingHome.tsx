@@ -33,6 +33,7 @@ const initial = (): HomeState => {
   return { selected: 'nico', residents: { nico: resident(44, 80), robot: resident(24, 72), pet: resident(68, 84) }, path: [], pending: null, completed: 0 };
 };
 const copyHome = (state: HomeState): HomeState => ({ ...state, residents: { nico: { ...state.residents.nico }, robot: { ...state.residents.robot }, pet: { ...state.residents.pet } } });
+const HOME_SPOTS = [[35, 23], [53, 23], [35, 38], [53, 38], [2, 44], [82, 38], [2, 75], [78, 75], [78, 52]];
 const DECOR_ICONS: Record<string, string> = { 'Animal Photo Wall': '🐾', 'Charging Dock': '⚡', 'Trophy Shelf': '🏆', 'Mecha Banner': '⚙', 'Star Window': '✧', 'Monster Plush': '👾', 'Dino Fossil Case': '🦴', 'Art Gallery': '🎨' };
 
 export function LivingHome({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
@@ -180,7 +181,7 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
       <div className="home-objects" aria-label={es ? 'Decoraciones activas' : 'Active decorations'}>{profile.decorations.map((item, index) => {
         const slot = profile.homeLayout?.[item] ?? index % 9;
         return <button type="button" className={`robot-home-decoration home-object${item === CONSTELLATION ? ' home-object--constellation' : ''}`} key={item}
-          style={{ left: `${8 + (slot % 3) * 35}%`, top: `${18 + Math.floor(slot / 3) * 17}%` }}
+          style={{ left: `${HOME_SPOTS[slot][0]}%`, top: `${HOME_SPOTS[slot][1]}%` }}
           aria-label={`${es ? 'Colocar' : 'Place'} ${item === CONSTELLATION ? (es ? 'Constelación del Puente Estelar' : CONSTELLATION) : optionLabel(item, profile.language)}`}
           onClick={() => setPlacing(item)}>
           {item === CONSTELLATION ? <svg viewBox="0 0 120 70" role="img" aria-label={es ? 'Constelación ganada en el puente' : 'Constellation earned at the bridge'}><path d="M10 55 35 15 65 40 100 10 110 55" fill="none" stroke="currentColor" strokeWidth="2" />{[[10,55],[35,15],[65,40],[100,10],[110,55]].map(([x,y]) => <circle key={x} cx={x} cy={y} r="5" fill="currentColor" />)}</svg> : <span>{DECOR_ICONS[item] ?? '✦'}</span>}
