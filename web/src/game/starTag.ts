@@ -12,6 +12,7 @@ export type TagMonster = Point & { id: number; hp: number; kind: number; clock: 
 export type TagShot = Point & { id: number; vx: number; vz: number; life: number; friendly: boolean };
 export type TagSpark = Point & { id: number; life: number; friendly: boolean };
 export type TagState = {
+  assisted: boolean;
   status: 'ready' | 'playing' | 'paused' | 'won' | 'rest';
   player: Point; yaw: number; shield: number; score: number; wave: number;
   tags: number; shotsFired: number; time: number; distance: number; cooldown: number;
@@ -38,9 +39,9 @@ function spawnWave(s: TagState) {
   }));
   s.crystals = [{ id: s.nextId++, x: -8, z: 4 }, { id: s.nextId++, x: 8, z: -4 }];
 }
-export function createTagState(): TagState {
+export function createTagState(assisted = true): TagState {
   const s: TagState = {
-    status: 'ready', player: { x: 0, z: 7 }, yaw: 0, shield: 100, score: 0, wave: 1,
+    assisted, status: 'ready', player: { x: 0, z: 7 }, yaw: 0, shield: 100, score: 0, wave: 1,
     tags: 0, shotsFired: 0, time: 0, distance: 0, cooldown: 0, dashCooldown: 0,
     invulnerable: 0, nextWave: 0, nextId: 1, monsters: [], shots: [], sparks: [], crystals: [],
   };
@@ -49,7 +50,7 @@ export function createTagState(): TagState {
 }
 function damage(s: TagState, amount: number) {
   if (s.invulnerable > 0) return;
-  s.shield = Math.max(0, s.shield - amount);
+  s.shield = Math.max(0, s.shield - amount * (s.assisted ? .6 : 1));
   s.invulnerable = .8;
   if (s.shield === 0) s.status = 'rest';
 }
@@ -73,7 +74,7 @@ function substep(s: TagState, input: ArenaInput, dt: number) {
     // Gentle aim assistance only inside the reticle cone, never through scenery.
     const target = s.monsters.filter(m => {
       const angle = Math.atan2(m.x - s.player.x, -(m.z - s.player.z));
-      return Math.abs(Math.atan2(Math.sin(angle - aim), Math.cos(angle - aim))) < .12;
+      return Math.abs(Math.atan2(Math.sin(angle - aim), Math.cos(angle - aim))) < (s.assisted ? .3 : .12);
     }).sort((a, b) => distance(a, s.player) - distance(b, s.player))[0];
     if (target) aim = Math.atan2(target.x - s.player.x, -(target.z - s.player.z));
     s.shots.push({ id: s.nextId++, ...s.player, vx: Math.sin(aim) * 19, vz: -Math.cos(aim) * 19, life: 1.4, friendly: true });
@@ -91,7 +92,7 @@ function substep(s: TagState, input: ArenaInput, dt: number) {
     } else damage(s, 8);
     if (m.clock <= 0 && d > 1 && s.shots.length < 64) {
       m.clock = 3.8 - s.wave * .35;
-      s.shots.push({ id: s.nextId++, x: m.x, z: m.z, vx: (s.player.x - m.x) / d * 3.5, vz: (s.player.z - m.z) / d * 3.5, life: 5, friendly: false });
+      s.shots.push({ id: s.nextId++, x: m.x, z: m.z, vx: (s.player.x - m.x) / d * (s.assisted ? 2.5 : 3.5), vz: (s.player.z - m.z) / d * (s.assisted ? 2.5 : 3.5), life: 5, friendly: false });
     }
   }
   for (const shot of s.shots) {

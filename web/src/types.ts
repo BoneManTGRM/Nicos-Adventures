@@ -210,6 +210,7 @@ export type LocalProfile = {
   fossils: string[];
   arcadeScores: Record<string, number>;
   decorations: string[];
+  homeLayout?: Record<string, number>;
   badges: string[];
   movieProjects: MovieProject[];
   adventures: GoldenAdventureProgress;

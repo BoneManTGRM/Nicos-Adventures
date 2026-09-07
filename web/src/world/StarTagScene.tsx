@@ -18,7 +18,7 @@ function Character({source,entity,runtime,companion,atlas=false}:{source:string;
  const sprite=useRef<Sprite>(null),position=useRef<Point>({x:companion==='pet'?2.5:-2.5,z:3});
  useFrame((_,delta)=>{
   if(!sprite.current)return;const s=runtime.current;
-  if(entity){sprite.current.visible=entity.hp>0;sprite.current.position.set(entity.x,1.25+Math.sin(s.time*3+entity.id)*.07,entity.z);sprite.current.material.color.set(entity.flash>0?'#fff5b0':['#ffffff','#a8f6ff','#f2c5ff'][entity.kind]);}
+  if(entity){sprite.current.visible=entity.hp>0;sprite.current.position.set(entity.x,1.25+Math.sin(s.time*3+entity.id)*.07,entity.z);sprite.current.material.color.set(entity.flash>0?'#fff5b0':entity.clock<.7?'#ffbc74':['#ffffff','#a8f6ff','#f2c5ff'][entity.kind]);}
   else{
    if(s.status==='playing'){
     const side=companion==='pet'?2.4:-2.4;

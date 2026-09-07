@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SectionId } from "./types";
 import type { StarBridgeEvent } from "./game/goldenAdventure";
+import { openNicoWorld } from "./nico/NicoWorldExperience";
 import { tr, ui } from "./i18n/core";
 import { useAppStore } from "./app/AppStoreContext";
 import { applyStarBridgeEvent } from "./game/goldenAdventureProfile";
@@ -19,6 +20,7 @@ import { WorldMap } from "./world/WorldMap";
 import { VisitorCounter } from "./world/VisitorCounter";
 import { WORLD_SECTIONS } from "./world/catalogs";
 import "./styles.css";
+import "./world/connected-world.css";
 import "./full-world.css";
 import "./feature-parity.css";
 import "./world/system-parity.css";
@@ -102,16 +104,25 @@ export default function FullApp() {
    case "game-arcade": return <Arcade {...props} />;
    case "dinosaur-valley": return <DinosaurValley {...props} />;
    case "pet-workshop": return <PetWorkshop {...props} />;
-   case "robot-home": return <RobotHome {...props} />;
+   case "robot-home": return <RobotHome {...props} open={open} beginStarBridge={beginStarBridge} />;
    case "memory-book": return <Museum profile={profile} />;
    case "badge-book": return <Badges profile={profile} />;
    case "parent-settings": return <Settings store={store} profile={profile} setStore={setStore} update={updateProfile} announce={announce} />;
    default: return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} advanceStarBridge={advanceStarBridge} />;
   }
  })();
- return <div className="fw-app" data-active-section={profile.selectedSection}>
+ const playLayout = ['robot-home', 'game-arcade', 'robo-lab'].includes(profile.selectedSection);
+ return <div className="fw-app" data-active-section={profile.selectedSection} data-play-layout={playLayout}>
   <a className="fw-skip-link" href="#main-content">{tr(ui.skipToContent, profile.language)}</a>
   <AppHeader profile={profile} open={open} update={updateProfile} announce={announce} />
+  {playLayout && <nav className="world-travel" aria-label={profile.language === 'es-MX' ? 'Viajar por el mundo' : 'Travel the world'}>
+   <button onClick={() => open('world-map')}>🧭 {profile.language === 'es-MX' ? 'Explorar' : 'Explore'}</button>
+   <button onClick={() => open('art-studio')}>🎨 {profile.language === 'es-MX' ? 'Crear' : 'Create'}</button>
+   <button onClick={() => open('robot-home')}>⌂ {profile.language === 'es-MX' ? 'Casa' : 'Home'}</button>
+   <button onClick={() => open('parent-settings')}>☰ {profile.language === 'es-MX' ? 'Opciones' : 'Settings'}</button>
+   <button onClick={() => openNicoWorld('ask')}>? {profile.language === 'es-MX' ? 'Ayuda' : 'Help'}</button>
+   <small>{profile.language === 'es-MX' ? 'Guardado en este dispositivo' : 'Saved on this device'}</small>
+  </nav>}
   <div className="sr-only" aria-live="polite" aria-atomic="true" key={announcement.id}>{announcement.message}</div>
   <main id="main-content" data-section-id={profile.selectedSection}><PageTitle sectionId={profile.selectedSection} language={profile.language} /><Suspense fallback={<div className="fw-empty" role="status">{profile.language === 'es-MX' ? 'Preparando tu aventura…' : 'Preparing your adventure…'}</div>}>{page}</Suspense></main>
   <footer className="fw-site-footer"><VisitorCounter language={profile.language}/><div className="fw-site-footer__promise"><strong>{profile.language === "es-MX" ? "Hecho para mentes curiosas" : "Made for curious minds"}</strong><span>{profile.language === "es-MX" ? "Amable · Creativo · Privado por diseño" : "Kind · Creative · Private by design"}</span></div></footer>

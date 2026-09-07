@@ -11,7 +11,11 @@ concurrency:
 jobs:
   browser-quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     defaults:
       run:
         working-directory: web
@@ -25,14 +29,15 @@ jobs:
       - name: Install from lockfile
         run: npm ci --no-audit --no-fund
       - name: Install pinned browser engines
+        timeout-minutes: 5
         run: npx playwright install --with-deps chromium webkit
       - name: Run Golden Adventure browser matrix
-        run: npm run test:e2e
+        run: npm run test:e2e -- --shard=${{ matrix.shard }}/4
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: golden-adventure-browser-evidence
+          name: golden-adventure-browser-evidence-${{ matrix.shard }}
           path: |
             web/playwright-report
             web/test-results

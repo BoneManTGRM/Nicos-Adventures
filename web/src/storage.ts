@@ -505,6 +505,8 @@ function normalizeProfile(candidate: unknown): LocalProfile | null {
     arcadeScores,
     decorations: uniqueNewest(Array.isArray(value.decorations) ? value.decorations : fresh.decorations, 100, 80),
     badges: uniqueNewest(Array.isArray(value.badges) ? value.badges : [], 200, 100),
+    homeLayout: Object.fromEntries(Object.entries(asRecord(value.homeLayout) ?? {}).filter(([key, slot]) =>
+      key.length <= 80 && Number.isInteger(slot) && Number(slot) >= 0 && Number(slot) < 9).slice(0, 100).map(([key, slot]) => [key, Number(slot)])),
     movieProjects,
     adventures: normalizeGoldenAdventureProgress(value.adventures),
     nico: normalizeNico(value.nico),

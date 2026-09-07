@@ -107,6 +107,11 @@ async function assertPageChrome(page: Page, title: string, label: string, expect
       titleTop: pageTitle?.top ?? -1,
       navigationBottom: bottomNavigation?.bottom ?? 0,
       navigationTop: bottomNavigation?.top ?? 0,
+      playLayout: document.querySelector('.fw-app')?.getAttribute('data-play-layout') === 'true',
+      navPosition: getComputedStyle(document.querySelector('.fw-bottom-nav')!).position,
+      mainBottom: document.querySelector('main')!.getBoundingClientRect().bottom,
+      travelTop: document.querySelector('.world-travel')?.getBoundingClientRect().top ?? 0,
+      travelBottom: document.querySelector('.world-travel')?.getBoundingClientRect().bottom ?? 0,
       viewportHeight: window.innerHeight,
       scrollY: window.scrollY,
       overflowingElements: [...document.body.querySelectorAll<HTMLElement>("*")]
@@ -122,9 +127,17 @@ async function assertPageChrome(page: Page, title: string, label: string, expect
     };
   });
   expect(metrics.scrollY, `${label}: route did not reset scroll`).toBeLessThanOrEqual(2);
-  expect(metrics.titleTop, `${label}: title is hidden by the sticky header`).toBeGreaterThanOrEqual(metrics.headerBottom);
   expect(metrics.navigationTop, `${label}: bottom navigation covers the header`).toBeGreaterThan(metrics.headerBottom);
-  expect(metrics.navigationBottom, `${label}: bottom navigation exceeds the safe viewport`).toBeLessThanOrEqual(metrics.viewportHeight);
+  if (metrics.playLayout) {
+    expect(metrics.travelTop, `${label}: travel controls are hidden by the sticky header`).toBeGreaterThanOrEqual(metrics.headerBottom);
+    expect(metrics.navPosition, `${label}: secondary navigation should flow below play`).toBe('static');
+    expect(metrics.navigationTop, `${label}: secondary navigation overlaps the scene`).toBeGreaterThanOrEqual(metrics.mainBottom);
+    expect(metrics.travelBottom, `${label}: compact travel controls exceed the viewport`).toBeLessThanOrEqual(metrics.viewportHeight);
+    await expect(page.getByRole('navigation', { name: /Travel the world|Viajar por el mundo/ })).toBeVisible();
+  } else {
+    expect(metrics.titleTop, `${label}: title is hidden by the sticky header`).toBeGreaterThanOrEqual(metrics.headerBottom);
+    expect(metrics.navigationBottom, `${label}: bottom navigation exceeds the safe viewport`).toBeLessThanOrEqual(metrics.viewportHeight);
+  }
   expect(metrics.documentWidth, `${label}: document overflow (${metrics.overflowingElements.join(", ")})`).toBeLessThanOrEqual(metrics.clientWidth + 2);
   expect(metrics.bodyWidth, `${label}: body overflow (${metrics.overflowingElements.join(", ")})`).toBeLessThanOrEqual(metrics.clientWidth + 2);
   expect(metrics.brokenImages, `${label}: broken images`).toEqual([]);
@@ -393,7 +406,8 @@ test("all destinations keep their main local interactions working", async ({ pag
   await openDestination(page, text.world, text.robotHome, `${testInfo.project.name} Robot Home`);
   await expect(page.locator(".robot-home-stage")).toContainText(robotName);
   await expect(page.locator(".robot-home-stage")).toContainText(petName);
-  await expect(page.locator(".robot-home-stage")).toContainText(artworkTitle);
+  await expect(page.locator(".robot-home-stage .creative-poster-preview")).toHaveAccessibleName(new RegExp(artworkTitle));
+  await expect(page.locator(".robot-home-stage .creative-poster-preview")).toBeVisible();
   const artworkChoice = page.locator(".robot-home-choice-list button").filter({ hasText: artworkTitle });
   await artworkChoice.click();
   await expect(artworkChoice).toHaveAttribute("aria-pressed", "true");
@@ -402,7 +416,7 @@ test("all destinations keep their main local interactions working", async ({ pag
   const decorationLabel = (await decoration.textContent())?.replace(/^[＋✓]\s*/, "").trim() ?? "";
   await decoration.click();
   await expect(page.locator('.robot-home-decoration-grid button[aria-pressed="true"]').filter({ hasText: decorationLabel })).toHaveCount(1);
-  const stagedDecoration = page.locator(`.robot-home-decoration[aria-label="${decorationLabel}"]`);
+  const stagedDecoration = page.locator(`.robot-home-decoration[aria-label="${language === "es-MX" ? "Colocar" : "Place"} ${decorationLabel}"]`);
   await expect(stagedDecoration).toBeVisible();
   await expect(stagedDecoration).not.toContainText(decorationLabel);
   await attachVisual(page, testInfo, "robot-home");
