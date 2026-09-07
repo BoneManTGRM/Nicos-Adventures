@@ -22,7 +22,7 @@ export function NicoVideoCard({ language }: { language: Language }) {
     setError(false);
     // WebKit can leave play() pending on a failed media request without an error event.
     timer.current = setTimeout(() => { if (attempt.current === current) setError(true); }, 8000);
-    void el.play().catch(() => { if (attempt.current === current) { clearTimer(); setError(true); } });
+    void el.play().then(() => { if (attempt.current === current) { clearTimer(); setError(false); } }).catch(() => { if (attempt.current === current) { clearTimer(); setError(true); } });
   };
   return <article className="nico-video-card" aria-label="Nico TV">
     <div className="nico-video-card__copy"><small>Nico TV</small><h2>{es ? 'Mira a Nico jugar' : 'Watch Nico play'}</h2>
