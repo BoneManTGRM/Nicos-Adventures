@@ -38,6 +38,7 @@ function ThumbPad({ label, testId, change }: { label: string; testId: string; ch
 }
 export function StarTagArcade({ profile, update, announce, close }: { profile: LocalProfile; update: UpdateProfile; announce: Announce; close: () => void }) {
   const text = labels[profile.language];
+  const [assisted, setAssisted] = useState(true);
   const runtime = useRef(createTagState()), input = useRef(emptyArenaInput());
   const keys = useRef(new Set<string>()), touch = useRef({ forward: 0, side: 0, turn: 0, fire: false, dash: false });
   const latest = useRef({ profile, update, announce }); latest.current = { profile, update, announce };
@@ -106,7 +107,8 @@ export function StarTagArcade({ profile, update, announce, close }: { profile: L
   }, [expanded]);
   const start = (reset = false) => {
     clear();
-    if (reset || ['won','rest'].includes(runtime.current.status)) { runtime.current = createTagState(); saved.current = false; }
+    runtime.current.assisted = assisted;
+    if (reset || ['won','rest'].includes(runtime.current.status)) { runtime.current = createTagState(assisted); saved.current = false; }
     runtime.current.status = 'playing'; setSnapshot(snapshotTag(runtime.current)); region.current?.focus({ preventScroll: true });
   };
   const leave = () => { saveResult(); clear(); close(); };
@@ -137,7 +139,7 @@ export function StarTagArcade({ profile, update, announce, close }: { profile: L
         <ThumbPad label={text.look} testId="tag-look" change={x => { touch.current.turn = x; sync(); }} />
       </div></>}
       {(!active || failed) && <div className="star-tag__overlay">{failed ? <><h2>{text.title}</h2><p role="alert">{text.error}</p><button type="button" onClick={() => { setFailed(false); setLoaded(false); setGeneration(v => v + 1); }}>{text.retry}</button></> : <>
-        <div className="star-tag__portrait"><NicoCostumeFigure profession={profile.nico.profession} compact alt="Nico" /></div><small>{text.allies}</small><h2>{snapshot.status === 'won' ? text.won : snapshot.status === 'rest' ? text.rest : snapshot.status === 'paused' ? text.paused : text.title}</h2><p>{snapshot.status === 'rest' ? text.again : text.mission}</p><p className="star-tag__best">🏆 {text.best}: {profile.arcadeScores['star-tag-adventure'] ?? 0}</p><button type="button" className="fw-primary" disabled={!loaded} data-testid="tag-start" onClick={() => start()}>{!loaded ? text.ready : snapshot.status === 'paused' ? text.resume : ['won','rest'].includes(snapshot.status) ? text.restart : text.start}</button>{snapshot.status === 'paused' && <button type="button" onClick={() => start(true)}>{text.restart}</button>}<small>{text.crystal}</small>
+        <div className="star-tag__portrait"><NicoCostumeFigure profession={profile.nico.profession} wardrobe={profile.nico.wardrobe} accentColor={profile.nico.accentColor} compact alt="Nico" /></div><small>{["Nico", profile.robot.name, profile.pets.find(p => p.id === profile.activePetId)?.name].filter(Boolean).join(" + ")}</small><h2>{snapshot.status === 'won' ? text.won : snapshot.status === 'rest' ? text.rest : snapshot.status === 'paused' ? text.paused : text.title}</h2><p>{snapshot.status === 'rest' ? text.again : text.mission}</p><p className="star-tag__best">🏆 {text.best}: {profile.arcadeScores['star-tag-adventure'] ?? 0}</p>{snapshot.status !== 'paused' && <label>{profile.language === 'es-MX' ? 'Estilo de juego ' : 'Play style '}<select aria-label={profile.language === 'es-MX' ? 'Estilo de juego' : 'Play style'} value={assisted ? 'guided' : 'precise'} onChange={e => setAssisted(e.target.value === 'guided')}><option value="guided">{profile.language === 'es-MX' ? 'Apoyo de puntería' : 'Guided aiming'}</option><option value="precise">{profile.language === 'es-MX' ? 'Puntería precisa' : 'Precise aiming'}</option></select></label>}<button type="button" className="fw-primary" disabled={!loaded} data-testid="tag-start" onClick={() => start()}>{!loaded ? text.ready : snapshot.status === 'paused' ? text.resume : ['won','rest'].includes(snapshot.status) ? text.restart : text.start}</button>{snapshot.status === 'paused' && <button type="button" onClick={() => start(true)}>{text.restart}</button>}<small>{text.crystal}</small>
       </>}</div>}
     </div><footer className="star-tag__help"><button type="button" aria-expanded={help} onClick={() => setHelp(v => !v)}>⌨ / ☝ {profile.language === 'es-MX' ? 'Controles' : 'Controls'}</button>{help && <p>{text.help}</p>}</footer>
   </section>;

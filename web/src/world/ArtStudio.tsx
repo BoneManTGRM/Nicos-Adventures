@@ -6,21 +6,7 @@ import type { Announce, UpdateProfile } from "./common";
 import { EmptyState, makeId } from "./common";
 import { completeCreativeMilestones } from "./creativeProgression";
 
-const BACKGROUNDS = [
-  { id: "Starry Space", emoji: "🌌", en: "Starry Space", es: "Espacio estrellado", colors: ["#172554", "#4c1d95"] },
-  { id: "Jungle Discovery", emoji: "🌿", en: "Jungle Discovery", es: "Descubrimiento en la selva", colors: ["#14532d", "#166534"] },
-  { id: "Ocean Lab", emoji: "🌊", en: "Ocean Lab", es: "Laboratorio oceánico", colors: ["#075985", "#0e7490"] },
-  { id: "Dinosaur Valley", emoji: "🦖", en: "Dinosaur Valley", es: "Valle de dinosaurios", colors: ["#713f12", "#365314"] },
-  { id: "Robot Home", emoji: "🏠", en: "Robot Home", es: "Casa Robot", colors: ["#1e3a8a", "#0f766e"] },
-  { id: "Sunset Stage", emoji: "🌅", en: "Sunset Stage", es: "Escenario al atardecer", colors: ["#9a3412", "#be123c"] },
-] as const;
-
-const FRAMES = [
-  { id: "Gold Frame", en: "Gold Frame", es: "Marco dorado", color: "#facc15" },
-  { id: "Neon Frame", en: "Neon Frame", es: "Marco neón", color: "#22d3ee" },
-  { id: "Leaf Frame", en: "Leaf Frame", es: "Marco de hojas", color: "#4ade80" },
-  { id: "Space Frame", en: "Space Frame", es: "Marco espacial", color: "#c084fc" },
-] as const;
+import { ArtworkPreview, BACKGROUNDS, FRAMES } from "./ArtworkPreview";
 
 function newArtwork(profile: LocalProfile): ArtworkRecord {
   return {
@@ -52,7 +38,6 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
   }, [language, profile.animals, profile.monsters, profile.pets, profile.robot.name]);
 
   const background = BACKGROUNDS.find((item) => item.id === draft.background) ?? BACKGROUNDS[0];
-  const frame = FRAMES.find((item) => item.id === draft.frame) ?? FRAMES[0];
 
   const startNew = () => {
     setEditingId(null);
@@ -82,7 +67,7 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
     const artworkList = exists
       ? profile.artwork.map((item) => item.id === artwork.id ? artwork : item)
       : [...profile.artwork, artwork].slice(-60);
-    let nextProfile: LocalProfile = { ...profile, artwork: artworkList, stars: profile.stars + (exists ? 0 : 2) };
+    let nextProfile: LocalProfile = { ...profile, artwork: artworkList, displayedArtworkId: artwork.id, stars: profile.stars + (exists ? 0 : 2) };
     const milestones = completeCreativeMilestones(nextProfile, "artwork", previousCount, artworkList.length);
     nextProfile = milestones.profile;
     update(nextProfile);
@@ -116,19 +101,7 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
           </div>
           <span>{background.emoji}</span>
         </header>
-        <article
-          className="creative-poster-preview"
-          style={{
-            background: `linear-gradient(145deg, ${background.colors[0]}, ${background.colors[1]})`,
-            borderColor: frame.color,
-          }}
-          aria-label={`${draft.title}. ${draft.subject}. ${draft.caption}`}
-        >
-          <div className="creative-poster-stars" aria-hidden="true">✦　✧　✦</div>
-          <strong>{draft.subject}</strong>
-          <span aria-hidden="true">{background.emoji}</span>
-          <p>{draft.caption}</p>
-        </article>
+        <ArtworkPreview artwork={draft} />
         <div className="fw-action-row">
           <button type="button" onClick={inspire}>🎲 {language === "es-MX" ? "Inspirarme" : "Inspire me"}</button>
           <button type="button" onClick={startNew}>＋ {language === "es-MX" ? "Lienzo nuevo" : "New canvas"}</button>

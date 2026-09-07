@@ -1,0 +1,10 @@
+.living-home .living-home__art{width:24%;height:30%;left:5%;top:5%;transform:rotate(-2deg);border:0;container-type:inline-size}
+.living-home__art .creative-poster-preview{width:100%;height:100%;min-height:0;aspect-ratio:auto;padding:4%;border-width:4px;gap:2%;border-radius:0;box-sizing:border-box;overflow:hidden}
+.living-home__art .creative-poster-preview strong{font-size:9cqw}.living-home__art .creative-poster-preview>span{font-size:19cqw}.living-home__art .creative-poster-preview p{font-size:6cqw;margin:0}.living-home__art .creative-poster-stars{font-size:7cqw}
+.home-objects{position:absolute;inset:0;pointer-events:none}
+.living-home .home-object{position:absolute;width:14%;height:13%;min-height:40px;border:0;border-bottom:5px solid #ba9466;border-radius:6px;background:linear-gradient(transparent,#17374c66);padding:3px;pointer-events:auto;color:#ffe29a;box-shadow:0 7px 8px #08162733}
+.home-object>span{font-size:clamp(1.2rem,4vw,2.8rem)}.home-object svg{width:100%;height:100%;filter:drop-shadow(0 0 6px #ffdc74)}
+.living-home__lamp.is-repaired{filter:drop-shadow(0 0 20px #ffdf8e);border-color:#fff3bc}.living-home__lamp.is-repaired:after{background:linear-gradient(#ffe9a566,transparent)}
+.home-workshop,.home-placement,.home-journal,.home-follow{display:block;margin:.75rem;padding:1rem;background:#17344a;border:1px solid #628c9d;border-radius:16px;color:#e4f2f7}
+.home-workshop header{display:flex;justify-content:space-between;align-items:center;gap:1rem}.home-workshop h3{margin:0}.home-workshop p,.home-journal p{line-height:1.6}
+.home-placement__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.5rem}.home-follow input{margin-right:.5rem}.home-journal summary{cursor:pointer;min-height:40px}

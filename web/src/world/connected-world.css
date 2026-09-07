@@ -1,0 +1,19 @@
+.fw-app[data-play-layout=true]{padding-bottom:1rem}
+.fw-app[data-play-layout=true] .fw-topbar{padding:.35rem .8rem;min-height:0;gap:.5rem}
+.fw-app[data-play-layout=true] .fw-brand small,.fw-app[data-play-layout=true] .fw-profile-pill,.fw-app[data-play-layout=true] .fw-site-footer{display:none}
+.fw-app[data-play-layout=true] .fw-brand strong{font-size:1rem}
+.fw-app[data-play-layout=true] .fw-page-header{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.fw-app[data-play-layout=true] main{padding:.3rem .6rem;max-width:1440px;margin:auto}
+.fw-app[data-play-layout=true] .fw-bottom-nav{position:static;transform:none;margin:1rem auto;width:min(100%,1000px);box-shadow:none}
+.world-travel{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;padding:.4rem .7rem;max-width:1200px;margin:auto}
+.world-travel button{min-height:40px;padding:.4rem .75rem;font-size:.85rem}.world-travel small{margin-left:auto}
+.fw-app[data-play-layout=true] .living-home__header{display:none}
+.fw-app[data-play-layout=true] .living-home__room{height:68dvh;min-height:310px;max-height:760px;aspect-ratio:auto}
+.fw-app[data-play-layout=true] .living-home__select{padding:.35rem .65rem}
+.fw-app[data-play-layout=true] .living-home__activities{padding:.4rem;gap:.35rem;grid-template-columns:repeat(5,minmax(0,1fr))}
+.fw-app[data-play-layout=true] .living-home__activities button{padding:.35rem;font-size:.72rem}
+.fw-app[data-play-layout=true] .living-home__activities button>span{font-size:1rem}
+.world-continue{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:linear-gradient(120deg,#173d4c,#263859);border:1px solid #a9d7d1;padding:1rem 1.25rem;border-radius:20px;color:#f6e7bc}
+.world-continue p{margin:.35rem 0;line-height:1.5}.world-continue button{background:#ffe5a0;color:#21394b;font-weight:800;min-height:48px}
+.robot-home-system>.world-continue{padding:.35rem .7rem;border-radius:12px;margin-bottom:.35rem}.robot-home-system>.world-continue button{min-height:40px;font-size:.8rem}
+@media(max-width:600px){.world-travel{gap:.25rem;padding:.3rem}.world-travel button{font-size:.73rem;padding:.35rem .5rem}.world-travel small{display:none}.fw-app[data-play-layout=true] main{padding:.2rem}.fw-app[data-play-layout=true] .living-home{border-radius:14px}.fw-app[data-play-layout=true] .living-home__room{height:62dvh;min-height:310px}.living-home .home-object{width:17%}.home-workshop,.home-journal{padding:.65rem}.fw-app[data-play-layout=true] .living-home__command-bar{padding:.4rem}.fw-app[data-play-layout=true] .living-home__command-bar p{font-size:.7rem}.robot-home-system>.world-continue strong{font-size:.75rem}}
