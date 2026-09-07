@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createProfile } from '../src/storage';
+import type { LocalProfile } from '../src/types';
 import { applyStarBridgeEvent, CONSTELLATION } from '../src/game/goldenAdventureProfile';
 import type { StarBridgeEvent } from '../src/game/goldenAdventure';
 const events: StarBridgeEvent['type'][] = ['REVEAL_BRIDGE','CONFIGURE_ROBOT','PASS_MOVEMENT_TEST','PASS_SCANNER_TEST','PASS_LOGIC_TEST','INSPECT_BRIDGE','INSTALL_STAR_CORE','COMPLETE_ADVENTURE'];
@@ -7,17 +7,20 @@ const events: StarBridgeEvent['type'][] = ['REVEAL_BRIDGE','CONFIGURE_ROBOT','PA
 test('homecoming artwork, placement, mini game, language and reload', async ({ page }, info) => {
   // Fixture starts after the independently tested mission; this is homecoming UI proof.
   const es = info.project.metadata.language === 'es-MX';
-  let profile = createProfile('Nico', es ? 'es-MX' : 'en');
+  await page.goto('/');
+  await expect(page.getByTestId('continue-world')).toBeVisible();
+  let profile: LocalProfile = await page.evaluate(() => JSON.parse(localStorage.getItem('nicos-world-local-save-v4')!).profiles[0]);
+  profile.language = es ? 'es-MX' : 'en';
   profile.robot.name = 'Azure';
   profile.artwork = [{ id: 'poster-one', title: 'Our sky', background: 'Starry Space', subject: 'Azure', frame: 'Neon Frame', caption: 'Together among the stars' }];
   profile.displayedArtworkId = 'poster-one';
   for (const type of events) profile = applyStarBridgeEvent(profile, { type });
   profile.selectedSection = 'robot-home';
-  await page.addInitScript(value => {
-    if (!localStorage.getItem('nicos-world-local-save-v4')) localStorage.setItem('nicos-world-local-save-v4', JSON.stringify({ schemaVersion: 4, activeProfileId: value.id, profiles: [value] }));
+  await page.evaluate(value => {
+    localStorage.setItem('nicos-world-local-save-v4', JSON.stringify({ schemaVersion: 4, activeProfileId: value.id, profiles: [value] }));
   }, profile);
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/');
+  await page.reload();
   await expect(page.locator('.living-home__art [data-artwork-id="poster-one"]')).toContainText('Together among the stars');
   await expect(page.locator('.home-journal')).toContainText(es ? 'El puente que volvimos' : 'The bridge we brought');
   const object = page.getByRole('button', { name: es ? 'Colocar Constelación del Puente Estelar' : `Place ${CONSTELLATION}`, exact: true });
