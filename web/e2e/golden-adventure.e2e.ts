@@ -146,7 +146,7 @@ async function assertLayout(page: Page, label: string) {
 }
 
 async function openDestination(page: Page, name: string) {
-  const destination = page.locator(".fw-destination").filter({ hasText: name });
+  const destination = page.locator(".fw-destination-grid > .fw-destination").filter({ has: page.getByText(name, { exact: true }) });
   await expect(destination).toHaveCount(1);
   await activateWithKeyboard(page, destination);
 }

@@ -20,3 +20,5 @@
 
 .world-travel button{background:#17344a;color:#e6f4ff;border:1px solid #628c9d;border-radius:12px;font:inherit;font-size:.8rem;cursor:pointer}
 body:has(.fw-app[data-play-layout=true]) .nico-guide{display:none}
+
+@media(max-width:600px){.world-travel{flex-wrap:nowrap;overflow-x:auto}.world-travel button{flex:none;white-space:nowrap;font-size:.72rem;padding:.35rem .45rem}}
