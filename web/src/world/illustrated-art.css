@@ -8,4 +8,4 @@
 .creative-controls .creative-choice-grid button{min-height:74px}
 .creative-canvas-panel .fw-action-row{display:grid;grid-template-columns:1fr 1fr;margin-top:20px;gap:10px}
 .living-home .living-home__art .illustrated-poster{padding:0;border:3px solid #d6b279;box-shadow:0 6px 8px #13233555}
-@media(min-width:1000px){.creative-canvas-panel:has(.illustrated-poster){align-self:start;position:sticky;top:110px}}
+.creative-library button{scroll-margin-block:120px}
