@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { PremiumBoltBotSprite } from '../boltbot/PremiumBoltBotSprite';
 import { NicoCostumeFigure } from '../nico/NicoCostumeFigure';
@@ -164,17 +164,13 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
     setPlacing(null);
     announce(es ? "Decoración colocada." : "Decoration placed.");
   };
-  const welcomeArt = { id: "home-welcome", title: es ? "Nuestro rincón feliz" : "Our happy place", subject: "Nico", background: "Jungle Discovery", frame: "Gold Frame", caption: es ? "Aquí comienza la aventura" : "Adventure starts here" };
+  const welcomeArt = useMemo(() => ({ id: "home-welcome", title: es ? "Nuestro rincón feliz" : "Our happy place", subject: "Nico", background: "Jungle Discovery", frame: "Gold Frame", caption: es ? "Aquí comienza la aventura" : "Adventure starts here" }), [es]);
 
   // Preserve the public room/decor selectors used by the whole-site acceptance suite.
   return <section className="living-home robot-home-stage" aria-label={es ? 'Casa Robot interactiva' : 'Interactive Robot Home'} data-home-activities={view.completed}>
     <header className="living-home__header"><div><small>{es ? 'TU EQUIPO, TU CASA' : 'YOUR TEAM, YOUR HOME'}</small><h2>{es ? 'Una casa llena de vida' : 'Make yourself at home'}</h2></div><span>✦ {es ? 'Explora y juega' : 'Explore & play'}</span></header>
     <div className="living-home__select" role="group" aria-label={es ? 'Personaje para mover' : 'Character to move'}>
       {actors.map(actor => <button type="button" key={actor} aria-pressed={view.selected === actor} onClick={() => choose(actor)} data-home-select={actor}>{actor === 'nico' ? '🧭' : actor === 'robot' ? '⚡' : '🐾'} {names[actor]}</button>)}
-    </div>
-    <div className="home-themes" role="group" aria-label={es ? 'Estilo de habitación' : 'Room theme'}>
-      <span>{es ? 'Mi refugio' : 'My hideaway'}</span>
-      {([['starlight','Starlight','Luz de estrellas'],['sunrise','Sunrise','Amanecer'],['forest','Forest','Bosque']] as const).map(([id,en,label])=><button type="button" key={id} aria-pressed={(profile.homeTheme ?? 'starlight') === id} onClick={()=>update({...profile,homeTheme:id})}>{es ? label : en}</button>)}
     </div>
     <div ref={room} className="living-home__room" data-theme={profile.homeTheme ?? 'starlight'} tabIndex={0} role="group" aria-label={es ? 'Habitación: toca para caminar' : 'Room: tap to walk'}
       data-home-selected={view.selected} data-home-x={selected.x.toFixed(2)} data-home-z={selected.z.toFixed(2)} data-home-action={selected.action ?? (selected.moving ? 'walk' : 'idle')}
@@ -217,6 +213,10 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
       })}
       {placing && <div className="home-placement-targets" role="group" aria-label={es ? 'Lugares en la habitación' : 'Places in the room'}>{HOME_SPOTS.map(([x,y],slot)=><button type="button" key={slot} style={{left:`${x+7}%`,top:`${y+6}%`}} aria-label={`${es ? 'Colocar aquí' : 'Place here'} ${slot+1}`} onClick={()=>place(slot)}>{slot+1}</button>)}</div>}
       {view.path.length > 0 && <span className="living-home__target" style={{ left: `${view.path.at(-1)!.x}%`, top: `${view.path.at(-1)!.z}%` }} aria-hidden="true">◎</span>}
+    </div>
+    <div className="home-themes" role="group" aria-label={es ? 'Estilo de habitación' : 'Room theme'}>
+      <span>{es ? 'Mi refugio' : 'My hideaway'}</span>
+      {([['starlight','Starlight','Luz de estrellas'],['sunrise','Sunrise','Amanecer'],['forest','Forest','Bosque']] as const).map(([id,en,label])=><button type="button" key={id} aria-pressed={(profile.homeTheme ?? 'starlight') === id} onClick={()=>update({...profile,homeTheme:id})}>{es ? label : en}</button>)}
     </div>
     {placing && <section className="home-placement" aria-label={es ? 'Colocar objeto' : 'Place object'}>
       <p>{es ? 'Elige un lugar para tu objeto.' : 'Choose a spot for your object.'}</p>

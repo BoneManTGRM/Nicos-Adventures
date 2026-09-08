@@ -83,8 +83,8 @@ test('Monster Lab removes the ghost pod and the same monster plays a low-power a
 });
 
 test('illustrated poster composition downloads and survives home display',async({page},info)=>{
- await boot(page,info);await page.getByTestId('continue-world').click();const es=language(info);
- await destination(page,es?'Estudio de Arte':'Art Studio');
+ await boot(page,info);const es=language(info);
+ await destination(page,es?'Estudio de arte':'Art Studio');
  const poster=page.locator('.creative-canvas-panel .illustrated-poster');
  await expect(poster).toHaveAttribute('data-art-ready','true',{timeout:30000});
  await page.getByLabel(es?'Protagonista':'Subject',{exact:true}).selectOption('Becca');
@@ -100,4 +100,15 @@ test('illustrated poster composition downloads and survives home display',async(
  await page.reload();await page.locator('.creative-library').getByRole('button',{name:es?'Editar':'Edit',exact:true}).first().click();
  await expect(page.getByLabel(es?'Tamaño del personaje':'Character size',{exact:true})).toHaveValue('0.8');
  await expect(page.getByLabel(es?'Posición del personaje':'Character position',{exact:true})).toHaveValue('30');await bounds(page);
+});
+
+
+test('cousins retain natural artwork proportions without a Nico frame',async({page},info)=>{
+ await boot(page,info);const es=language(info);
+ await destination(page,es?'Mapa de Aventuras de los Primos':'Cousins’ Adventure Map');
+ const team=page.locator('.cousins-hero__team');await expect(team).toBeVisible();
+ const nico=team.locator('.nico-costume');await expect(nico).toHaveCSS('transform','none');
+ const frame=nico.locator('.nico-costume__frame');await expect(frame).toHaveCSS('border-top-width','0px');await expect(frame).toHaveCSS('background-image','none');
+ const ratio=await frame.evaluate(el=>{const r=el.getBoundingClientRect();return r.width/r.height;});expect(ratio).toBeCloseTo(.75,2);
+ await team.scrollIntoViewIfNeeded();await shot(page,info,'cousins-natural-proportions');await bounds(page);
 });

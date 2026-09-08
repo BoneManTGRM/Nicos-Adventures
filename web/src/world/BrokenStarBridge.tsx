@@ -51,12 +51,6 @@ const copy = {
   wrongInstall: { en: "That order is not safe. Reset the grippers and try again.", "es-MX": "Ese orden no es seguro. Reinicia las pinzas e inténtalo de nuevo." },
   achievement: { en: "Star Bridge Engineer", "es-MX": "Ingeniero del Puente Estelar" },
   scene: { en: "Broken Star Bridge repair scene", "es-MX": "Escena de reparación del Puente Estelar Roto" },
-  loading: { en: "Loading the Star Bridge", "es-MX": "Cargando el Puente Estelar" },
-  ready: { en: "Star Bridge scene ready", "es-MX": "Escena del Puente Estelar lista" },
-  lost: { en: "The 3D view paused. Repair controls still work.", "es-MX": "La vista 3D se pausó. Los controles de reparación siguen funcionando." },
-  restored: { en: "The 3D view is ready again.", "es-MX": "La vista 3D está lista de nuevo." },
-  unavailable: { en: "The 3D view is unavailable. Continue with the accessible repair controls.", "es-MX": "La vista 3D no está disponible. Continúa con los controles accesibles de reparación." },
-  instructions: { en: "Use the repair controls beside the scene.", "es-MX": "Usa los controles de reparación junto a la escena." },
 } satisfies Record<string, Localized>;
 
 const faultCopy: Record<string, { name: Localized; clue: Localized }> = {

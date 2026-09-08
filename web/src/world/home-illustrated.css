@@ -17,3 +17,5 @@
 .home-placement-targets{position:absolute;inset:0;z-index:110;background:#06162966;pointer-events:none}
 .home-placement-targets button{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px;min-height:44px;border:2px dashed #ffecb1;background:#16394e;color:#fff3c6;border-radius:50%;padding:0;pointer-events:auto;box-shadow:0 3px 12px #031827}
 .home-placement-targets button:focus-visible,.home-placement-targets button:hover{background:#79633c;outline:3px solid #fff}
+.living-home .living-home__art{width:18%;height:auto;aspect-ratio:6/7;left:7%;top:5%}
+@media(max-width:600px){.living-home .living-home__art{width:24%}}

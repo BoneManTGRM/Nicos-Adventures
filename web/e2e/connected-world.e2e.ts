@@ -30,8 +30,10 @@ test('homecoming artwork, placement, mini game, language and reload', async ({ p
   await expect(object).toHaveAttribute('style', /left: 78%; top: 52%/);
   await page.getByRole('button', { name: es ? 'Deshacer colocación' : 'Undo placement' }).click();
   await expect(object).not.toHaveAttribute('style', /left: 78%; top: 52%/);
-  await object.click(); await page.getByRole('button', { name: es ? 'Lugar 9' : 'Spot 9', exact: true }).click();
+  await object.click(); await page.getByRole('button', { name: es ? 'Colocar aquí 9' : 'Place here 9', exact: true }).click();
+  await page.getByRole('button', {name: es ? 'Bosque' : 'Forest', exact:true}).click();
   await page.reload(); await expect(object).toHaveAttribute('style', /left: 78%; top: 52%/);
+  await expect(page.locator('.living-home__room')).toHaveAttribute('data-theme','forest');
   await page.locator('[data-home-activity="repair"]').click();
   const workshop = page.locator('.home-workshop');
   await expect(workshop).toBeVisible();
