@@ -49,6 +49,7 @@ describe("painted-in permanent monster faces", () => {
     expect(html).not.toContain('class="monster-face');
     expect(html).not.toContain('class="monster-mouth');
     expect(html).not.toContain('class="monster-core');
+    for (const part of ["horns", "wings", "tail"]) expect(html).not.toContain(`class="monster-${part}"`);
     expect(html).not.toContain("data-monster-face-signature");
     expect(html).not.toContain("data-monster-mouth-signature");
   });
