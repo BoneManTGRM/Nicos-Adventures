@@ -8,13 +8,10 @@ import {
   type StarCoreCommand,
 } from "../game/starBridgeRepair";
 import type { StarBridgeEvent, StarBridgeState } from "../game/goldenAdventure";
-import {
-  AdventureAudio,
-  BoltBot,
-  CanonicalNico,
-  GameCanvas,
-  readQualityProfile,
-} from "../game3d";
+import { AdventureAudio } from "../game3d/audio/AdventureAudio";
+import { PremiumBoltBotSprite } from "../boltbot/PremiumBoltBotSprite";
+import { NicoCostumeFigure } from "../nico/NicoCostumeFigure";
+import worldArt from "../assets/world/nicos-world-map-restored-960.webp";
 import { tr, type Localized } from "../i18n/core";
 import type { Language, Robot } from "../types";
 import "./broken-star-bridge.css";
@@ -54,12 +51,6 @@ const copy = {
   wrongInstall: { en: "That order is not safe. Reset the grippers and try again.", "es-MX": "Ese orden no es seguro. Reinicia las pinzas e inténtalo de nuevo." },
   achievement: { en: "Star Bridge Engineer", "es-MX": "Ingeniero del Puente Estelar" },
   scene: { en: "Broken Star Bridge repair scene", "es-MX": "Escena de reparación del Puente Estelar Roto" },
-  loading: { en: "Loading the Star Bridge", "es-MX": "Cargando el Puente Estelar" },
-  ready: { en: "Star Bridge scene ready", "es-MX": "Escena del Puente Estelar lista" },
-  lost: { en: "The 3D view paused. Repair controls still work.", "es-MX": "La vista 3D se pausó. Los controles de reparación siguen funcionando." },
-  restored: { en: "The 3D view is ready again.", "es-MX": "La vista 3D está lista de nuevo." },
-  unavailable: { en: "The 3D view is unavailable. Continue with the accessible repair controls.", "es-MX": "La vista 3D no está disponible. Continúa con los controles accesibles de reparación." },
-  instructions: { en: "Use the repair controls beside the scene.", "es-MX": "Usa los controles de reparación junto a la escena." },
 } satisfies Record<string, Localized>;
 
 const faultCopy: Record<string, { name: Localized; clue: Localized }> = {
@@ -83,74 +74,27 @@ const commandCopy: Record<StarCoreCommand, Localized> = {
   charge: { en: "Charge", "es-MX": "Cargar" },
 };
 
-function BridgeScene({
-  state,
-  robot,
-  selectedFault,
-  reducedMotion,
-}: {
-  state: StarBridgeState;
-  robot: Robot;
-  selectedFault: string | null;
-  reducedMotion: boolean;
+function BridgeScene({ state, robot, selectedFault, language }: {
+  state: StarBridgeState; robot: Robot; selectedFault: string | null; language: Language;
 }) {
   const stage = starBridgeRepairStage(state.step);
   const complete = stage === "complete";
-  const coreInstalled = stage === "activate" || complete;
-  const brokenDeck = [
-    [-1.75, .62, -.8, 0],
-    [-1.02, .55, -.8, -.13],
-    [1.02, .52, -.8, .15],
-    [1.75, .62, -.8, 0],
-  ] as const;
-  const restoredDeck = [-1.8, -1.08, -.36, .36, 1.08, 1.8].map((x) => [x, .62, -.8, 0] as const);
-  const boltAnimation = reducedMotion
-    ? "Idle"
-    : complete
-      ? "Celebrate"
-      : stage === "install"
-        ? "Repair"
-        : stage === "inspect"
-          ? "Scan"
-          : "Think";
-
-  return (
-    <>
-      <pointLight color={complete ? "#fde68a" : "#38bdf8"} intensity={complete ? 9 : 3} position={[0, 3, 0]} distance={10} />
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -.04, -.3]}>
-        <planeGeometry args={[8, 6]} />
-        <meshStandardMaterial color={complete ? "#174c52" : "#111d3f"} roughness={.86} />
-      </mesh>
-      {[-2.5, 2.5].map((x) => (
-        <mesh key={x} castShadow position={[x, 1.15, -.8]}>
-          <boxGeometry args={[.55, 2.3, .75]} />
-          <meshStandardMaterial color={complete ? "#d6b85d" : "#155e75"} metalness={.35} roughness={.42} />
-        </mesh>
-      ))}
-      {(complete ? restoredDeck : brokenDeck).map(([x, y, z, rotation], index) => (
-        <mesh key={index} castShadow receiveShadow position={[x, y, z]} rotation={[0, 0, rotation]}>
-          <boxGeometry args={[.68, .16, 1.05]} />
-          <meshStandardMaterial color={complete ? "#facc15" : "#287da0"} emissive={complete ? "#854d0e" : "#082f49"} />
-        </mesh>
-      ))}
-      <mesh castShadow position={[0, 1.05, -.72]} scale={selectedFault === "dark-core-socket" ? 1.12 : 1}>
-        <octahedronGeometry args={[.36, 0]} />
-        <meshStandardMaterial
-          color={coreInstalled ? "#fde68a" : "#334155"}
-          emissive={coreInstalled ? "#f59e0b" : "#020617"}
-          emissiveIntensity={complete ? 3 : 1}
-        />
-      </mesh>
-      {complete ? Array.from({ length: 10 }, (_, index) => (
-        <mesh key={index} position={[-2.7 + index * .6, 1.7 + (index % 3) * .38, -1.2]}>
-          <sphereGeometry args={[.045, 8, 8]} />
-          <meshBasicMaterial color={index % 2 ? "#67e8f9" : "#fde68a"} />
-        </mesh>
-      )) : null}
-      <CanonicalNico animation={reducedMotion || !complete ? "Idle" : "Celebrate"} position={[-1.45, 0, .75]} rotation={[0, .2, 0]} scale={.85} />
-      <BoltBot animation={boltAnimation} robot={robot} position={[1.35, 0, .7]} rotation={[0, -.25, 0]} scale={.78} />
-    </>
-  );
+  return <div className="illustrated-bridge" data-renderer="premium-2d" data-stage={stage} role="img" aria-label={tr(copy.scene, language)}>
+    <img className="illustrated-bridge__landscape" src={worldArt} alt="" />
+    <div className="illustrated-bridge__mist" />
+    <svg className="illustrated-bridge__deck" viewBox="0 0 600 300" aria-hidden="true">
+      <path d="M0 270 Q140 180 260 245 L260 300H0Z M340 245Q460 180 600 270V300H340Z" fill="#153c52"/>
+      <path d="M70 200 Q300 290 530 200" fill="none" stroke="#756399" strokeWidth="22"/>
+      <path d={complete ? "M70 200 Q300 240 530 200" : "M70 200L237 224 M365 224L530 200"} fill="none" stroke={complete ? "#f9db86" : "#a6c1cf"} strokeWidth="18"/>
+      {[90,180,420,510].map(x=><g key={x}><path d={`M${x} 215V100`} stroke="#bd9a6d" strokeWidth="12"/><circle cx={x} cy="100" r="9" fill="#ffeab2"/></g>)}
+      <path d="M90 105Q300 210 510 105" fill="none" stroke="#e7c792" strokeWidth="4"/>
+      <path d="M275 224L300 190L325 224L300 254Z" fill={stage === "activate" || complete ? "#ffeaa1" : "#17253c"} stroke={selectedFault === "dark-core-socket" ? "#ffdc7a" : "#76dce6"} strokeWidth="5"/>
+      {complete && <path d="M90 204Q300 246 510 204" fill="none" stroke="#fff4b3" strokeWidth="4"/>}
+    </svg>
+    <div className="illustrated-bridge__nico"><NicoCostumeFigure profession="explorer" alt="Nico" /></div>
+    <div className="illustrated-bridge__robot"><PremiumBoltBotSprite robot={robot} action={complete ? "celebrate" : stage === "install" ? "repair" : "scan"} alt={robot.name} /></div>
+    <span className="illustrated-bridge__caption">✦ {language === "es-MX" ? "Puente Estelar" : "Star Bridge"}</span>
+  </div>;
 }
 
 export function BrokenStarBridge({
@@ -167,7 +111,6 @@ export function BrokenStarBridge({
   close: () => void;
 }) {
   const stage = starBridgeRepairStage(state.step);
-  const quality = useMemo(() => readQualityProfile(), []);
   const audio = useMemo(() => new AdventureAudio(), []);
   const heading = useRef<HTMLHeadingElement>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -190,15 +133,7 @@ export function BrokenStarBridge({
   const playCue = (cue: "inspect" | "install" | "activate") => {
     if (soundEnabled) void audio.playCue(cue).catch(() => undefined);
   };
-  const labels = {
-    scene: tr(copy.scene, language),
-    loading: tr(copy.loading, language),
-    ready: tr(copy.ready, language),
-    contextLost: tr(copy.lost, language),
-    contextRestored: tr(copy.restored, language),
-    unavailable: tr(copy.unavailable, language),
-    instructions: tr(copy.instructions, language),
-  };
+
 
   return (
     <section className={`broken-bridge ${stage === "complete" ? "is-restored" : "is-broken"}`} aria-labelledby="broken-bridge-title">
@@ -214,9 +149,7 @@ export function BrokenStarBridge({
         <p>{tr(body, language)}</p>
       </div>
       <div className="broken-bridge__layout">
-        <GameCanvas labels={labels} quality={quality} controls={<span>{tr(title, language)}</span>}>
-          <BridgeScene state={state} robot={robot} selectedFault={selectedFault} reducedMotion={quality.reducedMotion} />
-        </GameCanvas>
+        <BridgeScene state={state} robot={robot} selectedFault={selectedFault} language={language} />
         <div className="broken-bridge__controls">
           {stage === "inspect" ? (
             <>

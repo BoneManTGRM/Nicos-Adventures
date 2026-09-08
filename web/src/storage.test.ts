@@ -169,3 +169,19 @@ describe("profile schema v4 migration", () => {
     expect(((profile.nico as Record<string, unknown>).wardrobe as Record<string, unknown>).malicious).toBeUndefined();
   });
 });
+
+
+describe("illustrated studio and home saves", () => {
+  it("preserves composition and theme while bounding imported values", () => {
+    const store = normalizeStore({activeProfileId:"art",profiles:[{id:"art",playerName:"Nico",homeTheme:"forest",artwork:[
+      {id:"old",title:"Legacy",subject:"Nico",caption:"Keep this"},
+      {id:"new",scale:.8,offset:35}, {id:"invalid",scale:900,offset:-400}
+    ]}]});
+    const profile=store.profiles[0];
+    expect(profile.homeTheme).toBe("forest");
+    expect(profile.artwork[0]).toMatchObject({title:"Legacy",caption:"Keep this",scale:1,offset:0});
+    expect(profile.artwork[1]).toMatchObject({scale:.8,offset:35});
+    expect(profile.artwork[2]).toMatchObject({scale:1.2,offset:-70});
+    expect(normalizeStore(store).profiles[0].artwork).toEqual(profile.artwork);
+  });
+});

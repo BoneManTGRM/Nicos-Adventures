@@ -40,3 +40,15 @@
 @media (prefers-reduced-motion: reduce) {
   .broken-bridge *, .broken-bridge *::before, .broken-bridge *::after { animation: none !important; transition: none !important; }
 }
+
+.illustrated-bridge{position:relative;isolation:isolate;overflow:hidden;min-width:0;aspect-ratio:1.15;border:1px solid #7699b5;border-radius:24px;background:#153851;align-self:start}
+.illustrated-bridge__landscape{position:absolute;width:100%;height:100%;object-fit:cover;object-position:50% 32%;opacity:.85}
+.illustrated-bridge__mist{position:absolute;inset:0;background:linear-gradient(#09183222,#0a173b44 45%,#101d36)}
+.illustrated-bridge__deck{position:absolute;width:100%;height:70%;bottom:10%;filter:drop-shadow(0 8px 8px #03102a)}
+.illustrated-bridge__nico{position:absolute;left:0;bottom:10%;width:45%}
+.illustrated-bridge__nico .nico-costume,.illustrated-bridge__nico .nico-costume[data-art-state="canonical-2d"] .nico-costume__frame{margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;aspect-ratio:3/4}
+.illustrated-bridge__nico .nico-costume__frame:before,.illustrated-bridge__nico .nico-costume__frame:after{content:none}
+.illustrated-bridge__robot{position:absolute;right:1%;bottom:11%;width:39%;aspect-ratio:3/4;display:grid;align-items:end}
+.illustrated-bridge__robot>span{width:100%;height:100%}
+.illustrated-bridge__caption{position:absolute;bottom:4%;left:0;right:0;text-align:center;color:#ffdf93;font-weight:800;letter-spacing:.12em;text-shadow:0 2px 8px #000}
+.illustrated-bridge[data-stage="complete"] .illustrated-bridge__deck{filter:drop-shadow(0 0 10px #e6c676)}

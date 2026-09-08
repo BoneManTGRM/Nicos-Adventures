@@ -151,11 +151,12 @@ async function openDestination(page: Page, name: string) {
   await activateWithKeyboard(page, destination);
 }
 
-async function assertRendererReady(page: Page, reducedMotion: boolean) {
-  const canvas = page.locator(".game-canvas").first();
-  await expect(canvas).toHaveAttribute("data-renderer-status", "ready", { timeout: 30_000 });
-  await expect(canvas).toHaveAttribute("data-reduced-motion", String(reducedMotion));
-  await expect(canvas.locator("canvas")).toHaveCount(1);
+async function assertRendererReady(page: Page, _reducedMotion: boolean) {
+  const scene = page.locator(".illustrated-bridge");
+  await expect(scene).toHaveAttribute("data-renderer", "premium-2d");
+  await expect(scene.locator('[data-nico-renderer="canonical-2d"]')).toBeVisible();
+  await expect(scene.locator('[data-boltbot-renderer="premium-2d"]')).toBeVisible();
+  await expect(scene.locator("canvas")).toHaveCount(0);
 }
 
 async function waitForServiceWorkerControl(page: Page) {

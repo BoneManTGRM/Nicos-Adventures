@@ -81,3 +81,34 @@ test('Monster Lab removes the ghost pod and the same monster plays a low-power a
  await page.getByTestId('rift-power').click();await expect.poll(async()=>Number(await canvas.getAttribute('data-power-uses'))).toBeGreaterThan(0);await expect(page.locator('.monster-rift__avatar .monster-premium-body__art')).toBeVisible();await shot(page,info,'monster-rift-real-gameplay');await bounds(page);
  await page.locator('.monster-rift__header button').last().click();await expect(page.locator('.monster-rift')).toHaveAttribute('data-rift-status','paused');const frames=await canvas.getAttribute('data-frames');await page.waitForTimeout(400);expect(await canvas.getAttribute('data-frames')).toBe(frames);await expect(canvas).toHaveAttribute('data-renderer','canvas2d');expect(errors).toEqual([]);
 });
+
+test('illustrated poster composition downloads and survives home display',async({page},info)=>{
+ await boot(page,info);const es=language(info);
+ await destination(page,es?'Estudio de arte':'Art Studio');
+ const poster=page.locator('.creative-canvas-panel .illustrated-poster');
+ await expect(poster).toHaveAttribute('data-art-ready','true',{timeout:30000});
+ await page.getByLabel(es?'Protagonista':'Subject',{exact:true}).selectOption('Becca');
+ await page.getByLabel(es?'Título':'Title',{exact:true}).fill('Our painted adventure');
+ await page.getByLabel(es?'Tamaño del personaje':'Character size',{exact:true}).fill('0.8');
+ await page.getByLabel(es?'Posición del personaje':'Character position',{exact:true}).fill('30');
+ await expect(poster).toHaveAttribute('data-art-ready','true',{timeout:30000});
+ const download=page.waitForEvent('download');await page.getByRole('button',{name:es?'Descargar póster':'Download poster'}).click();
+ const file=await download;expect(file.suggestedFilename()).toBe('nico-adventure-poster.png');
+ const path=await file.path();expect(readFileSync(path!).subarray(0,8).toString('hex')).toBe('89504e470d0a1a0a');
+ await poster.scrollIntoViewIfNeeded();await shot(page,info,'illustrated-art-studio');
+ await page.getByRole('button',{name:es?'Guardar obra':'Save artwork',exact:false}).click();
+ await page.reload();await page.locator('.creative-library').getByRole('button',{name:es?'Editar':'Edit',exact:true}).first().click();
+ await expect(page.getByLabel(es?'Tamaño del personaje':'Character size',{exact:true})).toHaveValue('0.8');
+ await expect(page.getByLabel(es?'Posición del personaje':'Character position',{exact:true})).toHaveValue('30');await bounds(page);
+});
+
+
+test('cousins retain natural artwork proportions without a Nico frame',async({page},info)=>{
+ await boot(page,info);const es=language(info);
+ await destination(page,es?'Mapa de Aventuras de los Primos':'Cousins’ Adventure Map');
+ const team=page.locator('.cousins-hero__team');await expect(team).toBeVisible();
+ const nico=team.locator('.nico-costume');await expect(nico).toHaveCSS('transform','none');
+ const frame=nico.locator('.nico-costume__frame');await expect(frame).toHaveCSS('border-top-width','0px');await expect(frame).toHaveCSS('background-image','none');
+ const ratio=await frame.evaluate(el=>{const r=el.getBoundingClientRect();return r.width/r.height;});expect(ratio).toBeCloseTo(.75,2);
+ await team.scrollIntoViewIfNeeded();await shot(page,info,'cousins-natural-proportions');await bounds(page);
+});

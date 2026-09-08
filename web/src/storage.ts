@@ -282,6 +282,8 @@ function normalizeArtwork(candidate: unknown): ArtworkRecord | null {
     subject: clampText(value.subject, 80, "Nico"),
     frame: clampText(value.frame, 60, "Gold Frame"),
     caption: clampText(value.caption, 140),
+    scale: typeof value.scale === "number" && Number.isFinite(value.scale) ? Math.max(.65, Math.min(1.2, value.scale)) : 1,
+    offset: typeof value.offset === "number" && Number.isFinite(value.offset) ? Math.max(-70, Math.min(70, value.offset)) : 0,
   };
 }
 
@@ -510,6 +512,7 @@ function normalizeProfile(candidate: unknown): LocalProfile | null {
     arcadeScores,
     decorations: uniqueNewest(Array.isArray(value.decorations) ? value.decorations : fresh.decorations, 100, 80),
     badges: uniqueNewest(Array.isArray(value.badges) ? value.badges : [], 200, 100),
+    homeTheme: value.homeTheme === "sunrise" || value.homeTheme === "forest" ? value.homeTheme : "starlight",
     homeLayout: Object.fromEntries(Object.entries(asRecord(value.homeLayout) ?? {}).filter(([key, slot]) =>
       key.length <= 80 && Number.isInteger(slot) && Number(slot) >= 0 && Number(slot) < 9).slice(0, 100).map(([key, slot]) => [key, Number(slot)])),
     movieProjects,

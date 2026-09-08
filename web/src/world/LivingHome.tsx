@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { PremiumBoltBotSprite } from '../boltbot/PremiumBoltBotSprite';
 import { NicoCostumeFigure } from '../nico/NicoCostumeFigure';
@@ -13,9 +13,11 @@ import { optionLabel } from '../i18n/display';
 import { ArtworkPreview } from './ArtworkPreview';
 import { HomeWorkshop } from './HomeWorkshop';
 import { CONSTELLATION } from '../game/goldenAdventureProfile';
+import { HomeDecoration } from './HomeDecoration';
 import './connected-home.css';
 import './playable-world.css';
 import './playable-world-hardening.css';
+import './home-illustrated.css';
 
 type Actor = 'nico' | 'robot' | 'pet';
 type Activity = 'charge' | 'rest' | 'repair' | 'snack' | 'dance';
@@ -34,7 +36,7 @@ const initial = (): HomeState => {
 };
 const copyHome = (state: HomeState): HomeState => ({ ...state, residents: { nico: { ...state.residents.nico }, robot: { ...state.residents.robot }, pet: { ...state.residents.pet } } });
 const HOME_SPOTS = [[35, 23], [53, 23], [35, 38], [53, 38], [2, 44], [82, 38], [2, 75], [78, 75], [78, 52]];
-const DECOR_ICONS: Record<string, string> = { 'Animal Photo Wall': '🐾', 'Charging Dock': '⚡', 'Trophy Shelf': '🏆', 'Mecha Banner': '⚙', 'Star Window': '✧', 'Monster Plush': '👾', 'Dino Fossil Case': '🦴', 'Art Gallery': '🎨' };
+
 
 export function LivingHome({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const es = profile.language === 'es-MX';
@@ -155,13 +157,22 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
   }, [interact, perform]);
   const actors: Actor[] = pet ? ['nico', 'robot', 'pet'] : ['nico', 'robot'];
   const selected = view.residents[view.selected];
+  const place = (slot: number) => {
+    if (!placing) return;
+    setUndo({ ...profile.homeLayout });
+    update({ ...profile, homeLayout: { ...profile.homeLayout, [placing]: slot } });
+    setPlacing(null);
+    announce(es ? "Decoración colocada." : "Decoration placed.");
+  };
+  const welcomeArt = useMemo(() => ({ id: "home-welcome", title: es ? "Nuestro rincón feliz" : "Our happy place", subject: "Nico", background: "Jungle Discovery", frame: "Gold Frame", caption: es ? "Aquí comienza la aventura" : "Adventure starts here" }), [es]);
+
   // Preserve the public room/decor selectors used by the whole-site acceptance suite.
   return <section className="living-home robot-home-stage" aria-label={es ? 'Casa Robot interactiva' : 'Interactive Robot Home'} data-home-activities={view.completed}>
     <header className="living-home__header"><div><small>{es ? 'TU EQUIPO, TU CASA' : 'YOUR TEAM, YOUR HOME'}</small><h2>{es ? 'Una casa llena de vida' : 'Make yourself at home'}</h2></div><span>✦ {es ? 'Explora y juega' : 'Explore & play'}</span></header>
     <div className="living-home__select" role="group" aria-label={es ? 'Personaje para mover' : 'Character to move'}>
       {actors.map(actor => <button type="button" key={actor} aria-pressed={view.selected === actor} onClick={() => choose(actor)} data-home-select={actor}>{actor === 'nico' ? '🧭' : actor === 'robot' ? '⚡' : '🐾'} {names[actor]}</button>)}
     </div>
-    <div ref={room} className="living-home__room" tabIndex={0} role="group" aria-label={es ? 'Habitación: toca para caminar' : 'Room: tap to walk'}
+    <div ref={room} className="living-home__room" data-theme={profile.homeTheme ?? 'starlight'} tabIndex={0} role="group" aria-label={es ? 'Habitación: toca para caminar' : 'Room: tap to walk'}
       data-home-selected={view.selected} data-home-x={selected.x.toFixed(2)} data-home-z={selected.z.toFixed(2)} data-home-action={selected.action ?? (selected.moving ? 'walk' : 'idle')}
       onBlur={() => { controls.current.clear(); touch.current = { x: 0, z: 0 }; }}
       onClick={e => {
@@ -177,14 +188,14 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
       <div className="living-home__snacks" aria-hidden="true"><span>🍎</span><i/></div>
       <div className="living-home__dock" aria-hidden="true">ϟ</div>
       <div className="living-home__rug" aria-hidden="true">✦</div>
-      <div className="living-home__art" title={artwork?.title}>{artwork ? <ArtworkPreview artwork={artwork} /> : <span aria-hidden="true">☀</span>}</div>
+      <div className="living-home__art" title={artwork?.title}>{<ArtworkPreview artwork={artwork ?? welcomeArt} profile={profile} />}</div>
       <div className="home-objects" aria-label={es ? 'Decoraciones activas' : 'Active decorations'}>{profile.decorations.map((item, index) => {
         const slot = profile.homeLayout?.[item] ?? index % 9;
         return <button type="button" className={`robot-home-decoration home-object${item === CONSTELLATION ? ' home-object--constellation' : ''}`} key={item}
           style={{ left: `${HOME_SPOTS[slot][0]}%`, top: `${HOME_SPOTS[slot][1]}%` }}
           aria-label={`${es ? 'Colocar' : 'Place'} ${item === CONSTELLATION ? (es ? 'Constelación del Puente Estelar' : CONSTELLATION) : optionLabel(item, profile.language)}`}
           onClick={() => setPlacing(item)}>
-          {item === CONSTELLATION ? <svg viewBox="0 0 120 70" role="img" aria-label={es ? 'Constelación ganada en el puente' : 'Constellation earned at the bridge'}><path d="M10 55 35 15 65 40 100 10 110 55" fill="none" stroke="currentColor" strokeWidth="2" />{[[10,55],[35,15],[65,40],[100,10],[110,55]].map(([x,y]) => <circle key={x} cx={x} cy={y} r="5" fill="currentColor" />)}</svg> : <span>{DECOR_ICONS[item] ?? '✦'}</span>}
+          {item === CONSTELLATION ? <svg viewBox="0 0 120 70" role="img" aria-label={es ? 'Constelación ganada en el puente' : 'Constellation earned at the bridge'}><path d="M10 55 35 15 65 40 100 10 110 55" fill="none" stroke="currentColor" strokeWidth="2" />{[[10,55],[35,15],[65,40],[100,10],[110,55]].map(([x,y]) => <circle key={x} cx={x} cy={y} r="5" fill="currentColor" />)}</svg> : <HomeDecoration item={item} />}
         </button>;
       })}</div>
       {actors.map(actor => {
@@ -200,15 +211,16 @@ export function LivingHome({ profile, update, announce }: { profile: LocalProfil
           <small>{names[actor]}</small>
         </button>;
       })}
+      {placing && <div className="home-placement-targets" role="group" aria-label={es ? 'Lugares en la habitación' : 'Places in the room'}>{HOME_SPOTS.map(([x,y],slot)=><button type="button" key={slot} style={{left:`${x+7}%`,top:`${y+6}%`}} aria-label={`${es ? 'Colocar aquí' : 'Place here'} ${slot+1}`} onClick={()=>place(slot)}>{slot+1}</button>)}</div>}
       {view.path.length > 0 && <span className="living-home__target" style={{ left: `${view.path.at(-1)!.x}%`, top: `${view.path.at(-1)!.z}%` }} aria-hidden="true">◎</span>}
+    </div>
+    <div className="home-themes" role="group" aria-label={es ? 'Estilo de habitación' : 'Room theme'}>
+      <span>{es ? 'Mi refugio' : 'My hideaway'}</span>
+      {([['starlight','Starlight','Luz de estrellas'],['sunrise','Sunrise','Amanecer'],['forest','Forest','Bosque']] as const).map(([id,en,label])=><button type="button" key={id} aria-pressed={(profile.homeTheme ?? 'starlight') === id} onClick={()=>update({...profile,homeTheme:id})}>{es ? label : en}</button>)}
     </div>
     {placing && <section className="home-placement" aria-label={es ? 'Colocar objeto' : 'Place object'}>
       <p>{es ? 'Elige un lugar para tu objeto.' : 'Choose a spot for your object.'}</p>
-      <div className="home-placement__grid">{Array.from({ length: 9 }, (_, slot) => <button key={slot} onClick={() => {
-        setUndo({ ...profile.homeLayout });
-        update({ ...profile, homeLayout: { ...profile.homeLayout, [placing]: slot } });
-        setPlacing(null);
-      }}>{es ? 'Lugar' : 'Spot'} {slot + 1}</button>)}</div><button onClick={() => setPlacing(null)}>{es ? 'Cancelar' : 'Cancel'}</button>
+      <div className="home-placement__grid">{Array.from({ length: 9 }, (_, slot) => <button key={slot} onClick={() => place(slot)}>{es ? 'Lugar' : 'Spot'} {slot + 1}</button>)}</div><button onClick={() => setPlacing(null)}>{es ? 'Cancelar' : 'Cancel'}</button>
     </section>}
     {undo && <button onClick={() => { update({ ...profile, homeLayout: undo }); setUndo(null); }}>{es ? 'Deshacer colocación' : 'Undo placement'}</button>}
     {workshop && <HomeWorkshop key={workshop} activity={workshop} language={profile.language} close={() => { setWorkshop(null); room.current?.focus(); }} finish={() => {
