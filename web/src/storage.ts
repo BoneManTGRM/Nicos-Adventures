@@ -1,4 +1,6 @@
+import { normalizeShots } from "./showtime/director";
 import professionData from "./catalogs/nico-professions.json";
+import additionalProfessions from "./catalogs/nico-professions-phase2-extra.json";
 import {
   initialGoldenAdventureProgress,
   normalizeGoldenAdventureProgress,
@@ -35,8 +37,8 @@ const LEGACY_KEYS = [
 const now = (): string => new Date().toISOString();
 const id = (prefix: string): string => `${prefix}-${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}`;
 
-const professionIds = professionData.map((item) => item.id) as NicoProfessionId[];
-const characterKinds: MovieCharacterKind[] = ["nico", "robot", "monster", "pet", "animal"];
+const professionIds = [...professionData, ...additionalProfessions].map((item) => item.id) as NicoProfessionId[];
+const characterKinds: MovieCharacterKind[] = ["nico", "robot", "monster", "pet", "animal", "friend"];
 const moviePoses: MoviePose[] = ["idle", "wave", "celebrate", "launch", "dance", "spin", "bounce", "roar", "sleep"];
 const sectionIds: SectionId[] = [
   "world-map", "robo-lab", "animal-forest", "becca-corner", "cousins-adventure", "monster-lab", "monster-habitats",
@@ -289,7 +291,7 @@ function normalizeStory(candidate: unknown): StoryRecord | null {
   const storyId = clampText(value.id, 80);
   if (!storyId) return null;
   const pages = Array.isArray(value.pages)
-    ? value.pages.map((page) => clampText(page, 900)).filter(Boolean).slice(0, 12)
+    ? value.pages.map((page) => clampText(page, value.adventureVersion === 1 ? 1800 : 900)).filter(Boolean).slice(0, 12)
     : [];
   return {
     id: storyId,
@@ -304,6 +306,7 @@ function normalizeStory(candidate: unknown): StoryRecord | null {
     magicItem: optionalText(value.magicItem, 160),
     specialDetail: optionalText(value.specialDetail, 120),
     pages: pages.length ? pages : undefined,
+    ...(value.adventureVersion === 1 ? { adventureVersion: 1 as const, adventureChoices: [Array.isArray(value.adventureChoices) && value.adventureChoices[0] === 1 ? 1 : 0, Array.isArray(value.adventureChoices) && value.adventureChoices[1] === 1 ? 1 : 0] as [number, number] } : {}),
   };
 }
 
@@ -349,6 +352,7 @@ function normalizeNico(candidate: unknown): NicoPreferences {
     profession,
     accentColor,
     speechEnabled: value.speechEnabled !== false,
+    favoriteOutfits: Array.isArray(value.favoriteOutfits) ? [...new Set(value.favoriteOutfits.filter((v: unknown) => professionIds.includes(v as NicoProfessionId)))].slice(0,26) as NicoProfessionId[] : [],
     wardrobe: normalizeWardrobe(value.wardrobe, profession, accentColor),
   };
 }
@@ -373,7 +377,7 @@ function normalizeMovieProject(candidate: unknown): MovieProject | null {
     : [];
   if (!characters.length) return null;
 
-  const poseSequence = Array.isArray(value.poseSequence)
+  const poseSequence = value.directorVersion === 1 ? normalizeShots(value.poseSequence) : Array.isArray(value.poseSequence)
     ? value.poseSequence.flatMap((item) => {
         const step = asRecord(item);
         if (!step) return [];
@@ -390,10 +394,11 @@ function normalizeMovieProject(candidate: unknown): MovieProject | null {
     title: clampText(value.title, 48, "My Little Movie"),
     characters,
     poseSequence,
+    ...(value.directorVersion === 1 ? { directorVersion: 1 as const, format: (["wide", "square", "portrait"].includes(String(value.format)) ? value.format : "wide") as "wide" | "square" | "portrait" } : {}),
     background: clampText(value.background, 40, "Star Stage"),
     caption: clampText(value.caption, 140),
     language: normalizeLanguage(value.language),
-    durationMs: Math.round(clampNumber(value.durationMs, 4000, 8000, Math.max(4000, Math.min(8000, calculatedDuration)))),
+    durationMs: value.directorVersion === 1 ? calculatedDuration : Math.round(clampNumber(value.durationMs, 4000, 8000, Math.max(4000, Math.min(8000, calculatedDuration)))),
     createdAt: clampText(value.createdAt, 50, now()),
     lastDownloadedAt: optionalText(value.lastDownloadedAt, 50),
     lastMimeType: optionalText(value.lastMimeType, 80),

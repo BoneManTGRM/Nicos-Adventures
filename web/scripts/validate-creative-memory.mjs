@@ -23,7 +23,8 @@ for (const relative of requiredFiles) {
 const read = (relative) => fs.readFileSync(path.join(root, relative), "utf8");
 const fullApp = read("src/FullApp.tsx");
 const art = read("src/world/ArtStudio.tsx");
-const stories = read("src/world/StoryCastle.tsx");
+const stories = read("src/world/StoryCastle.tsx") + read("src/world/StoryCastleBook.tsx");
+const narration = read("src/nico/Narration.tsx");
 const home = read("src/world/RobotHome.tsx");
 const museum = read("src/world/Museum.tsx");
 const badges = read("src/world/Badges.tsx");
@@ -43,10 +44,10 @@ if (!fullApp.includes('import "./world/creative-memory.css"')) throw new Error("
 if (!art.includes("creative-library-grid") || !art.includes("editingId") || !art.includes("completeCreativeMilestones") || !art.includes("remove =")) {
   throw new Error("Art Studio does not support editable local gallery progression");
 }
-if (!stories.includes("surprise") || !stories.includes("speechSynthesis") || !stories.includes("creative-library-grid") || !stories.includes("completeCreativeMilestones")) {
+if (!stories.includes("surprise") || !narration.includes("speechSynthesis") || !stories.includes("creative-library-grid") || !stories.includes("completeCreativeMilestones")) {
   throw new Error("Story Castle does not support surprise generation, narration, editing, and milestones");
 }
-if (!stories.includes("storyCombinationCount") || !stories.includes("story-page-turner") || !stories.includes("buildStoryPages")) {
+if (!stories.includes("storyCombinationCount") || !stories.includes("story-page-turner") || !stories.includes("buildAdventurePages")) {
   throw new Error("Story Castle does not provide extensive customizable multi-page storybooks");
 }
 if (!home.includes("roomGoals") || !home.includes("chooseRobot") || !home.includes("choosePet") || !home.includes("displayArtwork") || !home.includes("roomGoalId")) {

@@ -1,0 +1,17 @@
+/* Canonical Monster Lab artwork comes directly from the user's approved
+   16-monster gallery. These rules intentionally suppress the old composited
+   eyes, mouths, horns, wings, tails, and badges that made the art look pasted
+   together. The body and its permanent face now move as one image. */
+
+.monster-stage .monster-anatomy,
+.monster-stage .monster-traits--front,
+.monster-stage .monster-face,
+.monster-stage .monster-mouth,
+.monster-stage .monster-core,
+.monster-stage .monster-horns,
+.monster-stage .monster-wings,
+.monster-stage .monster-tail,
+.monster-portrait__traits {
+  display: none !important;
+}
+

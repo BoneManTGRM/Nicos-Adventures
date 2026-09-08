@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import { optionLabel } from "./i18n/display";
 import type { AnimalRecord, Language, MonsterRecord } from "./types";
 import { monsterAccessoryLayout, monsterAccessoryTransform, monsterBodyArtStyle } from "./world/monsterArt";
-import { MonsterFaceArt, monsterFaceTreatment } from "./world/monsterFaceArt";
+import { MonsterFaceArt, monsterFaceTreatment, monsterHasIntegratedFace } from "./world/monsterFaceArt";
 import { monsterColorSwatch } from "./world/monsterCreatureStudio";
 import "./monster-stage-premium.css";
 import "./monster-faces.css";
@@ -78,9 +78,10 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
   const texture = String(monster.texture || "smooth").toLowerCase().replace(/\s+/g,"-");
   const pattern = String(monster.pattern || "solid").toLowerCase().replace(/\s+/g,"-");
   const faceTreatment = monsterFaceTreatment(monster.body);
-  const hasWings = !monster.wings.toLowerCase().includes("no ");
-  const hasHorns = ["Dragon", "Royal", "Volcano"].includes(monster.body);
-  const hasTail = monster.body !== "Lizard Alien" && !String(monster.tail || "No tail").toLowerCase().includes("no ");
+  const preserveAnatomy = monsterHasIntegratedFace(monster.body);
+  const hasWings = !preserveAnatomy && !monster.wings.toLowerCase().includes("no ");
+  const hasHorns = !preserveAnatomy && ["Dragon", "Royal", "Volcano"].includes(monster.body);
+  const hasTail = !preserveAnatomy && monster.body !== "Lizard Alien" && !String(monster.tail || "No tail").toLowerCase().includes("no ");
   const accessoryLayout = monsterAccessoryLayout(monster.body);
   return <article className={`monster-stage monster-stage--${action}`} style={{ "--monster-main": color } as CSSProperties}>
     <div className="monster-stage__environment" aria-hidden="true"><i/><i/><i/></div>

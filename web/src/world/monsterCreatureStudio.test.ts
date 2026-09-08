@@ -16,32 +16,21 @@ const monster = {
 describe("Monster Lab visual creature contract", () => {
   it("offers only controls that have a dependable visual result", () => {
     const keys = MONSTER_TRAITS.map((trait) => trait.key);
-    expect(keys).toEqual(["body", "wings", "arms", "tail", "color", "pattern", "texture"]);
+    expect(keys).toEqual(["body", "color", "pattern", "texture"]);
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys.every((key) => key in MONSTER_OPTIONS)).toBe(true);
   });
 
   it("routes traits to stable visual groups", () => {
     expect(monsterTrait("body")).toMatchObject({ icon: "◉", group: "form" });
-    expect(monsterTrait("wings")).toMatchObject({ icon: "🪽", group: "features" });
+    expect(monsterTrait("color")).toMatchObject({ icon: "●", group: "style" });
     expect(monsterTrait("texture")).toMatchObject({ icon: "✺", group: "style" });
   });
 
-  it("shows arm variants only for the body atlas that supports them", () => {
-    expect(monsterVisualTraits(monster).map((trait) => trait.key)).not.toContain("arms");
-    expect(monsterVisualTraits({ ...monster, body: "Alien" }).map((trait) => trait.key)).toContain("arms");
-  });
-
-  it("keeps the lizard alien's integrated limbs out of accessory controls", () => {
-    const visible = monsterVisualTraits({ ...monster, body: "Lizard Alien" }).map((trait) => trait.key);
-    expect(visible).not.toContain("arms");
-    expect(visible).not.toContain("tail");
-    expect(visible).toContain("wings");
-  });
-
-  it("does not offer duplicate wing and tail variants that render identically", () => {
-    expect(monsterVisualOptions("wings", MONSTER_OPTIONS.wings)).toEqual(["No wings", "Star wings"]);
-    expect(monsterVisualOptions("tail", MONSTER_OPTIONS.tail)).toEqual(["No tail", "Dragon tail"]);
+  it.each(MONSTER_OPTIONS.body)("preserves %s anatomy by hiding detached accessory controls", (body) => {
+    const visible = monsterVisualTraits({ ...monster, body }).map(trait => trait.key);
+    for (const key of ["arms", "wings", "tail", "horns", "eyes", "mouth"]) expect(visible).not.toContain(key);
+    expect(monsterVisualOptions("color", MONSTER_OPTIONS.color)).toEqual(MONSTER_OPTIONS.color);
   });
 
   it("gives every catalog color a distinct visible swatch", () => {

@@ -96,6 +96,8 @@ export type StoryRecord = {
   magicItem?: string;
   specialDetail?: string;
   pages?: string[];
+  adventureVersion?: 1;
+  adventureChoices?: [number, number];
 };
 export type DinosaurRecord = { id: string; name: string; emoji: string; period: string; discovered: boolean; };
 
@@ -156,10 +158,11 @@ export type NicoPreferences = {
   profession: NicoProfessionId;
   accentColor: string;
   speechEnabled: boolean;
+  favoriteOutfits?: NicoProfessionId[];
   wardrobe: NicoWardrobe;
 };
 
-export type MovieCharacterKind = "nico" | "robot" | "monster" | "pet" | "animal";
+export type MovieCharacterKind = "nico" | "robot" | "monster" | "pet" | "animal" | "friend";
 export type MoviePose = "idle" | "wave" | "celebrate" | "launch" | "dance" | "spin" | "bounce" | "roar" | "sleep";
 
 export type MovieCharacterRef = {
@@ -169,11 +172,16 @@ export type MovieCharacterRef = {
 };
 
 export type MoviePoseStep = {
+  background?: string;
+  caption?: string;
+  camera?: "wide" | "close";
   pose: MoviePose;
   durationMs: number;
 };
 
 export type MovieProject = {
+  directorVersion?: 1;
+  format?: "wide" | "square" | "portrait";
   id: string;
   title: string;
   characters: MovieCharacterRef[];

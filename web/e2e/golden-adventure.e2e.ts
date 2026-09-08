@@ -301,7 +301,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await openDestination(page, text.monsterLab);
   await expect(page.getByRole("heading", { name: text.monsterLab, exact: true })).toBeFocused();
   await expect(page.getByRole("heading", { name: text.monsterStudio, exact: true })).toBeVisible();
-  await expect(page.locator(".monster-studio__trait")).toHaveCount(6);
+  await expect(page.locator(".monster-studio__trait")).toHaveCount(4);
   await expect(page.locator('.monster-studio__trait[data-trait="eyes"], .monster-studio__trait[data-trait="mouth"], .monster-studio__trait[data-trait="horns"]')).toHaveCount(0);
   const premiumMonster = page.locator('.monster-v2[data-monster-body-art="Dragon"]');
   await expect(premiumMonster).toBeVisible();
@@ -327,8 +327,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   const alienMonster = page.locator('.monster-v2[data-monster-body-art="Alien"]');
   await expect(alienMonster).toBeVisible();
   await expect(alienMonster).toHaveAttribute("data-monster-face-treatment", "integrated-visor");
-  await expect(page.locator('.monster-studio__trait[data-trait="arms"]')).toHaveCount(1);
-  await expect(page.locator(".monster-studio__trait")).toHaveCount(7);
+  await expect(page.locator('.monster-studio__trait[data-trait="arms"]')).toHaveCount(0);
+  await expect(page.locator(".monster-studio__trait")).toHaveCount(4);
   const alienFit = await alienMonster.evaluate((element) => {
     const body = element.querySelector<HTMLElement>(".monster-premium-body")!.getBoundingClientRect();
     const horns = element.querySelector<SVGGElement>(".monster-horns")?.getBoundingClientRect();

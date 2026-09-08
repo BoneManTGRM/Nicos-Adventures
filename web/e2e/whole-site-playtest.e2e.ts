@@ -308,8 +308,7 @@ test("all destinations keep their main local interactions working", async ({ pag
     await page.locator(`.monster-studio__choice[data-option="${option}"]`).click();
   };
   await chooseMonsterOption("body", "Stone Golem");
-  await chooseMonsterOption("wings", "Star wings");
-  await chooseMonsterOption("tail", "Dragon tail");
+  await expect(page.locator('.monster-studio__trait[data-trait="wings"], .monster-studio__trait[data-trait="tail"]')).toHaveCount(0);
   const fittedGolem = page.locator('[data-monster-body-art="Stone Golem"]');
   await expect(fittedGolem).toHaveAttribute("data-monster-face-treatment", "carved-golem");
   await expect(fittedGolem.locator(".monster-traits--rear")).toHaveCSS("z-index", "1");
@@ -330,11 +329,11 @@ test("all destinations keep their main local interactions working", async ({ pag
   await attachVisual(page, testInfo, "monster-lab-stone-golem-fit");
 
   await chooseMonsterOption("body", "Alien");
-  await chooseMonsterOption("arms", "Four arms");
+  await expect(page.locator('.monster-studio__trait[data-trait="arms"]')).toHaveCount(0);
   await page.locator(".monster-lab-name input").fill(monsterName);
   await page.getByRole("button", { name: new RegExp(`${text.saveMonster}$`) }).click();
   await expect(page.locator(".monster-collection button").filter({ hasText: monsterName })).toHaveCount(1);
-  const premiumAlien = page.locator('[data-monster-body-art="Alien"][data-monster-arms-art="Four arms"]');
+  const premiumAlien = page.locator('[data-monster-body-art="Alien"]');
   await expect(premiumAlien).toBeVisible();
   await expect(premiumAlien).toHaveAttribute("data-monster-face-treatment", "integrated-visor");
   await expect(premiumAlien.locator(".monster-premium-body__art")).toHaveCSS("background-size", "contain");

@@ -1,118 +1,32 @@
-export type MovieRecordingResult = {
-  blob: Blob;
-  mimeType: string;
-  durationMs: number;
-};
-
-export type RecordCanvasMovieOptions = {
-  canvas: HTMLCanvasElement;
-  durationMs: number;
-  drawFrame: (elapsedMs: number) => void | Promise<void>;
-  fps?: number;
-  onProgress?: (progress: number) => void;
-  signal?: AbortSignal;
-};
-
-export const MOVIE_MIME_TYPES = [
-  "video/webm;codecs=vp9",
-  "video/webm;codecs=vp8",
-  "video/webm",
-] as const;
-
-export function selectSupportedMimeType(
-  mediaRecorder: Pick<typeof MediaRecorder, "isTypeSupported"> | undefined = globalThis.MediaRecorder,
-): string | null {
-  if (!mediaRecorder || typeof mediaRecorder.isTypeSupported !== "function") return null;
-  return MOVIE_MIME_TYPES.find((mimeType) => mediaRecorder.isTypeSupported(mimeType)) ?? null;
+export type MovieRecordingResult={blob:Blob;mimeType:string;durationMs:number};
+export type RecordCanvasMovieOptions={canvas:HTMLCanvasElement;durationMs:number;drawFrame:(elapsedMs:number)=>void|Promise<void>;fps?:number;onProgress?:(progress:number)=>void;signal?:AbortSignal};
+// VP8 is usually cheaper than VP9 to encode. MP4 remains available where WebM is not.
+export const MOVIE_MIME_TYPES=['video/webm;codecs=vp8','video/webm','video/mp4;codecs=avc1.42E01E','video/mp4'] as const;
+export function selectSupportedMimeType(recorder:Pick<typeof MediaRecorder,'isTypeSupported'>|undefined=globalThis.MediaRecorder):string|null{return recorder&&typeof recorder.isTypeSupported==='function'?MOVIE_MIME_TYPES.find(m=>recorder.isTypeSupported(m))??null:null;}
+export function canRecordCanvasMovie():boolean{return typeof window!=='undefined'&&typeof MediaRecorder!=='undefined'&&typeof document.createElement('canvas').captureStream==='function'&&selectSupportedMimeType()!==null;}
+export async function recordCanvasMovie({canvas,durationMs,drawFrame,fps=24,onProgress,signal}:RecordCanvasMovieOptions):Promise<MovieRecordingResult>{
+ const mimeType=selectSupportedMimeType();if(!canvas.captureStream||!mimeType)throw new Error('Video recording is unavailable.');
+ const aborted=()=>new DOMException('Recording cancelled','AbortError');if(signal?.aborted)throw aborted();
+ const safeDuration=Math.max(1000,Math.min(24000,Number.isFinite(durationMs)?Math.round(durationMs):6000)),rate=Math.max(12,Math.min(30,Number.isFinite(fps)?Math.round(fps):24));
+ await drawFrame(0);const stream=canvas.captureStream(rate);let recorder:MediaRecorder|null=null;
+ let frame=0,timer=0,watchdog=0,stopWatch=0,stopResolve=()=>{},rejectFrame:(reason:unknown)=>void=()=>{};
+ let failure:unknown=null;const chunks:BlobPart[]=[];
+ const cancel=()=>{failure=aborted();rejectFrame(failure);};
+ const hidden=()=>{if(document.hidden)cancel();};
+ try{
+  recorder=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:2_000_000});
+  const stopped=new Promise<void>(resolve=>{stopResolve=resolve;recorder!.addEventListener('stop',()=>resolve(),{once:true});});
+  recorder.addEventListener('dataavailable',e=>{if(e.data.size)chunks.push(e.data);});recorder.addEventListener('error',()=>{failure=new Error('Video encoder failed.');rejectFrame(failure);});
+  signal?.addEventListener('abort',cancel,{once:true});document.addEventListener('visibilitychange',hidden);recorder.start(250);
+  try{await new Promise<void>((resolve,reject)=>{
+    rejectFrame=reject;const start=performance.now();let last=0,lastProgress=-1;
+    const schedule=()=>{timer=window.setTimeout(()=>{frame=requestAnimationFrame(tick);},Math.max(1,1000/rate-(performance.now()-last)));};
+    const tick=async()=>{if(signal?.aborted||document.hidden){reject(aborted());return;}if(failure){reject(failure);return;}const now=performance.now();if(last&&now-last<1000/rate){schedule();return;}last=now;const elapsed=Math.min(safeDuration,now-start);
+      try{await drawFrame(elapsed);const progress=elapsed/safeDuration;if(progress-lastProgress>=.04||progress===1){onProgress?.(progress);lastProgress=progress;}}catch(e){reject(e);return;}
+      if(elapsed>=safeDuration)resolve();else schedule();
+    };watchdog=window.setTimeout(()=>reject(new Error('Recording timed out.')),safeDuration+10000);schedule();
+  });}finally{clearTimeout(timer);clearTimeout(watchdog);cancelAnimationFrame(frame);if(recorder.state!=='inactive')recorder.stop();stopWatch=window.setTimeout(stopResolve,5000);await stopped;clearTimeout(stopWatch);}
+  if(failure)throw failure;if(signal?.aborted)throw aborted();if(!chunks.length)throw new Error('No video data was produced.');return{blob:new Blob(chunks,{type:mimeType}),mimeType,durationMs:safeDuration};
+ }finally{clearTimeout(timer);clearTimeout(watchdog);clearTimeout(stopWatch);cancelAnimationFrame(frame);signal?.removeEventListener('abort',cancel);document.removeEventListener('visibilitychange',hidden);if(recorder&&recorder.state!=='inactive')recorder.stop();stream.getTracks().forEach(t=>t.stop());}
 }
-
-export function canRecordCanvasMovie(): boolean {
-  if (typeof window === "undefined" || typeof MediaRecorder === "undefined") return false;
-  const canvas = document.createElement("canvas") as HTMLCanvasElement & { captureStream?: (fps?: number) => MediaStream };
-  return typeof canvas.captureStream === "function" && selectSupportedMimeType() !== null;
-}
-
-const waitForRecorderStop = (recorder: MediaRecorder): Promise<void> => new Promise((resolve, reject) => {
-  recorder.addEventListener("stop", () => resolve(), { once: true });
-  recorder.addEventListener("error", () => reject(new Error("The browser could not finish the video recording.")), { once: true });
-});
-
-export async function recordCanvasMovie({
-  canvas,
-  durationMs,
-  drawFrame,
-  fps = 30,
-  onProgress,
-  signal,
-}: RecordCanvasMovieOptions): Promise<MovieRecordingResult> {
-  const captureCanvas = canvas as HTMLCanvasElement & { captureStream?: (fps?: number) => MediaStream };
-  const mimeType = selectSupportedMimeType();
-  if (!captureCanvas.captureStream || typeof MediaRecorder === "undefined" || !mimeType) {
-    throw new Error("Video recording is not supported by this browser.");
-  }
-
-  const safeDuration = Math.max(4000, Math.min(8000, Math.round(durationMs)));
-  const stream = captureCanvas.captureStream(Math.max(12, Math.min(60, Math.round(fps))));
-  const chunks: BlobPart[] = [];
-  const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 4_000_000 });
-  recorder.addEventListener("dataavailable", (event) => {
-    if (event.data.size > 0) chunks.push(event.data);
-  });
-
-  const stopped = waitForRecorderStop(recorder);
-  recorder.start(250);
-  const startedAt = performance.now();
-
-  try {
-    await new Promise<void>((resolve, reject) => {
-      let frameRequest = 0;
-      const frame = async (now: number) => {
-        if (signal?.aborted) {
-          cancelAnimationFrame(frameRequest);
-          reject(new DOMException("Recording cancelled", "AbortError"));
-          return;
-        }
-
-        const elapsed = Math.min(safeDuration, Math.max(0, now - startedAt));
-        try {
-          await drawFrame(elapsed);
-          onProgress?.(elapsed / safeDuration);
-        } catch (error) {
-          cancelAnimationFrame(frameRequest);
-          reject(error);
-          return;
-        }
-
-        if (elapsed >= safeDuration) {
-          resolve();
-          return;
-        }
-        frameRequest = requestAnimationFrame(frame);
-      };
-      frameRequest = requestAnimationFrame(frame);
-    });
-  } finally {
-    if (recorder.state !== "inactive") recorder.stop();
-    await stopped.catch(() => undefined);
-    stream.getTracks().forEach((track) => track.stop());
-  }
-
-  if (!chunks.length) throw new Error("The browser finished without producing video data.");
-  return { blob: new Blob(chunks, { type: mimeType }), mimeType, durationMs: safeDuration };
-}
-
-export function downloadMovieBlob(blob: Blob, fileName: string): void {
-  const safeName = fileName
-    .trim()
-    .replace(/[^a-z0-9-_]+/gi, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60) || "nicos-world-movie";
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `${safeName}.webm`;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
-}
+export function downloadMovieBlob(blob:Blob,fileName:string){const name=fileName.trim().replace(/[^a-z0-9-_]+/gi,'-').replace(/^-+|-+$/g,'').slice(0,60)||'nicos-world-movie';const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${name}.${blob.type.includes('mp4')?'mp4':'webm'}`;document.body.appendChild(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),30000);}
