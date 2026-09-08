@@ -82,7 +82,7 @@ export type MonsterRecord = {
 };
 
 export type PetRecord = { id: string; name: string; species: string; color: string; accessory: string; personality: string; bond: number; tricks: string[]; };
-export type ArtworkRecord = { id: string; title: string; background: string; subject: string; frame: string; caption: string; };
+export type ArtworkRecord = { id: string; title: string; background: string; subject: string; frame: string; caption: string; scale?: number; offset?: number; };
 export type StoryRecord = {
   id: string;
   title: string;
@@ -219,6 +219,7 @@ export type LocalProfile = {
   arcadeScores: Record<string, number>;
   decorations: string[];
   homeLayout?: Record<string, number>;
+  homeTheme?: "starlight" | "sunrise" | "forest";
   badges: string[];
   movieProjects: MovieProject[];
   adventures: GoldenAdventureProgress;

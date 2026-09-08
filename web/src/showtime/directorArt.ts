@@ -29,7 +29,7 @@ async function castArt(ch:RenderableMovieCharacter,profession:NicoProfessionId):
 }
 export async function loadDirectorArt(characters:RenderableMovieCharacter[],profession:NicoProfessionId,scenes:string[]):Promise<DirectorArt>{
  const cast=new Map<string,HTMLCanvasElement>(),backdrops=new Map<string,HTMLCanvasElement>();
- const habitats=scenes.some(s=>s==='jungle'||s==='dinosaur-valley')?localImage(habitatSource):null;
+ const habitats=scenes.some(s=>s==='jungle'||s==='dinosaur-valley'||s==='ocean')?localImage(habitatSource):null;
  const results=await Promise.allSettled([
   ...characters.map(async c=>cast.set(c.key,await castArt(c,profession))),
   ...[...new Set(scenes)].map(async scene=>backdrops.set(scene,await backdrop(scene,habitats)))
@@ -44,7 +44,7 @@ export function disposeDirectorArt(art:DirectorArt|null){art?.cast.forEach(c=>{c
 async function backdrop(scene:string,habitats:Promise<HTMLImageElement>|null):Promise<HTMLCanvasElement>{
  if(scene==='robot-home'||scene==='castle')return bakeRoom(scene==='robot-home'?'workshop':'castle');
  const art=document.createElement('canvas');art.width=960;art.height=540;const c=art.getContext('2d')!;
- if((scene==='jungle'||scene==='dinosaur-valley')&&habitats){const image=await habitats;const w=image.naturalWidth/3,h=image.naturalHeight/3;const x=scene==='jungle'?0:1;c.drawImage(image,x*w+3,3,w-6,h-6,0,0,960,540);return art;}
+ if((scene==='jungle'||scene==='dinosaur-valley'||scene==='ocean')&&habitats){const image=await habitats;const w=image.naturalWidth/3,h=image.naturalHeight/3;const x=scene==='jungle'?0:scene==='ocean'?2:1;c.drawImage(image,x*w+3,3,w-6,h-6,0,0,960,540);return art;}
  const sky=c.createLinearGradient(0,0,0,540);sky.addColorStop(0,scene==='space'?'#101631':'#161538');sky.addColorStop(1,scene==='space'?'#2e4267':'#405274');c.fillStyle=sky;c.fillRect(0,0,960,540);
  for(let i=0;i<82;i++){const x=(i*149+41)%960,y=(i*71+23)%410;c.fillStyle=i%5?'#d7edf3':'#ffd791';c.beginPath();c.arc(x,y,i%7===0?2:1,0,Math.PI*2);c.fill();}
  if(scene==='space'){const glow=c.createRadialGradient(770,135,18,770,135,90);glow.addColorStop(0,'#88b8b8');glow.addColorStop(1,'#35557b');c.fillStyle=glow;c.beginPath();c.arc(770,135,78,0,Math.PI*2);c.fill();c.strokeStyle='#a3c7d17a';c.lineWidth=5;c.beginPath();c.ellipse(770,135,112,22,-.28,0,Math.PI*2);c.stroke();c.fillStyle='#111f3b';c.beginPath();c.moveTo(0,440);c.quadraticCurveTo(380,370,960,455);c.lineTo(960,540);c.lineTo(0,540);c.fill();}

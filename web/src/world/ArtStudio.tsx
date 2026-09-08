@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { ArtworkRecord, LocalProfile } from "../types";
 import { localizeAnimalCompat } from "../i18n/animalsCompat";
 import { mergeAnimalLibrary } from "../FeatureArt";
@@ -21,6 +21,7 @@ function newArtwork(profile: LocalProfile): ArtworkRecord {
 
 export function ArtStudio({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
+  const posterCanvas = useRef<HTMLCanvasElement>(null);
   const [draft, setDraft] = useState<ArtworkRecord>(() => newArtwork(profile));
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -29,7 +30,7 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
       .filter((animal) => animal.discovered)
       .map((animal) => localizeAnimalCompat(animal, language).name);
     return [...new Set([
-      "Nico",
+      "Nico", "Becca", "Lua",
       profile.robot.name,
       ...profile.monsters.map((monster) => monster.name),
       ...profile.pets.map((pet) => pet.name),
@@ -101,8 +102,15 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
           </div>
           <span>{background.emoji}</span>
         </header>
-        <ArtworkPreview artwork={draft} />
+        <ArtworkPreview artwork={draft} profile={profile} canvasRef={posterCanvas} />
         <div className="fw-action-row">
+          <button type="button" onClick={() => {
+            const canvas = posterCanvas.current;
+            if (!canvas || canvas.closest("article")?.getAttribute("data-art-ready") !== "true") { announce(language === "es-MX" ? "Espera a que cargue el arte." : "Wait for the artwork to load."); return; }
+            canvas.toBlob(blob => { if (!blob) { announce(language === "es-MX" ? "No se pudo descargar." : "Download failed."); return; }
+              const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="nico-adventure-poster.png";link.click();window.setTimeout(()=>URL.revokeObjectURL(url),30000);
+            }, "image/png");
+          }}>{language === "es-MX" ? "Descargar póster" : "Download poster"}</button>
           <button type="button" onClick={inspire}>🎲 {language === "es-MX" ? "Inspirarme" : "Inspire me"}</button>
           <button type="button" onClick={startNew}>＋ {language === "es-MX" ? "Lienzo nuevo" : "New canvas"}</button>
           <button type="button" className="fw-primary" onClick={save}>💾 {editingId ? (language === "es-MX" ? "Actualizar" : "Update") : (language === "es-MX" ? "Guardar obra" : "Save artwork")}</button>
@@ -117,6 +125,12 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
             {subjects.map((subject) => <option key={subject}>{subject}</option>)}
           </select>
         </label>
+        <fieldset className="art-composition">
+          <legend>{language === "es-MX" ? "Composición" : "Composition"}</legend>
+          <label>{language === "es-MX" ? "Tamaño del personaje" : "Character size"}<input type="range" min="0.65" max="1.2" step="0.05" value={draft.scale ?? 1} onChange={event => setDraft({...draft, scale:Number(event.target.value)})}/></label>
+          <label>{language === "es-MX" ? "Posición del personaje" : "Character position"}<input type="range" min="-70" max="70" step="5" value={draft.offset ?? 0} onChange={event => setDraft({...draft, offset:Number(event.target.value)})}/></label>
+          <button type="button" onClick={()=>setDraft({...draft,scale:1,offset:0})}>{language === "es-MX" ? "Centrar personaje" : "Center character"}</button>
+        </fieldset>
         <fieldset>
           <legend>{language === "es-MX" ? "Escenario" : "Scene"}</legend>
           <div className="creative-choice-grid">

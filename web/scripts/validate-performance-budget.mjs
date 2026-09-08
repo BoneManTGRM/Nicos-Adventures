@@ -34,7 +34,7 @@ const measured = {
   livingWorldAtlas: enforce(findOne(/^LivingWorldAtlas-[^.]+\.js$/, "Living World Atlas"), 24_000, "Living World Atlas"),
   animalForestTrail: enforce(findOne(/^AnimalForestTrail-[^.]+\.js$/, "Animal Forest trail"), 24_000, "Animal Forest trail"),
   testChamber: enforce(findOne(/^BoltBotTestChamber-[^.]+\.js$/, "BoltBot test chamber"), 20_000, "BoltBot test chamber"),
-  starBridge3d: enforce(findOne(/^BrokenStarBridge-[^.]+\.js$/, "Broken Star Bridge"), 285_000, "Remaining lazy Star Bridge 3D route"),
+  starBridge2d: enforce(findOne(/^BrokenStarBridge-[^.]+\.js$/, "Broken Star Bridge"), 35_000, "Illustrated Star Bridge route"),
 };
 
 console.log(`Performance budgets passed: ${Object.entries(measured).map(([name, bytes]) => `${name}=${bytes}B gzip`).join(", ")}.`);

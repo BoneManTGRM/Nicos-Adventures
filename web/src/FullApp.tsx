@@ -6,7 +6,7 @@ import { tr, ui } from "./i18n/core";
 import { useAppStore } from "./app/AppStoreContext";
 import { applyStarBridgeEvent } from "./game/goldenAdventureProfile";
 import { hasDinosaurValleyAccess } from "./game/starBridgeRepair";
-import { ArtStudio } from "./world/ArtStudio";
+const ArtStudio = lazy(() => import("./world/ArtStudio").then(module => ({ default: module.ArtStudio })));
 import { Badges } from "./world/Badges";
 import { AppHeader, BottomNavigation, PageTitle } from "./world/common";
 import { DinosaurValley } from "./world/DinosaurValley";
