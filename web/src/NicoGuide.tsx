@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useAppStore } from "./app/AppStoreContext";
 import { NicoCostumeFigure } from "./nico/NicoCostumeFigure";
-import { NICO_BASKETBALL_MEDIA, loadBase64Media } from "./nico/nicoBasketballMedia";
+import { NICO_VIDEO, NICO_POSTER } from "./world/NicoVideoCard";
+
 import { openNicoWorld } from "./nico/NicoWorldExperience";
 import "./nico-guide.css";
 
@@ -107,6 +108,7 @@ export default function NicoGuide() {
 
   useEffect(() => {
     if (!isVideoOpen) return;
+    void import("./nico-video.css");
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.requestAnimationFrame(() => videoCloseRef.current?.focus());
@@ -147,38 +149,7 @@ export default function NicoGuide() {
       return;
     }
 
-    const controller = new AbortController();
-    let videoUrl = "";
-    let posterUrl = "";
-    setMedia({ status: "loading", videoUrl: "", posterUrl: "" });
-
-    void Promise.all([
-      loadBase64Media(
-        NICO_BASKETBALL_MEDIA.videoParts,
-        "video/mp4",
-        NICO_BASKETBALL_MEDIA.videoBytes,
-        controller.signal,
-      ),
-      loadBase64Media(
-        NICO_BASKETBALL_MEDIA.posterParts,
-        "image/jpeg",
-        NICO_BASKETBALL_MEDIA.posterBytes,
-        controller.signal,
-      ),
-    ]).then(([videoBlob, posterBlob]) => {
-      if (controller.signal.aborted) return;
-      videoUrl = URL.createObjectURL(videoBlob);
-      posterUrl = URL.createObjectURL(posterBlob);
-      setMedia({ status: "ready", videoUrl, posterUrl });
-    }).catch(() => {
-      if (!controller.signal.aborted) setMedia({ status: "error", videoUrl: "", posterUrl: "" });
-    });
-
-    return () => {
-      controller.abort();
-      if (videoUrl) URL.revokeObjectURL(videoUrl);
-      if (posterUrl) URL.revokeObjectURL(posterUrl);
-    };
+    setMedia({ status: "ready", videoUrl: NICO_VIDEO, posterUrl: NICO_POSTER });
   }, [isVideoOpen, mediaAttempt]);
 
   const openWorldMap = () => {
@@ -295,13 +266,13 @@ export default function NicoGuide() {
                   controls
                   autoPlay
                   muted
-                  loop
                   playsInline
-                  preload="metadata"
+                  preload="none"
                   poster={media.posterUrl}
                   controlsList="nodownload noplaybackrate"
                   disablePictureInPicture
                   aria-label={text.videoPlayLabel}
+                  onError={() => setMedia({ status: "error", videoUrl: "", posterUrl: "" })}
                   onCanPlay={() => {
                     void videoRef.current?.play().catch(() => undefined);
                   }}

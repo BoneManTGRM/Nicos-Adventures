@@ -146,7 +146,7 @@ async function assertLayout(page: Page, label: string) {
 }
 
 async function openDestination(page: Page, name: string) {
-  const destination = page.locator(".fw-destination").filter({ hasText: name });
+  const destination = page.locator(".fw-destination-grid > .fw-destination").filter({ has: page.getByText(name, { exact: true }) });
   await expect(destination).toHaveCount(1);
   await activateWithKeyboard(page, destination);
 }
@@ -301,7 +301,7 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   await openDestination(page, text.monsterLab);
   await expect(page.getByRole("heading", { name: text.monsterLab, exact: true })).toBeFocused();
   await expect(page.getByRole("heading", { name: text.monsterStudio, exact: true })).toBeVisible();
-  await expect(page.locator(".monster-studio__trait")).toHaveCount(6);
+  await expect(page.locator(".monster-studio__trait")).toHaveCount(4);
   await expect(page.locator('.monster-studio__trait[data-trait="eyes"], .monster-studio__trait[data-trait="mouth"], .monster-studio__trait[data-trait="horns"]')).toHaveCount(0);
   const premiumMonster = page.locator('.monster-v2[data-monster-body-art="Dragon"]');
   await expect(premiumMonster).toBeVisible();
@@ -327,8 +327,8 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   const alienMonster = page.locator('.monster-v2[data-monster-body-art="Alien"]');
   await expect(alienMonster).toBeVisible();
   await expect(alienMonster).toHaveAttribute("data-monster-face-treatment", "integrated-visor");
-  await expect(page.locator('.monster-studio__trait[data-trait="arms"]')).toHaveCount(1);
-  await expect(page.locator(".monster-studio__trait")).toHaveCount(7);
+  await expect(page.locator('.monster-studio__trait[data-trait="arms"]')).toHaveCount(0);
+  await expect(page.locator(".monster-studio__trait")).toHaveCount(4);
   const alienFit = await alienMonster.evaluate((element) => {
     const body = element.querySelector<HTMLElement>(".monster-premium-body")!.getBoundingClientRect();
     const horns = element.querySelector<SVGGElement>(".monster-horns")?.getBoundingClientRect();
@@ -422,6 +422,17 @@ test("Golden Adventure passes the production browser matrix", async ({ page, con
   });
   await activateWithKeyboard(page, page.getByRole("button", { name: text.bridgeReturn, exact: true }).last());
   await expect(page.getByText(text.restoredStatus, { exact: true })).toBeVisible();
+  // Complete the same live UI journey by bringing the earned object home.
+  await openDestination(page, language === 'es-MX' ? 'Casa Robot' : 'Robot Home');
+  const keepsake = page.getByRole('button', { name: language === 'es-MX' ? 'Colocar Constelación del Puente Estelar' : 'Place Star Bridge Constellation', exact: true });
+  await keepsake.click();
+  await page.getByRole('button', { name: language === 'es-MX' ? 'Lugar 9' : 'Spot 9', exact: true }).click();
+  await page.locator('.home-journal summary').click();
+  await expect(page.locator('.home-journal')).toContainText('Nico');
+  await page.reload();
+  await expect(keepsake).toHaveAttribute('style', /left: 78%; top: 52%/);
+  await testInfo.attach('real-adventure-homecoming', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
+  await activateWithKeyboard(page, page.locator('.fw-brand'));
   const unlockedAtlasValley = page.locator(".world-atlas__landmark").filter({ hasText: text.dinosaur });
   await expect(unlockedAtlasValley).toBeEnabled();
   await expect(page.locator(".world-atlas")).toHaveAttribute("data-valley-status", "open");

@@ -13,29 +13,17 @@ export const MONSTER_TRAITS: ReadonlyArray<{
   group: MonsterTraitGroup;
 }> = [
   { key: "body", icon: "◉", group: "form" },
-  { key: "wings", icon: "🪽", group: "features" },
-  { key: "arms", icon: "✦", group: "features" },
-  { key: "tail", icon: "〰", group: "features" },
   { key: "color", icon: "●", group: "style" },
   { key: "pattern", icon: "▧", group: "style" },
   { key: "texture", icon: "✺", group: "style" },
 ];
 
-const BINARY_VISUAL_OPTIONS: Partial<Record<MonsterTraitKey, readonly string[]>> = {
-  wings: ["No wings", "Star wings"],
-  tail: ["No tail", "Dragon tail"],
-};
-
-export function monsterVisualTraits(monster: MonsterRecord) {
-  return MONSTER_TRAITS.filter((trait) => {
-    if (trait.key === "arms") return monster.body === "Alien";
-    if (trait.key === "tail") return monster.body !== "Lizard Alien";
-    return true;
-  });
+// Finished artwork keeps its original anatomy and painted-in face.
+export function monsterVisualTraits(_monster: Pick<MonsterRecord, "body">) {
+  return MONSTER_TRAITS;
 }
-
-export function monsterVisualOptions(key: MonsterTraitKey, options: readonly string[]): readonly string[] {
-  return BINARY_VISUAL_OPTIONS[key] ?? options;
+export function monsterVisualOptions(_key: MonsterTraitKey, options: readonly string[]): readonly string[] {
+  return options;
 }
 
 const MONSTER_COLORS: Record<string, string> = {

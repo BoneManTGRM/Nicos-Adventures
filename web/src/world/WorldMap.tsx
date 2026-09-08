@@ -46,6 +46,14 @@ export function WorldMap({
   }
   return (
     <div className="fw-grid fw-grid--map">
+      <section className="world-continue"><div><strong>{language === 'es-MX' ? 'Tu equipo. Tus creaciones. Tu mundo.' : 'Your team. Your creations. Your world.'}</strong><p>{language === 'es-MX' ? 'Prepara a tus amigos, repara el puente y trae una constelación a casa.' : 'Prepare your friends, repair the bridge and bring a constellation home.'}</p></div>
+        <button data-testid="continue-world" onClick={() => {
+          const step = profile.adventures.starBridge.step;
+          if (step === 'briefing' || step === 'complete') open('robot-home');
+          else if (['logic_passed','bridge_inspected','star_core_installed'].includes(step)) setBridgeOpen(true);
+          else open('robo-lab');
+        }}>{language === 'es-MX' ? 'Continuar aventura' : 'Continue adventure'} →</button>
+      </section>
       <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Despertando el Mundo de Nico…" : "Waking up Nico's World…"}</div>}>
         <LivingWorldAtlas language={language} dinosaurValleyAvailable={dinosaurValleyAvailable} open={open} />
       </Suspense>

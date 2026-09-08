@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import type { ArtworkRecord, LocalProfile, PetRecord, Robot } from "../types";
+import { lazy, Suspense, useMemo, useState } from "react";
+import type { ArtworkRecord, LocalProfile, PetRecord, Robot, SectionId } from "../types";
 import { optionLabel } from "../i18n/display";
 import { ROOM_DECORATIONS } from "./catalogs";
 import type { Announce, UpdateProfile } from "./common";
@@ -7,7 +7,10 @@ import { EmptyState } from "./common";
 import { completeOnce, hasCompleted } from "./progression";
 import { roomGoalId } from "./creativeProgression";
 import { PetArt } from "./PetArt";
+import { awardHomecoming } from "../game/goldenAdventureProfile";
 import { LivingHome } from "./LivingHome";
+
+const HomeTheater = lazy(() => import("./HomeTheater").then(module => ({ default: module.HomeTheater })));
 
 type RoomGoal = { id: "robot-team" | "pet-companion" | "art-display" | "decorator"; emoji: string; title: { en: string; "es-MX": string }; ready: boolean; reward: number };
 export const ROOM_DECORATION_VISUALS: Record<string, { icon: string; className: string }> = {
@@ -20,8 +23,9 @@ export const ROOM_DECORATION_VISUALS: Record<string, { icon: string; className: 
   "Dino Fossil Case": { icon: "🦴", className: "dino-fossil" },
   "Art Gallery": { icon: "🎨", className: "art-gallery" },
 };
-export function RobotHome({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
+export function RobotHome({ profile, update, announce, open, beginStarBridge }: { profile: LocalProfile; update: UpdateProfile; announce: Announce; open?: (id: SectionId) => void; beginStarBridge?: () => void }) {
   const language = profile.language;
+  const [theater, setTheater] = useState(false);
   const activePet = profile.pets.find(pet => pet.id === profile.activePetId) ?? profile.pets[0];
   const displayedArtwork = profile.artwork.find(artwork => artwork.id === profile.displayedArtworkId) ?? profile.artwork.at(-1) ?? null;
   const roomGoals = useMemo<RoomGoal[]>(() => [
@@ -46,7 +50,14 @@ export function RobotHome({ profile, update, announce }: { profile: LocalProfile
     announce(language === "es-MX" ? `Meta de la Casa Robot completada: ${goal.title[language]}. Ganaste ${goal.reward} estrellas.` : `Robot Home goal completed: ${goal.title[language]}. You earned ${goal.reward} stars.`);
   };
   return <div className="robot-home-system">
+    <section className="world-continue"><div><strong>{language === 'es-MX' ? 'La aventura empieza en casa' : 'Adventure starts at home'}</strong></div>
+      {profile.adventures.starBridge.step === 'complete' ? <>
+        {!profile.completedMissions.includes('homecoming:star-bridge') && <button onClick={() => update(awardHomecoming(profile))}>{language === 'es-MX' ? 'Traer mi recuerdo a casa' : 'Bring my keepsake home'}</button>}
+        <button onClick={() => open?.('story-castle')}>{language === 'es-MX' ? 'Crear otra historia' : 'Make another story'}</button>
+      </> : <button onClick={() => profile.adventures.starBridge.step === 'briefing' ? beginStarBridge?.() : open?.(['logic_passed', 'bridge_inspected', 'star_core_installed'].includes(profile.adventures.starBridge.step) ? 'world-map' : 'robo-lab')}>{language === 'es-MX' ? 'Continuar aventura' : 'Continue adventure'} →</button>}
+    </section>
     <LivingHome profile={profile} update={update} announce={announce} />
+    <details open={theater} onToggle={e => setTheater(e.currentTarget.open)} className="robot-home-controls"><summary>📺 {language === 'es-MX' ? 'Televisión de casa · Mis películas' : 'Home TV · My movies'}</summary>{theater && <Suspense fallback={<p role="status">{language === 'es-MX' ? 'Preparando el escenario…' : 'Preparing the stage…'}</p>}><HomeTheater profile={profile} update={update} /></Suspense>}</details>
     <section className="robot-home-controls" aria-labelledby="robot-home-team-heading">
       <header><div><small>{language === "es-MX" ? "Equipo local" : "Local team"}</small><h2 id="robot-home-team-heading">{language === "es-MX" ? "Quién vive aquí" : "Who lives here"}</h2></div></header>
       <div className="robot-home-control-grid">
