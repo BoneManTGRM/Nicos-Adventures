@@ -121,7 +121,7 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
         <label>{language === "es-MX" ? "Título" : "Title"}<input value={draft.title} maxLength={60} onChange={(event) => setDraft({ ...draft, title: event.target.value })} /></label>
         <label>
           {language === "es-MX" ? "Protagonista" : "Subject"}
-          <select value={draft.subject} onChange={(event) => setDraft({ ...draft, subject: event.target.value })}>
+          <select aria-label={language === "es-MX" ? "Protagonista" : "Subject"} value={draft.subject} onChange={(event) => setDraft({ ...draft, subject: event.target.value })}>
             {subjects.map((subject) => <option key={subject}>{subject}</option>)}
           </select>
         </label>
