@@ -53,8 +53,19 @@ actual service worker, render the store, reject catalog fetches and order action
 and return to the cached game. This is a **real origin-outage control**, not a claim
 that it proves physical iPhone airplane-mode behavior. The six-project in-page
 offline/reconnect transaction tests remain unchanged and required.
-Local harness serving/shutdown checks pass. New remote browser results must be
-recorded before calling the revised qualification green.
+The harness serving/shutdown check passes locally; the full local unit suite is
+now **367 passes**. Remote run **36158808882**, artifact **10874723524**, checked
+head `d2a5a9c3fcf28a60fec1b5fb40315f644d03f72b` via GitHub's PR merge candidate
+`690187e6ae7036c1253f53fa649d101453e27eb6`: **66 browser passes, 0 failures,
+0 skips, 0 retries**. The actual iPhone Spanish outage screenshot was reviewed;
+its shell remains available while catalog retrieval and ordering fail closed.
+
+The final verification addition runs only on main pushes: it compares the exact
+live release commit, worker bytes, compiled catalog and lazy store script/style
+with the checked-out build, then checks the real production site in six
+browser-language combinations. It never submits an order, charge or message.
+That production check has not run yet; its result is required for deployment
+acceptance. All ordinary pre-merge checks remain enabled.
 
 ## Review and production boundaries
 

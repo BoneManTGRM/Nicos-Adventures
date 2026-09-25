@@ -34,3 +34,4 @@ web/store-playwright-report/
 web/playwright.*.local.ts
 store-source.tar.gz
 store-dependencies.tar.gz
+web/store-production-proof/
