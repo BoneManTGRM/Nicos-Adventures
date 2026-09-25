@@ -1,0 +1,56 @@
+name: Connected Adventure & Mobile Polish
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: connected-adventure-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  connected-adventure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Unit and UI contracts
+        run: npm test
+      - name: Build, types, unchanged budgets and closed-store output
+        run: npm run build && node scripts/validate-store-output.mjs && node scripts/validate-creative-budgets.mjs
+      - name: Pinned browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Six-profile preview journeys
+        if: github.event_name == 'pull_request'
+        run: npx playwright test --config playwright.connected.config.ts
+      - name: Bind exact main production revision
+        if: github.event_name == 'push'
+        run: node scripts/wait-for-cutout-release.mjs
+      - name: Six-profile live journeys
+        if: github.event_name == 'push'
+        env:
+          NICO_PRODUCTION_URL: https://nicos-world.com
+        run: npx playwright test --config playwright.connected.config.ts
+      - name: Preserve rendered evidence and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: connected-adventure-${{ github.sha }}
+          retention-days: 14
+          path: |
+            web/connected-report
+            web/connected-test-results
+            web/connected-results.json
+            web/cutout-production-release.json
+            web/dist/release.json

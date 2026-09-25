@@ -1,3 +1,5 @@
+import "./home-creations.css";
+import { nextAdventure } from "./journey";
 import { lazy, Suspense, useMemo, useState } from "react";
 import type { ArtworkRecord, LocalProfile, PetRecord, Robot, SectionId } from "../types";
 import { optionLabel } from "../i18n/display";
@@ -23,17 +25,18 @@ export const ROOM_DECORATION_VISUALS: Record<string, { icon: string; className: 
   "Dino Fossil Case": { icon: "🦴", className: "dino-fossil" },
   "Art Gallery": { icon: "🎨", className: "art-gallery" },
 };
-export function RobotHome({ profile, update, announce, open, beginStarBridge }: { profile: LocalProfile; update: UpdateProfile; announce: Announce; open?: (id: SectionId) => void; beginStarBridge?: () => void }) {
+export function RobotHome({ profile, update, announce, open, beginStarBridge, continueAdventure, openArtwork, openStory }: { profile: LocalProfile; update: UpdateProfile; announce: Announce; open?: (id: SectionId) => void; beginStarBridge?: () => void; continueAdventure?: () => void; openArtwork?: (id:string)=>void; openStory?: (id:string)=>void }) {
   const language = profile.language;
+  const next = nextAdventure(profile.adventures.starBridge.step,language);
   const [theater, setTheater] = useState(false);
   const activePet = profile.pets.find(pet => pet.id === profile.activePetId) ?? profile.pets[0];
   const displayedArtwork = profile.artwork.find(artwork => artwork.id === profile.displayedArtworkId) ?? profile.artwork.at(-1) ?? null;
   const roomGoals = useMemo<RoomGoal[]>(() => [
-    { id: "robot-team", emoji: "🤖", title: { en: "Build a two-robot team", "es-MX": "Forma un equipo de dos robots" }, ready: profile.robots.length >= 2, reward: 1 },
+    ...(profile.robots.length >= 2 || hasCompleted(profile, roomGoalId("robot-team")) ? [{ id: "robot-team" as const, emoji: "🤖", title: { en: "Build a two-robot team", "es-MX": "Forma un equipo de dos robots" }, ready: profile.robots.length >= 2, reward: 1 }] : []),
     { id: "pet-companion", emoji: "🐾", title: { en: "Choose an active pet companion", "es-MX": "Elige una mascota compañera" }, ready: Boolean(activePet), reward: 1 },
     { id: "art-display", emoji: "🖼️", title: { en: "Display artwork at home", "es-MX": "Exhibe una obra en casa" }, ready: Boolean(displayedArtwork), reward: 1 },
     { id: "decorator", emoji: "✨", title: { en: "Place four room decorations", "es-MX": "Coloca cuatro decoraciones" }, ready: profile.decorations.length >= 4, reward: 2 },
-  ], [activePet, displayedArtwork, profile.decorations.length, profile.robots.length]);
+  ], [activePet, displayedArtwork, profile.decorations.length, profile.robots.length, profile.completedMissions]);
   const chooseRobot = (robot: Robot) => { update({ ...profile, robot, activeRobotId: robot.id }); announce(language === "es-MX" ? `${robot.name} está activo en la Casa Robot.` : `${robot.name} is active in Robot Home.`); };
   const choosePet = (pet: PetRecord) => { update({ ...profile, activePetId: pet.id }); announce(language === "es-MX" ? `${pet.name} es la mascota compañera.` : `${pet.name} is the companion pet.`); };
   const displayArtwork = (artwork: ArtworkRecord) => { update({ ...profile, displayedArtworkId: artwork.id }); announce(language === "es-MX" ? `${artwork.title} está en exhibición.` : `${artwork.title} is on display.`); };
@@ -54,16 +57,23 @@ export function RobotHome({ profile, update, announce, open, beginStarBridge }: 
       {profile.adventures.starBridge.step === 'complete' ? <>
         {!profile.completedMissions.includes('homecoming:star-bridge') && <button onClick={() => update(awardHomecoming(profile))}>{language === 'es-MX' ? 'Traer mi recuerdo a casa' : 'Bring my keepsake home'}</button>}
         <button onClick={() => open?.('story-castle')}>{language === 'es-MX' ? 'Crear otra historia' : 'Make another story'}</button>
-      </> : <button onClick={() => profile.adventures.starBridge.step === 'briefing' ? beginStarBridge?.() : open?.(['logic_passed', 'bridge_inspected', 'star_core_installed'].includes(profile.adventures.starBridge.step) ? 'world-map' : 'robo-lab')}>{language === 'es-MX' ? 'Continuar aventura' : 'Continue adventure'} →</button>}
+      </> : <button onClick={() => continueAdventure ? continueAdventure() : next.action==='begin' ? beginStarBridge?.() : open?.(next.action==='bridge'?'world-map':'robo-lab')}>{next.label} →</button>}
     </section>
     <LivingHome profile={profile} update={update} announce={announce} />
+    <section className="home-creation-shelf" aria-labelledby="home-creations-title">
+      <h2 id="home-creations-title">{language==='es-MX'?'Hecho por ti':'Made by you'}</h2>
+      <div>{displayedArtwork&&openArtwork&&<button type="button" data-testid="home-edit-art" onClick={()=>openArtwork(displayedArtwork.id)}><span aria-hidden="true">🖼️</span><strong>{displayedArtwork.title}</strong><small>{language==='es-MX'?'Ver y editar mi obra':'View and edit my artwork'}</small></button>}
+      {profile.stories.slice(-3).reverse().map(story=>openStory&&<button type="button" data-testid="home-read-story" key={story.id} onClick={()=>openStory(story.id)}><span aria-hidden="true">📖</span><strong>{story.title}</strong><small>{language==='es-MX'?'Abrir mi cuento':'Open my story'}</small></button>)}
+      {!profile.stories.length&&open&&<button type="button" onClick={()=>open('story-castle')}><span aria-hidden="true">📚</span><strong>{language==='es-MX'?'Inventar mi primer cuento':'Make my first story'}</strong></button>}
+      </div>
+    </section>
     <details open={theater} onToggle={e => setTheater(e.currentTarget.open)} className="robot-home-controls"><summary>📺 {language === 'es-MX' ? 'Televisión de casa · Mis películas' : 'Home TV · My movies'}</summary>{theater && <Suspense fallback={<p role="status">{language === 'es-MX' ? 'Preparando el escenario…' : 'Preparing the stage…'}</p>}><HomeTheater profile={profile} update={update} /></Suspense>}</details>
     <section className="robot-home-controls" aria-labelledby="robot-home-team-heading">
       <header><div><small>{language === "es-MX" ? "Equipo local" : "Local team"}</small><h2 id="robot-home-team-heading">{language === "es-MX" ? "Quién vive aquí" : "Who lives here"}</h2></div></header>
       <div className="robot-home-control-grid">
         <article><h3>{language === "es-MX" ? "Robot activo" : "Active robot"}</h3><div className="robot-home-choice-list">{profile.robots.map(robot => <button type="button" className={profile.activeRobotId === robot.id ? "active" : ""} aria-pressed={profile.activeRobotId === robot.id} key={robot.id} onClick={() => chooseRobot(robot)}>🤖 {robot.name}</button>)}</div></article>
-        <article><h3>{language === "es-MX" ? "Mascota compañera" : "Companion pet"}</h3>{!profile.pets.length ? <EmptyState emoji="🐾">{language === "es-MX" ? "Construye una mascota en el taller." : "Build a pet in the workshop."}</EmptyState> : <div className="robot-home-choice-list">{profile.pets.map(pet => <button type="button" className={`pet-collection-button ${activePet?.id === pet.id ? "active" : ""}`} aria-pressed={activePet?.id === pet.id} key={pet.id} onClick={() => choosePet(pet)}><PetArt pet={pet} language={language} decorative /><span>{pet.name}</span></button>)}</div>}</article>
-        <article><h3>{language === "es-MX" ? "Arte en exhibición" : "Artwork on display"}</h3>{!profile.artwork.length ? <EmptyState emoji="🎨">{language === "es-MX" ? "Crea una obra en el Estudio de arte." : "Create artwork in Art Studio."}</EmptyState> : <div className="robot-home-choice-list">{profile.artwork.map(artwork => <button type="button" className={displayedArtwork?.id === artwork.id ? "active" : ""} aria-pressed={displayedArtwork?.id === artwork.id} key={artwork.id} onClick={() => displayArtwork(artwork)}>🖼️ {artwork.title}</button>)}</div>}</article>
+        <article><h3>{language === "es-MX" ? "Mascota compañera" : "Companion pet"}</h3>{!profile.pets.length ? <div><EmptyState emoji="🐾">{language === "es-MX" ? "Construye una mascota en el taller." : "Build a pet in the workshop."}</EmptyState>{open&&<button type="button" data-testid="home-create-pet" onClick={()=>open('pet-workshop')}>{language==='es-MX'?'Ir al taller de mascotas':'Go to the pet workshop'} →</button>}</div> : <div className="robot-home-choice-list">{profile.pets.map(pet => <button type="button" className={`pet-collection-button ${activePet?.id === pet.id ? "active" : ""}`} aria-pressed={activePet?.id === pet.id} key={pet.id} onClick={() => choosePet(pet)}><PetArt pet={pet} language={language} decorative /><span>{pet.name}</span></button>)}</div>}</article>
+        <article><h3>{language === "es-MX" ? "Arte en exhibición" : "Artwork on display"}</h3>{!profile.artwork.length ? <div><EmptyState emoji="🎨">{language === "es-MX" ? "Crea una obra en el Estudio de arte." : "Create artwork in Art Studio."}</EmptyState>{open&&<button type="button" data-testid="home-create-art" onClick={()=>open('art-studio')}>{language==='es-MX'?'Crear arte para mi habitación':'Make art for my room'} →</button>}</div> : <div className="robot-home-choice-list">{profile.artwork.map(artwork => <button type="button" className={displayedArtwork?.id === artwork.id ? "active" : ""} aria-pressed={displayedArtwork?.id === artwork.id} key={artwork.id} onClick={() => displayArtwork(artwork)}>🖼️ {artwork.title}</button>)}</div>}</article>
       </div>
     </section>
     <section className="robot-home-controls" aria-labelledby="robot-home-decor-heading"><header><div><small>{profile.decorations.length}/{ROOM_DECORATIONS.length}</small><h2 id="robot-home-decor-heading">{language === "es-MX" ? "Decorar la habitación" : "Decorate the room"}</h2></div></header><div className="robot-home-decoration-grid">{ROOM_DECORATIONS.map(item => <button type="button" className={profile.decorations.includes(item) ? "active" : ""} aria-pressed={profile.decorations.includes(item)} key={item} onClick={() => toggleDecoration(item)}>{profile.decorations.includes(item) ? "✓ " : "＋ "}{optionLabel(item, language)}</button>)}</div></section>
