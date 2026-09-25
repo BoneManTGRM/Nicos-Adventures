@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import { createProfile } from '../src/storage';
 import { TRICKS } from '../src/world/petPlay';
 
 test.use({ serviceWorkers: 'allow' });
@@ -7,15 +6,19 @@ test.use({ serviceWorkers: 'allow' });
 test('pet playground and every Sparky pose remain available after going offline', async ({ page, context }, info) => {
   test.setTimeout(120_000);
   const es = info.project.metadata.language === 'es-MX';
-  const profile = createProfile('Nico', es ? 'es-MX' : 'en');
-  profile.selectedSection = 'pet-workshop';
-  profile.pets = [{ id: 'offline-sparky', name: 'Sparky', species: 'Robot Dog', color: 'Blue', accessory: 'Explorer Scarf', personality: 'Playful', bond: 73, tricks: TRICKS.map(trick => trick.id) }];
-  profile.activePetId = 'offline-sparky';
-  await page.addInitScript(store => {
-    const key = 'nicos-world-local-save-v4';
-    if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(store));
-  }, { schemaVersion: 4, activeProfileId: profile.id, profiles: [profile] });
   await page.goto('/');
+  await expect(page.getByTestId('continue-world')).toBeVisible();
+  await page.evaluate(({ es, tricks }) => {
+    const key = 'nicos-world-local-save-v4';
+    const store = JSON.parse(localStorage.getItem(key)!);
+    const profile = store.profiles.find((item: { id: string }) => item.id === store.activeProfileId);
+    Object.assign(profile, {
+      selectedSection: 'pet-workshop', language: es ? 'es-MX' : 'en', activePetId: 'offline-sparky',
+      pets: [{ id: 'offline-sparky', name: 'Sparky', species: 'Robot Dog', color: 'Blue', accessory: 'Explorer Scarf', personality: 'Playful', bond: 73, tricks }],
+    });
+    localStorage.setItem(key, JSON.stringify(store));
+  }, { es, tricks: TRICKS.map(trick => trick.id) });
+  await page.reload();
   await expect(page.locator('.pet-haven')).toBeVisible();
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 60_000 });
   const cached = await page.evaluate(async () => {
