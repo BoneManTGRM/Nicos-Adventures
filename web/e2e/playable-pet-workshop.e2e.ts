@@ -18,7 +18,8 @@ async function boot(page: Page, info: TestInfo, pets: PetRecord[] = [pet()]) {
 async function tab(page: Page, name: string) { await page.locator('.pet-haven__nav').getByRole('button', { name, exact: true }).click(); }
 async function cues(page: Page) {
   for (let index = 0; index < 3; index++) {
-    const text = await page.locator('.pet-haven__sequence [aria-current="step"] small').innerText();
+    const text = (await page.locator('.pet-haven__sequence [aria-current="step"] small').textContent()) ?? '';
+    expect(text).toMatch(/^\d+\.\s*\S/);
     await page.locator('.pet-haven__cue-buttons').getByRole('button', { name: text.replace(/^\d+\.\s*/, ''), exact: true }).click();
   }
   await expect(page.locator('.pet-haven__challenge')).toContainText(/Great teamwork|Gran trabajo/);
