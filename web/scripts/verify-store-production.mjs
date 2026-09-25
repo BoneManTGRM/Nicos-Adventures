@@ -19,7 +19,7 @@ async function get(path) {
 try {
   const local = JSON.parse(await readFile("dist/release.json", "utf8"));
   assert.equal(local.commitSha, expected, "Verification checkout must match the expected deployment");
-  const deadline = Date.now() + 8 * 60_000;
+  const deadline = Date.now() + 15 * 60_000;
   let release;
   while (Date.now() < deadline) {
     try { release = await (await get("/release.json")).json(); if (release.commitSha === expected) break; }
@@ -27,7 +27,11 @@ try {
     await pause(5000);
   }
   proof.release = release;
-  assert.equal(release?.commitSha, expected, "Production did not serve the expected release within eight minutes");
+  assert.equal(release?.commitSha, expected, "Production did not serve the expected release within fifteen minutes");
+  // Deployment queues can outlast the original eight-minute arrival window.
+  // The exact revision and all privacy/browser assertions remain mandatory.
+  proof.homeCacheControl = (await get("/")).headers.get("cache-control");
+  assert.match(proof.homeCacheControl || "", /no-transform/i, "Shared HTML shell must reject edge script injection");
   const worker = Buffer.from(await (await get("/sw.js")).arrayBuffer());
   assert.equal(hash(worker), local.serviceWorkerHash, "Live worker differs from the verified checkout");
   assert.equal(hash(worker), release.serviceWorkerHash, "Live release receipt does not match its worker");
@@ -61,7 +65,9 @@ try {
           const external = [];
           const track = request => { if (new URL(request.url()).origin !== origin) external.push(request.url()); };
           page.on("request", track);
-          await page.goto(`${origin}/store?lang=${language}`, { waitUntil: "networkidle", timeout: 30_000 });
+          const navigation = await page.goto(`${origin}/store?lang=${language}`, { waitUntil: "networkidle", timeout: 30_000 });
+          result.cacheControl = navigation?.headers()["cache-control"];
+          assert.match(result.cacheControl || "", /no-transform/i, "Store must reject edge script injection");
           const title = language === "en" ? "Nico’s Toy Shop" : "La Tiendita de Nico";
           await page.getByRole("heading", { level: 1, name: title, exact: true }).waitFor();
           assert.equal(await page.locator(".toy-card").count(), catalog.products.length);
