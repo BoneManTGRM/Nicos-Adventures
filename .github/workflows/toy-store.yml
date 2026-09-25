@@ -1,0 +1,69 @@
+name: Toy Store Verification
+
+on:
+  pull_request:
+    paths:
+      - 'web/**'
+      - 'docs/*STORE*'
+      - 'docs/plans/*toy-store*'
+      - '.github/workflows/toy-store.yml'
+  push:
+    branches: [main, feat/nicos-toy-store]
+    paths:
+      - 'web/**'
+      - 'docs/*STORE*'
+      - '.github/workflows/toy-store.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: toy-store-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  store:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Preserve reproducible source for review
+        run: |
+          git archive --format=tar.gz --output=../store-source.tar.gz HEAD
+          tar -czf ../store-dependencies.tar.gz node_modules
+      - uses: actions/upload-artifact@v4
+        with:
+          name: store-review-source-${{ github.sha }}
+          path: |
+            store-source.tar.gz
+            store-dependencies.tar.gz
+          retention-days: 3
+      - name: Unit baseline and regression tests
+        run: npm test
+      - name: Build and release validations
+        run: npm run build
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Browser store contract
+        run: npx playwright test --config playwright.store.config.ts
+      - name: Preserve browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: toy-store-evidence-${{ github.sha }}
+          path: |
+            web/store-test-results
+            web/store-playwright-report
+            web/dist/release-manifest.json
+          retention-days: 14
