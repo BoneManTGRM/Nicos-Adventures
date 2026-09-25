@@ -15,6 +15,8 @@ const requiredFiles = [
   "src/world/friendly-duel.css",
   "src/world/DinosaurValley.tsx",
   "src/world/PetWorkshop.tsx",
+  "src/world/petPlay.ts",
+  "src/world/petPlay.test.ts",
   "src/world/progression.css",
 ];
 
@@ -36,7 +38,7 @@ const friendlyDuelView = read("src/world/FriendlyDuel.tsx");
 const friendlyDuelTests = read("src/world/friendlyDuel.test.ts");
 const friendlyDuelCss = read("src/world/friendly-duel.css");
 const dinosaurs = read("src/world/DinosaurValley.tsx");
-const pets = read("src/world/PetWorkshop.tsx");
+const pets = read("src/world/PetWorkshop.tsx") + read("src/world/petPlay.ts");
 const css = read("src/world/progression.css");
 const progressionTests = read("src/world/progression.test.ts");
 const arcadeTests = read("src/world/arcadeChallenges.test.ts");
