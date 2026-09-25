@@ -1,3 +1,4 @@
+import "./art-jumps.css";
 import { useMemo, useRef, useState } from "react";
 import type { ArtworkRecord, LocalProfile } from "../types";
 import { localizeAnimalCompat } from "../i18n/animalsCompat";
@@ -19,11 +20,14 @@ function newArtwork(profile: LocalProfile): ArtworkRecord {
   };
 }
 
-export function ArtStudio({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
+export function ArtStudio({ profile, update, announce, initialArtworkId, openHome }: { profile: LocalProfile; update: UpdateProfile; announce: Announce; initialArtworkId?: string; openHome?: () => void }) {
   const language = profile.language;
   const posterCanvas = useRef<HTMLCanvasElement>(null);
-  const [draft, setDraft] = useState<ArtworkRecord>(() => newArtwork(profile));
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const initialArtwork = profile.artwork.find(item => item.id === initialArtworkId);
+  const [offerHome,setOfferHome] = useState(false);
+  const [draft, setArtworkDraft] = useState<ArtworkRecord>(() => initialArtwork ? {...initialArtwork} : newArtwork(profile));
+  const setDraft: typeof setArtworkDraft = value => {setOfferHome(false);setArtworkDraft(value);};
+  const [editingId, setEditingId] = useState<string | null>(initialArtwork?.id ?? null);
 
   const subjects = useMemo(() => {
     const discovered = mergeAnimalLibrary(profile.animals)
@@ -74,6 +78,7 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
     update(nextProfile);
     setDraft(artwork);
     setEditingId(artwork.id);
+    setOfferHome(true);
     announce(language === "es-MX"
       ? `${title} guardada.${!exists ? " Ganaste dos estrellas." : ""}${milestones.milestones.length ? " También alcanzaste un hito creativo." : ""}`
       : `${title} saved.${!exists ? " You earned two stars." : ""}${milestones.milestones.length ? " You also reached a creative milestone." : ""}`);
@@ -93,12 +98,15 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
   };
 
   return (
-    <div className="creative-studio-layout">
+    <div className="creative-studio-layout connected-art-studio">
+      <nav className="creation-jumps" aria-label={language==='es-MX'?'Moverse por el estudio':'Move around the studio'}>
+        {([['art-preview-heading',language==='es-MX'?'Vista previa':'Preview'],['art-tools',language==='es-MX'?'Herramientas':'Tools'],['art-library-heading',language==='es-MX'?'Galería':'Gallery']] as const).map(([id,label])=><button type="button" key={id} onClick={()=>{const target=document.getElementById(id);target?.scrollIntoView({block:'start',behavior:'auto'});target?.focus({preventScroll:true});}}>{label}</button>)}
+      </nav>
       <section className="creative-canvas-panel" aria-labelledby="art-preview-heading">
         <header>
           <div>
             <small>{language === "es-MX" ? "Vista previa en vivo" : "Live preview"}</small>
-            <h2 id="art-preview-heading">{draft.title || (language === "es-MX" ? "Obra sin título" : "Untitled Artwork")}</h2>
+            <h2 id="art-preview-heading" tabIndex={-1}>{draft.title || (language === "es-MX" ? "Obra sin título" : "Untitled Artwork")}</h2>
           </div>
           <span>{background.emoji}</span>
         </header>
@@ -115,9 +123,14 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
           <button type="button" onClick={startNew}>＋ {language === "es-MX" ? "Lienzo nuevo" : "New canvas"}</button>
           <button type="button" className="fw-primary" onClick={save}>💾 {editingId ? (language === "es-MX" ? "Actualizar" : "Update") : (language === "es-MX" ? "Guardar obra" : "Save artwork")}</button>
         </div>
+        {offerHome && openHome && profile.artwork.some(item=>item.id===editingId) && <section className="creation-next" aria-label={language==='es-MX'?'Qué sigue':'What next'}>
+          <strong>{language==='es-MX'?'Tu creación tiene un lugar en casa.':'Your creation has a place at home.'}</strong>
+          <button type="button" data-testid="art-see-home" onClick={openHome}>{language==='es-MX'?'Verla en mi habitación':'See it in my room'} →</button>
+          <button type="button" onClick={()=>setOfferHome(false)}>{language==='es-MX'?'Seguir creando':'Keep creating'}</button>
+        </section>}
       </section>
 
-      <section className="fw-panel creative-controls" aria-label={language === "es-MX" ? "Controles del estudio de arte" : "Art Studio controls"}>
+      <section id="art-tools" tabIndex={-1} className="fw-panel creative-controls" aria-label={language === "es-MX" ? "Controles del estudio de arte" : "Art Studio controls"}>
         <label>{language === "es-MX" ? "Título" : "Title"}<input value={draft.title} maxLength={60} onChange={(event) => setDraft({ ...draft, title: event.target.value })} /></label>
         <label>
           {language === "es-MX" ? "Protagonista" : "Subject"}
@@ -159,7 +172,7 @@ export function ArtStudio({ profile, update, announce }: { profile: LocalProfile
         <header>
           <div>
             <small>{language === "es-MX" ? "Guardado local" : "Saved locally"}</small>
-            <h2 id="art-library-heading">{language === "es-MX" ? "Galería" : "Gallery"}</h2>
+            <h2 id="art-library-heading" tabIndex={-1}>{language === "es-MX" ? "Galería" : "Gallery"}</h2>
           </div>
           <strong>{profile.artwork.length}/60</strong>
         </header>

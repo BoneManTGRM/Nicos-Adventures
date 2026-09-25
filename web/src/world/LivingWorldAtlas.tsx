@@ -39,7 +39,7 @@ export function LivingWorldAtlas({
     >
       <header className="world-atlas__intro">
         <small>{tr(copy.eyebrow, language)}</small>
-        <h2 id="world-atlas-title">{tr(copy.title, language)}</h2>
+        <h2 id="world-atlas-title" tabIndex={-1}>{tr(copy.title, language)}</h2>
         <p>{tr(copy.body, language)}</p>
         <strong className={`world-atlas__route-status ${dinosaurValleyAvailable ? "is-open" : "is-locked"}`}>
           <span aria-hidden="true">{dinosaurValleyAvailable ? "✦" : "◆"}</span>

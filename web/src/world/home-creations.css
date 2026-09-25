@@ -1,0 +1,6 @@
+.home-creation-shelf {padding:18px 0;}
+.home-creation-shelf h2 {margin:0 0 12px;font-size:22px;}
+.home-creation-shelf>div {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.home-creation-shelf button {display:grid;grid-template-columns:32px 1fr;text-align:left;gap:5px 8px;overflow-wrap:anywhere;}
+.home-creation-shelf button>span {grid-row:1/3;font-size:24px;}
+.home-creation-shelf button>small {font-size:12px;color:#bfd7e8;}

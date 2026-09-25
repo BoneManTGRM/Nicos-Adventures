@@ -1,3 +1,4 @@
+import { JourneyNavigation, type JourneyMenuKind } from "./JourneyNavigation";
 import type { ReactNode } from "react";
 import type { Language, LocalProfile, SectionId } from "../types";
 import { fieldLabel, tr, ui } from "../i18n/core";
@@ -64,35 +65,8 @@ export function PageTitle({ sectionId, language }: { sectionId: SectionId; langu
   );
 }
 
-export function BottomNavigation({
-  profile,
-  open,
-}: {
-  profile: LocalProfile;
-  open: (id: SectionId) => void;
-}) {
-  const ids: SectionId[] = ["world-map", "robo-lab", "animal-forest", "monster-lab", "robot-home", "parent-settings"];
-  return (
-    <nav className="fw-bottom-nav" aria-label={tr(ui.mainNavigation, profile.language)}>
-      {ids.map((sectionId) => {
-        const section = WORLD_SECTIONS.find((item) => item.id === sectionId)!;
-        const active = profile.selectedSection === sectionId;
-        return (
-          <button
-            type="button"
-            key={sectionId}
-            className={active ? "active" : ""}
-            aria-current={active ? "page" : undefined}
-            aria-label={`${tr(ui.openDestination, profile.language)}: ${tr(section.name, profile.language)}`}
-            onClick={() => open(sectionId)}
-          >
-            <span aria-hidden="true">{section.emoji}</span>
-            <small>{tr(section.name, profile.language)}</small>
-          </button>
-        );
-      })}
-    </nav>
-  );
+export function BottomNavigation({profile,open,showMenu}:{profile:LocalProfile;open:(id:SectionId)=>void;showMenu?:(kind:JourneyMenuKind)=>void}) {
+  return <JourneyNavigation profile={profile} open={open} showMenu={showMenu} />;
 }
 
 export function LocalizedSelect({

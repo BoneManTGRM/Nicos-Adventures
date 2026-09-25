@@ -142,7 +142,7 @@ for (const sectionId of sectionIds) {
   }
 }
 
-if (!common.includes('aria-current={active ? "page" : undefined}') || !common.includes('tabIndex={-1}')) {
+if (!read('src/world/JourneyNavigation.tsx').includes('aria-current={active ? "page" : undefined}') || !common.includes('tabIndex={-1}')) {
   throw new Error("World navigation does not expose the active page or focusable destination heading");
 }
 if (!animalForest.includes("localizeAnimalCompat") || !animalForest.includes('aria-pressed={sourceAnimal.favorite}')) {

@@ -7,6 +7,7 @@ import type { LocalProfile, SectionId } from "../types";
 import { tr, ui } from "../i18n/core";
 import { WORLD_SECTIONS } from "./catalogs";
 import { NicoVideoCard } from "./NicoVideoCard";
+import { nextAdventure } from "./journey";
 import { StarBridgeMap } from "./StarBridgeMap";
 
 const BrokenStarBridge = lazy(() => import("./BrokenStarBridge").then((module) => ({
@@ -21,14 +22,17 @@ export function WorldMap({
   open,
   beginStarBridge,
   advanceStarBridge,
+  onCreate, initialBridgeOpen = false,
 }: {
   profile: LocalProfile;
   open: (id: SectionId) => void;
   beginStarBridge: () => void;
   advanceStarBridge: (event: StarBridgeEvent) => void;
+  onCreate?: () => void; initialBridgeOpen?: boolean;
 }) {
   const language = profile.language;
-  const [bridgeOpen, setBridgeOpen] = useState(false);
+  const next = nextAdventure(profile.adventures.starBridge.step, language);
+  const [bridgeOpen, setBridgeOpen] = useState(initialBridgeOpen);
   const discovered = mergeAnimalLibrary(profile.animals).filter((animal) => animal.discovered).length;
   const dinosaurValleyAvailable = hasDinosaurValleyAccess(profile);
   if (bridgeOpen) {
@@ -46,13 +50,17 @@ export function WorldMap({
   }
   return (
     <div className="fw-grid fw-grid--map">
-      <section className="world-continue"><div><strong>{language === 'es-MX' ? 'Tu equipo. Tus creaciones. Tu mundo.' : 'Your team. Your creations. Your world.'}</strong><p>{language === 'es-MX' ? 'Prepara a tus amigos, repara el puente y trae una constelación a casa.' : 'Prepare your friends, repair the bridge and bring a constellation home.'}</p></div>
-        <button data-testid="continue-world" onClick={() => {
-          const step = profile.adventures.starBridge.step;
-          if (step === 'briefing' || step === 'complete') open('robot-home');
-          else if (['logic_passed','bridge_inspected','star_core_installed'].includes(step)) setBridgeOpen(true);
-          else open('robo-lab');
-        }}>{language === 'es-MX' ? 'Continuar aventura' : 'Continue adventure'} →</button>
+      <section className="world-continue world-welcome" aria-label={language==='es-MX'?'Tu próxima aventura':'Your next adventure'}>
+        <div className="world-welcome__intro"><small>{language==='es-MX'?'EXPLORA · CREA · IMAGINA':'EXPLORE · CREATE · IMAGINE'}</small><h2>{language==='es-MX'?'¿Qué haremos hoy?':'What shall we do today?'}</h2><p>{language==='es-MX'?'Ayuda a BoltBot, inventa algo nuevo o elige un lugar para explorar.':'Help BoltBot, make something new, or choose a place to explore.'}</p></div>
+        <div className="world-welcome__actions">
+          <button type="button" data-testid="continue-world" data-next-objective={profile.adventures.starBridge.step} onClick={()=>{
+            if(next.action==='begin') beginStarBridge();
+            else if(next.action==='bridge') setBridgeOpen(true);
+            else open(next.action==='home'?'robot-home':'robo-lab');
+          }}><span aria-hidden="true">✦</span><strong>{next.label}</strong><small>{language==='es-MX'?'Mi aventura del Puente Estelar':'My Star Bridge adventure'}</small></button>
+          <button type="button" data-testid="world-create" onClick={()=>onCreate?onCreate():open('art-studio')}><span aria-hidden="true">🎨</span><strong>{language==='es-MX'?'Crear algo':'Create something'}</strong><small>{language==='es-MX'?'Arte, cuentos y nuevos amigos':'Art, stories and new friends'}</small></button>
+          <button type="button" data-testid="world-explore" onClick={()=>{const target=document.getElementById('world-atlas-title');target?.scrollIntoView({block:'start',behavior:'auto'});target?.focus({preventScroll:true});}}><span aria-hidden="true">🧭</span><strong>{language==='es-MX'?'Explorar el mundo':'Explore the world'}</strong><small>{language==='es-MX'?'Elige un lugar del mapa':'Choose a place on the map'}</small></button>
+        </div>
       </section>
       <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Despertando el Mundo de Nico…" : "Waking up Nico's World…"}</div>}>
         <LivingWorldAtlas language={language} dinosaurValleyAvailable={dinosaurValleyAvailable} open={open} />
@@ -65,6 +73,26 @@ export function WorldMap({
         openBridge={() => setBridgeOpen(true)}
         openDinosaurValley={() => open("dinosaur-valley")}
       />
+      <section className="fw-destination-grid" aria-label={tr(ui.mainNavigation, language)}>
+        {WORLD_SECTIONS.filter((section) => section.id !== "world-map").map((section) => {
+          const locked = section.id === "dinosaur-valley" && !dinosaurValleyAvailable;
+          const lockCopy = language === "es-MX" ? "Completa El Puente Estelar Roto para desbloquearlo" : "Complete The Broken Star Bridge to unlock";
+          return (
+            <button
+              type="button"
+              className={`fw-destination${locked ? " is-locked" : ""}`}
+              key={section.id}
+              disabled={locked}
+              onClick={() => open(section.id)}
+              aria-label={`${tr(ui.openDestination, language)}: ${tr(section.name, language)}. ${locked ? lockCopy : tr(section.description, language)}`}
+            >
+              <span aria-hidden="true">{locked ? "🔒" : section.emoji}</span>
+              <strong>{tr(section.name, language)}</strong>
+              <small>{locked ? lockCopy : tr(section.description, language)}</small>
+            </button>
+          );
+        })}
+      </section>
       <NicoVideoCard language={language} />
       <article className="fw-hero-card" aria-label={language === "es-MX" ? "Equipo de aventura" : "Adventure team"}>
         <RobotStage
@@ -79,26 +107,7 @@ export function WorldMap({
           <span aria-label={`${profile.monsters.length} ${tr(ui.monsters, language)}`}>👾 {profile.monsters.length}</span>
         </div>
       </article>
-      <section className="fw-destination-grid" aria-label={tr(ui.mainNavigation, language)}>
-        {WORLD_SECTIONS.filter((section) => section.id !== "world-map").map((section) => {
-          const locked = section.id === "dinosaur-valley" && !dinosaurValleyAvailable;
-          const lockCopy = language === "es-MX" ? "Completa El Puente Estelar Roto para desbloquearlo" : "Complete The Broken Star Bridge to unlock";
-          return (
-            <button
-              type="button"
-              className={`fw-destination${locked ? " is-locked" : ""}`}
-              key={section.id}
-              disabled={locked}
-              onClick={() => open(section.id)}
-              aria-label={`${tr(section.name, language)}. ${locked ? lockCopy : tr(section.description, language)}`}
-            >
-              <span aria-hidden="true">{locked ? "🔒" : section.emoji}</span>
-              <strong>{tr(section.name, language)}</strong>
-              <small>{locked ? lockCopy : tr(section.description, language)}</small>
-            </button>
-          );
-        })}
-      </section>
+
     </div>
   );
 }
