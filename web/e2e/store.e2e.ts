@@ -1,4 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
+import path from "node:path";
+import { startStoreOrigin } from "./storeOrigin";
 import { syntheticCatalog } from "../test-fixtures/store";
 import { storeCopy } from "../src/store/copy";
 import type { StoreLanguage } from "../src/store/types";
@@ -145,24 +147,42 @@ test("world navigation retains local saves and browser back returns to the game"
 });
 test.describe("actual service worker", () => {
   test.use({ serviceWorkers: "allow" });
-  test("offline shell and games remain available without caching catalog or customer data", async ({ page, context }, testInfo) => {
+  test("origin outage preserves cached shell and games without caching catalog or customer data", async ({ page, browser }, testInfo) => {
     const language = String(testInfo.project.metadata.language) as StoreLanguage, copy = storeCopy(language);
-    await page.goto(`/store?lang=${language}`); await expect(page.getByRole("heading", { name: copy.emptyTitle })).toBeVisible();
-    await page.evaluate(async () => { await navigator.serviceWorker.ready; if (!navigator.serviceWorker.controller) await new Promise<void>(resolve => navigator.serviceWorker.addEventListener("controllerchange", () => resolve(), { once: true })); });
-    await page.evaluate(() => fetch("/store-catalog.json", { cache: "no-store" }));
-    const cached = await page.evaluate(async () => (await Promise.all((await caches.keys()).map(async name => (await (await caches.open(name)).keys()).map(request => request.url)))).flat());
-    expect(cached.some(url => url.includes("store-catalog") || url.includes("orders@example"))).toBe(false);
-    await context.setOffline(true); await page.reload();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(copy.title);
-    // Browser network emulation can leave navigator.onLine true after a cached
-    // navigation. Assert the accurate state for that signal AND actual failure;
-    // never equate an emulated network flag with confirmed reachability.
-    const advertisedOnline = await page.evaluate(() => navigator.onLine);
-    await expect(page.getByTestId("store-status")).toHaveText(advertisedOnline ? copy.unavailable : copy.offline);
-    expect(await page.evaluate(() => fetch("/store-catalog.json").then(() => true, () => false))).toBe(false);
-    await expect(page.locator('a[href^="mailto:"], a[href*="wa.me"]')).toHaveCount(0);
-    await expect(page.getByRole("button", { name: copy.prepare, exact: true })).toHaveCount(0);
-    await page.getByRole("link", { name: copy.back }).click(); await expect(page.locator(".fw-app")).toBeVisible();
-    await context.setOffline(false);
+    const origin = await startStoreOrigin(path.resolve("dist"));
+    // The browser's offline flag is tested separately for in-page transaction
+    // shutdown. WebKit navigation under setOffline is an upstream tooling defect:
+    // https://github.com/microsoft/playwright/issues/42775. This test instead
+    // establishes real origin unavailability, not physical-device airplane mode.
+    try {
+      await page.goto(`${origin.url}/store?lang=${language}`);
+      await expect(page.getByRole("heading", { name: copy.emptyTitle })).toBeVisible();
+      await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+      await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
+      expect(await page.evaluate(async () => Boolean(await caches.match("/index.html")))).toBe(true);
+      await page.evaluate(() => fetch("/store-catalog.json", { cache: "no-store" }));
+      const cached = await page.evaluate(async () => (await Promise.all((await caches.keys()).map(async name => (await (await caches.open(name)).keys()).map(request => request.url)))).flat());
+      expect(cached.some(url => url.includes("store-catalog") || url.includes("orders@example"))).toBe(false);
+      await origin.stop();
+      expect(origin.listening()).toBe(false);
+      // A clean context with no worker must fail. This prevents a live server
+      // or ordinary HTTP-cache hit from masquerading as a worker fallback.
+      const negative = await browser.newContext({ serviceWorkers: "block" });
+      try {
+        const unprotectedPage = await negative.newPage();
+        await expect(unprotectedPage.goto(`${origin.url}/store`, { timeout: 10_000 })).rejects.toThrow();
+      } finally { await negative.close(); }
+      const response = await page.reload();
+      expect(response?.status()).toBe(200);
+      expect(response?.fromServiceWorker()).toBe(true);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(copy.title);
+      await expect(page.getByTestId("store-status")).toHaveText(copy.unavailable);
+      expect(await page.evaluate(() => fetch("/store-catalog.json").then(() => true, () => false))).toBe(false);
+      await expect(page.locator('a[href^="mailto:"], a[href*="wa.me"]')).toHaveCount(0);
+      await expect(page.getByRole("button", { name: copy.prepare, exact: true })).toHaveCount(0);
+      await page.screenshot({ path: testInfo.outputPath("store-origin-outage.png"), fullPage: true });
+      await page.getByRole("link", { name: copy.back }).click();
+      await expect(page.locator(".fw-app")).toBeVisible();
+    } finally { await origin.stop(); }
   });
 });

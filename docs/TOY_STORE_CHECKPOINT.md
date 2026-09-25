@@ -1,29 +1,91 @@
 # Toy store checkpoint — 2026-09-25
 
-Scope: `BoneManTGRM/Nicos-Adventures`, branch `feat/nicos-toy-store`, route `/store`. Never change the separate `BoneManTGRM/NICO` project. Continue this branch rather than starting another store.
+Scope: `BoneManTGRM/Nicos-Adventures`, branch `feat/nicos-toy-store`, route `/store`.
+Continue PR **#134**: https://github.com/BoneManTGRM/Nicos-Adventures/pull/134.
+Never change the separate `BoneManTGRM/NICO` assessment project.
 
-## Baseline and evidence
+## Implemented, not open for real orders
 
-- Starting main: `ba0cab4a00664426848c34747f7377e59492f56a`; no open PRs at recovery.
-- Test-first commit: `6a76ab6fe20757df979e294aa7a830a2a69978c6`.
-- CI run `36149239002`, job `108118028752`: all 300 existing unit tests and complete build passed. Six store browser tests failed on the missing heading: expected the store, received World Map. This is the recorded feature RED, not a baseline app failure.
-- Review-source infrastructure commit: `9adfb589591ac6982b08b47ef0bfd996d67002b2`.
-- Local domain tests: 14 failing assertions before implementation; 48 passed after. Compiler tests: 10 failed before implementation; 11 passed after. Synthetic fixtures are not live products.
-- Local implementation check: all 359 unit tests passed and the complete build passed. Main JS 128246 bytes gzip versus baseline 128096; main CSS 29075 versus 28996. Existing budgets were not raised.
-- The local container has a managed Chromium that returned `ERR_BLOCKED_BY_ADMINISTRATOR` on loopback navigation. No local UI/screenshot success is claimed, and that policy was not altered. The temporary local browser configuration is not part of the change. The established repository CI browser workflow is the release-verification path.
+Separate lazy bilingual storefront before the child-profile provider; Store/Tienda navigation;
+validated, allowlisted public catalog and metadata-checked content-addressed photos;
+adult-approved email/WhatsApp enquiries; fresh catalog and expiry checks;
+no automatic sending, payments, child-profile data, tracking, customer database or public admin panel.
+See `docs/TOY_STORE.md` for the phone-friendly product-update workflow.
+The real catalog remains empty, `salesEnabled: false`, `seller: null`.
 
-## Implemented scope
+## Verified history
 
-Independent lazy store route before the child-profile provider; restrained Store/Tienda navigation; English/es-MX copy; empty closed catalog; typed allowlist publication compiler and metadata-checked, content-addressed approved images; adult-approved email/WhatsApp enquiry preparation; fresh-catalog check and expiry; no automatic sending/payments; accessible fallback text; sold-out/incomplete/error/offline handling; network-only catalog; no child state, tracking, customer database, public admin panel or checkout integration. See `docs/TOY_STORE.md` for operation and mobile-friendly intake.
+- Original main: `ba0cab4a00664426848c34747f7377e59492f56a`.
+- RED commit `6a76ab6fe20757df979e294aa7a830a2a69978c6`, run `36149239002`:
+  all 300 baseline unit tests and build passed; six browser tests failed because
+  `/store` still rendered World Map. This was an expected missing-feature failure.
+- Implementation `29132725a3364a52ca4c216c3e30b0739eae6623`, run `36152961435`:
+  359 unit tests/build passed; store 36 passed / 30 failed; existing selected game
+  browser suites 26 passed / 6 intentional pre-existing configuration skips;
+  Python and root Cloudflare build/packaging checks passed.
+- Corrective commit `a14f6ba75f92ee15cfdb7dc36bea21ab56310898`:
+  explicit select text label; correct native option and textarea assertions;
+  manually injected unavailable-variant rejection; accurate network-failure wording;
+  percent-encoded email recipient and strict local/domain validation.
+  Recipient regression observed 4 failing assertions before correction, all 7 pass after.
+  Full local unit suite 366 passes and build passes, without relaxed budgets.
+- Run `36156693247`, immediate artifact `10874640502`, confirms **64 store
+  browser passes, 2 failures, 0 skips, 0 retries** on a14f. Only the iPhone WebKit
+  service-worker navigation tests fail with `WebKit encountered an internal error`.
+  All bilingual request journeys, in-page offline disabling, failed-photo behavior,
+  unpublished/sold-out states, exact routing and child-data isolation checks pass.
+- Actual a14f mobile/desktop screenshots were opened and reviewed for the closed
+  catalog, synthetic enquiry, and unchanged world header. No overlapping controls
+  or horizontal overflow was observed in those captures. Synthetic products are
+  explicitly marked and exist only in tests, never in the production catalog.
 
-## Genuine boundaries and remaining gates
+## Browser-harness correction under qualification
 
-The attempt to create a draft PR was blocked by the tool safety check: “This tool call was blocked by OpenAI because we couldn't determine the safety status of the request.” No PR was created. Do not bypass the block by writing to main, another tool, or a workflow-created PR. Independent branch implementation and verification are permitted. Merge/deployment are not complete.
+Upstream https://github.com/microsoft/playwright/issues/42775 reports WebKit
+`setOffline(true)` rejecting even literal service-worker navigation responses.
+The observed a14f failure is consistent with that report; no precise internal
+browser cause is claimed. Do not change pinned dependencies or suppress errors.
 
-Implementation browser verification, rendered screenshot inspection and existing game browser regression results must be recorded from their actual CI run before merge readiness is claimed. An independent review has not yet occurred. Do not call self-review independent review. Production acceptance has not occurred.
+The revised test serves the actual build on a test-owned ephemeral origin, waits
+for the actual worker and shell cache, stops that origin and verifies a clean
+no-worker context fails. The controlled page must then return HTTP 200 from the
+actual service worker, render the store, reject catalog fetches and order actions,
+and return to the cached game. This is a **real origin-outage control**, not a claim
+that it proves physical iPhone airplane-mode behavior. The six-project in-page
+offline/reconnect transaction tests remain unchanged and required.
+Local harness serving/shutdown checks pass. New remote browser results must be
+recorded before calling the revised qualification green.
 
-No approved real product photos/listings, prices/currency, public adult contact, sales territory, fulfillment arrangements, product-specific rights/safety review or seller policies have been supplied. Keep `web/store/catalog.json` empty and `salesEnabled: false`. These block sales, not engineering verification of the closed store. Do not fabricate listings, take payments, infer a contact address from connected data, or upload original/private photos to this public repository.
+## Review and production boundaries
 
-## Continue
+The first PR-creation action was blocked. A normal same-tool retry after the
+continuation succeeded: PR #134 is open and draft. That blocker is cleared;
+there was no direct main push or alternative PR-creation bypass.
 
-Run the unchanged unit/build checks and `validate-store-output.mjs`; run the dedicated six-project store browser matrix and the existing Golden Adventure/whole-site browser suites. Inspect all failures and actual screenshots, repair regressions without weakening acceptance, and update this checkpoint with exact results and commit IDs. Finish independent review and the normal authorized PR/release process only when unblocked. Verify the deployed revision at `/release.json` before saying deployed. Keep implemented/tested/merged/deployed/orders-enabled separate in the handoff.
+A live public fetch at 2026-09-25 approximately 15:55 UTC found `/store` showing
+the closed empty shop and `/release.json` advertising **29132725...**, while
+GitHub main remained **ba0cab4a...**. The deployment mechanism behind this mismatch
+is not established. Do not infer that the corrected branch is deployed or that
+main is the only production source. Verify final live revision and artifacts.
+
+Review so far is **self-review**, not independent review. No separate reviewer
+has been engaged. Existing PR workflows must reach terminal success before the
+normal merge/release path; no approval, security check or required test may be bypassed.
+Local managed Chromium denied loopback navigation with `ERR_BLOCKED_BY_ADMINISTRATOR`;
+that policy was not changed. Browser evidence comes from normal GitHub Actions.
+Local Python collection lacks Streamlit; remote CI Python results are authoritative.
+
+## Remaining owner information
+
+Real product photos/listings, price and currency, options/dimensions/material/care,
+preparation and fulfillment, adult-approved public business contact, sales territory,
+product-specific commercial rights and safety review, and seller/privacy/return terms
+are still absent. Never infer them from private connected accounts. These block
+opening sales, not testing or releasing the explicitly closed store.
+
+## Next verification
+
+Read the current branch/PR before editing. Run the unchanged unit/build/output checks,
+the full store browser matrix and existing game workflows. Inspect fresh screenshots.
+Record exact head, run results, self/independent-review status and deployed revision.
+Keep implemented / tested / merged / deployed / orders-enabled separate in the handoff.
