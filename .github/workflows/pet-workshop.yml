@@ -27,6 +27,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - name: Pet model and rendered UI regressions
         run: npx vitest run src/world/petPlay.test.ts src/world/PetWorkshop.test.tsx
+      - name: Redirected offline navigation regressions
+        run: node --test tests/service-worker-navigation.mjs
       - name: Build and existing release contracts
         run: npm run build
       - name: Pinned browser engines

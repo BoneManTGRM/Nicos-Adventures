@@ -1,5 +1,5 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v27";
+const CACHE = "nicos-world-static-v28";
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
@@ -51,6 +51,19 @@ self.addEventListener("message", (event) => {
   if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
 
+// Cloudflare redirects /index.html to /. A cached followed redirect cannot be
+// returned directly to a navigation whose redirect mode is manual.
+async function offlineDocument() {
+  const cached = await caches.match("/index.html");
+  if (!cached || !cached.ok || !/text\/html\b/i.test(cached.headers.get("content-type") || "")) return Response.error();
+  if (!cached.redirected) return cached;
+  const headers = new Headers(cached.headers);
+  // Cache bodies are decoded. Keep all privacy/security headers, not wire sizes.
+  headers.delete("content-encoding");
+  headers.delete("content-length");
+  return new Response(await cached.arrayBuffer(), { status: cached.status, statusText: cached.statusText, headers });
+}
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
@@ -88,7 +101,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(async () => (await caches.match("/index.html")) || Response.error())
+        .catch(offlineDocument)
     );
     return;
   }
