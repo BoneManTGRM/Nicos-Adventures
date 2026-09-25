@@ -55,6 +55,16 @@ jobs:
         run: npx playwright install --with-deps chromium webkit
       - name: Browser store contract
         run: npx playwright test --config playwright.store.config.ts
+      - name: Preserve immediate store evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-browser-evidence-${{ github.sha }}
+          path: |
+            web/store-test-results
+            web/store-playwright-report
+            web/dist/release.json
+          retention-days: 14
       - name: Existing game browser regressions
         if: ${{ !cancelled() }}
         run: npx playwright test --config playwright.config.ts golden-adventure.e2e.ts whole-site-playtest.e2e.ts

@@ -46,9 +46,9 @@ test("language toggle, direct trailing slash, keyboard focus and exact route bou
   expect(await page.evaluate(() => getComputedStyle(document.activeElement!).outlineStyle)).not.toBe("none");
   await page.goto("/storehouse"); await expect(page.locator(".fw-app")).toBeVisible();
 });
-test("real empty catalog has no synthetic listings, external orders or leaked data", async ({ page }) => {
+test("real empty catalog has no synthetic listings, external orders or leaked data", async ({ page, baseURL }) => {
   const outbound: string[] = [];
-  page.on("request", request => { if (!request.url().startsWith("http://127.0.0.1:4173")) outbound.push(request.url()); });
+  page.on("request", request => { if (new URL(request.url()).origin !== new URL(baseURL!).origin) outbound.push(request.url()); });
   await page.goto("/store"); await expect(page.getByTestId("store-status")).toBeVisible();
   const response = await page.request.get("/store-catalog.json");
   expect(response.headers()["cache-control"]).toContain("no-store");
@@ -65,7 +65,7 @@ test("approved synthetic journey prepares correct request without sending or con
   expect(url.searchParams.get("body")).toContain(language === "en" ? "Quantity: 2" : "Cantidad: 2");
   expect(url.searchParams.get("body")).toContain("MXN"); expect(url.searchParams.get("body")).toContain("299");
   await expect(page.getByText(copy.fallback)).toBeVisible();
-  await expect(page.getByLabel(copy.requestText, { exact: true })).toContainText(language === "en" ? "not a confirmed order or payment" : "no es un pedido ni un pago confirmado");
+  await expect(page.getByLabel(copy.requestText, { exact: true })).toHaveValue(new RegExp(language === "en" ? "not a confirmed order or payment" : "no es un pedido ni un pago confirmado"));
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath("store-synthetic-request.png"), fullPage: true });
   await page.getByLabel(copy.quantity, { exact: true }).fill("3"); await expect(link).toHaveCount(0);
@@ -75,8 +75,16 @@ test("invalid quantity, unavailable variant, missing adult and disabled sales fa
   await fixture(page); await page.goto(`/store?lang=${language}`); await page.getByText(copy.details, { exact: true }).click();
   const button = page.getByRole("button", { name: copy.prepare, exact: true });
   await expect(button).toBeDisabled();
-  await expect(page.getByRole("option", { name: new RegExp(language === "en" ? "Test red" : "Rojo de prueba") })).toBeDisabled();
+  await expect(page.getByRole("option", { name: new RegExp(language === "en" ? "Test red" : "Rojo de prueba") })).toHaveJSProperty("disabled", true);
   await page.getByLabel(copy.option, { exact: true }).selectOption("blue"); await page.getByLabel(copy.adult, { exact: true }).check();
+  // Even a manually injected unavailable selection must fail the real form gate.
+  await page.getByLabel(copy.option, { exact: true }).evaluate(element => {
+    const select = element as HTMLSelectElement; select.value = "red";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  await expect(button).toBeDisabled();
+  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+  await page.getByLabel(copy.option, { exact: true }).selectOption("blue");
   for (const value of ["0", "1.5", "11", ""]) { await page.getByLabel(copy.quantity, { exact: true }).fill(value); await expect(button).toBeDisabled(); }
   const raw = syntheticCatalog(); raw.salesEnabled = false;
   await page.unroute("**/store-catalog.json"); await fixture(page, raw); await page.reload();
@@ -146,8 +154,14 @@ test.describe("actual service worker", () => {
     expect(cached.some(url => url.includes("store-catalog") || url.includes("orders@example"))).toBe(false);
     await context.setOffline(true); await page.reload();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(copy.title);
-    await expect(page.getByTestId("store-status")).toContainText(copy.offline);
+    // Browser network emulation can leave navigator.onLine true after a cached
+    // navigation. Assert the accurate state for that signal AND actual failure;
+    // never equate an emulated network flag with confirmed reachability.
+    const advertisedOnline = await page.evaluate(() => navigator.onLine);
+    await expect(page.getByTestId("store-status")).toHaveText(advertisedOnline ? copy.unavailable : copy.offline);
     expect(await page.evaluate(() => fetch("/store-catalog.json").then(() => true, () => false))).toBe(false);
+    await expect(page.locator('a[href^="mailto:"], a[href*="wa.me"]')).toHaveCount(0);
+    await expect(page.getByRole("button", { name: copy.prepare, exact: true })).toHaveCount(0);
     await page.getByRole("link", { name: copy.back }).click(); await expect(page.locator(".fw-app")).toBeVisible();
     await context.setOffline(false);
   });

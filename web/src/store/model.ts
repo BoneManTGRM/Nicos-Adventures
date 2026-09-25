@@ -52,7 +52,13 @@ function seller(value: unknown): Seller | null {
   const destination = string(contact.value, 254);
   if (!destination || destination !== contact.value) return null;
   // Fixed protocols: source data can never inject an arbitrary checkout/redirect URL.
-  const validEmail = contact.kind === "email" && /^[a-zA-Z0-9.!#$'*+\/_=-]+@[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?\.[a-zA-Z]{2,}$/.test(destination);
+  const [localPart, domain = ""] = destination.split("@");
+  const domainLabels = domain.split(".");
+  const validEmail = contact.kind === "email"
+    && localPart.length <= 64 && !localPart.startsWith(".") && !localPart.endsWith(".") && !localPart.includes("..")
+    && /^[a-zA-Z0-9.!#$'*+\/_=-]+@[a-zA-Z0-9.-]+$/.test(destination)
+    && domainLabels.length >= 2 && /^[a-zA-Z]{2,}$/.test(domainLabels.at(-1) ?? "")
+    && domainLabels.every(label => /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/.test(label));
   const validPhone = contact.kind === "whatsapp" && /^[1-9][0-9]{7,14}$/.test(destination);
   if (!validEmail && !validPhone) return null;
   const territory = localized(raw.territory), delivery = localized(raw.delivery), returns = localized(raw.returns), privacy = localized(raw.privacy), information = localized(raw.information);
@@ -108,7 +114,7 @@ export function createOrderRequest(catalog: Catalog, selection: Selection, langu
   ];
   const text = lines.join("\n"), contact = catalog.seller.contact;
   const href = contact.kind === "email"
-    ? `mailto:${contact.value}?subject=${encodeURIComponent(es ? `Solicitud: ${item.id}` : `Enquiry: ${item.id}`)}&body=${encodeURIComponent(text)}`
+    ? `mailto:${encodeURIComponent(contact.value).replace("%40", "@")}?subject=${encodeURIComponent(es ? `Solicitud: ${item.id}` : `Enquiry: ${item.id}`)}&body=${encodeURIComponent(text)}`
     : `https://wa.me/${contact.value}?text=${encodeURIComponent(text)}`;
   return { href, text, contact: contact.value, channel: contact.kind };
 }

@@ -9,7 +9,7 @@ const platforms = [
 export default defineConfig({
   testDir: "./e2e", testMatch: "store.e2e.ts", outputDir: "store-test-results",
   timeout: 45_000, expect: { timeout: 10_000 }, fullyParallel: true, workers: 2, retries: 0,
-  reporter: [["line"], ["html", { open: "never", outputFolder: "store-playwright-report" }]],
+  reporter: [["json", { outputFile: "store-test-results/results.json" }], ["line"], ["html", { open: "never", outputFolder: "store-playwright-report" }]],
   use: { baseURL: process.env.STORE_BASE_URL || "http://127.0.0.1:4173", trace: "retain-on-failure", screenshot: "only-on-failure", serviceWorkers: "block" },
   webServer: process.env.STORE_BASE_URL ? undefined : { command: "npm run preview -- --host 127.0.0.1", url: "http://127.0.0.1:4173", timeout: 60_000, reuseExistingServer: !process.env.CI },
   projects: platforms.flatMap(platform => languages.map(language => ({ name: `${platform.name}-${language.suffix}`, use: { ...platform.use, locale: language.locale, reducedMotion: "reduce" as const }, metadata: { language: language.language } }))),

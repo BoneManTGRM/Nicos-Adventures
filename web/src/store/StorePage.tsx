@@ -62,7 +62,7 @@ function ProductCard({ product, language, snapshot, fresh, online, refresh }: {
         {product.photos.length > 1 && <div className="toy-gallery">{product.photos.slice(1).map(photo => <ProductPhoto key={photo.src} photo={photo} language={language} onFailure={() => setPhotoFailed(true)} />)}</div>}
         <dl>{details.map(([label, value]) => value && <div key={label}><dt>{label}</dt><dd>{value[language]}</dd></div>)}</dl>
         {!enabled ? <p className="toy-note">{copy.approvalPending}</p> : <form onSubmit={event => void prepare(event)}>
-          {product.variants.length > 0 && <label htmlFor={`option-${product.id}`}>{copy.option}<select id={`option-${product.id}`} value={variant} required onChange={event => { setVariant(event.target.value); setPrepared(null); }}>
+          {product.variants.length > 0 && <label htmlFor={`option-${product.id}`}><span id={`option-label-${product.id}`}>{copy.option}</span><select aria-labelledby={`option-label-${product.id}`} id={`option-${product.id}`} value={variant} required onChange={event => { setVariant(event.target.value); setPrepared(null); }}>
             <option value="">{copy.choose}</option>{product.variants.map(item => <option key={item.id} value={item.id} disabled={!item.available}>{item.label[language]}{item.available ? "" : ` — ${copy.soldOut}`}</option>)}
           </select></label>}
           <label htmlFor={`quantity-${product.id}`}>{copy.quantity}<input id={`quantity-${product.id}`} type="number" min="1" max={MAX_QUANTITY} step="1" inputMode="numeric" required value={quantity} onChange={event => { setQuantity(event.target.value); setPrepared(null); }} /></label>
