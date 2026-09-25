@@ -16,11 +16,21 @@ async function ownedOrigin(upstream: string) {
       if (target.origin !== base.origin || !['GET', 'HEAD'].includes(request.method ?? '')) {
         response.writeHead(405); response.end(); return;
       }
-      const source = await fetch(target, { method: request.method, redirect: 'error', signal: AbortSignal.timeout(15_000) });
+      // Reproduce the hosting service's canonical index redirect in previews too.
+      if (target.pathname === '/index.html') {
+        response.writeHead(307, { location: '/' + target.search }); response.end(); return;
+      }
+      const source = await fetch(target, { method: request.method, redirect: 'manual', signal: AbortSignal.timeout(15_000) });
+      const location = source.headers.get('location');
+      if (source.status >= 300 && source.status < 400 && location) {
+        const next = new URL(location, target);
+        if (next.origin !== base.origin) throw new Error('Cross-origin mirror redirect rejected');
+        response.setHeader('location', next.pathname + next.search);
+      }
       const bytes = Buffer.from(await source.arrayBuffer());
       if (response.destroyed) return;
       response.statusCode = source.status;
-      for (const header of ['content-type', 'cache-control', 'content-security-policy', 'service-worker-allowed']) {
+      for (const header of ['content-type', 'cache-control', 'content-security-policy', 'service-worker-allowed', 'referrer-policy', 'permissions-policy', 'x-content-type-options']) {
         const value = source.headers.get(header); if (value) response.setHeader(header, value);
       }
       // fetch has decoded the body; do not forward compressed content-length/encoding.
@@ -78,12 +88,16 @@ test('cached pet play survives Chromium offline or a WebKit origin outage', asyn
     await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 60_000 });
     const cached = await page.evaluate(async () => {
       const names = await caches.keys();
-      const cache = await caches.open(names.find(name => name === 'nicos-world-static-v27') ?? 'missing');
+      const cache = await caches.open(names.find(name => name === 'nicos-world-static-v28') ?? 'missing');
       return (await cache.keys()).map(request => new URL(request.url).pathname);
     });
     expect(cached.filter(path => /\/PetWorkshop-.*\.(?:js|css)$/.test(path))).toHaveLength(2);
     expect(cached.filter(path => /\/sparky-(?:idle|sit|high-five|fetch-tool)-v2-.*\.webp$/.test(path))).toHaveLength(4);
     evidence.cachedAssets = cached;
+    evidence.cachedDocument = await page.evaluate(async () => {
+      const response = await caches.match('/index.html');
+      return { status: response?.status, redirected: response?.redirected, contentType: response?.headers.get('content-type') };
+    });
     if (mirror) {
       await mirror.stop(); expect(mirror.listening()).toBe(false);
       evidence.originListening = mirror.listening();
