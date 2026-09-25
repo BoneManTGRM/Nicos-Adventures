@@ -128,15 +128,30 @@ test('cousins portraits and all four Sparky poses keep working with native trans
   await open(page,info,'cousins-adventure');await loadedImages(page,'.cousins-hero__becca,.cousins-hero__lua');
   await shot(page,info,'cousins-corrected-cutouts','.cousins-hero__team');
   const es=await open(page,info,'pet-workshop');
-  await page.locator('.fw-action-row button').filter({hasText:es?'Nueva mascota':'New pet'}).click();
-  await page.locator('.fw-action-row button.fw-primary').click();
-  await loadedImages(page,'.pet-training-stage .pet-art img');
-  await shot(page,info,'sparky-idle','.pet-training-stage');
+  // The workshop now separates playing and customization. Follow the real UI
+  // and learn each trick before asking for its original, reviewed artwork.
+  await page.locator('.pet-haven__nav').getByRole('button',{name:es?'Diseño':'Style',exact:true}).click();
+  const editor=page.locator('.pet-haven__editor');
+  await editor.locator('input').fill('Sparky');
+  await editor.locator('select').nth(0).selectOption('Robot Dog');
+  await editor.locator('select').nth(1).selectOption('Blue');
+  await editor.locator('select').nth(2).selectOption('Explorer Scarf');
+  await editor.locator('button.fw-primary').click();
+  await loadedImages(page,'.pet-haven__stage .pet-art img');
+  await shot(page,info,'sparky-idle','.pet-haven__stage');
+  await page.locator('.pet-haven__nav').getByRole('button',{name:es?'Trucos':'Train',exact:true}).click();
   for(const [pose,en,spanish] of [['sit','Sit','Sentarse'],['fetch-tool','Fetch a tool','Traer una herramienta'],['high-five','High five','Chocar los cinco']]){
-    await page.locator('.pet-trick-grid button').filter({has:page.getByText(es?spanish:en,{exact:true})}).click();
-    await expect(page.locator('.pet-training-stage [data-pet-pose]')).toHaveAttribute('data-pet-pose',pose);
-    await loadedImages(page,'.pet-training-stage .pet-art img');
-    await shot(page,info,'sparky-'+pose,'.pet-training-stage');
+    const card=page.locator('.pet-haven__tricks article').filter({has:page.getByRole('heading',{name:es?spanish:en,exact:true})});
+    await card.getByRole('button',{name:es?'Aprender':'Learn',exact:true}).click();
+    for(let step=0;step<3;step++){
+      const cue=(await page.locator('.pet-haven__sequence [aria-current="step"] small').textContent()) ?? '';
+      expect(cue).toMatch(/^\d+\.\s*\S/);
+      await page.locator('.pet-haven__cue-buttons').getByRole('button',{name:cue.replace(/^\d+\.\s*/,''),exact:true}).click();
+    }
+    await card.getByRole('button',{name:es?'Ver truco':'Perform',exact:true}).click();
+    await expect(page.locator('.pet-haven__stage [data-pet-pose]')).toHaveAttribute('data-pet-pose',pose);
+    await loadedImages(page,'.pet-haven__stage .pet-art img');
+    await shot(page,info,'sparky-'+pose,'.pet-haven__stage');
   }
   expect(errors).toEqual([]);
 });
