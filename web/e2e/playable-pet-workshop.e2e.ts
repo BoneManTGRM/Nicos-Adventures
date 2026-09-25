@@ -74,6 +74,7 @@ test('protects unsaved designs, keeps each pet separate, and preserves progress 
   await tab(page, es(info) ? 'Mascotas' : 'My pets'); await page.locator('.pet-haven__roster').getByRole('button', { name: /Ollie/ }).click();
   await expect(page.locator('.pet-haven__save-guard')).toBeVisible();
   await page.getByRole('button', { name: es(info) ? 'Seguir editando' : 'Keep editing', exact: true }).click();
+  await expect(page.locator('.pet-haven__roster').getByRole('button', { name: /Ollie/ })).toBeFocused();
   expect((await profile(page)).activePetId).toBe('pet-test-sparky');
   await page.locator('.pet-haven__roster').getByRole('button', { name: /Ollie/ }).click();
   await page.getByRole('button', { name: es(info) ? 'Descartar cambios' : 'Discard changes', exact: true }).click();
@@ -91,6 +92,11 @@ test('phone layout, backdrops, touch targets and reduced motion remain usable', 
   }
   const targets = await page.locator('.pet-haven button').evaluateAll(buttons => buttons.map(button => button.getBoundingClientRect()).filter(rect => rect.width && rect.height).map(rect => ({ width: rect.width, height: rect.height })));
   for (const target of targets) { expect(target.width).toBeGreaterThanOrEqual(44); expect(target.height).toBeGreaterThanOrEqual(44); }
+  await tab(page, es(info) ? 'Trucos' : 'Train');
+  await page.locator('.pet-haven__tricks article').first().getByRole('button', { name: es(info) ? 'Ver truco' : 'Perform', exact: true }).click();
+  await expect(page.locator('.pet-haven__actor')).toHaveAttribute('data-action', 'Sit');
+  await expect(page.locator('.pet-haven__speech')).toContainText(es(info) ? 'Sentarse' : 'Sit');
+  expect((await profile(page)).pets[0].bond).toBe(73);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   expect(await page.locator('.pet-haven__actor').evaluate(element => getComputedStyle(element).animationName)).toBe('none');
   await page.locator('.pet-haven__stage').scrollIntoViewIfNeeded();

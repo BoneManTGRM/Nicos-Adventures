@@ -16,7 +16,7 @@ import { DinosaurValley } from "./world/DinosaurValley";
 import { Museum } from "./world/Museum";
 const MonsterLab = lazy(() => import("./world/MonsterWorld").then(module => ({ default: module.MonsterLab })));
 const MonsterHabitats = lazy(() => import("./world/MonsterWorld").then(module => ({ default: module.MonsterHabitats })));
-import { PetWorkshop } from "./world/PetWorkshop";
+const PetWorkshop = lazy(() => import("./world/PetWorkshop").then(module => ({ default: module.PetWorkshop })));
 import { RoboLab } from "./world/RoboLab";
 import { Settings } from "./world/Settings";
 import { StoryCastle } from "./world/StoryCastle";

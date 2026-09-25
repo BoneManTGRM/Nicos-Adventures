@@ -42,6 +42,7 @@ function PetWorkshopSession({ profile, update, announce }: Props) {
   const careThisVisit = useRef(new Set<string>());
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const guardHeading = useRef<HTMLHeadingElement>(null);
+  const guardOpener = useRef<HTMLElement | null>(null);
   const stage = useRef<HTMLElement>(null);
   const savedPet = profile.pets.find((pet) => pet.id === draft.id);
   const pet = savedPet ? { ...draft, bond: savedPet.bond, tricks: savedPet.tricks } : draft;
@@ -71,9 +72,9 @@ function PetWorkshopSession({ profile, update, announce }: Props) {
     setWasSaved(Boolean(chosen)); setView(chosen ? "play" : "style");
     if (chosen) update({ ...current, activePetId: chosen.id });
   };
-  const request = (intent: Intent) => {
+  const request = (intent: Intent, opener: HTMLElement) => {
     if (intent.kind === "choose" && intent.id === draft.id) return;
-    if (dirty && !lostPet) setPending(intent); else transition(intent);
+    if (dirty && !lostPet) { guardOpener.current = opener; setPending(intent); } else transition(intent);
   };
   const save = (then?: Intent) => {
     const next = savePetStyle(profile, draft, wasSaved);
@@ -148,7 +149,7 @@ function PetWorkshopSession({ profile, update, announce }: Props) {
       <div className="pet-haven__actions">
         <button type="button" onClick={() => save(pending)}>{es ? "Guardar y continuar" : "Save and continue"}</button>
         <button type="button" onClick={() => transition(pending)}>{es ? "Descartar cambios" : "Discard changes"}</button>
-        <button type="button" onClick={() => setPending(null)}>{es ? "Seguir editando" : "Keep editing"}</button>
+        <button type="button" onClick={() => { setPending(null); guardOpener.current?.focus(); }}>{es ? "Seguir editando" : "Keep editing"}</button>
       </div>
     </section>}
     <div className="pet-haven__layout">
@@ -213,15 +214,15 @@ function PetWorkshopSession({ profile, update, announce }: Props) {
           <div className="fw-form-grid">{Object.entries(PET_OPTIONS).map(([key, values]) => <LocalizedSelect key={key} field={key} values={values}
             value={String(draft[key as keyof PetRecord] ?? values[0])} language={language} onChange={(value) => setDraft({ ...draft, [key]: value })} />)}</div>
           <div className="pet-haven__actions"><button type="button" className="fw-primary" disabled={lostPet} onClick={() => save()}>🐾 {tr(ui.savePet, language)}</button>
-            <button type="button" disabled={profile.pets.length >= PET_LIMIT} onClick={() => request({ kind: "new" })}>＋ {es ? "Nueva mascota" : "New pet"}</button></div>
+            <button type="button" disabled={profile.pets.length >= PET_LIMIT} onClick={(event) => request({ kind: "new" }, event.currentTarget)}>＋ {es ? "Nueva mascota" : "New pet"}</button></div>
         </section>}
         {view === "pets" && <section>
           <header className="pet-haven__collection-heading"><h2>{es ? "Tu equipo de amigos" : "Your crew of friends"}</h2><span>{profile.pets.length}/{PET_LIMIT}</span></header>
           <p>{es ? "Elige quién te acompaña. Cada mascota conserva su propia amistad y sus trucos." : "Choose your companion. Every pet keeps its own friendship and tricks."}</p>
-          <button type="button" disabled={profile.pets.length >= PET_LIMIT} onClick={() => request({ kind: "new" })}>＋ {es ? "Crear una mascota" : "Create a pet"}</button>
+          <button type="button" disabled={profile.pets.length >= PET_LIMIT} onClick={(event) => request({ kind: "new" }, event.currentTarget)}>＋ {es ? "Crear una mascota" : "Create a pet"}</button>
           {!profile.pets.length && <p>{es ? "Tu primera amistad empieza con un diseño." : "Your first friendship starts with a design."}</p>}
           <div className="pet-haven__roster">{profile.pets.map((item) => <button type="button" key={item.id} className="pet-collection-button"
-            aria-pressed={item.id === draft.id} onClick={() => request({ kind: "choose", id: item.id })}>
+            aria-pressed={item.id === draft.id} onClick={(event) => request({ kind: "choose", id: item.id }, event.currentTarget)}>
             <PetArt pet={item} language={language} decorative /><span><strong>{item.name}</strong><small>{optionLabel(item.species, language)} · {knownTrickCount(item)}/6</small>
               <small>{bondLabel(item.bond, language)} · {item.bond}/100</small></span></button>)}</div>
           {profile.pets.length >= PET_LIMIT && <p>{es ? "Colección completa: tus 60 mascotas están a salvo." : "Full collection: all 60 pets are safe."}</p>}
