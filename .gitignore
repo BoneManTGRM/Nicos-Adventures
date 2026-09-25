@@ -27,3 +27,10 @@ web/public/assets/nico/video/*.jpg
 web/node_modules/
 web/dist/
 dist/
+
+# Toy-store verification artifacts are not application assets.
+web/store-test-results/
+web/store-playwright-report/
+web/playwright.*.local.ts
+store-source.tar.gz
+store-dependencies.tar.gz

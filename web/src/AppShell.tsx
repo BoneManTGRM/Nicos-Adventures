@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import FullApp from "./FullApp";
 import NicoGuide from "./NicoGuide";
 import ServiceWorkerRefresh from "./ServiceWorkerRefresh";
@@ -6,6 +7,8 @@ import { AppStoreProvider, useAppStore } from "./app/AppStoreContext";
 import NicoPortalArt from "./nico/NicoPortalArt";
 import NicoWorldExperience from "./nico/NicoWorldExperience";
 import "./app/app-shell.css";
+
+const StorePage = lazy(() => import("./store/StorePage"));
 
 function SaveFailureNotice() {
   const { profile, saveState } = useAppStore();
@@ -34,6 +37,10 @@ function AppExperience() {
 }
 
 export default function AppShell() {
+  // Do not mount or read child profiles on the independent store route.
+  if (window.location.pathname === "/store" || window.location.pathname === "/store/") {
+    return <AppErrorBoundary><ServiceWorkerRefresh /><Suspense fallback={<p role="status">Loading / Cargando…</p>}><StorePage /></Suspense></AppErrorBoundary>;
+  }
   return (
     <AppStoreProvider>
       <AppExperience />
