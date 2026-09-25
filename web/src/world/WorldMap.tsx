@@ -58,7 +58,7 @@ export function WorldMap({
             else if(next.action==='bridge') setBridgeOpen(true);
             else open(next.action==='home'?'robot-home':'robo-lab');
           }}><span aria-hidden="true">✦</span><strong>{next.label}</strong><small>{language==='es-MX'?'Mi aventura del Puente Estelar':'My Star Bridge adventure'}</small></button>
-          <button type="button" data-testid="world-create" onClick={()=>onCreate?onCreate():open('art-studio')}><span aria-hidden="true">🎨</span><strong>{language==='es-MX'?'Crear algo':'Create something'}</strong><small>{language==='es-MX'?'Arte, cuentos y nuevos amigos':'Art, stories and new friends'}</small></button>
+          <button type="button" data-testid="world-create" onClick={event=>{event.currentTarget.focus({preventScroll:true});if(onCreate)onCreate();else open('art-studio');}}><span aria-hidden="true">🎨</span><strong>{language==='es-MX'?'Crear algo':'Create something'}</strong><small>{language==='es-MX'?'Arte, cuentos y nuevos amigos':'Art, stories and new friends'}</small></button>
           <button type="button" data-testid="world-explore" onClick={()=>{const target=document.getElementById('world-atlas-title');target?.scrollIntoView({block:'start',behavior:'auto'});target?.focus({preventScroll:true});}}><span aria-hidden="true">🧭</span><strong>{language==='es-MX'?'Explorar el mundo':'Explore the world'}</strong><small>{language==='es-MX'?'Elige un lugar del mapa':'Choose a place on the map'}</small></button>
         </div>
       </section>

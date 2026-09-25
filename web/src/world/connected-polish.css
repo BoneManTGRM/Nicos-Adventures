@@ -41,6 +41,7 @@
  .world-welcome__actions button:first-child {grid-column:1/-1;grid-template-columns:28px 1fr;min-height:78px;}
  .world-welcome__actions button:not(:first-child)>span {grid-row:auto;font-size:23px;}
  .world-welcome__actions strong {font-size:15px;}
+ .world-welcome__actions button:not(:first-child)>small {display:none;}
  .fw-grid--map>.fw-destination-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
  .fw-grid--map>.fw-destination-grid .fw-destination {padding:14px 12px;grid-template-columns:1fr;min-width:0;}
  .fw-grid--map>.fw-destination-grid .fw-destination>span {grid-row:auto;}

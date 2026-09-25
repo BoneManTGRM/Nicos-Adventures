@@ -165,7 +165,7 @@ export function ArtStudio({ profile, update, announce, initialArtworkId, openHom
             ))}
           </div>
         </fieldset>
-        <label>{language === "es-MX" ? "Mensaje" : "Caption"}<textarea value={draft.caption} maxLength={140} rows={3} onChange={(event) => setDraft({ ...draft, caption: event.target.value })} /></label>
+        <label htmlFor="art-caption"><span id="art-caption-label">{language === "es-MX" ? "Mensaje" : "Caption"}</span><textarea id="art-caption" aria-labelledby="art-caption-label" value={draft.caption} maxLength={140} rows={3} onChange={(event) => setDraft({ ...draft, caption: event.target.value })} /></label>
       </section>
 
       <section className="creative-library" aria-labelledby="art-library-heading">

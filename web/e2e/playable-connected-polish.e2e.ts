@@ -23,6 +23,13 @@ test('first screen has three clear choices, labeled navigation and direct missio
  const controls=await page.locator('.fw-bottom-nav [data-journey-nav]').evaluateAll(elements=>elements.map(e=>{const r=e.getBoundingClientRect(),label=e.querySelector('small')!;return {w:r.width,h:r.height,label:label.textContent,display:getComputedStyle(label).display};}));
  expect(controls).toHaveLength(4);for(const c of controls){expect(c.w).toBeGreaterThanOrEqual(44);expect(c.h).toBeGreaterThanOrEqual(44);expect(c.label?.length).toBeGreaterThan(0);expect(c.display).not.toBe('none');}
  expect(await page.getByTestId('world-create').evaluate(e=>e.getBoundingClientRect().bottom<innerHeight)).toBe(true);
+ const guide=page.locator('.nico-guide__launcher');await expect(guide).toBeVisible();
+ for(const id of ['continue-world','world-create','world-explore']) {
+  const choice=await page.getByTestId(id).boundingBox(),launcher=await guide.boundingBox();
+  expect(choice).not.toBeNull();expect(launcher).not.toBeNull();
+  const overlaps=choice!.x<launcher!.x+launcher!.width&&choice!.x+choice!.width>launcher!.x&&choice!.y<launcher!.y+launcher!.height&&choice!.y+choice!.height>launcher!.y;
+  expect(overlaps,`${id} must not sit underneath the guide`).toBe(false);
+ }
  await layout(page);await info.attach('simplified-first-screen',{body:await page.screenshot(),contentType:'image/png'});
  await page.getByTestId('world-explore').click();await expect(page.locator('#world-atlas-title')).toBeFocused();
  await expect(page.locator('.fw-destination-grid>.fw-destination')).toHaveCount(16);
@@ -34,7 +41,7 @@ test('first screen has three clear choices, labeled navigation and direct missio
 
 test('Create and More use accessible dialogs without disturbing a draft',async({page},info)=>{
  await boot(page,info);const opener=page.getByTestId('world-create');await opener.click();const dialog=page.getByRole('dialog');await expect(dialog).toBeVisible();
- for(let i=0;i<10;i++){await page.keyboard.press('Tab');expect(await dialog.evaluate(d=>d.contains(document.activeElement))).toBe(true);}
+ for(const direction of ['Tab','Shift+Tab'])for(let i=0;i<10;i++){await page.keyboard.press(direction);expect(await dialog.evaluate(d=>d.contains(document.activeElement))).toBe(true);}
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(opener).toBeFocused();
  await menu(page,'create');await page.locator('[data-menu-destination="art-studio"]').click();
  const title=page.getByLabel(es(info)?'Título':'Title',{exact:true});await title.fill('My unfinished picture');
