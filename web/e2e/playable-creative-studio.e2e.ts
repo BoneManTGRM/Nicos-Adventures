@@ -1,5 +1,6 @@
 import {expect,test,type Page,type TestInfo} from '@playwright/test';
 import {readFileSync} from 'node:fs';
+import {expectImageReady} from './imageReadiness';
 const language=(info:TestInfo)=>info.project.metadata.language==='es-MX';
 async function boot(page:Page,info:TestInfo,hub?:'ask'|'dress'|'showtime'|'movies'){
  await page.goto('/');
@@ -67,7 +68,7 @@ test('movie recording creates real playable video and cancellation releases the 
  await info.attach('actual-recording-proof',{body:Buffer.from(JSON.stringify({file:output.suggestedFilename(),bytes:readFileSync(path!).byteLength,tracksEnded:true,realEncoder:true})),contentType:'application/json'});
 });
 test('Story Castle displays real illustrations, saves choices and highlights narration without losing original books',async({page},info)=>{
- await speechStub(page);await boot(page,info);const es=language(info);await destination(page,es?'Castillo de cuentos':'Story Castle');await expect(page.locator('.story-reader')).toBeVisible();await expect(page.locator('.story-scene img')).toBeVisible();expect(await page.locator('.story-scene img').evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
+ await speechStub(page);await boot(page,info);const es=language(info);await destination(page,es?'Castillo de cuentos':'Story Castle');await expect(page.locator('.story-reader')).toBeVisible();await expect(page.locator('.story-scene img')).toBeVisible();await expectImageReady(page.locator('.story-scene img'));
  const next=page.locator('.story-page-turner button').last();await next.click();await page.locator('[data-story-choice="0-1"]').click();await next.click();await expect(page.locator('.story-reader__text')).toContainText(es?'melodía':'melody');await next.click();await page.locator('[data-story-choice="1-1"]').click();await next.click();await expect(page.locator('.story-reader__text')).toContainText(es?'criatura':'creature');
  await page.getByRole('button',{name:es?'Guardar cuento':'Save story',exact:true}).click();await page.getByRole('button',{name:es?'Leer página':'Read page',exact:true}).click();await expect(page.locator('.story-sentence.is-reading')).toHaveCount(1);await page.getByRole('button',{name:es?'Detener voz':'Stop voice',exact:true}).click();
  await page.getByRole('button',{name:es?'Letra grande':'Bigger text',exact:true}).click();await page.locator('.story-scene').scrollIntoViewIfNeeded();await shot(page,info,'illustrated-story-reader');await bounds(page);
