@@ -392,14 +392,23 @@ test("all destinations keep their main local interactions working", async ({ pag
   await attachVisual(page, testInfo, "game-arcade");
 
   await openDestination(page, text.world, text.petWorkshop, `${testInfo.project.name} Pet Workshop`);
-  await page.locator(".pet-workshop-layout .fw-panel input").fill(petName);
+  const petTabs = page.locator(".pet-haven__nav");
+  await petTabs.getByRole("button", { name: language === "es-MX" ? "Diseño" : "Style", exact: true }).click();
+  await page.locator(".pet-haven__editor input").fill(petName);
   await page.getByRole("button", { name: new RegExp(`${text.savePet}$`) }).click();
-  await expect(page.locator(".fw-collection-row button").filter({ hasText: petName })).toHaveCount(1);
-  const firstTrick = page.locator(".pet-trick-grid button").first();
-  await firstTrick.click();
-  await expect(firstTrick).toBeEnabled();
-  await expect(firstTrick.locator("small")).toHaveText(language === "es-MX" ? "Practicar" : "Practice");
-  await expect(page.locator('.pet-training-stage > .pet-art[data-pet-renderer="premium-sparky"]')).toHaveAttribute("data-pet-pose", "sit");
+  await petTabs.getByRole("button", { name: language === "es-MX" ? "Mascotas" : "My pets", exact: true }).click();
+  await expect(page.locator(".pet-haven__roster button").filter({ hasText: petName })).toHaveCount(1);
+  await petTabs.getByRole("button", { name: language === "es-MX" ? "Trucos" : "Train", exact: true }).click();
+  const firstTrick = page.locator(".pet-haven__tricks article").first();
+  await firstTrick.getByRole("button", { name: language === "es-MX" ? "Aprender" : "Learn", exact: true }).click();
+  for (let step = 0; step < 3; step++) {
+    const cue = (await page.locator('.pet-haven__sequence [aria-current="step"] small').textContent()) ?? "";
+    expect(cue).toMatch(/^\d+\.\s*\S/);
+    await page.locator(".pet-haven__cue-buttons").getByRole("button", { name: cue.replace(/^\d+\.\s*/, ""), exact: true }).click();
+  }
+  await expect(firstTrick.getByRole("button", { name: language === "es-MX" ? /Practicar/ : /Practice/ })).toBeEnabled();
+  await firstTrick.getByRole("button", { name: language === "es-MX" ? "Ver truco" : "Perform", exact: true }).click();
+  await expect(page.locator('.pet-haven__stage [data-pet-renderer="premium-sparky"]')).toHaveAttribute("data-pet-pose", "sit");
   await attachVisual(page, testInfo, "pet-workshop");
 
   await openDestination(page, text.world, text.robotHome, `${testInfo.project.name} Robot Home`);
