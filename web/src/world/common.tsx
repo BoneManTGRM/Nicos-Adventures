@@ -38,6 +38,7 @@ export function AppHeader({
       </button>
       <div className="fw-profile-pill" aria-label={`${tr(ui.profile, language)}: ${profile.playerName}`}>👤 {profile.playerName}</div>
       <div className="fw-profile-pill" aria-label={`${profile.stars} ${tr(ui.stars, language)}`}>⭐ {profile.stars}</div>
+      <a className="fw-store-link" href={`/store?lang=${language}`}>{language === "es-MX" ? "Tienda" : "Store"}</a>
       <button
         type="button"
         onClick={switchLanguage}

@@ -8,8 +8,8 @@ const platforms = [
 ] as const;
 export default defineConfig({
   testDir: "./e2e", testMatch: "**/*.e2e.ts",
-  // The dedicated Playable World workflow owns these tests and its WebGL configuration.
-  testIgnore: "**/playable-*.e2e.ts",
+  // Dedicated workflows own Playable World/WebGL and isolated store/network-mock tests.
+  testIgnore: ["**/playable-*.e2e.ts", "**/store.e2e.ts"],
   outputDir: "test-results", timeout: 120_000, expect: { timeout: 15_000 },
   fullyParallel: false, workers: process.env.CI ? 2 : 1, retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["line"], ["html", { open: "never", outputFolder: "playwright-report" }]] : [["list"], ["html", { open: "never", outputFolder: "playwright-report" }]],
