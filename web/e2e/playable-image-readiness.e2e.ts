@@ -4,7 +4,7 @@ import { expectImageReady } from './imageReadiness';
 // All requests are fulfilled in this browser context; no external server is contacted.
 const imageUrl = 'https://image-readiness.invalid/illustration.png';
 const validPng = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aWQAAAABJRU5ErkJggg==',
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==',
   'base64',
 );
 const failureMessage = 'Image must finish loading with positive intrinsic width';
