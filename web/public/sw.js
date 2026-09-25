@@ -1,5 +1,5 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v24";
+const CACHE = "nicos-world-static-v25";
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
@@ -77,7 +77,11 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request, { cache: "no-store" })
         .then(async (response) => {
-          if (response.ok) {
+          // Only canonical HTML entries have the no-transform privacy policy.
+          // An arbitrary SPA fallback must not replace that protected offline shell.
+          const canonicalShell = url.origin === self.location.origin
+            && ["/", "/index.html", "/store", "/store/"].includes(url.pathname);
+          if (response.ok && canonicalShell && /text\/html\b/i.test(response.headers.get("content-type") || "")) {
             const copy = response.clone();
             const cache = await caches.open(CACHE);
             await cache.put("/index.html", copy);
