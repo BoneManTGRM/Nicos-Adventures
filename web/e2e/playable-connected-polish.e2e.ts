@@ -45,6 +45,7 @@ test('Create and More use accessible dialogs without disturbing a draft',async({
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(opener).toBeFocused();
  await menu(page,'create');await page.locator('[data-menu-destination="art-studio"]').click();
  const title=page.getByLabel(es(info)?'Título':'Title',{exact:true});await title.fill('My unfinished picture');
+ await expect(title).toHaveValue('My unfinished picture');await expect(page.locator('#art-preview-heading')).toHaveText('My unfinished picture');
  await menu(page,'more');await info.attach('more-menu',{body:await page.screenshot(),contentType:'image/png'});
  await page.getByRole('button',{name:es(info)?'Cerrar menú':'Close menu',exact:true}).click();await expect(title).toHaveValue('My unfinished picture');
  await menu(page,'more');await page.locator('[data-menu-destination="parent-settings"]').click();await expect(page.locator('.fw-app')).toHaveAttribute('data-active-section','parent-settings');

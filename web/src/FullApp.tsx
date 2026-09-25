@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SectionId } from "./types";
+import { focusNavigationHeading } from "./app/navigationFocus";
 import type { StarBridgeEvent } from "./game/goldenAdventure";
 import { JourneyNavigation, type JourneyMenuKind } from "./world/JourneyNavigation";
 import { nextAdventure } from "./world/journey";
@@ -67,7 +68,7 @@ export default function FullApp() {
   const activation = pendingTitleFocus.current;
   if (!activation) return;
   let firstFrame = 0, secondFrame = 0;
-  const focusTitle = () => document.getElementById("page-title")?.focus({ preventScroll: true });
+  const focusTitle = focusNavigationHeading;
   const scheduleFocus = () => { firstFrame = window.requestAnimationFrame(() => { secondFrame = window.requestAnimationFrame(focusTitle); }); };
   scheduleFocus();
   if (activation === "pointer") { pendingTitleFocus.current = null; return () => { window.cancelAnimationFrame(firstFrame); window.cancelAnimationFrame(secondFrame); }; }
