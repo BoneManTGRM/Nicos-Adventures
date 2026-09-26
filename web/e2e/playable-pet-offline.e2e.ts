@@ -88,7 +88,7 @@ test('cached pet play survives Chromium offline or a WebKit origin outage', asyn
     await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 60_000 });
     const cached = await page.evaluate(async () => {
       const names = await caches.keys();
-      const cache = await caches.open(names.find(name => name === 'nicos-world-static-v28') ?? 'missing');
+      const cache = await caches.open(names.find(name => name === 'nicos-world-static-v29') ?? 'missing');
       return (await cache.keys()).map(request => new URL(request.url).pathname);
     });
     expect(cached.filter(path => /\/PetWorkshop-.*\.(?:js|css)$/.test(path))).toHaveLength(2);

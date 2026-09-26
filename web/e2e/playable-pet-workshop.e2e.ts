@@ -122,6 +122,9 @@ test('every species keeps illustrated art through customization and saving', asy
   await expect(page.locator('.pet-haven__actor [data-pet-renderer]')).toHaveAttribute('data-pet-renderer', 'premium-collection');
   await expect(page.locator('.pet-haven__actor img')).toHaveAttribute('src', /crew-owl-scout-v3/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  const figure = await page.locator('.pet-haven__actor img').boundingBox();
+  const speech = await page.locator('.pet-haven__speech').boundingBox();
+  expect(figure && speech && figure.y + figure.height <= speech.y + 2, JSON.stringify({ figure, speech })).toBe(true);
   await info.attach('matching-pet-collection', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
   await page.getByRole('button', { name: /Save pet$|Guardar mascota$/ }).click();
   await page.reload();
