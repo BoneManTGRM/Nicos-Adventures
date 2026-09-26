@@ -10,6 +10,7 @@ test("Signal Run teaches commands, completes a route, and saves progress", async
   await page.getByTestId("open-signal-run").click();
   const game = page.getByTestId("signal-run");
   await expect(game).toBeVisible();
+  await expect(page.locator(".monster-arcade-entry")).toBeHidden();
   await expect(game.getByText(es ? /Coloca órdenes/ : /Queue commands/)).toBeVisible();
   for (let index = 0; index < 4; index++) await game.getByRole("button", { name: es ? "Avanzar" : "Forward" }).click();
   await game.getByRole("button", { name: es ? /^Ejecutar/ : /^Run/ }).click();
