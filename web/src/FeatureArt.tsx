@@ -83,7 +83,7 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
   const hasHorns = !preserveAnatomy && ["Dragon", "Royal", "Volcano"].includes(monster.body);
   const hasTail = !preserveAnatomy && monster.body !== "Lizard Alien" && !String(monster.tail || "No tail").toLowerCase().includes("no ");
   const accessoryLayout = monsterAccessoryLayout(monster.body);
-  return <article className={`monster-stage monster-stage--${action}`} style={{ "--monster-main": color } as CSSProperties}>
+  return <article className={`monster-stage monster-stage--${action} monster-evolution--${Math.max(1, Math.min(3, monster.evolutionTier ?? 1))}`} style={{ "--monster-main": color } as CSSProperties}>
     <div className="monster-stage__environment" aria-hidden="true"><i/><i/><i/></div>
     <div className="monster-atmosphere" aria-hidden="true"><i/><i/><i/><i/><i/></div>
     <div

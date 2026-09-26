@@ -11,6 +11,8 @@ import { roomGoalId } from "./creativeProgression";
 import { PetArt } from "./PetArt";
 import { awardHomecoming } from "../game/goldenAdventureProfile";
 import { LivingHome } from "./LivingHome";
+import { DASH_UPGRADES, upgradeRobot } from './companionEvolution';
+import './companion-evolution.css';
 
 const HomeTheater = lazy(() => import("./HomeTheater").then(module => ({ default: module.HomeTheater })));
 
@@ -60,6 +62,15 @@ export function RobotHome({ profile, update, announce, open, beginStarBridge, co
       </> : <button onClick={() => continueAdventure ? continueAdventure() : next.action==='begin' ? beginStarBridge?.() : open?.(next.action==='bridge'?'world-map':'robo-lab')}>{next.label} →</button>}
     </section>
     <LivingHome profile={profile} update={update} announce={announce} />
+    <section className="evolution-panel" aria-label={language === 'es-MX' ? 'Mejoras de BoltBot' : 'BoltBot upgrades'}>
+      <h2>⚡ {language === 'es-MX' ? 'Mejora a BoltBot' : 'Upgrade BoltBot'}</h2>
+      <p>{language === 'es-MX' ? 'Supera etapas en Carrera de números para mejorar a tu robot activo.' : 'Clear Number Dash stages to upgrade your active robot.'}</p>
+      <div className="evolution-panel__choices">{DASH_UPGRADES.map(item => {
+        const unlocked = Array.from({ length: 12 }, (_, index) => profile.completedMissions.includes(`arcade:signal-run:${index}`)).filter(Boolean).length >= item.checkpoints;
+        const installed = profile.robot.upgrades?.includes(item.id);
+        return <div key={item.id}><strong>{language === 'es-MX' ? item.es : item.en}</strong><button type="button" disabled={!unlocked || installed} onClick={() => { update(upgradeRobot(profile, profile.robot.id, item.id)); announce(language === 'es-MX' ? '¡Mejora instalada!' : 'Upgrade installed!'); }}>{installed ? (language === 'es-MX' ? 'Instalada' : 'Installed') : unlocked ? (language === 'es-MX' ? 'Instalar' : 'Install') : `${language === 'es-MX' ? 'Supera' : 'Clear'} ${item.checkpoints} ${language === 'es-MX' ? 'etapas' : 'stages'}`}</button></div>;
+      })}</div>
+    </section>
     <section className="home-creation-shelf" aria-labelledby="home-creations-title">
       <h2 id="home-creations-title">{language==='es-MX'?'Hecho por ti':'Made by you'}</h2>
       <div>{displayedArtwork&&openArtwork&&<button type="button" data-testid="home-edit-art" onClick={()=>openArtwork(displayedArtwork.id)}><span aria-hidden="true">🖼️</span><strong>{displayedArtwork.title}</strong><small>{language==='es-MX'?'Ver y editar mi obra':'View and edit my artwork'}</small></button>}

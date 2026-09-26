@@ -14,6 +14,8 @@ import {
   type MonsterPose,
 } from "./monsterMovement";
 import { completeOnce, hasCompleted, monsterFriendshipMission } from "./progression";
+import { evolveMonster, monsterCanEvolve, tier } from './companionEvolution';
+import './companion-evolution.css';
 
 const MonsterLabVisuals = lazy(() => import("./MonsterLabVisuals"));
 
@@ -85,7 +87,8 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
   useEffect(() => () => clearMotionTimer(), []);
 
   const save = () => {
-    const monster = { ...draft, id: draft.id || makeId("monster"), name: draft.name.trim() || (language === "es-MX" ? "Monstruo" : "Monster") };
+    const current = profile.monsters.find(item => item.id === draft.id);
+    const monster = { ...draft, friendship: current?.friendship ?? draft.friendship, evolutionTier: current?.evolutionTier ?? draft.evolutionTier, id: draft.id || makeId("monster"), name: draft.name.trim() || (language === "es-MX" ? "Monstruo" : "Monster") };
     const exists = profile.monsters.some((item) => item.id === monster.id);
     const monsters = exists
       ? profile.monsters.map((item) => item.id === monster.id ? monster : item)
@@ -197,7 +200,7 @@ export function MonsterHabitats({ profile, update, announce }: { profile: LocalP
   const care = (monsterId: string, amount: number, action: { en: string; "es-MX": string }) => {
     const monster = profile.monsters.find((item) => item.id === monsterId);
     if (!monster || monster.friendship >= 100) return;
-    const nextFriendship = Math.min(100, monster.friendship + amount);
+    const nextFriendship = Math.min(100, monster.friendship + amount + tier(monster) - 1);
     let nextProfile: LocalProfile = {
       ...profile,
       monsters: profile.monsters.map((item) => item.id === monsterId ? { ...item, friendship: nextFriendship } : item),
@@ -236,6 +239,7 @@ export function MonsterHabitats({ profile, update, announce }: { profile: LocalP
             <span className={hasCompleted(profile, monsterFriendshipMission(monster.id, 50)) ? "earned" : ""}>⭐ 50</span>
             <span className={hasCompleted(profile, monsterFriendshipMission(monster.id, 100)) ? "earned" : ""}>🏆 100</span>
           </div>
+          <div className="evolution-panel__progress"><strong>{language === 'es-MX' ? 'Evolución' : 'Evolution'} {tier(monster)}/3</strong><span>{tier(monster) === 3 ? (language === 'es-MX' ? 'Forma final · +2 amistad al cuidar' : 'Final form · +2 friendship from care') : `${language === 'es-MX' ? 'Siguiente' : 'Next'}: ${tier(monster) === 1 ? 40 : 80}/100 ${language === 'es-MX' ? 'amistad' : 'friendship'}`}</span><button type="button" disabled={!monsterCanEvolve(monster)} onClick={() => { update(evolveMonster(profile, monster.id)); announce(language === 'es-MX' ? `¡${monster.name} evolucionó!` : `${monster.name} evolved!`); }}>{monsterCanEvolve(monster) ? (language === 'es-MX' ? '✨ ¡Evolucionar!' : '✨ Evolve!') : tier(monster) === 3 ? (language === 'es-MX' ? 'Forma final' : 'Final form') : (language === 'es-MX' ? 'Cuídalo para evolucionar' : 'Care to evolve')}</button></div>
           <div className="fw-action-row" role="group" aria-label={language === "es-MX" ? `Cuidar a ${monster.name}` : `Care for ${monster.name}`}>
             <button type="button" onClick={() => care(monster.id, 5, { en: "Fed", "es-MX": "Alimentado" })} disabled={monster.friendship >= 100}>🍎 {language === "es-MX" ? "Alimentar" : "Feed"}</button>
             <button type="button" onClick={() => care(monster.id, 10, { en: "Played together", "es-MX": "Jugaron juntos" })} disabled={monster.friendship >= 100}>🎾 {language === "es-MX" ? "Jugar" : "Play"}</button>

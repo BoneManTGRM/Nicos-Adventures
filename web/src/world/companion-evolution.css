@@ -1,0 +1,20 @@
+.evolution-panel { margin: 18px 0; padding: 20px; border: 1px solid #67e8f977; border-radius: 22px; background: linear-gradient(130deg, #112e48, #10213a 65%, #182a49); color: #f5fbff; box-shadow: 0 14px 34px #02081740; }
+.evolution-panel h2 { margin: 0 0 8px; }
+.evolution-panel p { margin: 0 0 14px; color: #c9ddeb; }
+.evolution-panel__choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.evolution-panel__choices > div { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid #a5f3fc44; border-radius: 16px; background: #06192a88; }
+.evolution-panel__progress { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 12px 0; padding: 12px; border: 1px solid #67e8f966; border-radius: 14px; background: #102c46; color: #f5fbff; }
+.evolution-panel__progress span { color: #cbe7ed; font-size: .9rem; }
+.evolution-panel__progress button { margin-left: auto; }
+.evolution-panel button, .evolution-panel__progress button { min-height: 42px; padding: 8px 14px; border: 1px solid #67e8f9; border-radius: 12px; background: #155e75; color: white; font-weight: 700; cursor: pointer; }
+.evolution-panel button:disabled, .evolution-panel__progress button:disabled { opacity: .66; cursor: default; }
+.pet-art.pet-evolution-frame--2, .pet-art.pet-evolution-frame--3 { filter: drop-shadow(0 0 12px #67e8f9aa) drop-shadow(0 12px 12px #07142888); }
+.pet-art.pet-evolution-frame--3 { filter: drop-shadow(0 0 15px #facc15cc) drop-shadow(0 0 5px #67e8f9); }
+.pet-art.pet-evolution-frame--2::before, .pet-art.pet-evolution-frame--3::before { content: ''; position: absolute; inset: 6% 8%; border-radius: 50%; border: 2px solid #67e8f9aa; box-shadow: inset 0 0 18px #67e8f966, 0 0 20px #67e8f977; pointer-events: none; }
+.pet-art.pet-evolution-frame--3::before { border-color: #fde68abb; box-shadow: inset 0 0 18px #fde68a88, 0 0 24px #fde68aaa; }
+.pet-art--crew.pet-evolution-frame--2, .pet-art--crew.pet-evolution-frame--3 { position: relative; }
+.monster-stage.monster-evolution--2 .monster-v2, .monster-stage.monster-evolution--3 .monster-v2 { filter: drop-shadow(0 0 13px #67e8f9aa); }
+.monster-stage.monster-evolution--3 .monster-v2 { filter: drop-shadow(0 0 18px #fde68acc); }
+.monster-stage.monster-evolution--2 .monster-v2::after, .monster-stage.monster-evolution--3 .monster-v2::after { content: ''; position: absolute; inset: 7%; border: 2px solid #67e8f9a0; border-radius: 50%; box-shadow: 0 0 18px #67e8f988, inset 0 0 16px #67e8f955; pointer-events: none; }
+.monster-stage.monster-evolution--3 .monster-v2::after { border-color: #fde68aaa; box-shadow: 0 0 22px #fde68aaa, inset 0 0 20px #fde68a66; }
+@media (max-width: 600px) { .evolution-panel { padding: 16px; } .evolution-panel__progress button { width: 100%; margin-left: 0; } }

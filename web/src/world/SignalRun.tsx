@@ -14,8 +14,10 @@ export function SignalRun({ profile, update, announce, close }: { profile: Local
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1000000) + 1);
   const [round, setRound] = useState(0);
   const [phase, setPhase] = useState<Phase>("ready");
-  const [seconds, setSeconds] = useState(SPRINT_SECONDS);
-  const [energy, setEnergy] = useState(3);
+  const maxEnergy = profile.robot.upgrades?.includes('battery') ? 4 : 3;
+  const startSeconds = SPRINT_SECONDS + (profile.robot.upgrades?.includes('turbo') ? 10 : 0);
+  const [seconds, setSeconds] = useState(startSeconds);
+  const [energy, setEnergy] = useState(maxEnergy);
   const [streak, setStreak] = useState(0);
   const [score, setScore] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -79,13 +81,13 @@ export function SignalRun({ profile, update, announce, close }: { profile: Local
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
-  const restart = () => { setSeed(Math.floor(Math.random() * 1000000) + 1); setRound(0); setPhase("ready"); setSeconds(SPRINT_SECONDS); setEnergy(3); setStreak(0); setScore(0); setProgress(0); setSelected(null); setAnsweredQuestion(null); setEarned(false); };
+  const restart = () => { setSeed(Math.floor(Math.random() * 1000000) + 1); setRound(0); setPhase("ready"); setSeconds(startSeconds); setEnergy(maxEnergy); setStreak(0); setScore(0); setProgress(0); setSelected(null); setAnsweredQuestion(null); setEarned(false); };
   const right = selected !== null && answeredQuestion !== null && answeredQuestion.choices[selected] === answeredQuestion.answer;
   const feedback = phase === "finished" ? `${labels.finish} ${labels.score}: ${score}` : selected === null ? labels.ready : `${right ? labels.good : `${labels.wrong} ${visibleQuestion.answer}.`} ${visibleQuestion.explanation[es ? "es-MX" : "en"]}${earned ? ` ${labels.star}` : ""}`;
 
   return <section className="signal-run" aria-label={labels.title} data-testid="signal-run">
     <header className="signal-run__header"><button type="button" onClick={close}>← {labels.back}</button><strong>⚡ {labels.title}</strong><span>🏆 {labels.best}: {profile.arcadeScores[SIGNAL_RUN_ID] ?? 0}</span></header>
-    <div className="signal-run__hud"><span>⭐ {completed}/{CHECKPOINT_COUNT}</span><span>🔥 {streak}</span><span>✦ {score}</span><span className={seconds < 16 ? "is-urgent" : ""}>⏱ {seconds}s</span><span aria-label={`${labels.energy}: ${energy}/3`}>{"♥".repeat(energy)}<i>{"♡".repeat(3 - energy)}</i></span></div>
+    <div className="signal-run__hud"><span>⭐ {completed}/{CHECKPOINT_COUNT}</span><span>🔥 {streak}</span><span>✦ {score}</span><span className={seconds < 16 ? "is-urgent" : ""}>⏱ {seconds}s</span><span aria-label={`${labels.energy}: ${energy}/${maxEnergy}`}>{"♥".repeat(energy)}<i>{"♡".repeat(maxEnergy - energy)}</i></span></div>
     <div className="signal-run__scene" data-result={selected === null ? "idle" : right ? "correct" : "wrong"}>
       <div className="signal-run__sky"><span className="signal-run__sun" /><span className="signal-run__mountains" /><span className="signal-run__city" /></div>
       <div className="signal-run__goal"><span>★</span><strong>{labels.checkpoint} {checkpoint + 1}/{CHECKPOINT_COUNT}</strong><small>{progress}/{ANSWERS_PER_CHECKPOINT} · {labels.goal}</small></div>
