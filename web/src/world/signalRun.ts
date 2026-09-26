@@ -1,47 +1,43 @@
-export type Command = "forward" | "left" | "right";
-export type Point = { x: number; y: number };
-export type Direction = 0 | 1 | 2 | 3; // north, east, south, west
-export type Board = { start: Point; facing: Direction; battery: Point; beacon: Point; walls: Point[] };
-export type RobotState = Point & { facing: Direction; charged: boolean };
-export type StepResult = { state: RobotState; outcome: "moving" | "blocked" | "won" };
+export const SIGNAL_RUN_ID = "signal-run"; // Keep saved arcade scores and mission IDs compatible.
+export const CHECKPOINT_COUNT = 12;
+export const ANSWERS_PER_CHECKPOINT = 5;
+export const SPRINT_SECONDS = 75;
 
-export const GRID_SIZE = 5;
-export const PROGRAM_LIMIT = 24;
-export const LEVEL_COUNT = 12;
-export const SIGNAL_RUN_ID = "signal-run";
+export type DashQuestion = {
+  prompt: string;
+  answer: number;
+  choices: number[];
+  explanation: { en: string; "es-MX": string };
+};
 
-const layouts: Board[] = [
-  { start: { x: 0, y: 4 }, facing: 1, battery: { x: 2, y: 4 }, beacon: { x: 4, y: 4 }, walls: [] },
-  { start: { x: 0, y: 4 }, facing: 1, battery: { x: 1, y: 3 }, beacon: { x: 4, y: 2 }, walls: [{ x: 2, y: 4 }, { x: 2, y: 3 }, { x: 0, y: 2 }] },
-  { start: { x: 0, y: 4 }, facing: 1, battery: { x: 2, y: 2 }, beacon: { x: 4, y: 0 }, walls: [{ x: 2, y: 4 }, { x: 2, y: 3 }, { x: 1, y: 1 }, { x: 3, y: 2 }] },
-];
-
-export function samePoint(a: Point, b: Point): boolean { return a.x === b.x && a.y === b.y; }
-
-export function boardFor(level: number): Board {
-  const source = layouts[Math.floor(level / 4) % layouts.length];
-  const quarterTurns = level % 4;
-  const rotate = (point: Point): Point => {
-    let { x, y } = point;
-    for (let turn = 0; turn < quarterTurns; turn++) [x, y] = [GRID_SIZE - 1 - y, x];
-    return { x, y };
+// A seeded generator keeps a question stable while React rerenders the timer.
+export function makeQuestion(seed: number, checkpoint: number): DashQuestion {
+  let state = (seed >>> 0) || 1;
+  const pick = (limit: number) => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    return state % limit;
   };
-  return { start: rotate(source.start), facing: ((source.facing + quarterTurns) % 4) as Direction,
-    battery: rotate(source.battery), beacon: rotate(source.beacon), walls: source.walls.map(rotate) };
-}
-
-export function initialRobot(board: Board): RobotState {
-  return { ...board.start, facing: board.facing, charged: false };
-}
-
-export function stepRobot(board: Board, state: RobotState, command: Command): StepResult {
-  if (command !== "forward") return { state: { ...state, facing: ((state.facing + (command === "right" ? 1 : 3)) % 4) as Direction }, outcome: "moving" };
-  const offsets: Point[] = [{ x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }];
-  const offset = offsets[state.facing];
-  const next = { ...state, x: state.x + offset.x, y: state.y + offset.y };
-  if (next.x < 0 || next.y < 0 || next.x >= GRID_SIZE || next.y >= GRID_SIZE || board.walls.some(wall => samePoint(wall, next))) {
-    return { state, outcome: "blocked" };
+  const kind = checkpoint < 1 ? 0 : checkpoint < 3 ? pick(2) : pick(3);
+  const range = checkpoint < 2 ? 9 : checkpoint < 5 ? 15 : 20;
+  let first = 2 + pick(range - 1), second = 1 + pick(checkpoint < 2 ? 7 : 9);
+  if (kind === 1 && second > first) [first, second] = [second, first];
+  if (kind === 2) { first = 2 + pick(Math.min(7, 3 + Math.floor(checkpoint / 2))); second = 2 + pick(8); }
+  const answer = kind === 0 ? first + second : kind === 1 ? first - second : first * second;
+  const symbol = kind === 0 ? "+" : kind === 1 ? "−" : "×";
+  const distractors = new Set<number>();
+  for (const offset of [1, -1, 2, -2, second, -second, 10]) {
+    const candidate = answer + offset;
+    if (candidate >= 0 && candidate !== answer) distractors.add(candidate);
+    if (distractors.size >= 2) break;
   }
-  next.charged = state.charged || samePoint(next, board.battery);
-  return { state: next, outcome: next.charged && samePoint(next, board.beacon) ? "won" : "moving" };
+  const choices = [answer, ...Array.from(distractors).slice(0, 2)];
+  const shift = pick(3);
+  return {
+    prompt: `${first} ${symbol} ${second} = ?`, answer,
+    choices: choices.map((_, index) => choices[(index + shift) % 3]),
+    explanation: {
+      en: kind === 2 ? `${first} groups of ${second} make ${answer}.` : kind === 1 ? `Take ${second} away from ${first} to get ${answer}.` : `Start at ${first} and count ${second} more to reach ${answer}.`,
+      "es-MX": kind === 2 ? `${first} grupos de ${second} son ${answer}.` : kind === 1 ? `Quita ${second} de ${first} y quedan ${answer}.` : `Empieza en ${first} y suma ${second} para llegar a ${answer}.`,
+    },
+  };
 }
