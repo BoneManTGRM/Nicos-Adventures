@@ -1,5 +1,17 @@
 import { expect, test } from "@playwright/test";
 
+test("a direct link opens Number Dash and exit returns to the arcade", async ({ page }, testInfo) => {
+  test.skip(!["chromium-desktop-en", "webkit-iphone-es"].includes(testInfo.project.name));
+  await page.goto("/?play=number-dash");
+  await expect(page.getByTestId("signal-run")).toBeVisible();
+  await expect(page.locator(".monster-arcade-entry")).toBeHidden();
+  await page.getByTestId("signal-run").getByRole("button", { name: /All games|Todos los juegos/ }).click();
+  await expect(page).not.toHaveURL(/play=number-dash/);
+  await expect(page.getByTestId("open-signal-run")).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId("open-signal-run")).toBeVisible();
+});
+
 test("Number Dash teaches math with live feedback and saves checkpoints on phone and desktop", async ({ page }, testInfo) => {
   test.skip(!["chromium-desktop-en", "webkit-iphone-es"].includes(testInfo.project.name));
   const es = testInfo.project.metadata.language === "es-MX";
