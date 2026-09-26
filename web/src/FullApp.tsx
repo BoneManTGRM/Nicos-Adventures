@@ -53,6 +53,11 @@ export default function FullApp() {
  const lastNavigationInput = useRef<"keyboard" | "pointer">("pointer");
  const announce = (message: string) => setAnnouncement(current => ({ id: current.id + 1, message }));
  useEffect(() => {
+  if (new URLSearchParams(window.location.search).get("play") !== "number-dash") return;
+  if (profile.selectedSection !== "game-arcade") commitProfile(current => ({ ...current, selectedSection: "game-arcade" }));
+ // The link is interpreted once on arrival; later navigation follows the player's choice.
+ }, []);
+ useEffect(() => {
   const section = WORLD_SECTIONS.find(item => item.id === profile.selectedSection) ?? WORLD_SECTIONS[0];
   document.documentElement.lang = profile.language;
   document.title = `${tr(section.name, profile.language)} · ${profile.language === "es-MX" ? "El Mundo de Nico" : "Nico's World"}`;
@@ -78,6 +83,9 @@ export default function FullApp() {
  }, [profile.selectedSection]);
  const presentSection = () => { pendingTitleFocus.current = lastNavigationInput.current; lastNavigationInput.current = "pointer"; window.scrollTo({ top: 0, left: 0, behavior: "auto" }); };
  const open = (sectionId: SectionId) => {
+  if (sectionId !== "game-arcade" && new URLSearchParams(window.location.search).get("play") === "number-dash") {
+   const url = new URL(window.location.href); url.searchParams.delete("play"); window.history.replaceState(null, "", url);
+  }
   setBridgeRequested(false); setCreationIntent(null); setMenu(null);
   if (sectionId === "dinosaur-valley" && !hasDinosaurValleyAccess(profile)) { announce(profile.language === "es-MX" ? "Completa El Puente Estelar Roto para desbloquear el Valle de Dinosaurios." : "Complete The Broken Star Bridge to unlock Dinosaur Valley."); return; }
   const section = WORLD_SECTIONS.find(item => item.id === sectionId) ?? WORLD_SECTIONS[0]; presentSection();
