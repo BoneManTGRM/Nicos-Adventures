@@ -3,7 +3,7 @@ import type { LocalProfile } from "../types";
 import { PremiumBoltBotSprite } from "../boltbot/PremiumBoltBotSprite";
 import type { Announce, UpdateProfile } from "./common";
 import { completeOnce } from "./progression";
-import { ANSWERS_PER_CHECKPOINT, CHECKPOINT_COUNT, makeQuestion, SIGNAL_RUN_ID, SPRINT_SECONDS } from "./signalRun";
+import { ANSWERS_PER_CHECKPOINT, CHECKPOINT_COUNT, makeQuestion, SIGNAL_RUN_ID, SPRINT_SECONDS, type DashQuestion } from "./signalRun";
 import "./signal-run.css";
 
 type Phase = "ready" | "playing" | "feedback" | "finished";
@@ -20,10 +20,12 @@ export function SignalRun({ profile, update, announce, close }: { profile: Local
   const [score, setScore] = useState(0);
   const [progress, setProgress] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
+  const [answeredQuestion, setAnsweredQuestion] = useState<DashQuestion | null>(null);
   const [earned, setEarned] = useState(false);
   const completed = Array.from({ length: CHECKPOINT_COUNT }, (_, index) => profile.completedMissions.includes(mission(index))).filter(Boolean).length;
   const checkpoint = Math.min(completed, CHECKPOINT_COUNT - 1);
   const question = useMemo(() => makeQuestion(seed + round * 7919, checkpoint), [seed, round, checkpoint]);
+  const visibleQuestion = phase === "feedback" && answeredQuestion ? answeredQuestion : question;
   const labels = es ? {
     title: "Carrera de números", back: "Todos los juegos", guide: "Elige el resultado correcto. ¡Carga a BoltBot y encadena aciertos!", best: "Récord", checkpoint: "Etapa", score: "Puntos", energy: "Energía", time: "Tiempo", goal: "5 aciertos para una estrella", ready: "¡Toca una respuesta para empezar!", good: "¡Correcto!", wrong: "Casi. La respuesta es", star: "¡Etapa superada! Ganaste una estrella.", finish: "¡Buena carrera!", retry: "Jugar otra vez", mastered: "¡Conseguiste las 12 estrellas! Sigue mejorando tu récord.", keys: "Toca una puerta o usa 1, 2, 3.", boost: "¡Racha!"
   } : {
@@ -40,7 +42,7 @@ export function SignalRun({ profile, update, announce, close }: { profile: Local
     if (phase !== "feedback") return;
     const timer = window.setTimeout(() => {
       if (energy === 0) setPhase("finished");
-      else { setSelected(null); setEarned(false); setRound(value => value + 1); setPhase("playing"); }
+      else { setSelected(null); setAnsweredQuestion(null); setEarned(false); setRound(value => value + 1); setPhase("playing"); }
     }, earned ? 1500 : 1150);
     return () => window.clearTimeout(timer);
   }, [phase, energy, earned]);
@@ -49,6 +51,7 @@ export function SignalRun({ profile, update, announce, close }: { profile: Local
     if (phase === "feedback" || phase === "finished") return;
     const correct = question.choices[choiceIndex] === question.answer;
     setSelected(choiceIndex);
+    setAnsweredQuestion(question);
     setEarned(false);
     if (correct) {
       const nextStreak = streak + 1;
@@ -76,9 +79,9 @@ export function SignalRun({ profile, update, announce, close }: { profile: Local
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
-  const restart = () => { setSeed(Math.floor(Math.random() * 1000000) + 1); setRound(0); setPhase("ready"); setSeconds(SPRINT_SECONDS); setEnergy(3); setStreak(0); setScore(0); setProgress(0); setSelected(null); setEarned(false); };
-  const right = selected !== null && question.choices[selected] === question.answer;
-  const feedback = phase === "finished" ? `${labels.finish} ${labels.score}: ${score}` : selected === null ? labels.ready : `${right ? labels.good : `${labels.wrong} ${question.answer}.`} ${question.explanation[es ? "es-MX" : "en"]}${earned ? ` ${labels.star}` : ""}`;
+  const restart = () => { setSeed(Math.floor(Math.random() * 1000000) + 1); setRound(0); setPhase("ready"); setSeconds(SPRINT_SECONDS); setEnergy(3); setStreak(0); setScore(0); setProgress(0); setSelected(null); setAnsweredQuestion(null); setEarned(false); };
+  const right = selected !== null && answeredQuestion !== null && answeredQuestion.choices[selected] === answeredQuestion.answer;
+  const feedback = phase === "finished" ? `${labels.finish} ${labels.score}: ${score}` : selected === null ? labels.ready : `${right ? labels.good : `${labels.wrong} ${visibleQuestion.answer}.`} ${visibleQuestion.explanation[es ? "es-MX" : "en"]}${earned ? ` ${labels.star}` : ""}`;
 
   return <section className="signal-run" aria-label={labels.title} data-testid="signal-run">
     <header className="signal-run__header"><button type="button" onClick={close}>← {labels.back}</button><strong>⚡ {labels.title}</strong><span>🏆 {labels.best}: {profile.arcadeScores[SIGNAL_RUN_ID] ?? 0}</span></header>
@@ -90,9 +93,9 @@ export function SignalRun({ profile, update, announce, close }: { profile: Local
       <div className="signal-run__robot"><PremiumBoltBotSprite robot={profile.robot} action={right ? "celebrate" : phase === "playing" ? "drive" : "ready"} alt="BoltBot" /></div>
       {streak > 1 && <div className="signal-run__combo">{labels.boost} ×{streak}</div>}
     </div>
-    <div className="signal-run__challenge"><p>{labels.guide}</p><strong data-testid="dash-question">{question.prompt}</strong><small>{labels.keys}</small></div>
-    <div className="signal-run__gates" role="group" aria-label={question.prompt}>
-      {question.choices.map((choice, index) => <button key={`${round}-${index}`} type="button" className={`${selected === index ? "is-picked" : ""} ${selected !== null && choice === question.answer ? "is-correct" : ""}`} disabled={phase === "feedback" || phase === "finished"} onClick={() => choose(index)} aria-label={`${index + 1}: ${choice}`}><small>{index + 1}</small><strong>{choice}</strong><span>➜</span></button>)}
+    <div className="signal-run__challenge"><p>{labels.guide}</p><strong data-testid="dash-question">{visibleQuestion.prompt}</strong><small>{labels.keys}</small></div>
+    <div className="signal-run__gates" role="group" aria-label={visibleQuestion.prompt}>
+      {visibleQuestion.choices.map((choice, index) => <button key={`${round}-${index}`} type="button" className={`${selected === index ? "is-picked" : ""} ${selected !== null && choice === visibleQuestion.answer ? "is-correct" : ""}`} disabled={phase === "feedback" || phase === "finished"} onClick={() => choose(index)} aria-label={`${index + 1}: ${choice}`}><small>{index + 1}</small><strong>{choice}</strong><span>➜</span></button>)}
     </div>
     <div className={`signal-run__feedback ${selected === null ? "" : right ? "is-good" : "is-wrong"}`} role="status" aria-live="polite">{feedback}</div>
     {phase === "finished" && <button className="signal-run__retry" type="button" onClick={restart}>↻ {labels.retry}</button>}
