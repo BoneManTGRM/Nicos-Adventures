@@ -60,16 +60,18 @@ function SparkyArt({
   decorative,
   label,
   rawId,
+  evolutionTier,
 }: {
   action?: PetAction;
   decorative: boolean;
   label: string;
   rawId: string;
+  evolutionTier: number;
 }) {
   const pose = action === "Sit" ? "sit" : action === "High Five" || action === "Dance" ? "high-five" : action === "Fetch Tool" ? "fetch-tool" : "idle";
   const actionClass = action ? ` pet-art--action-${action.toLowerCase().replace(/\s+/g, "-")}` : "";
   return <span
-    className={`pet-art pet-art--premium-sparky pet-art--pose-${pose}${actionClass}`}
+    className={`pet-art pet-art--premium-sparky pet-art--pose-${pose} pet-evolution-frame--${evolutionTier}${actionClass}`}
     role={decorative ? undefined : "img"}
     aria-hidden={decorative || undefined}
     aria-label={decorative ? undefined : label}
@@ -88,12 +90,12 @@ export function PetArt({ pet, language = "en", decorative = false, action }: { p
 
   const isPremiumSparky = pet.species === "Robot Dog" && pet.color === "Blue" && pet.accessory === "Explorer Scarf";
   if (isPremiumSparky) {
-    return <SparkyArt action={action} decorative={decorative} label={label} rawId={rawId.replace(/:/g, "")} />;
+    return <SparkyArt action={action} decorative={decorative} label={label} rawId={rawId.replace(/:/g, "")} evolutionTier={Math.max(1, Math.min(3, pet.evolutionTier ?? 1))} />;
   }
   const id = `crew-${rawId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const style = { "--pet-color-filter": `url(#${id}-armor)` } as CSSProperties;
   return <span
-    className={`pet-art pet-art--crew pet-art--${pet.species.toLowerCase().replace(/\s+/g, "-")}`}
+    className={`pet-art pet-art--crew pet-art--${pet.species.toLowerCase().replace(/\s+/g, "-")} pet-evolution-frame--${Math.max(1, Math.min(3, pet.evolutionTier ?? 1))}`}
     style={style}
     role={decorative ? undefined : "img"}
     aria-hidden={decorative || undefined}

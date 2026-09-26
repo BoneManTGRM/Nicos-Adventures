@@ -11,6 +11,8 @@ import type { PetAction } from "./PetArt";
 import { PetChallenge } from "./PetChallenge";
 import { addPetBond, advancePetGame, beginPetGame, bondLabel, CUES, finishPetTraining, hasPetEdits, knownTrickCount, personalityGreeting, PET_LIMIT, savePetStyle, TRICKS } from "./petPlay";
 import type { PetGame, TrickId } from "./petPlay";
+import { evolvePet, petCanEvolve, tier } from './companionEvolution';
+import './companion-evolution.css';
 import "./pet-workshop.css";
 
 type Props = { profile: LocalProfile; update: UpdateProfile; announce: Announce };
@@ -45,7 +47,7 @@ function PetWorkshopSession({ profile, update, announce }: Props) {
   const guardOpener = useRef<HTMLElement | null>(null);
   const stage = useRef<HTMLElement>(null);
   const savedPet = profile.pets.find((pet) => pet.id === draft.id);
-  const pet = savedPet ? { ...draft, bond: savedPet.bond, tricks: savedPet.tricks } : draft;
+  const pet = savedPet ? { ...draft, bond: savedPet.bond, tricks: savedPet.tricks, evolutionTier: savedPet.evolutionTier } : draft;
   const lostPet = wasSaved && !savedPet;
   const dirty = hasPetEdits(draft, savedPet);
   const learned = knownTrickCount(pet);
@@ -113,7 +115,7 @@ function PetWorkshopSession({ profile, update, announce }: Props) {
         : `${es ? "Herramientas encontradas" : "Tools found"}: ${nextGame.step}/5.`);
       return;
     }
-    const next = current.trickId ? finishPetTraining(profile, current.petId, current.trickId) : addPetBond(profile, current.petId, 4);
+    const next = current.trickId ? finishPetTraining(profile, current.petId, current.trickId) : addPetBond(profile, current.petId, 3 + tier(savedPet));
     if (!next) { setChallenge(null); return; }
     const result = next.pets.find((item) => item.id === current.petId)!;
     const gain = result.bond - savedPet.bond;
@@ -166,6 +168,7 @@ function PetWorkshopSession({ profile, update, announce }: Props) {
         <p className="pet-haven__speech">{reply || personalityGreeting(pet.personality, language)}</p>
         <label className="pet-haven__bond"><span><strong>{bondLabel(pet.bond, language)}</strong><span>{es ? "Vínculo" : "Bond"} {pet.bond}/100</span></span>
           <progress max={100} value={pet.bond} aria-label={es ? "Vínculo con tu mascota" : "Pet bond"}>{pet.bond}%</progress></label>
+        {savedPet && <div className="evolution-panel__progress"><strong>{es ? 'Evolución' : 'Evolution'} {tier(savedPet)}/3</strong><span>{tier(savedPet) === 3 ? (es ? 'Forma final · +2 vínculo en cada búsqueda' : 'Final form · +2 bond per hunt') : (es ? 'Siguiente: ' : 'Next: ') + (tier(savedPet) === 1 ? `30 ${es ? 'de vínculo + 1 truco' : 'bond + 1 trick'}` : `70 ${es ? 'de vínculo + 3 trucos' : 'bond + 3 tricks'}`)}</span><button type="button" disabled={!petCanEvolve(savedPet)} onClick={() => { const next = evolvePet(profile, savedPet.id); update(next); say(es ? `¡${pet.name} evolucionó! +${tier(savedPet)+1} estrellas.` : `${pet.name} evolved! +${tier(savedPet)+1} stars.`); }}>{petCanEvolve(savedPet) ? (es ? '✨ ¡Evolucionar!' : '✨ Evolve!') : tier(savedPet) === 3 ? (es ? 'Forma final' : 'Final form') : (es ? 'Sigue entrenando' : 'Keep training')}</button></div>}
         {dirty && <span className="pet-haven__draft">{es ? "Diseño sin guardar" : "Unsaved design"}</span>}
       </article>
       <section className="pet-haven__panel" aria-label={es ? navigation.find((item) => item.id === view)!.es : navigation.find((item) => item.id === view)!.en}>

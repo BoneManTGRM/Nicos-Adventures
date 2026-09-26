@@ -20,6 +20,7 @@ export type Robot = {
   voice?: string;
   level: number;
   xp: number;
+  upgrades?: string[];
 };
 
 export type SectionId =
@@ -72,6 +73,7 @@ export type MonsterRecord = {
   power: string;
   personality: string;
   friendship: number;
+  evolutionTier?: number;
   habitat: string;
   mouth?: string;
   arms?: string;
@@ -81,7 +83,7 @@ export type MonsterRecord = {
   animation?: string;
 };
 
-export type PetRecord = { id: string; name: string; species: string; color: string; accessory: string; personality: string; bond: number; tricks: string[]; };
+export type PetRecord = { id: string; name: string; species: string; color: string; accessory: string; personality: string; bond: number; tricks: string[]; evolutionTier?: number; };
 export type ArtworkRecord = { id: string; title: string; background: string; subject: string; frame: string; caption: string; scale?: number; offset?: number; };
 export type StoryRecord = {
   id: string;

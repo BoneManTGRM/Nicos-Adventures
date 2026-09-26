@@ -74,7 +74,7 @@ export function savePetStyle(profile: LocalProfile, draft: PetRecord, wasSaved: 
 export function addPetBond(profile: LocalProfile, petId: string, amount: number): LocalProfile | null {
   const pet = profile.pets.find((item) => item.id === petId);
   if (!pet || !Number.isFinite(amount) || amount < 0) return null;
-  const next = { ...pet, bond: Math.min(100, Math.max(0, pet.bond) + Math.min(4, Math.floor(amount))) };
+  const next = { ...pet, bond: Math.min(100, Math.max(0, pet.bond) + Math.min(6, Math.floor(amount))) };
   return { ...profile, pets: profile.pets.map((item) => item.id === petId ? next : item) };
 }
 

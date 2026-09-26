@@ -203,6 +203,7 @@ function normalizeRobot(candidate: unknown, fallback: Robot): Robot {
     voice: optionalText(value.voice, 40),
     level: Math.round(clampNumber(value.level, 1, 999, fallback.level)),
     xp: Math.round(clampNumber(value.xp, 0, 999999, fallback.xp)),
+    upgrades: Array.isArray(value.upgrades) ? [...new Set(value.upgrades.filter((item): item is string => item === 'battery' || item === 'turbo'))] : [],
   };
 }
 
@@ -243,6 +244,7 @@ function normalizeMonster(candidate: unknown): MonsterRecord | null {
     power: clampText(value.power, 80, "Friendship"),
     personality: clampText(value.personality, 60, "Curious"),
     friendship: Math.round(clampNumber(value.friendship, 0, 100, 1)),
+    evolutionTier: Math.round(clampNumber(value.evolutionTier, 1, 3, 1)),
     habitat: clampText(value.habitat, 60, "Crystal Cave"),
     mouth: optionalText(value.mouth, 60),
     arms: optionalText(value.arms, 60),
@@ -266,6 +268,7 @@ function normalizePet(candidate: unknown): PetRecord | null {
     accessory: clampText(value.accessory, 60, "None"),
     personality: clampText(value.personality, 60, "Playful"),
     bond: Math.round(clampNumber(value.bond, 0, 100, 1)),
+    evolutionTier: Math.round(clampNumber(value.evolutionTier, 1, 3, 1)),
     tricks: uniqueNewest(Array.isArray(value.tricks) ? value.tricks : [], 30, 60),
   };
 }
