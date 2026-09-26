@@ -3,6 +3,7 @@ import type { LocalProfile } from '../types';
 import type { Announce,UpdateProfile } from './common';
 import { Arcade as Collection } from './ArcadeCollection';
 import './monster-entry.css';
+import './signal-run.css';
 const MonsterRift=lazy(()=>import('./MonsterRift').then(module=>({default:module.MonsterRift})));
 export function Arcade(props:{profile:LocalProfile;update:UpdateProfile;announce:Announce}){
  const [play,setPlay]=useState(false),es=props.profile.language==='es-MX';
