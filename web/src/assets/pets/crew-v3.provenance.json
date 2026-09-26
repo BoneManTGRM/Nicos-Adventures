@@ -1,0 +1,18 @@
+{
+  "version": 3,
+  "created": "2026-09-26",
+  "generator": "built-in image_gen",
+  "prompt": "Use case: stylized-concept. Asset type: transparent game character sprite for Nico's World pet workshop. Create ONE SPECIES: {species}. Cohesive premium 3D animated family-film robot toy style, matching glossy cobalt-blue and pearl-white robotic dog with cyan luminous joints, expressive large warm amber eyes, friendly smile, rounded manufactured panels and navy mechanical joints. All colored body armor must be blue; neutral silver/white muzzle and belly. Front-facing symmetrical seated upright character, camera eye level, entire body visible, centered within square canvas with 12% clear margin. Head center at (50%,32%), eyes at 30% height, neck at 49%, chest at 61%, feet at 85%. For quadrupeds sitting upright with forepaws in front; for owl/penguin wings folded by sides; dragon small wings and tail; orb spherical face with small floating blue side fins. No clothes, scarf, collars, crowns, goggles, props, floor or scene. Soft studio light from upper left, beautiful smooth bevels, realistic gentle material shading, crisp silhouette, no outlines or flat vector shapes. Transparent background, no text or labels. This is one member of a matched collection; keep proportions and rendering consistent.",
+  "species": [
+    "Robot Dog",
+    "Robot Cat",
+    "Mini Dinosaur",
+    "Tiny Dragon",
+    "Penguin Bot",
+    "Fox Bot",
+    "Owl Scout",
+    "Space Orb"
+  ],
+  "encoding": "640 × 640 WebP, quality 85, source alpha preserved",
+  "rendering": "Blue armor recolored with a selective SVG filter; warm eyes and neutral panels preserved. Accessories are independent shaded SVG layers. Signature Sparky retains original performance sprites."
+}

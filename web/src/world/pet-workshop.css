@@ -139,3 +139,19 @@
 @media (prefers-reduced-motion: reduce) {
   .pet-haven *, .pet-haven *::before, .pet-haven *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+.pet-haven__species { border: 0; padding: 0; margin: 18px 0 22px; min-width: 0; }
+.pet-haven__species legend { color: #d6eee7; font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.pet-haven__species-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.pet-haven__species-grid > button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 8px 4px; min-width: 0; background: radial-gradient(ellipse at 50% 35%, #28576588, #0a2033); }
+.pet-haven__species-grid > button[aria-pressed="true"] { border: 2px solid #a9f2d6; background: radial-gradient(ellipse at 50% 35%, #438e7988, #143d40); }
+.pet-haven__species-grid .pet-art { width: 100%; height: 80px; margin: 0; }
+.pet-haven__species-grid .pet-art__figure { width: 80px; max-width: 100%; }
+.pet-haven__species-grid > button > span:not(.pet-art) { font-size: 11px; line-height: 1.35; padding-top: 6px; }
+.pet-haven__species-grid .pet-haven__selected { position: absolute; top: 3px; right: 5px; color: #c5ffe6; }
+@media (max-width: 480px) {
+  .pet-haven__species-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pet-haven__species-grid .pet-art { height: 94px; }
+  .pet-haven__species-grid .pet-art__figure { width: 94px; }
+  .pet-haven__species-grid > button > span:not(.pet-art) { font-size: 12px; }
+}

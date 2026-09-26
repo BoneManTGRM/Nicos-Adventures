@@ -133,9 +133,9 @@ test('cousins portraits and all four Sparky poses keep working with native trans
   await page.locator('.pet-haven__nav').getByRole('button',{name:es?'Diseño':'Style',exact:true}).click();
   const editor=page.locator('.pet-haven__editor');
   await editor.locator('input').fill('Sparky');
-  await editor.locator('select').nth(0).selectOption('Robot Dog');
-  await editor.locator('select').nth(1).selectOption('Blue');
-  await editor.locator('select').nth(2).selectOption('Explorer Scarf');
+  await editor.locator('.pet-haven__species-grid').getByRole('button', { name: es ? 'Perro robot' : 'Robot Dog', exact: true }).click();
+  await editor.locator('select').nth(0).selectOption('Blue');
+  await editor.locator('select').nth(1).selectOption('Explorer Scarf');
   await editor.locator('button.fw-primary').click();
   await loadedImages(page,'.pet-haven__stage .pet-art img');
   await shot(page,info,'sparky-idle','.pet-haven__stage');

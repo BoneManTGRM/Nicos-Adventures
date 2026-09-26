@@ -93,6 +93,7 @@ test('cached pet play survives Chromium offline or a WebKit origin outage', asyn
     });
     expect(cached.filter(path => /\/PetWorkshop-.*\.(?:js|css)$/.test(path))).toHaveLength(2);
     expect(cached.filter(path => /\/sparky-(?:idle|sit|high-five|fetch-tool)-v2-.*\.webp$/.test(path))).toHaveLength(4);
+    expect(cached.filter(path => /\/crew-[a-z-]+-v3-.*\.webp$/.test(path))).toHaveLength(8);
     evidence.cachedAssets = cached;
     evidence.cachedDocument = await page.evaluate(async () => {
       const response = await caches.match('/index.html');

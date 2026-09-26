@@ -82,3 +82,16 @@
   .pet-art,
   .pet-art * { animation: none !important; }
 }
+
+/* One material and lighting style across the entire customizable collection. */
+.pet-art--crew { position: relative; display: grid; place-items: center; aspect-ratio: 1; }
+.pet-art__figure { display: block; position: relative; width: 100%; height: 100%; aspect-ratio: 1; }
+.pet-art__figure > img { display: block; width: 100%; height: 100%; object-fit: contain; filter: var(--pet-color-filter); user-select: none; pointer-events: none; }
+.pet-art__outfit { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; filter: drop-shadow(0 1px 1px #07152366); }
+.pet-haven__actor > .pet-art--crew { width: auto; max-width: 100%; height: 100%; margin: auto; }
+.pet-collection-button .pet-art__figure { width: 100%; height: auto; }
+
+.pet-art--space-orb .pet-art__outfit > g { transform: translateY(9px); }
+.pet-art--space-orb .pet-art__outfit[data-pet-accessory="Tiny Crown"] > g { transform: translateY(4px); }
+.pet-art--penguin-bot .pet-art__outfit[data-pet-accessory="Tiny Crown"] > g { transform: translateY(-10px); }
+.pet-art--owl-scout .pet-art__outfit[data-pet-accessory="Tiny Crown"] > g { transform: translateY(-6px); }

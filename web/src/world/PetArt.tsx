@@ -1,5 +1,5 @@
 import { useId } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import type { Language, PetRecord } from "../types";
 import { optionLabel } from "../i18n/display";
 import sparkyFetchTool from "../assets/pets/sparky-fetch-tool-v2.webp";
@@ -17,76 +17,42 @@ const SPARKY_POSES: Record<"idle" | "sit" | "high-five" | "fetch-tool", string> 
   "fetch-tool": sparkyFetchTool,
 };
 
-const PET_COLORS: Record<string, string> = {
-  Blue: "#38bdf8",
-  Red: "#fb7185",
-  Purple: "#a78bfa",
-  Green: "#4ade80",
-  Gold: "#fbbf24",
-  Pink: "#f472b6",
+// Every customizable pet uses the same illustrated collection. The original
+// Sparky performance sprites remain available for his familiar signature look.
+const PET_SPRITES: Record<string, string> = {
+  "Robot Dog": new URL("../assets/pets/crew-robot-dog-v3.webp", import.meta.url).href,
+  "Robot Cat": new URL("../assets/pets/crew-robot-cat-v3.webp", import.meta.url).href,
+  "Mini Dinosaur": new URL("../assets/pets/crew-mini-dinosaur-v3.webp", import.meta.url).href,
+  "Tiny Dragon": new URL("../assets/pets/crew-tiny-dragon-v3.webp", import.meta.url).href,
+  "Penguin Bot": new URL("../assets/pets/crew-penguin-bot-v3.webp", import.meta.url).href,
+  "Fox Bot": new URL("../assets/pets/crew-fox-bot-v3.webp", import.meta.url).href,
+  "Owl Scout": new URL("../assets/pets/crew-owl-scout-v3.webp", import.meta.url).href,
+  "Space Orb": new URL("../assets/pets/crew-space-orb-v3.webp", import.meta.url).href,
 };
+const COLOR_TURNS: Record<string, number> = { Blue: 0, Red: 140, Purple: 55, Green: 260, Gold: 190, Pink: 100 };
 
-function Face({ owl = false }: { owl?: boolean }) {
-  return <>
-    <circle cx={owl ? 171 : 177} cy="128" r={owl ? 33 : 27} fill="#eafcff" stroke="#10223d" strokeWidth="8" />
-    <circle cx={owl ? 249 : 243} cy="128" r={owl ? 33 : 27} fill="#eafcff" stroke="#10223d" strokeWidth="8" />
-    <circle cx={owl ? 176 : 182} cy="133" r="12" fill="#07111f" />
-    <circle cx={owl ? 244 : 238} cy="133" r="12" fill="#07111f" />
-    <circle cx={owl ? 170 : 176} cy="125" r="5" fill="#fff" />
-    <circle cx={owl ? 238 : 232} cy="125" r="5" fill="#fff" />
-    {owl
-      ? <path d="M197 154l13 14 13-14-13-10z" fill="#fbbf24" stroke="#7c4a0a" strokeWidth="4" />
-      : <><ellipse cx="210" cy="164" rx="21" ry="15" fill="#d9eff6" stroke="#10223d" strokeWidth="6" /><circle cx="210" cy="159" r="7" fill="#10223d" /><path d="M196 176q14 14 28 0" fill="none" stroke="#10223d" strokeLinecap="round" strokeWidth="6" /></>}
-  </>;
-}
-
-function Accessory({ accessory }: { accessory: string }) {
-  if (accessory === "Jetpack") return <g className="pet-art__jetpack"><rect x="112" y="191" width="38" height="82" rx="12" fill="#64748b" stroke="#10223d" strokeWidth="7"/><rect x="270" y="191" width="38" height="82" rx="12" fill="#64748b" stroke="#10223d" strokeWidth="7"/><path d="M124 274l13 36 13-36m120 0 13 36 13-36" fill="#fbbf24" stroke="#fb7185" strokeWidth="8" strokeLinejoin="round"/></g>;
-  if (accessory === "Explorer Scarf") return <g><path d="M158 188q52 20 104 0l-8 32q-45 16-88 0z" fill="#fb7185" stroke="#7f1d1d" strokeWidth="6"/><path d="M249 205q51 17 79 50l-35 7q-21-31-52-38z" fill="#fb7185" stroke="#7f1d1d" strokeWidth="6"/></g>;
-  if (accessory === "Star Collar") return <g><path d="M158 194q52 20 104 0" fill="none" stroke="#fbbf24" strokeWidth="12" strokeLinecap="round"/><path d="M210 201l7 14 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2z" fill="#fff7b2" stroke="#a16207" strokeWidth="4"/></g>;
-  if (accessory === "Goggles") return <g fill="rgba(34,211,238,.35)" stroke="#f8fafc" strokeWidth="7"><circle cx="177" cy="128" r="35"/><circle cx="243" cy="128" r="35"/><path d="M210 126h0m-99-7l32 5m166-5-32 5"/></g>;
-  if (accessory === "Tiny Crown") return <path d="M168 82l12-39 30 27 30-27 12 39z" fill="#fbbf24" stroke="#854d0e" strokeWidth="7" strokeLinejoin="round"/>;
-  return <g><rect x="275" y="210" width="54" height="65" rx="12" fill="#f59e0b" stroke="#10223d" strokeWidth="7"/><path d="M292 226h20m-10-10v20m-3 14l-17 18m17-18 13 13" fill="none" stroke="#eafcff" strokeWidth="7" strokeLinecap="round"/></g>;
-}
-
-function StandardPet({ species }: { species: string }) {
-  const cat = species === "Robot Cat" || species === "Fox Bot";
-  const fox = species === "Fox Bot";
-  const penguin = species === "Penguin Bot";
-  const owl = species === "Owl Scout";
-  const dinosaur = species === "Mini Dinosaur" || species === "Tiny Dragon";
-  const dragon = species === "Tiny Dragon";
-  let ears: ReactNode;
-  if (owl) ears = <><path d="M145 91l18-42 27 34"/><path d="M275 91l-18-42-27 34"/></>;
-  else if (dinosaur) ears = <><path d="M155 94l18-38 23 33"/><path d="M225 87l20-42 22 49"/></>;
-  else if (cat) ears = <><path d="M145 93l13-58 46 48"/><path d="M275 93l-13-58-46 48"/></>;
-  else if (!penguin) ears = <><path d="M145 96q-47-5-54 31 31 22 66 3"/><path d="M275 96q47-5 54 31-31 22-66 3"/></>;
-
-  return <>
-    <g className="pet-art__tail" fill="var(--pet-main)" stroke="#10223d" strokeWidth="9" strokeLinejoin="round">
-      {fox || cat ? <path d="M285 235q83-45 89 25-5 45-65 34 39-19 13-42"/> : dinosaur ? <path d="M278 236q80 1 98-47-2 74-84 92"/> : !penguin && !owl ? <path d="M286 241q63-45 82 2-3 41-45 32 25-20 1-34"/> : null}
-    </g>
-    {dragon && <g className="pet-art__wings" fill="#a5f3fc" stroke="#10223d" strokeWidth="8" strokeLinejoin="round"><path d="M156 211q-70-62-86-1 18 8 25 31 22-14 61 13"/><path d="M264 211q70-62 86-1-18 8-25 31-22-14-61 13"/></g>}
-    <g fill="var(--pet-main)" stroke="#10223d" strokeWidth="9" strokeLinejoin="round">
-      <ellipse cx="210" cy="236" rx={penguin ? 82 : 91} ry="77" />
-      {penguin || owl ? <><path d="M139 211q-56 38-42 86 33-3 61-43"/><path d="M281 211q56 38 42 86-33-3-61-43"/></> : <><path d="M162 267v45h-43q-7-27 22-47"/><path d="M258 267v45h43q7-27-22-47"/></>}
-      <rect x="137" y="76" width="146" height="122" rx={owl ? 58 : 51} />
-      {ears}
-    </g>
-    <path d="M177 219q33 20 66 0v58q-33 21-66 0z" fill="rgba(224,242,254,.32)" stroke="rgba(255,255,255,.35)" strokeWidth="5" />
-    <Face owl={owl} />
-    {fox && <><path d="M149 150l33 30" stroke="#f8fafc" strokeWidth="10"/><path d="M271 150l-33 30" stroke="#f8fafc" strokeWidth="10"/></>}
-  </>;
-}
-
-function SpaceOrb() {
-  return <>
-    <g className="pet-art__orbital"><ellipse cx="210" cy="171" rx="142" ry="55" fill="none" stroke="#a5f3fc" strokeWidth="12"/><circle cx="335" cy="149" r="17" fill="#fbbf24" stroke="#10223d" strokeWidth="6"/></g>
-    <circle cx="210" cy="171" r="99" fill="var(--pet-main)" stroke="#10223d" strokeWidth="10" />
-    <circle cx="180" cy="135" r="41" fill="#fff" opacity=".22" />
-    <Face />
-    <path d="M168 213q42 25 84 0" fill="none" stroke="#dffaff" strokeWidth="7" strokeLinecap="round" />
-  </>;
+/** Shaded, independent accessories keep their own color when armor changes. */
+function CrewAccessory({ accessory, id, turn }: { accessory: string; id: string; turn: number }) {
+  const gold = `url(#${id}-gold)`, silver = `url(#${id}-silver)`, red = `url(#${id}-red)`;
+  return <svg className="pet-art__outfit" viewBox="0 0 100 100" aria-hidden="true" focusable="false" data-pet-accessory={accessory}>
+    <defs>
+      <filter id={`${id}-armor`} colorInterpolationFilters="sRGB">
+        <feColorMatrix in="SourceGraphic" type="hueRotate" values={String(turn)} result="tinted" />
+        <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -2 -.5 2.5 0 0" result="blueArmor" />
+        <feComposite in="tinted" in2="blueArmor" operator="in" result="armor" />
+        <feComposite in="armor" in2="SourceGraphic" operator="atop" />
+      </filter>
+      <linearGradient id={`${id}-gold`} x2=".7" y2="1"><stop stopColor="#fff5bb"/><stop offset=".4" stopColor="#ffd15b"/><stop offset="1" stopColor="#a96210"/></linearGradient>
+      <linearGradient id={`${id}-silver`} x2=".7" y2="1"><stop stopColor="#f1fdff"/><stop offset=".45" stopColor="#88abc5"/><stop offset="1" stopColor="#28435e"/></linearGradient>
+      <linearGradient id={`${id}-red`} x2=".5" y2="1"><stop stopColor="#ffb071"/><stop offset=".35" stopColor="#f65331"/><stop offset="1" stopColor="#9b1726"/></linearGradient>
+    </defs>
+    {accessory === "Explorer Scarf" && <g stroke="#892738" strokeWidth=".5"><path d="M40 50Q50 55 60 50L59 55Q50 62 41 55Z" fill={red}/><path d="M57 54Q68 56 72 65L65 64L63 68L55 56Z" fill={red}/></g>}
+    {accessory === "Star Collar" && <g><path d="M39 51Q50 58 61 51" fill="none" stroke="#8c5315" strokeWidth="3"/><path d="M39 50.5Q50 57.5 61 50.5" fill="none" stroke={gold} strokeWidth="2"/><path d="M50 55L52 59L56.5 60L53 63L54 67L50 65L46 67L47 63L43.5 60L48 59Z" fill={gold} stroke="#8c5315" strokeWidth=".6"/></g>}
+    {accessory === "Tiny Crown" && <g><path d="M39 17L37 7L44 11L50 3L56 11L63 7L61 17Z" fill={gold} stroke="#935b19" strokeWidth=".6"/><path d="M40 17Q50 20 60 17" fill="none" stroke="#ffea9b" strokeWidth="2"/><circle cx="50" cy="12" r="1.7" fill="#62e7fa"/></g>}
+    {accessory === "Goggles" && <g fill="#8aebff22" stroke={silver} strokeWidth="2"><rect x="29" y="27" width="20" height="15" rx="7"/><rect x="51" y="27" width="20" height="15" rx="7"/><path d="M49 32Q50 30 51 32M25 31H29M71 31H75" fill="none"/><path d="M33 30L38 29M55 30L60 29" stroke="#fff" strokeWidth=".8"/></g>}
+    {accessory === "Jetpack" && <g stroke="#233f59" strokeWidth=".8"><rect x="22" y="54" width="10" height="22" rx="4" fill={silver}/><rect x="68" y="54" width="10" height="22" rx="4" fill={silver}/><path d="M24 77L27 86L30 77M70 77L73 86L76 77" fill="#79eaff" stroke="#42bded"/><path d="M24 60H30M70 60H76" stroke="#abf5ff" strokeWidth="2"/></g>}
+    {accessory === "Tool Pack" && <g><path d="M64 59Q61 53 58 52" stroke="#5c3526" strokeWidth="2" fill="none"/><rect x="61" y="59" width="13" height="16" rx="3" fill={gold} stroke="#71451f" strokeWidth=".7"/><path d="M64 63H71M64 71H71" stroke="#fff0c4" strokeWidth="1"/><path d="M67 58L67 67M65 57Q67 60 69 57" stroke={silver} strokeWidth="2" fill="none"/></g>}
+  </svg>;
 }
 
 function SparkyArt({
@@ -119,25 +85,26 @@ function SparkyArt({
 export function PetArt({ pet, language = "en", decorative = false, action }: { pet: PetRecord; language?: Language; decorative?: boolean; action?: PetAction }) {
   const rawId = useId();
   const label = `${pet.name}, ${optionLabel(pet.species, language)}`;
-  const style = { "--pet-main": PET_COLORS[pet.color] ?? PET_COLORS.Blue } as CSSProperties;
+
   const isPremiumSparky = pet.species === "Robot Dog" && pet.color === "Blue" && pet.accessory === "Explorer Scarf";
   if (isPremiumSparky) {
     return <SparkyArt action={action} decorative={decorative} label={label} rawId={rawId.replace(/:/g, "")} />;
   }
-  return <svg
-    className={`pet-art pet-art--${pet.species.toLowerCase().replace(/\s+/g, "-")}`}
-    viewBox="0 0 420 340"
+  const id = `crew-${rawId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const style = { "--pet-color-filter": `url(#${id}-armor)` } as CSSProperties;
+  return <span
+    className={`pet-art pet-art--crew pet-art--${pet.species.toLowerCase().replace(/\s+/g, "-")}`}
     style={style}
     role={decorative ? undefined : "img"}
     aria-hidden={decorative || undefined}
     aria-label={decorative ? undefined : label}
     data-pet-species-art={pet.species}
-    data-pet-art-id={rawId.replace(/:/g, "")}
+    data-pet-renderer="premium-collection"
+    data-pet-art-id={id}
   >
-    {!decorative && <title>{label}</title>}
-    <ellipse cx="210" cy="313" rx="125" ry="18" fill="#020617" opacity=".5" />
-    {pet.species === "Space Orb" ? <SpaceOrb /> : <StandardPet species={pet.species} />}
-    <Accessory accessory={pet.accessory} />
-    <g className="pet-art__shine" fill="none" stroke="#fff" strokeLinecap="round" opacity=".45"><path d="M176 92q25-18 53-5" strokeWidth="8"/><path d="M159 225q18-15 38-16" strokeWidth="7"/></g>
-  </svg>;
+    <span className="pet-art__figure">
+      <img src={PET_SPRITES[pet.species] ?? PET_SPRITES["Robot Dog"]} alt="" draggable={false} />
+      <CrewAccessory accessory={pet.accessory} id={id} turn={COLOR_TURNS[pet.color] ?? 0} />
+    </span>
+  </span>;
 }
