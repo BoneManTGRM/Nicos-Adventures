@@ -49,22 +49,14 @@ jobs:
         run: npm test
       - name: Build and release validations
         run: npm run build
-      - name: Verify public store output
-        run: node scripts/validate-store-output.mjs
+      - name: Verify store is absent from published output
+        run: |
+          test ! -e dist/store-catalog.json
+          test ! -d dist/store-images
+          test "$(find dist/assets -name 'StorePage-*' | wc -l)" -eq 0
+          ! grep -q 'fw-store-link' dist/assets/*.js
       - name: Install browser engines
         run: npx playwright install --with-deps chromium webkit
-      - name: Browser store contract
-        run: npx playwright test --config playwright.store.config.ts
-      - name: Preserve immediate store evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: store-browser-evidence-${{ github.sha }}
-          path: |
-            web/store-test-results
-            web/store-playwright-report
-            web/dist/release.json
-          retention-days: 14
       - name: Existing game browser regressions
         if: ${{ !cancelled() }}
         run: npx playwright test --config playwright.config.ts golden-adventure.e2e.ts whole-site-playtest.e2e.ts
@@ -74,8 +66,6 @@ jobs:
         with:
           name: toy-store-evidence-${{ github.sha }}
           path: |
-            web/store-test-results
-            web/store-playwright-report
             web/dist/release.json
             web/test-results
             web/playwright-report
@@ -135,27 +125,11 @@ jobs:
         working-directory: web
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22.12.0'
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - run: npm ci --no-audit --no-fund
-      - name: Build exact comparison artifacts
-        run: npm run build
-      - name: Install production verification browsers
-        run: npx playwright install --with-deps chromium webkit
-      - name: Verify live store revision, artifacts and six browser-language combinations
-        env:
-          EXPECTED_SHA: ${{ github.sha }}
-        run: node scripts/verify-store-production.mjs
-      - name: Preserve production store evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: store-production-${{ github.sha }}
-          path: web/store-production-proof
-          if-no-files-found: error
-          retention-days: 14
+      - name: Wait for production revision
+        run: node scripts/wait-for-cutout-release.mjs
+      - name: Verify former store route returns to the game
+        run: |
+          node --input-type=module -e 'const r=await fetch("https://nicos-world.com/store",{redirect:"manual"});if(![301,302,307,308].includes(r.status)||new URL(r.headers.get("location"),r.url).pathname!=="/")throw Error(`Store route still available: ${r.status} ${r.headers.get("location")}`);'

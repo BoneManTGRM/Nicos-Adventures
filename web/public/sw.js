@@ -67,11 +67,6 @@ async function offlineDocument() {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
-  // Never persist prices, availability or transactional data in the game cache.
-  if (url.origin === self.location.origin && url.pathname === "/store-catalog.json") {
-    event.respondWith(fetch(event.request, { cache: "no-store" }));
-    return;
-  }
 
   if (url.origin === self.location.origin && url.pathname.endsWith("/assets/nico/nico-fullbody.b64")) {
     event.respondWith(
@@ -93,7 +88,7 @@ self.addEventListener("fetch", (event) => {
           // Only canonical HTML entries have the no-transform privacy policy.
           // An arbitrary SPA fallback must not replace that protected offline shell.
           const canonicalShell = url.origin === self.location.origin
-            && ["/", "/index.html", "/store", "/store/"].includes(url.pathname);
+            && ["/", "/index.html"].includes(url.pathname);
           if (response.ok && canonicalShell && /text\/html\b/i.test(response.headers.get("content-type") || "")) {
             const copy = response.clone();
             const cache = await caches.open(CACHE);
