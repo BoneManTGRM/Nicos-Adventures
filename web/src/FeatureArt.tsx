@@ -72,7 +72,7 @@ const rawAnimals: Array<[string,string,string,string,string,string,string,string
 
 export const ANIMAL_LIBRARY: AnimalRecord[] = rawAnimals.map(([id,name,habitat,emoji,fact,group,region,adaptation]) => ({ id,name,habitat,emoji,fact,group,region,adaptation,discovered:false,favorite:false,imageTitle:name }));
 
-export function MonsterStage({ monster, action = "idle", language = "en" }: { monster: MonsterRecord; action?: string; language?: Language }) {
+export function MonsterStage({ monster, action = "idle", language = "en", scenery }: { monster: MonsterRecord; action?: string; language?: Language; scenery?: "habitat" }) {
   const color = monsterColorSwatch(monster.color);
   const family = monster.body.toLowerCase().replace(/\s+/g,"-");
   const texture = String(monster.texture || "smooth").toLowerCase().replace(/\s+/g,"-");
@@ -83,7 +83,8 @@ export function MonsterStage({ monster, action = "idle", language = "en" }: { mo
   const hasHorns = !preserveAnatomy && ["Dragon", "Royal", "Volcano"].includes(monster.body);
   const hasTail = !preserveAnatomy && monster.body !== "Lizard Alien" && !String(monster.tail || "No tail").toLowerCase().includes("no ");
   const accessoryLayout = monsterAccessoryLayout(monster.body);
-  return <article className={`monster-stage monster-stage--${action}`} style={{ "--monster-main": color } as CSSProperties}>
+  const habitatSlug = String(monster.habitat || "Crystal Cave").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return <article className={`monster-stage monster-stage--${action}`} data-monster-scenery={scenery} data-monster-habitat={scenery ? habitatSlug : undefined} style={{ "--monster-main": color } as CSSProperties}>
     <div className="monster-stage__environment" aria-hidden="true"><i/><i/><i/></div>
     <div className="monster-atmosphere" aria-hidden="true"><i/><i/><i/><i/><i/></div>
     <div
