@@ -3,77 +3,99 @@ import type { LocalProfile } from "../types";
 import { PremiumBoltBotSprite } from "../boltbot/PremiumBoltBotSprite";
 import type { Announce, UpdateProfile } from "./common";
 import { completeOnce } from "./progression";
-import { boardFor, GRID_SIZE, initialRobot, LEVEL_COUNT, PROGRAM_LIMIT, samePoint, SIGNAL_RUN_ID, stepRobot, type Command } from "./signalRun";
+import { ANSWERS_PER_CHECKPOINT, CHECKPOINT_COUNT, makeQuestion, SIGNAL_RUN_ID, SPRINT_SECONDS } from "./signalRun";
 import "./signal-run.css";
 
-const arrows = ["↑", "→", "↓", "←"];
-const mission = (level: number) => `arcade:${SIGNAL_RUN_ID}:${level}`;
+type Phase = "ready" | "playing" | "feedback" | "finished";
+const mission = (checkpoint: number) => `arcade:${SIGNAL_RUN_ID}:${checkpoint}`;
 
 export function SignalRun({ profile, update, announce, close }: { profile: LocalProfile; update: UpdateProfile; announce: Announce; close: () => void }) {
   const es = profile.language === "es-MX";
-  const [level, setLevel] = useState(() => {
-    const next = Array.from({ length: LEVEL_COUNT }, (_, index) => index).find(index => !profile.completedMissions.includes(mission(index)));
-    return next ?? 0;
-  });
-  const [program, setProgram] = useState<Command[]>([]);
-  const board = useMemo(() => boardFor(level), [level]);
-  const [robot, setRobot] = useState(() => initialRobot(board));
-  const [index, setIndex] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<"ready" | "blocked" | "unfinished" | "won">("ready");
-  const [score, setScore] = useState(0);
+  const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1000000) + 1);
+  const [round, setRound] = useState(0);
+  const [phase, setPhase] = useState<Phase>("ready");
+  const [seconds, setSeconds] = useState(SPRINT_SECONDS);
+  const [energy, setEnergy] = useState(3);
   const [streak, setStreak] = useState(0);
+  const [score, setScore] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [earned, setEarned] = useState(false);
+  const completed = Array.from({ length: CHECKPOINT_COUNT }, (_, index) => profile.completedMissions.includes(mission(index))).filter(Boolean).length;
+  const checkpoint = Math.min(completed, CHECKPOINT_COUNT - 1);
+  const question = useMemo(() => makeQuestion(seed + round * 7919, checkpoint), [seed, round, checkpoint]);
+  const labels = es ? {
+    title: "Carrera de números", back: "Todos los juegos", guide: "Elige el resultado correcto. ¡Carga a BoltBot y encadena aciertos!", best: "Récord", checkpoint: "Etapa", score: "Puntos", energy: "Energía", time: "Tiempo", goal: "5 aciertos para una estrella", ready: "¡Toca una respuesta para empezar!", good: "¡Correcto!", wrong: "Casi. La respuesta es", star: "¡Etapa superada! Ganaste una estrella.", finish: "¡Buena carrera!", retry: "Jugar otra vez", mastered: "¡Conseguiste las 12 estrellas! Sigue mejorando tu récord.", keys: "Toca una puerta o usa 1, 2, 3.", boost: "¡Racha!"
+  } : {
+    title: "Number Dash", back: "All games", guide: "Pick the right answer. Power up BoltBot and build a combo!", best: "Best", checkpoint: "Stage", score: "Score", energy: "Energy", time: "Time", goal: "5 right answers earn a star", ready: "Tap an answer to start!", good: "Nice hit!", wrong: "Close. The answer is", star: "Stage cleared! You earned a star.", finish: "Nice run!", retry: "Play again", mastered: "All 12 stars earned! Keep beating your best score.", keys: "Tap a gate or press 1, 2, 3.", boost: "Combo!"
+  };
 
   useEffect(() => {
-    if (!running) return;
-    if (index >= program.length) { setRunning(false); setResult("unfinished"); return; }
+    if (phase !== "playing" && phase !== "feedback") return;
+    const timer = window.setInterval(() => setSeconds(current => Math.max(0, current - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [phase]);
+  useEffect(() => { if (seconds === 0 && phase !== "ready") setPhase("finished"); }, [seconds, phase]);
+  useEffect(() => {
+    if (phase !== "feedback") return;
     const timer = window.setTimeout(() => {
-      const next = stepRobot(board, robot, program[index]);
-      setRobot(next.state);
-      setIndex(index + 1);
-      if (next.outcome === "blocked") { setRunning(false); setResult("blocked"); setStreak(0); return; }
-      if (next.outcome === "won") {
-        setRunning(false); setResult("won");
-        const nextScore = score + 10 + Math.max(0, 3 - Math.floor(program.length / 8)) + Math.min(streak, 5);
-        setScore(nextScore); setStreak(streak + 1);
-        const saved = { ...profile, arcadeScores: { ...profile.arcadeScores, [SIGNAL_RUN_ID]: Math.max(profile.arcadeScores[SIGNAL_RUN_ID] ?? 0, nextScore) } };
-        const completion = completeOnce(saved, mission(level), 1);
-        update(completion.profile);
-        announce(es ? `¡Misión completa! ${completion.awarded ? "Ganaste una estrella." : "Ya ganaste esta estrella."}` : `Mission complete! ${completion.awarded ? "You earned a star." : "You already earned this star."}`);
-      }
-    }, 350);
+      if (energy === 0) setPhase("finished");
+      else { setSelected(null); setEarned(false); setRound(value => value + 1); setPhase("playing"); }
+    }, earned ? 1500 : 1150);
     return () => window.clearTimeout(timer);
-  }, [board, es, index, program, profile, robot, running, score, streak, update, announce, level]);
+  }, [phase, energy, earned]);
 
-  const resetRobot = () => { setRunning(false); setRobot(initialRobot(board)); setIndex(0); setResult("ready"); };
-  const add = (command: Command) => { if (running || result === "won" || program.length >= PROGRAM_LIMIT) return; setProgram(previous => [...previous, command]); resetRobot(); };
-  const undo = () => { if (running || result === "won") return; setProgram(previous => previous.slice(0, -1)); resetRobot(); };
-  const advance = () => { setRunning(false); const next = (level + 1) % LEVEL_COUNT; setLevel(next); setRobot(initialRobot(boardFor(next))); setProgram([]); setIndex(0); setResult("ready"); };
-  const labels = es ? { back: "Todos los juegos", title: "Ruta de señales", subject: "Programa a BoltBot", instruction: "Coloca órdenes para recoger la batería y llegar a la señal. Girar cambia la dirección; no mueve al robot.", battery: "Batería", beacon: "Señal", wall: "Roca", robot: "BoltBot", empty: "Toca las órdenes para armar tu programa.", forward: "Avanzar", left: "Girar izquierda", right: "Girar derecha", undo: "Deshacer", clear: "Borrar", run: "Ejecutar", retry: "Volver a probar", next: "Siguiente ruta", finish: "¡Ruta completa!", blocked: "BoltBot chocó. Cambia una orden y prueba de nuevo.", unfinished: "Aún falta llegar con la batería. Agrega o cambia órdenes.", ready: "Reúne la batería antes de llegar a la señal.", best: "Mejor", streak: "Racha", level: "Ruta", finishedAll: "¡Completaste las 12 rutas! Puedes volver a jugarlas." }
-    : { back: "All games", title: "Signal Run", subject: "Program BoltBot", instruction: "Queue commands to collect the battery and reach the beacon. Turning changes direction; it does not move the robot.", battery: "Battery", beacon: "Beacon", wall: "Rock", robot: "BoltBot", empty: "Tap commands to build a program.", forward: "Forward", left: "Turn left", right: "Turn right", undo: "Undo", clear: "Clear", run: "Run", retry: "Try again", next: "Next route", finish: "Route complete!", blocked: "BoltBot hit a rock. Change a command and try again.", unfinished: "The battery and beacon are still ahead. Add or change commands.", ready: "Collect the battery before reaching the beacon.", best: "Best", streak: "Streak", level: "Route", finishedAll: "You completed all 12 routes! You can play them again." };
-  const completed = Array.from({ length: LEVEL_COUNT }, (_, current) => profile.completedMissions.includes(mission(current))).filter(Boolean).length;
-  const status = result === "won" ? labels.finish : result === "blocked" ? labels.blocked : result === "unfinished" ? labels.unfinished : labels.ready;
+  const choose = (choiceIndex: number) => {
+    if (phase === "feedback" || phase === "finished") return;
+    const correct = question.choices[choiceIndex] === question.answer;
+    setSelected(choiceIndex);
+    setEarned(false);
+    if (correct) {
+      const nextStreak = streak + 1;
+      const nextScore = score + 10 + Math.min(nextStreak - 1, 10) * 2;
+      const nextProgress = progress + 1;
+      setStreak(nextStreak); setScore(nextScore);
+      const saved = { ...profile, arcadeScores: { ...profile.arcadeScores, [SIGNAL_RUN_ID]: Math.max(profile.arcadeScores[SIGNAL_RUN_ID] ?? 0, nextScore) } };
+      if (nextProgress === ANSWERS_PER_CHECKPOINT) {
+        const completion = completeOnce(saved, mission(checkpoint), 1);
+        setEarned(completion.awarded);
+        setProgress(0);
+        update(completion.profile);
+        if (completion.awarded) announce(labels.star);
+      } else { setProgress(nextProgress); update(saved); }
+    } else { setStreak(0); setEnergy(value => value - 1); }
+    setPhase("feedback");
+  };
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.repeat || !["1", "2", "3"].includes(event.key)) return;
+      const target = event.target as HTMLElement;
+      if (target.closest("input, textarea, select, [contenteditable=true]")) return;
+      choose(Number(event.key) - 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+  const restart = () => { setSeed(Math.floor(Math.random() * 1000000) + 1); setRound(0); setPhase("ready"); setSeconds(SPRINT_SECONDS); setEnergy(3); setStreak(0); setScore(0); setProgress(0); setSelected(null); setEarned(false); };
+  const right = selected !== null && question.choices[selected] === question.answer;
+  const feedback = phase === "finished" ? `${labels.finish} ${labels.score}: ${score}` : selected === null ? labels.ready : `${right ? labels.good : `${labels.wrong} ${question.answer}.`} ${question.explanation[es ? "es-MX" : "en"]}${earned ? ` ${labels.star}` : ""}`;
 
   return <section className="signal-run" aria-label={labels.title} data-testid="signal-run">
-    <header className="signal-run__header"><button type="button" onClick={close}>← {labels.back}</button><span>⚡ {labels.level} {level + 1}/{LEVEL_COUNT}</span><strong>🏆 {labels.best}: {profile.arcadeScores[SIGNAL_RUN_ID] ?? 0}</strong></header>
-    <div className="signal-run__intro"><div><small>NICO · BOLTBOT</small><h2>{labels.title}</h2><p>{labels.instruction}</p></div><div className="signal-run__stats"><span>✦ {score}</span><span>🔥 {labels.streak}: {streak}</span><span>⭐ {completed}/{LEVEL_COUNT}</span></div></div>
-    <div className="signal-run__play">
-      <div className="signal-run__board" role="img" aria-label={`${labels.level} ${level + 1}: ${labels.robot} ${robot.x + 1}, ${robot.y + 1}. ${robot.charged ? labels.battery : labels.ready}`}>
-        {Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, cell) => {
-          const point = { x: cell % GRID_SIZE, y: Math.floor(cell / GRID_SIZE) };
-          const wall = board.walls.some(tile => samePoint(tile, point)), bot = samePoint(robot, point);
-          const battery = !robot.charged && samePoint(board.battery, point), beacon = samePoint(board.beacon, point);
-          return <div key={cell} className={`signal-run__cell${wall ? " is-wall" : ""}${beacon ? " is-beacon" : ""}${battery ? " is-battery" : ""}${bot ? " is-bot" : ""}`} aria-hidden="true">{bot ? <span className="signal-run__bot"><PremiumBoltBotSprite robot={profile.robot} action={running ? "drive" : result === "won" ? "celebrate" : "idle"} /><b>{arrows[robot.facing]}</b></span> : wall ? "▦" : battery ? "🔋" : beacon ? "✦" : ""}</div>;
-        })}
-      </div>
-      <div className="signal-run__panel"><div className="signal-run__legend"><span>🔋 {labels.battery}</span><span>✦ {labels.beacon}</span><span>▦ {labels.wall}</span></div>
-        <div className="signal-run__program"><strong>{es ? "Tu programa" : "Your program"} <span>{program.length}/{PROGRAM_LIMIT}</span></strong><div className="signal-run__chips" aria-label={es ? "Órdenes programadas" : "Programmed commands"}>{program.length ? program.map((command, commandIndex) => <span key={commandIndex} className={index === commandIndex && running ? "is-current" : ""}>{command === "forward" ? "↑" : command === "left" ? "↶" : "↷"}<small>{commandIndex + 1}</small></span>) : <p>{labels.empty}</p>}</div></div>
-        <div className="signal-run__controls"><button type="button" disabled={running || result === "won" || program.length >= PROGRAM_LIMIT} onClick={() => add("forward")}>↑ <span>{labels.forward}</span></button><button type="button" disabled={running || result === "won" || program.length >= PROGRAM_LIMIT} onClick={() => add("left")}>↶ <span>{labels.left}</span></button><button type="button" disabled={running || result === "won" || program.length >= PROGRAM_LIMIT} onClick={() => add("right")}>↷ <span>{labels.right}</span></button></div>
-        <div className="signal-run__edit"><button type="button" disabled={running || result === "won" || program.length === 0} onClick={undo}>{labels.undo}</button><button type="button" disabled={running || result === "won" || program.length === 0} onClick={() => { setProgram([]); resetRobot(); }}>{labels.clear}</button></div>
-        <p className={`signal-run__feedback ${result}`} role="status" aria-live="polite">{status}</p>
-        {result === "won" ? <button type="button" className="signal-run__primary" onClick={advance}>{labels.next} →</button> : <button type="button" className="signal-run__primary" disabled={running || !program.length} onClick={() => { resetRobot(); setRunning(true); }}>{result === "ready" ? labels.run : labels.retry} ▶</button>}
-        {completed === LEVEL_COUNT && <small className="signal-run__mastered">{labels.finishedAll}</small>}
-      </div>
+    <header className="signal-run__header"><button type="button" onClick={close}>← {labels.back}</button><strong>⚡ {labels.title}</strong><span>🏆 {labels.best}: {profile.arcadeScores[SIGNAL_RUN_ID] ?? 0}</span></header>
+    <div className="signal-run__hud"><span>⭐ {completed}/{CHECKPOINT_COUNT}</span><span>🔥 {streak}</span><span>✦ {score}</span><span className={seconds < 16 ? "is-urgent" : ""}>⏱ {seconds}s</span><span aria-label={`${labels.energy}: ${energy}/3`}>{"♥".repeat(energy)}<i>{"♡".repeat(3 - energy)}</i></span></div>
+    <div className="signal-run__scene" data-result={selected === null ? "idle" : right ? "correct" : "wrong"}>
+      <div className="signal-run__sky"><span className="signal-run__sun" /><span className="signal-run__mountains" /><span className="signal-run__city" /></div>
+      <div className="signal-run__goal"><span>★</span><strong>{labels.checkpoint} {checkpoint + 1}/{CHECKPOINT_COUNT}</strong><small>{progress}/{ANSWERS_PER_CHECKPOINT} · {labels.goal}</small></div>
+      <div className="signal-run__road"><span /><span /><span /></div>
+      <div className="signal-run__robot"><PremiumBoltBotSprite robot={profile.robot} action={right ? "celebrate" : phase === "playing" ? "drive" : "ready"} alt="BoltBot" /></div>
+      {streak > 1 && <div className="signal-run__combo">{labels.boost} ×{streak}</div>}
     </div>
+    <div className="signal-run__challenge"><p>{labels.guide}</p><strong data-testid="dash-question">{question.prompt}</strong><small>{labels.keys}</small></div>
+    <div className="signal-run__gates" role="group" aria-label={question.prompt}>
+      {question.choices.map((choice, index) => <button key={`${round}-${index}`} type="button" className={`${selected === index ? "is-picked" : ""} ${selected !== null && choice === question.answer ? "is-correct" : ""}`} disabled={phase === "feedback" || phase === "finished"} onClick={() => choose(index)} aria-label={`${index + 1}: ${choice}`}><small>{index + 1}</small><strong>{choice}</strong><span>➜</span></button>)}
+    </div>
+    <div className={`signal-run__feedback ${selected === null ? "" : right ? "is-good" : "is-wrong"}`} role="status" aria-live="polite">{feedback}</div>
+    {phase === "finished" && <button className="signal-run__retry" type="button" onClick={restart}>↻ {labels.retry}</button>}
+    {completed === CHECKPOINT_COUNT && <p className="signal-run__mastered">{labels.mastered}</p>}
   </section>;
 }
