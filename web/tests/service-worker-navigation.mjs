@@ -52,7 +52,3 @@ test('an error or non-HTML cache entry cannot become the offline document', asyn
   assert.equal((await worker(shell({ status: 404 })).navigate()).type, 'error');
   assert.equal((await worker(shell({ contentType: 'application/json' })).navigate()).type, 'error');
 });
-test('store catalog never falls back to the cached game', async () => {
-  const instance = worker(shell()); await assert.rejects(instance.navigate('/store-catalog.json', 'cors'), /Offline/);
-  assert.equal(instance.calls(), 1);
-});

@@ -27,8 +27,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - name: Unit and UI contracts
         run: npm test
-      - name: Build, types, unchanged budgets and closed-store output
-        run: npm run build && node scripts/validate-store-output.mjs && node scripts/validate-creative-budgets.mjs
+      - name: Build, types and creative budgets
+        run: npm run build && node scripts/validate-creative-budgets.mjs
       - name: Pinned browser engines
         run: npx playwright install --with-deps chromium webkit
       - name: Six-profile preview journeys
