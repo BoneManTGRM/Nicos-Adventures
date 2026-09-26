@@ -29,7 +29,8 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
   const solvedCount = useMemo(() => activeGame ? questions.filter(item => hasCompleted(profile, arcadeMissionId(activeGame, item.id))).length : 0, [activeGame, profile, questions]);
   const openGame = (game: string) => {
     setActiveGame(game); setQuestionIndex(0); setAnswerIndex(null); setSessionScore(0);
-    announce(language === "es-MX" ? `Juego abierto: ${optionLabel(game, language)}.` : `Game opened: ${game}.`);
+    const name = game === "signal-run" ? (language === "es-MX" ? "Ruta de señales" : "Signal Run") : optionLabel(game, language);
+    announce(language === "es-MX" ? `Juego abierto: ${name}.` : `Game opened: ${name}.`);
   };
   const answer = (index: number) => {
     if (!activeGame || !question || answerIndex !== null) return;
