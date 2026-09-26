@@ -35,6 +35,33 @@ export function WorldMap({
   const [bridgeOpen, setBridgeOpen] = useState(initialBridgeOpen);
   const discovered = mergeAnimalLibrary(profile.animals).filter((animal) => animal.discovered).length;
   const dinosaurValleyAvailable = hasDinosaurValleyAccess(profile);
+  const destinationGroups = [
+    {
+      id: "play",
+      label: language === "es-MX" ? "Jugar y explorar" : "Play and explore",
+      ids: ["robo-lab", "animal-forest", "game-arcade", "dinosaur-valley"],
+    },
+    {
+      id: "create",
+      label: language === "es-MX" ? "Crear e imaginar" : "Create and imagine",
+      ids: ["becca-corner", "cousins-adventure", "monster-lab", "art-studio", "story-castle"],
+    },
+    {
+      id: "care",
+      label: language === "es-MX" ? "Cuidar a tus amigos" : "Care for your friends",
+      ids: ["monster-habitats", "pet-workshop"],
+    },
+    {
+      id: "collection",
+      label: language === "es-MX" ? "Tu colección" : "Your collection",
+      ids: ["robot-home", "memory-book", "badge-book"],
+    },
+    {
+      id: "grown-ups",
+      label: language === "es-MX" ? "Para adultos" : "For grown-ups",
+      ids: ["parent-settings"],
+    },
+  ];
   if (bridgeOpen) {
     return (
       <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando el Puente Estelar…" : "Preparing the Star Bridge…"}</div>}>
@@ -73,26 +100,35 @@ export function WorldMap({
         openBridge={() => setBridgeOpen(true)}
         openDinosaurValley={() => open("dinosaur-valley")}
       />
-      <section className="fw-destination-grid" aria-label={tr(ui.mainNavigation, language)}>
-        {WORLD_SECTIONS.filter((section) => section.id !== "world-map").map((section) => {
-          const locked = section.id === "dinosaur-valley" && !dinosaurValleyAvailable;
-          const lockCopy = language === "es-MX" ? "Completa El Puente Estelar Roto para desbloquearlo" : "Complete The Broken Star Bridge to unlock";
-          return (
-            <button
-              type="button"
-              className={`fw-destination${locked ? " is-locked" : ""}`}
-              key={section.id}
-              disabled={locked}
-              onClick={() => open(section.id)}
-              aria-label={`${tr(ui.openDestination, language)}: ${tr(section.name, language)}. ${locked ? lockCopy : tr(section.description, language)}`}
-            >
-              <span aria-hidden="true">{locked ? "🔒" : section.emoji}</span>
-              <strong>{tr(section.name, language)}</strong>
-              <small>{locked ? lockCopy : tr(section.description, language)}</small>
-            </button>
-          );
-        })}
-      </section>
+      <div className="world-destination-groups" aria-label={tr(ui.mainNavigation, language)}>
+        {destinationGroups.map((group) => (
+          <section className="world-destination-group" key={group.id} aria-labelledby={`world-destinations-${group.id}`}>
+            <h2 id={`world-destinations-${group.id}`}>{group.label}</h2>
+            <div className="fw-destination-grid">
+              {group.ids.map((id) => WORLD_SECTIONS.find((section) => section.id === id)).filter((section) => section !== undefined).map((section) => {
+                const locked = section.id === "dinosaur-valley" && !dinosaurValleyAvailable;
+                const lockCopy = language === "es-MX"
+                  ? "Completa El Puente Estelar Roto para desbloquear el Valle de dinosaurios."
+                  : "Complete The Broken Star Bridge to unlock Dinosaur Valley.";
+                return (
+                  <button
+                    type="button"
+                    className={`fw-destination${locked ? " is-locked" : ""}`}
+                    key={section.id}
+                    disabled={locked}
+                    onClick={() => open(section.id)}
+                    aria-label={`${tr(ui.openDestination, language)}: ${tr(section.name, language)}. ${locked ? lockCopy : tr(section.description, language)}`}
+                  >
+                    <span aria-hidden="true">{locked ? "🔒" : section.emoji}</span>
+                    <strong>{tr(section.name, language)}</strong>
+                    <small>{locked ? lockCopy : tr(section.description, language)}</small>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
       <NicoVideoCard language={language} />
       <article className="fw-hero-card" aria-label={language === "es-MX" ? "Equipo de aventura" : "Adventure team"}>
         <RobotStage
