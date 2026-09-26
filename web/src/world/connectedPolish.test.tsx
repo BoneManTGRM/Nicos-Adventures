@@ -15,6 +15,16 @@ describe('connected adventure visible entry and navigation', () => {
     expect(html).toContain('data-testid="world-create"');
     expect(html).toContain('data-testid="world-explore"');
   });
+  it.each([
+    ['en', ['Play and explore', 'Create and imagine', 'Care for your friends', 'Your collection', 'For grown-ups'], 'Complete The Broken Star Bridge to unlock Dinosaur Valley.'],
+    ['es-MX', ['Jugar y explorar', 'Crear e imaginar', 'Cuidar a tus amigos', 'Tu colección', 'Para adultos'], 'Completa El Puente Estelar Roto para desbloquear el Valle de dinosaurios.'],
+  ] as const)('groups every destination and explains the locked route in %s', (language, headings, lockedCopy) => {
+    const html = renderToStaticMarkup(createElement(WorldMap, {profile:createProfile('Test',language),open:noop,beginStarBridge:noop,advanceStarBridge:noop}));
+    for (const heading of headings) expect(html).toContain(heading);
+    expect((html.match(/class="fw-destination(?: is-locked)?"/g) ?? []).length).toBe(15);
+    expect(html).toContain(lockedCopy);
+    expect(html).toContain('disabled=""');
+  });
   it.each(['en','es-MX'] as const)('has four consistently labeled navigation actions in %s', language => {
     const html = renderToStaticMarkup(createElement(BottomNavigation, {profile:createProfile('Test',language), open:noop}));
     for (const action of ['explore','create','home','more']) expect(html).toContain(`data-journey-nav="${action}"`);
