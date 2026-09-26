@@ -17,7 +17,7 @@ const StarTagArcade = lazy(() => import("./StarTagArcade").then(module => ({ def
 const SignalRun = lazy(() => import("./SignalRun").then(module => ({ default: module.SignalRun })));
 export function Arcade({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
-  const [activeGame, setActiveGame] = useState<string | null>(null);
+  const [activeGame, setActiveGame] = useState<string | null>(() => new URLSearchParams(window.location.search).get("play") === "number-dash" ? "signal-run" : null);
   const [legacyOpen, setLegacyOpen] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answerIndex, setAnswerIndex] = useState<number | null>(null);
@@ -28,6 +28,10 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
   const answeredCorrectly = question && answerIndex === question.correctIndex;
   const solvedCount = useMemo(() => activeGame ? questions.filter(item => hasCompleted(profile, arcadeMissionId(activeGame, item.id))).length : 0, [activeGame, profile, questions]);
   const openGame = (game: string) => {
+    const url = new URL(window.location.href);
+    if (game === "signal-run") url.searchParams.set("play", "number-dash");
+    else url.searchParams.delete("play");
+    window.history.replaceState(null, "", url);
     setActiveGame(game); setQuestionIndex(0); setAnswerIndex(null); setSessionScore(0);
     const name = game === "signal-run" ? (language === "es-MX" ? "Carrera de números" : "Number Dash") : optionLabel(game, language);
     announce(language === "es-MX" ? `Juego abierto: ${name}.` : `Game opened: ${name}.`);
@@ -43,10 +47,11 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
     announce(language === "es-MX" ? `Respuesta correcta. ${question.explanation[language]}${completion.awarded ? " Ganaste una estrella." : ""}` : `Correct. ${question.explanation[language]}${completion.awarded ? " You earned one star." : ""}`);
   };
   const nextQuestion = () => { setQuestionIndex(current => current + 1); setAnswerIndex(null); };
+  const closeGame = () => { const url = new URL(window.location.href); url.searchParams.delete("play"); window.history.replaceState(null, "", url); setActiveGame(null); };
   if (activeGame === 'friends-map') return <Suspense fallback={<div className="fw-empty" role="status">{language === 'es-MX' ? 'Preparando el mapa…' : 'Preparing the map…'}</div>}><FriendsMap key={profile.id} profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
   if (activeGame === 'star-tag-adventure') return <Suspense fallback={<div className="fw-empty" role="status">{language === 'es-MX' ? 'Cargando la aventura…' : 'Loading the adventure…'}</div>}><StarTagArcade profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
   if (activeGame === FRIENDLY_DUEL_ID) return <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la arena…" : "Preparing the arena…"}</div>}><FriendlyDuel profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
-  if (activeGame === "signal-run") return <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la carrera…" : "Preparing the dash…"}</div>}><SignalRun profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
+  if (activeGame === "signal-run") return <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la carrera…" : "Preparing the dash…"}</div>}><SignalRun profile={profile} update={update} announce={announce} close={closeGame} /></Suspense>;
   if (activeGame && question) return <div className="arcade-challenge-layout">
     <section className="arcade-challenge" aria-labelledby="arcade-question-heading">
       <header><button type="button" onClick={() => setActiveGame(null)}>← {language === "es-MX" ? "Todos los juegos" : "All games"}</button><div><small>{optionLabel(activeGame, language)}</small><h2 id="arcade-question-heading">{language === "es-MX" ? "Desafío" : "Challenge"} {questionIndex % questions.length + 1}/{questions.length}</h2></div><strong>{language === "es-MX" ? "Puntuación" : "Score"}: {sessionScore}</strong></header>
