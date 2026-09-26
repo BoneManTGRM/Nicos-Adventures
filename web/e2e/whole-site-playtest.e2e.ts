@@ -138,7 +138,10 @@ async function assertPageChrome(page: Page, title: string, label: string, expect
     expect(metrics.titleTop, `${label}: title is hidden by the sticky header`).toBeGreaterThanOrEqual(metrics.headerBottom);
     expect(metrics.navigationBottom, `${label}: bottom navigation exceeds the safe viewport`).toBeLessThanOrEqual(metrics.viewportHeight);
   }
-  expect(metrics.documentWidth, `${label}: document overflow (${metrics.overflowingElements.join(", ")})`).toBeLessThanOrEqual(metrics.clientWidth + 2);
+  // WebKit can retain the previous route's scrollWidth briefly after React swaps destinations.
+  // Keep the width assertion, but wait for layout to settle before reporting overflow.
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    { message: `${label}: document overflow (${metrics.overflowingElements.join(", ")})`, timeout: 2000 }).toBeLessThanOrEqual(2);
   expect(metrics.bodyWidth, `${label}: body overflow (${metrics.overflowingElements.join(", ")})`).toBeLessThanOrEqual(metrics.clientWidth + 2);
   expect(metrics.brokenImages, `${label}: broken images`).toEqual([]);
 }
