@@ -28,7 +28,7 @@ export const FRAMES = [
 export function ArtworkPreview({ artwork, profile, canvasRef }: { artwork: ArtworkRecord; profile: LocalProfile; canvasRef?: RefObject<HTMLCanvasElement | null> }) {
   const ownCanvas = useRef<HTMLCanvasElement>(null);
   const canvas = canvasRef ?? ownCanvas;
-  const [art, setArt] = useState<DirectorArt | null>(null);
+  const [loadedArt, setLoadedArt] = useState<{ requestKey: string; art: DirectorArt } | null>(null);
   const [error, setError] = useState(false);
   const [retry, setRetry] = useState(0);
   const subject = useMemo<RenderableMovieCharacter | undefined>(() => {
@@ -43,15 +43,17 @@ export function ArtworkPreview({ artwork, profile, canvasRef }: { artwork: Artwo
     return characters.find(item => item.name === artwork.subject);
   }, [artwork.subject, profile.robot, profile.monsters, profile.pets, profile.animals, profile.language]);
   const scene = ({"Starry Space":"space","Jungle Discovery":"jungle","Ocean Lab":"ocean","Dinosaur Valley":"dinosaur-valley","Robot Home":"robot-home","Sunset Stage":"star-stage"} as Record<string,string>)[artwork.background] ?? "space";
+  const requestKey = JSON.stringify([scene, subject?.key ?? null, profile.nico.profession]);
+  const art = loadedArt?.requestKey === requestKey ? loadedArt.art : null;
   useEffect(() => {
     let cancelled = false, loaded: DirectorArt | null = null;
-    setArt(null); setError(false);
+    setError(false);
     loadDirectorArt(subject ? [subject] : [], profile.nico.profession, [scene]).then(result => {
       if (cancelled) { disposeDirectorArt(result); return; }
-      loaded = result; setArt(result);
+      loaded = result; setLoadedArt({ requestKey, art: result });
     }).catch(() => { if (!cancelled) setError(true); });
     return () => { cancelled = true; disposeDirectorArt(loaded); };
-  }, [subject, scene, profile.nico.profession, retry]);
+  }, [subject, scene, profile.nico.profession, requestKey, retry]);
   useEffect(() => {
     const target = canvas.current;
     if (!target) return;
@@ -60,7 +62,8 @@ export function ArtworkPreview({ artwork, profile, canvasRef }: { artwork: Artwo
     if (!art) return;
     const frame = FRAMES.find(item=>item.id===artwork.frame) ?? FRAMES[0];
     c.fillStyle=frame.color;c.fillRect(0,0,900,1050);
-    const backdrop=art.scenes.get(scene)!;
+    const backdrop=art.scenes.get(scene);
+    if (!backdrop) return;
     // Cover the portrait without stretching the original scene.
     const ratio=Math.max(852/backdrop.width,1002/backdrop.height);
     c.save();c.beginPath();c.rect(24,24,852,1002);c.clip();
@@ -76,9 +79,10 @@ export function ArtworkPreview({ artwork, profile, canvasRef }: { artwork: Artwo
     c.font="26px sans-serif";wrap(artwork.caption,919,730,34,3);
     c.restore();
   }, [art, artwork, subject, scene, canvas]);
-  return <article className="creative-poster-preview illustrated-poster" data-artwork-id={artwork.id} data-art-ready={Boolean(art)} aria-label={`${artwork.title}. ${artwork.subject}. ${artwork.caption}`}>
+  const artReady = Boolean(art && art.scenes.has(scene) && (!subject || art.cast.has(subject.key)));
+  return <article className="creative-poster-preview illustrated-poster" data-artwork-id={artwork.id} data-art-ready={artReady} aria-label={`${artwork.title}. ${artwork.subject}. ${artwork.caption}`}>
     <canvas ref={canvas} width={900} height={1050} role="img" aria-label={`${artwork.subject}: ${artwork.background}`} />
     <span className="illustrated-poster__text">{artwork.title}. {artwork.subject}. {artwork.caption}</span>
-    {!art && <p className="illustrated-poster__status" role="status">{error ? (profile.language === "es-MX" ? "No se pudo cargar el arte." : "Artwork could not load.") : (profile.language === "es-MX" ? "Preparando tu lienzo…" : "Preparing your canvas…")}{error && <button type="button" onClick={()=>setRetry(n=>n+1)}>{profile.language === "es-MX" ? "Reintentar" : "Retry"}</button>}</p>}
+    {!artReady && <p className="illustrated-poster__status" role="status">{error ? (profile.language === "es-MX" ? "No se pudo cargar el arte." : "Artwork could not load.") : (profile.language === "es-MX" ? "Preparando tu lienzo…" : "Preparing your canvas…")}{error && <button type="button" onClick={()=>setRetry(n=>n+1)}>{profile.language === "es-MX" ? "Reintentar" : "Retry"}</button>}</p>}
   </article>;
 }
