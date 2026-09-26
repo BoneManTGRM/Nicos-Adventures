@@ -211,7 +211,15 @@ function PetWorkshopSession({ profile, update, announce }: Props) {
           <h2>{es ? "Un amigo a tu estilo" : "Make this friend your own"}</h2>
           <p>{es ? "Prueba nuevos looks. El vínculo y los trucos no se pierden." : "Try a new look. Your bond and learned tricks stay with your pet."}</p>
           <label>{tr(ui.petName, language)}<input value={draft.name} maxLength={32} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></label>
-          <div className="fw-form-grid">{Object.entries(PET_OPTIONS).map(([key, values]) => <LocalizedSelect key={key} field={key} values={values}
+          <fieldset className="pet-haven__species"><legend>{es ? "Elige a tu compañero" : "Choose your companion"}</legend>
+            <div className="pet-haven__species-grid">{PET_OPTIONS.species.map((species) => <button type="button" key={species}
+              aria-pressed={draft.species === species} onClick={() => setDraft({ ...draft, species })}>
+              <PetArt pet={{ ...draft, species }} language={language} decorative />
+              <span>{optionLabel(species, language)}</span>
+              {draft.species === species && <span className="pet-haven__selected" aria-hidden="true">✓</span>}
+            </button>)}</div>
+          </fieldset>
+          <div className="fw-form-grid">{Object.entries(PET_OPTIONS).filter(([key]) => key !== "species").map(([key, values]) => <LocalizedSelect key={key} field={key} values={values}
             value={String(draft[key as keyof PetRecord] ?? values[0])} language={language} onChange={(value) => setDraft({ ...draft, [key]: value })} />)}</div>
           <div className="pet-haven__actions"><button type="button" className="fw-primary" disabled={lostPet} onClick={() => save()}>🐾 {tr(ui.savePet, language)}</button>
             <button type="button" disabled={profile.pets.length >= PET_LIMIT} onClick={(event) => request({ kind: "new" }, event.currentTarget)}>＋ {es ? "Nueva mascota" : "New pet"}</button></div>

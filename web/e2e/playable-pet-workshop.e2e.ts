@@ -37,7 +37,7 @@ test('retains an existing mastered pet, completes fetch, and saves style without
   await expect(page.getByRole('button', { name: es(info) ? 'Otra vez' : 'Play again', exact: true })).toBeVisible();
   await tab(page, es(info) ? 'Diseño' : 'Style');
   await page.locator('.pet-haven__editor input').fill('Luna');
-  await page.locator('.pet-haven__editor select').nth(1).selectOption('Purple');
+  await page.locator('.pet-haven__editor select').nth(0).selectOption('Purple');
   await page.getByRole('button', { name: /Save pet$|Guardar mascota$/ }).click();
   await page.reload();
   await expect(page.locator('.pet-haven__stage h2')).toHaveText('Luna');
@@ -102,4 +102,32 @@ test('phone layout, backdrops, touch targets and reduced motion remain usable', 
   expect(await page.locator('.pet-haven__actor').evaluate(element => getComputedStyle(element).animationName)).toBe('none');
   await page.locator('.pet-haven__stage').scrollIntoViewIfNeeded();
   await info.attach('owl-play-scene', { body: await page.screenshot(), contentType: 'image/png' });
+});
+
+test('every species keeps illustrated art through customization and saving', async ({ page }, info) => {
+  await boot(page, info);
+  await tab(page, es(info) ? 'Diseño' : 'Style');
+  const cards = page.locator('.pet-haven__species-grid button');
+  await expect(cards).toHaveCount(8);
+  for (let index = 0; index < 8; index++) {
+    await cards.nth(index).click();
+    await expect(cards.nth(index)).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(() => page.locator('.pet-haven__actor img').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    expect((await profile(page)).pets[0].species).toBe('Robot Dog');
+  }
+  // Reproduce the reported owl/color/accessory combination through the visual picker.
+  await cards.nth(6).click();
+  await page.locator('.pet-haven__editor select').nth(0).selectOption('Green');
+  await page.locator('.pet-haven__editor select').nth(1).selectOption('Star Collar');
+  await expect(page.locator('.pet-haven__actor [data-pet-renderer]')).toHaveAttribute('data-pet-renderer', 'premium-collection');
+  await expect(page.locator('.pet-haven__actor img')).toHaveAttribute('src', /crew-owl-scout-v3/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  const figure = await page.locator('.pet-haven__actor img').boundingBox();
+  const speech = await page.locator('.pet-haven__speech').boundingBox();
+  expect(figure && speech && figure.y + figure.height <= speech.y + 2, JSON.stringify({ figure, speech })).toBe(true);
+  await info.attach('matching-pet-collection', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+  await page.getByRole('button', { name: /Save pet$|Guardar mascota$/ }).click();
+  await page.reload();
+  expect((await profile(page)).pets[0]).toMatchObject({ species: 'Owl Scout', color: 'Green', accessory: 'Star Collar', bond: 73, tricks: TRICKS.map(t => t.id) });
+  await expect.poll(() => page.locator('.pet-haven__actor img').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 });

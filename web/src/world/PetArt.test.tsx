@@ -16,7 +16,7 @@ const basePet: PetRecord = {
 };
 
 describe("illustrated robot pets", () => {
-  it.each(PET_OPTIONS.species)("renders full SVG art for %s", (species) => {
+  it.each(PET_OPTIONS.species)("renders illustrated art for %s", (species) => {
     const html = renderToStaticMarkup(<PetArt pet={{ ...basePet, species }} />);
     expect(html).toContain(`data-pet-species-art="${species}"`);
     expect(html).toContain(species);
@@ -24,7 +24,8 @@ describe("illustrated robot pets", () => {
       expect(html).toContain('data-pet-renderer="premium-sparky"');
       expect(html).toContain("sparky-idle-v2.webp");
     } else {
-      expect(html).toContain("<svg");
+      expect(html).toContain('data-pet-renderer="premium-collection"');
+      expect(html).toContain("crew-");
     }
   });
 
@@ -45,9 +46,21 @@ describe("illustrated robot pets", () => {
     expect(html).toContain(asset);
   });
 
-  it("keeps customizable robot dog variants on the matching SVG renderer", () => {
+  it("keeps customizable robot dog variants in the illustrated collection", () => {
     const html = renderToStaticMarkup(<PetArt pet={{ ...basePet, color: "Gold" }} />);
-    expect(html).toContain("<svg");
+    expect(html).toContain('data-pet-renderer="premium-collection"');
     expect(html).not.toContain("premium-sparky");
   });
+  it("keeps every species and color in the premium collection with real accessories", () => {
+    for (const species of PET_OPTIONS.species) for (const color of PET_OPTIONS.color) for (const accessory of PET_OPTIONS.accessory) {
+      const html = renderToStaticMarkup(<PetArt pet={{ ...basePet, species, color, accessory }} />);
+      expect(html).toContain("<img");
+      expect(html).toMatch(/data-pet-renderer="premium-(collection|sparky)"/);
+      if (!(species === "Robot Dog" && color === "Blue" && accessory === "Explorer Scarf")) {
+        expect(html).toContain(`data-pet-accessory="${accessory}"`);
+        expect(html).toContain('result="blueArmor"');
+      }
+    }
+  });
+
 });
