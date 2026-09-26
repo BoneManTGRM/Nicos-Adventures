@@ -103,6 +103,19 @@ test('illustrated poster composition downloads and survives home display',async(
  await expect(page.getByLabel(es?'Posición del personaje':'Character position',{exact:true})).toHaveValue('30');await bounds(page);
 });
 
+test('changing the poster scene while artwork reloads does not crash the app',async({page},info)=>{
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await boot(page,info);const es=language(info);
+ await destination(page,es?'Estudio de arte':'Art Studio');
+ const poster=page.locator('.creative-canvas-panel .illustrated-poster');
+ await expect(poster).toHaveAttribute('data-art-ready','true',{timeout:30000});
+ await page.getByRole('button',{name:es?'Descubrimiento en la selva':'Jungle Discovery'}).click();
+ await expect(poster).toHaveAttribute('data-art-ready','true',{timeout:30000});
+ await expect(page.locator('.app-recovery')).toHaveCount(0);
+ expect(errors).toEqual([]);
+ await expect(page.getByRole('heading',{name:es?'Mi póster de aventura':'My Adventure Poster'})).toBeVisible();
+});
+
 
 test('cousins retain natural artwork proportions without a Nico frame',async({page},info)=>{
  await boot(page,info);const es=language(info);
