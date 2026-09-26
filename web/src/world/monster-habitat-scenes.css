@@ -1,0 +1,110 @@
+/* Small illustrated environment plates that let each monster live in its chosen world. */
+.monster-habitat-card {
+  --habitat-deep: #102747;
+  --habitat-mid: #173c5b;
+  --habitat-accent: #74d9f0;
+  --habitat-floor: #0a1a2c;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 4%, color-mix(in srgb, var(--habitat-accent) 25%, transparent), transparent 52%),
+    linear-gradient(150deg, color-mix(in srgb, var(--habitat-mid) 58%, #102344), #061329 72%);
+  border-color: color-mix(in srgb, var(--habitat-accent) 40%, rgba(103, 232, 249, .28));
+}
+
+.monster-habitat-card .monster-stage[data-monster-scenery="habitat"] {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--habitat-accent) 62%, rgba(186, 230, 253, .24));
+  background:
+    radial-gradient(ellipse at 50% 76%, color-mix(in srgb, var(--habitat-accent) 32%, transparent), transparent 42%),
+    radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--habitat-accent) 31%, transparent), transparent 31%),
+    linear-gradient(172deg, var(--habitat-mid) 0%, var(--habitat-deep) 53%, var(--habitat-floor) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.17), inset 0 -70px 120px rgba(0,0,0,.43), 0 28px 72px rgba(0,0,0,.32);
+}
+
+.monster-habitat-card .monster-stage[data-monster-scenery="habitat"]::before {
+  inset: 6% 6% 19%;
+  border-color: color-mix(in srgb, var(--habitat-accent) 37%, transparent);
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--habitat-accent) 15%, transparent), transparent 59%),
+    radial-gradient(circle, rgba(255,255,255,.42) 0 1px, transparent 1.6px) 0 0 / 31px 31px;
+  box-shadow: inset 0 0 95px color-mix(in srgb, var(--habitat-accent) 22%, transparent), 0 0 30px color-mix(in srgb, var(--habitat-accent) 12%, transparent);
+}
+
+.monster-habitat-card .monster-stage[data-monster-scenery="habitat"] .monster-stage__environment::before {
+  height: 38%;
+  border-color: color-mix(in srgb, var(--habitat-accent) 44%, transparent);
+  background:
+    radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--habitat-accent) 23%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--habitat-accent) 9%, transparent), var(--habitat-floor));
+}
+
+.monster-habitat-card .monster-stage[data-monster-scenery="habitat"] .monster-stage__environment i {
+  border-color: color-mix(in srgb, var(--habitat-accent) 36%, transparent);
+  background: linear-gradient(120deg, color-mix(in srgb, var(--habitat-accent) 25%, transparent), color-mix(in srgb, var(--habitat-accent) 2%, transparent));
+  box-shadow: 0 0 26px color-mix(in srgb, var(--habitat-accent) 18%, transparent);
+}
+
+.monster-habitat-card[data-monster-habitat="crystal-cave"] { --habitat-deep:#06374b; --habitat-mid:#14516b; --habitat-accent:#82f1ff; --habitat-floor:#041b2a; }
+.monster-habitat-card[data-monster-habitat="crystal-cave"] .monster-stage__environment i:nth-child(1),
+.monster-habitat-card[data-monster-habitat="crystal-cave"] .monster-stage__environment i:nth-child(2) { border-radius:0; clip-path:polygon(50% 0,100% 35%,74% 100%,25% 82%,0 33%); }
+.monster-habitat-card[data-monster-habitat="crystal-cave"] .monster-stage__environment i:nth-child(3) { border-radius:0; clip-path:polygon(50% 0,100% 48%,68% 100%,33% 84%,0 35%); }
+
+.monster-habitat-card[data-monster-habitat="cloud-nest"] { --habitat-deep:#234c79; --habitat-mid:#7bbbe0; --habitat-accent:#e4fbff; --habitat-floor:#1d385f; }
+.monster-habitat-card[data-monster-habitat="cloud-nest"] .monster-stage__environment i { border:0; border-radius:50%; background:radial-gradient(ellipse,rgba(255,255,255,.76),rgba(217,244,255,.24) 54%,transparent 72%); filter:blur(2px); }
+.monster-habitat-card[data-monster-habitat="cloud-nest"] .monster-stage__environment i:nth-child(1) { width:47%; height:32%; bottom:17%; }
+.monster-habitat-card[data-monster-habitat="cloud-nest"] .monster-stage__environment i:nth-child(2) { width:50%; height:28%; bottom:23%; }
+.monster-habitat-card[data-monster-habitat="cloud-nest"] .monster-stage__environment i:nth-child(3) { width:18%; height:13%; top:19%; right:22%; }
+
+.monster-habitat-card[data-monster-habitat="jungle-hut"] { --habitat-deep:#103d2b; --habitat-mid:#28734a; --habitat-accent:#b9f276; --habitat-floor:#0b241b; }
+.monster-habitat-card[data-monster-habitat="jungle-hut"] .monster-stage__environment i { border:0; border-radius:100% 0 100% 0; background:linear-gradient(145deg,rgba(205,255,120,.48),rgba(9,54,36,.24)); }
+.monster-habitat-card[data-monster-habitat="jungle-hut"] .monster-stage__environment i:nth-child(1) { width:35%; height:57%; left:-5%; bottom:17%; transform:rotate(-22deg); }
+.monster-habitat-card[data-monster-habitat="jungle-hut"] .monster-stage__environment i:nth-child(2) { width:37%; height:50%; right:-6%; bottom:17%; transform:rotate(34deg); }
+.monster-habitat-card[data-monster-habitat="jungle-hut"] .monster-stage__environment i:nth-child(3) { width:18%; height:23%; top:22%; right:27%; }
+
+.monster-habitat-card[data-monster-habitat="ocean-dome"] { --habitat-deep:#063651; --habitat-mid:#087ca0; --habitat-accent:#75f3e4; --habitat-floor:#042333; }
+.monster-habitat-card[data-monster-habitat="ocean-dome"] .monster-stage__environment i { width:11%; height:11%; border-radius:50%; background:radial-gradient(circle at 35% 30%,#efffff, color-mix(in srgb,var(--habitat-accent) 62%,transparent) 50%,transparent 72%); }
+.monster-habitat-card[data-monster-habitat="ocean-dome"] .monster-stage__environment i:nth-child(1) { left:16%; bottom:32%; }
+.monster-habitat-card[data-monster-habitat="ocean-dome"] .monster-stage__environment i:nth-child(2) { width:8%; height:8%; right:18%; bottom:45%; }
+.monster-habitat-card[data-monster-habitat="ocean-dome"] .monster-stage__environment i:nth-child(3) { width:6%; height:6%; top:24%; right:28%; }
+
+.monster-habitat-card[data-monster-habitat="candy-castle"] { --habitat-deep:#4a2c70; --habitat-mid:#ad61bb; --habitat-accent:#ffc5ec; --habitat-floor:#271a45; }
+.monster-habitat-card[data-monster-habitat="candy-castle"] .monster-stage__environment i { border-color:rgba(255,228,250,.52); border-radius:50% 50% 9px 9px; background:linear-gradient(90deg,rgba(255,255,255,.4),rgba(255,255,255,.05) 38%,rgba(255,255,255,.25)); }
+.monster-habitat-card[data-monster-habitat="candy-castle"] .monster-stage__environment i:nth-child(1),
+.monster-habitat-card[data-monster-habitat="candy-castle"] .monster-stage__environment i:nth-child(2) { height:48%; bottom:14%; }
+.monster-habitat-card[data-monster-habitat="candy-castle"] .monster-stage__environment i:nth-child(3) { width:12%; height:26%; border-radius:50% 50% 3px 3px; }
+
+.monster-habitat-card[data-monster-habitat="moon-base"] { --habitat-deep:#182450; --habitat-mid:#4d4d91; --habitat-accent:#c5cbff; --habitat-floor:#11152e; }
+.monster-habitat-card[data-monster-habitat="moon-base"] .monster-stage__environment i { border-radius:50%; background:radial-gradient(ellipse,rgba(207,213,255,.38),rgba(93,102,158,.08) 68%,transparent 74%); }
+.monster-habitat-card[data-monster-habitat="moon-base"] .monster-stage__environment i:nth-child(1) { width:40%; height:28%; bottom:18%; }
+.monster-habitat-card[data-monster-habitat="moon-base"] .monster-stage__environment i:nth-child(2) { width:35%; height:24%; bottom:24%; }
+.monster-habitat-card[data-monster-habitat="moon-base"] .monster-stage__environment i:nth-child(3) { width:13%; height:13%; top:20%; right:18%; }
+
+.monster-habitat-card[data-monster-habitat="volcano-fort"] { --habitat-deep:#4d171c; --habitat-mid:#922e25; --habitat-accent:#ffab4e; --habitat-floor:#1e0d15; }
+.monster-habitat-card[data-monster-habitat="volcano-fort"] .monster-stage__environment i { border-color:rgba(255,161,74,.44); background:linear-gradient(135deg,rgba(255,176,65,.28),rgba(52,12,18,.22)); }
+.monster-habitat-card[data-monster-habitat="volcano-fort"] .monster-stage__environment i:nth-child(1),
+.monster-habitat-card[data-monster-habitat="volcano-fort"] .monster-stage__environment i:nth-child(2) { width:40%; height:43%; bottom:14%; border-radius:50% 50% 8% 8%; }
+.monster-habitat-card[data-monster-habitat="volcano-fort"] .monster-stage__environment i:nth-child(3) { width:13%; height:18%; top:21%; background:radial-gradient(circle,#ffd38b,rgba(255,104,45,.5) 38%,transparent 72%); }
+
+.monster-habitat-card[data-monster-habitat="ice-palace"] { --habitat-deep:#164464; --habitat-mid:#65acd0; --habitat-accent:#dcfbff; --habitat-floor:#10273e; }
+.monster-habitat-card[data-monster-habitat="ice-palace"] .monster-stage__environment i { border-radius:0; clip-path:polygon(50% 0,100% 34%,69% 100%,32% 83%,0 30%); background:linear-gradient(155deg,rgba(244,255,255,.65),rgba(72,174,214,.12)); }
+.monster-habitat-card[data-monster-habitat="ice-palace"] .monster-stage__environment i:nth-child(1) { width:23%; height:48%; }
+.monster-habitat-card[data-monster-habitat="ice-palace"] .monster-stage__environment i:nth-child(2) { width:25%; height:41%; }
+.monster-habitat-card[data-monster-habitat="ice-palace"] .monster-stage__environment i:nth-child(3) { width:11%; height:23%; }
+
+.monster-habitat-card[data-monster-habitat="mecha-garage"] { --habitat-deep:#153446; --habitat-mid:#326078; --habitat-accent:#7ce5f3; --habitat-floor:#111b2c; }
+.monster-habitat-card[data-monster-habitat="mecha-garage"] .monster-stage__environment i { border-radius:8px; border-color:rgba(111,224,240,.52); background:repeating-linear-gradient(0deg,rgba(142,229,240,.18) 0 4px,rgba(7,24,43,.22) 5px 18px); }
+.monster-habitat-card[data-monster-habitat="mecha-garage"] .monster-stage__environment i:nth-child(1),
+.monster-habitat-card[data-monster-habitat="mecha-garage"] .monster-stage__environment i:nth-child(2) { height:49%; bottom:14%; }
+.monster-habitat-card[data-monster-habitat="mecha-garage"] .monster-stage__environment i:nth-child(3) { width:12%; height:22%; }
+
+.monster-habitat-card[data-monster-habitat="star-garden"] { --habitat-deep:#24174e; --habitat-mid:#513988; --habitat-accent:#b8ffdd; --habitat-floor:#171331; }
+.monster-habitat-card[data-monster-habitat="star-garden"] .monster-stage__environment i { border:0; border-radius:90% 0 90% 0; background:linear-gradient(145deg,rgba(176,255,208,.58),rgba(35,80,102,.1)); box-shadow:0 0 30px rgba(119,255,212,.2); }
+.monster-habitat-card[data-monster-habitat="star-garden"] .monster-stage__environment i:nth-child(1) { width:25%; height:44%; left:-2%; bottom:16%; transform:rotate(-25deg); }
+.monster-habitat-card[data-monster-habitat="star-garden"] .monster-stage__environment i:nth-child(2) { width:23%; height:39%; right:-2%; bottom:17%; transform:rotate(28deg); }
+.monster-habitat-card[data-monster-habitat="star-garden"] .monster-stage__environment i:nth-child(3) { width:13%; height:24%; top:19%; right:23%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .monster-habitat-card .monster-stage[data-monster-scenery="habitat"] { scroll-behavior: auto; }
+}

@@ -14,6 +14,7 @@ import {
   type MonsterPose,
 } from "./monsterMovement";
 import { completeOnce, hasCompleted, monsterFriendshipMission } from "./progression";
+import "./monster-habitat-scenes.css";
 
 const MonsterLabVisuals = lazy(() => import("./MonsterLabVisuals"));
 
@@ -223,9 +224,11 @@ export function MonsterHabitats({ profile, update, announce }: { profile: LocalP
 
   return (
     <div className="fw-card-grid">
-      {profile.monsters.map((monster) => (
-        <article className="fw-creature-card monster-habitat-card" key={monster.id}>
-          <MonsterStage monster={monster} language={language} />
+      {profile.monsters.map((monster) => {
+        const habitat = String(monster.habitat || "Crystal Cave").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        return (
+        <article className="fw-creature-card monster-habitat-card" data-monster-habitat={habitat} key={monster.id}>
+          <MonsterStage monster={monster} language={language} scenery="habitat" />
           <h3>{monster.name}</h3>
           <p>{optionLabel(monster.habitat, language)} · {optionLabel(monster.personality, language)}</p>
           <label>
@@ -242,7 +245,8 @@ export function MonsterHabitats({ profile, update, announce }: { profile: LocalP
             <button type="button" onClick={() => care(monster.id, 5, { en: "Groomed", "es-MX": "Cepillado" })} disabled={monster.friendship >= 100}>🪮 {language === "es-MX" ? "Cepillar" : "Groom"}</button>
           </div>
         </article>
-      ))}
+        );
+      })}
     </div>
   );
 }
