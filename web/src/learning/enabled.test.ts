@@ -20,3 +20,9 @@ it('default production build stays disabled at a version URL', async () => {
   vi.stubGlobal('location', { hostname: 'a1b2c3d4-nicos-world.synthetic.workers.dev' });
   expect((await import('./enabled')).learningLabEnabled).toBe(false);
 });
+
+it('approved release enables the learning activities on the production domain',async()=>{
+ vi.stubEnv('DEV',false);vi.stubEnv('VITE_LEARNING_LAB_RELEASE','true');
+ vi.stubGlobal('location',{hostname:'nicos-world.com'});
+ expect((await import('./enabled')).learningLabEnabled).toBe(true);
+});

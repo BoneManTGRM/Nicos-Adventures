@@ -239,3 +239,9 @@ Owner rejected the presentation despite green CI. Sentence Builder placed settin
 Owner explicitly requested voice removal after rejecting quality. This supersedes the original tutor voice requirement: Learning Lab, Word Rescue and Learning Lab parent panel now have no narration hook, playback buttons or voice selection. Entering/exiting the Lab cancels shared narration. Text, visuals, lessons, scores and existing unrelated character speech remain intact. No migration or paid replacement.
 
 Replaced tutor speech acceptance cases with absence-of-controls and no-speech-API lesson operation checks; shared speech-controller unit coverage retained for other app features. 480 unit tests and clean build/type/release/performance checks passed. Candidate browser checks remain pending. Voice naturalness is no longer a gate for this owner-requested text/visual tutor; other release gates and exact-target approval remain applicable. Not yet activated on production.
+
+## 2026-09-28 — Text/visual production activation candidate
+
+Owner said “Make it live” after requesting tutor voice removal. Main-branch Workers builds now explicitly enable the existing Learning Lab and Arcade destinations; version builds retain their hostname boundary. Removed preview wording from the Lab hero. No cloud settings, quota, dependency, profile schema, or paid service changes.
+
+Local 481 unit tests pass. Actual WORKERS_CI_BRANCH=main build, both type checks, release validation and performance gates pass (main JS gzip 131898 B). Exact candidate CI and deployment still required; this entry is not a production-success claim. Rollback: remove main's VITE_LEARNING_LAB_RELEASE define and deploy while retaining the additive profile normalizer; do not revert storage to pre-tutor code. Physical iPhone voice acceptance is superseded by owner removal of tutor audio. Other outstanding evidence remains honestly recorded above.
