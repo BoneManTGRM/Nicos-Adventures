@@ -79,3 +79,50 @@ test('local speech cancels stale callbacks, handles delayed voices and a stalled
  await page.clock.install();await repeat.click();await page.clock.fastForward(31000);
  await expect(lab.getByText(es?'La voz no terminó. Pulsa Repetir o continúa leyendo.':'Speech did not finish. Press Repeat or keep reading.',{exact:true})).toBeVisible();
 });
+
+test('all six missions in both bands teach, retry, check and reward once',async({page},info)=>{
+ test.setTimeout(240000);
+ const es=info.project.metadata.language==='es-MX';await boot(page,es?'es-MX':'en');
+ const lab=page.getByTestId('learning-lab');
+ // Literal independently reviewed answers, not values read from the lesson generator.
+ const answers=[
+  [['3','left','5','right'],['12','right','15','left']],
+  [['5','3','7','4'],['15','9','17','8']],
+  [['blue','circle','red','triangle'],['15','18','21','20']],
+  [['abc','bac','cab','acb'],['abcd','bcad','cadb','bdac']],
+  [['2','1','3','2'],['3','4','2','1']],
+  [['6','3','8','5'],['19','8','23','12']],
+ ];
+ for(let band=0;band<2;band++){
+  if(band)await lab.getByRole('button',{name:es?'Más difícil':'Make it harder',exact:true}).click();
+  for(let mission=0;mission<6;mission++){
+   await lab.locator('.learning-missions button').nth(mission).click();
+   await expect(lab.locator('.learning-example')).toBeVisible();
+   await lab.getByRole('button',{name:es?'Me toca':'My turn',exact:true}).click();
+   for(let position=0;position<4;position++){
+    const item=await lab.getAttribute('data-item-id');
+    const answer=answers[mission][band][position];
+    if(position===0){
+     const hint=lab.getByRole('button',{name:/Give me a hint|Dame una pista/});
+     await hint.click();const first=await lab.locator('.learning-hint').textContent();
+     await hint.click();await expect(lab.locator('.learning-hint')).not.toHaveText(first!);
+     await lab.getByRole('button',{name:es?'Explícalo de otra manera':'Explain another way',exact:true}).click();
+     await expect(lab.locator('.learning-hint')).toHaveCount(2);
+     await lab.locator(`[data-answer-id]:not([data-answer-id="${answer}"])`).first().click();
+     await lab.getByRole('button',{name:es?'Intentar con esta pista':'Retry with this clue',exact:true}).click();
+    }
+    await lab.locator(`[data-answer-id="${answer}"]`).click();
+    await expect(lab.locator('.learning-feedback')).toContainText(es?'¡Funciona!':'It works!');
+    await lab.getByRole('button',{name:es?'Continuar':'Continue',exact:true}).click();
+    const record=await page.evaluate(({key,item})=>JSON.parse(localStorage.getItem(key)!).profiles[0].learningLab.results[item!],{key,item});
+    expect(record.correct).toBe(true);
+    if(position>=2)expect(record.independent).toBe(true);
+    if(position===0)expect(record.assisted).toBe(true);
+   }
+   await expect(lab.getByRole('heading',{name:es?'¡Misión completada!':'Mission complete!',exact:true})).toBeVisible();
+   await page.reload();
+   const rewards=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].learningLab.rewarded,key);
+   expect(rewards).toHaveLength(band?6:mission+1);expect(new Set(rewards).size).toBe(rewards.length);
+  }
+ }
+});
