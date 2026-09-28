@@ -128,10 +128,10 @@
   .pet-haven .pet-haven__speech { min-height: 34px; padding: 6px 8px; font-size: 13px; margin-bottom: 12px; }
   .pet-haven__stage h2 { font-size: 25px; }
   .pet-haven__panel { padding: 16px; border-radius: 20px; }
+  .pet-haven__editor .fw-form-grid { grid-template-columns: minmax(0, 1fr); }
   .pet-haven__challenge { padding: 12px; }
 }
 @media (max-width: 360px) {
-  .pet-haven__editor .fw-form-grid { grid-template-columns: minmax(0, 1fr); }
   .pet-haven__stage > header { align-items: start; }
   .pet-haven__pill { font-size: 10px; padding: 6px 7px; }
   .pet-haven__tricks .pet-haven__quiet { font-size: 10px; }
