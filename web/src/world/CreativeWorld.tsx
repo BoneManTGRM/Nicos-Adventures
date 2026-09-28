@@ -1,3 +1,4 @@
+import { useNarration } from "../nico/Narration";
 import { useMemo, useState } from "react";
 import type { ArtworkRecord, LocalProfile, StoryRecord } from "../types";
 import { tr, ui } from "../i18n/core";
@@ -102,13 +103,8 @@ export function StoryCastle({ profile, update, announce }: { profile: LocalProfi
     announce(`${story.title}: ${tr(ui.saveSuccess, language)}`);
   };
 
-  const speak = () => {
-    if (!("speechSynthesis" in window)) return;
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = draft.language === "es-MX" ? "es-MX" : "en-US";
-    speechSynthesis.speak(utterance);
-  };
+  const narrator = useNarration(draft.language, profile.nico.speechEnabled);
+  const speak = () => narrator.speak([{text}]);
 
   return (
     <div className="fw-builder-layout">

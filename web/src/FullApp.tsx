@@ -1,3 +1,6 @@
+import { cancelNarration } from "./nico/speechCoordinator";
+import { learningLabEnabled } from "./learning/enabled";
+const LearningLab = lazy(() => import("./learning/LearningLab"));
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SectionId } from "./types";
 import { focusNavigationHeading } from "./app/navigationFocus";
@@ -45,6 +48,7 @@ if (typeof window !== "undefined" && "scrollRestoration" in window.history) wind
 type Announcement = { id: number; message: string };
 export default function FullApp() {
  const { store, profile, setStore, updateProfile, commitProfile } = useAppStore();
+ useEffect(() => { cancelNarration(); return cancelNarration; }, [profile.id, profile.language, profile.selectedSection]);
  const [menu, setMenu] = useState<JourneyMenuKind>(null);
  const [bridgeRequested,setBridgeRequested] = useState(false);
  const [creationIntent,setCreationIntent] = useState<{kind:'art'|'story';id:string}|null>(null);
@@ -118,6 +122,7 @@ export default function FullApp() {
  const page = (() => {
   const props = { profile, update: updateProfile, announce };
   switch (profile.selectedSection) {
+   case "learning-lab": return learningLabEnabled ? <LearningLab key={profile.id} /> : <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} advanceStarBridge={advanceStarBridge} />;
    case "world-map": return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} advanceStarBridge={advanceStarBridge} onCreate={()=>setMenu('create')} initialBridgeOpen={bridgeRequested} />;
    case "robo-lab": return <RoboLab {...props} open={open} />;
    case "animal-forest": return <Suspense fallback={<div className="fw-empty" role="status">{profile.language === "es-MX" ? "Preparando la expedición animal…" : "Preparing the wildlife expedition…"}</div>}><AnimalForest {...props} /></Suspense>;

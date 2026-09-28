@@ -10,6 +10,7 @@ export type WorldSection = {
 
 export const WORLD_SECTIONS: WorldSection[] = [
   { id: "world-map", emoji: "🌍", name: { en: "World Map", "es-MX": "Mapa del mundo" }, description: { en: "Choose a destination and continue the adventure.", "es-MX": "Elige un destino y continúa la aventura." } },
+  { id: "learning-lab", emoji: "🔬", name: { en: "Nico’s Learning Lab", "es-MX": "Laboratorio de Aprendizaje de Nico" }, description: { en: "Rescue robots with numbers, patterns, and instructions.", "es-MX": "Rescata robots con números, patrones e instrucciones." } },
   { id: "robo-lab", emoji: "🤖", name: { en: "Robo Lab", "es-MX": "Laboratorio robot" }, description: { en: "Help BoltBot scan, repair, and celebrate.", "es-MX": "Ayuda a BoltBot a explorar, reparar y celebrar." } },
   { id: "animal-forest", emoji: "🐾", name: { en: "Animal Forest", "es-MX": "Bosque animal" }, description: { en: "Meet the animals and discover where they live.", "es-MX": "Conoce a los animales y descubre dónde viven." } },
   { id: "becca-corner", emoji: "🦄", name: { en: "Becca’s Corner", "es-MX": "El Rincón de Becca" }, description: { en: "Create a magical unicorn friend with Becca and bring it to life.", "es-MX": "Crea una amiga unicornio con Becca y dale vida." } },

@@ -1,3 +1,4 @@
+import { learningLabEnabled } from "../learning/enabled";
 import { lazy, Suspense, useState } from "react";
 import { mergeAnimalLibrary } from "../FeatureArt";
 import type { StarBridgeEvent } from "../game/goldenAdventure";
@@ -74,7 +75,7 @@ export function WorldMap({
         openDinosaurValley={() => open("dinosaur-valley")}
       />
       <section className="fw-destination-grid" aria-label={tr(ui.mainNavigation, language)}>
-        {WORLD_SECTIONS.filter((section) => section.id !== "world-map").map((section) => {
+        {WORLD_SECTIONS.filter((section) => section.id !== "world-map" && (section.id !== "learning-lab" || learningLabEnabled)).map((section) => {
           const locked = section.id === "dinosaur-valley" && !dinosaurValleyAvailable;
           const lockCopy = language === "es-MX" ? "Completa El Puente Estelar Roto para desbloquearlo" : "Complete The Broken Star Bridge to unlock";
           return (

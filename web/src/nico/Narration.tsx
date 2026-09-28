@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Language } from '../types';
 import './narration.css';
+import { acquireNarration } from './speechCoordinator';
 export type VoiceInfo = Pick<SpeechSynthesisVoice, 'name' | 'lang' | 'voiceURI' | 'localService' | 'default'>;
 export type ReadingPart = { text: string; page?: number };
 const KEY = 'nico:narration:v1';
@@ -27,13 +28,15 @@ export function useNarration(language: Language, enabled = true) {
   const [current,setCurrent] = useState<ReadingPart | null>(null), [error,setError] = useState('');
   const session = useRef(0), active = useRef<SpeechSynthesisUtterance | null>(null), queue = useRef<ReadingPart[]>([]), index = useRef(0), mounted = useRef(true);
   const available = typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
-  const voice = voices.find(v => v.voiceURI === pref[language]) ?? voices[0];
-  const stop = useCallback(() => { session.current++; queue.current=[]; if(active.current) { active.current.onend=null; active.current.onerror=null; if(available) window.speechSynthesis.cancel(); } active.current=null; if(mounted.current){setStatus('idle');setCurrent(null);} },[available]);
+  const voice = voices.find(v => v.voiceURI === pref[language]) ?? (language === 'es-MX' ? voices.find(v => v.lang.toLowerCase().replace('_','-') === 'es-mx') : voices[0]);
+  const timeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const release = useRef<(() => void) | undefined>(undefined);
+  const stop = useCallback(() => { session.current++; queue.current=[]; clearTimeout(timeout.current); release.current?.(); release.current=undefined; if(active.current) { active.current.onend=null; active.current.onerror=null; if(available) window.speechSynthesis.cancel(); } active.current=null; if(mounted.current){setStatus('idle');setCurrent(null);} },[available]);
   useEffect(() => {
     mounted.current=true;
     setStatus('idle'); setCurrent(null); setError('');
     if(!available)return;
-    const load=()=>setVoices(localVoices(window.speechSynthesis.getVoices(),language)); load();
+    const load=()=>{const next=localVoices(window.speechSynthesis.getVoices(),language); if(active.current&&!next.some(v=>v.voiceURI===active.current?.voice?.voiceURI))stop();setVoices(next);}; load();
     window.speechSynthesis.addEventListener('voiceschanged',load);
     const hide=()=>{if(document.hidden)stop();}; document.addEventListener('visibilitychange',hide);
     return()=>{mounted.current=false;stop();window.speechSynthesis.removeEventListener('voiceschanged',load);document.removeEventListener('visibilitychange',hide);};
@@ -41,17 +44,21 @@ export function useNarration(language: Language, enabled = true) {
   useEffect(()=>{if(!enabled)stop();},[enabled,stop]);
   const speak = (parts: readonly ReadingPart[]) => {
     stop(); if(!enabled || !available || !voice) { setError(language==='es-MX'?'No hay una voz local de este idioma. Instala una voz en los ajustes de voz del dispositivo y vuelve a abrir la app.':'No local voice for this language is available. Install a voice in your device’s speech settings, then reopen the app.');setStatus('error');return; }
+    release.current=acquireNarration(stop);
     queue.current=readingChunks(parts); index.current=0; if(!queue.current.length)return;
     const token=++session.current; setError('');
     const next=()=>{
       if(token!==session.current || !mounted.current)return;
-      const part=queue.current[index.current]; if(!part){active.current=null;setCurrent(null);setStatus('idle');return;}
+      clearTimeout(timeout.current);
+      const part=queue.current[index.current]; if(!part){release.current?.();active.current=null;setCurrent(null);setStatus('idle');return;}
+      if(!window.speechSynthesis.getVoices().some(v=>v.localService===true&&v.voiceURI===voice.voiceURI)){stop();setStatus('error');setError(language==='es-MX'?'La voz local ya no está disponible. Puedes seguir leyendo.':'The local voice is no longer available. You can keep reading.');return;}
       const utterance=new SpeechSynthesisUtterance(part.text);active.current=utterance;
       utterance.voice=voice;utterance.lang=voice.lang;utterance.rate=pref.rate;utterance.pitch=1;utterance.volume=1;
-      utterance.onstart=()=>{if(token===session.current){setCurrent(part);setStatus('speaking');}};
-      utterance.onend=()=>{if(token===session.current){index.current++;next();}};
-      utterance.onerror=e=>{if(token!==session.current)return;active.current=null;setCurrent(null);if(e.error==='canceled'||e.error==='interrupted'){setStatus('idle');return;}setStatus('error');setError(language==='es-MX'?'La voz se detuvo. Prueba otra voz o vuelve a pulsar Leer.':'Narration stopped. Try another voice or press Read again.');};
-      window.speechSynthesis.resume();window.speechSynthesis.speak(utterance);
+      utterance.onstart=()=>{if(token===session.current&&active.current===utterance){setCurrent(part);setStatus('speaking');}};
+      utterance.onend=()=>{if(token===session.current&&active.current===utterance){utterance.onend=null;utterance.onerror=null;index.current++;next();}};
+      utterance.onerror=e=>{if(token!==session.current||active.current!==utterance)return;stop();if(e.error==='canceled'||e.error==='interrupted')return;setStatus('error');setError(language==='es-MX'?'La voz se detuvo. Prueba otra voz o vuelve a pulsar Leer.':'Narration stopped. Try another voice or press Read again.');};
+      timeout.current=setTimeout(()=>{if(token!==session.current||active.current!==utterance)return;stop();setStatus('error');setError(language==='es-MX'?'La voz no terminó. Pulsa Repetir o continúa leyendo.':'Speech did not finish. Press Repeat or keep reading.');},30000);
+      try { window.speechSynthesis.cancel();window.speechSynthesis.speak(utterance); } catch { stop();setStatus('error');setError(language==='es-MX'?'No se pudo iniciar la voz. Continúa leyendo.':'Speech could not start. Keep reading.'); }
     }; next();
   };
   const change = (patch: Partial<Preference>) => { stop(); const next={...pref,...patch};setPref(next);try{localStorage.setItem(KEY,JSON.stringify(next));}catch{/* Playback remains usable without storage. */} };
@@ -61,17 +68,17 @@ export function useNarration(language: Language, enabled = true) {
   };
 }
 export type Narrator = ReturnType<typeof useNarration>;
-export function NarrationControls({ narrator:n, language }: { narrator:Narrator;language:Language }) {
-  const es=language==='es-MX';
+export function NarrationControls({ narrator:n, language, uiLanguage = language, allowPause = true }: { narrator:Narrator;language:Language;uiLanguage?:Language;allowPause?:boolean }) {
+  const es=uiLanguage==='es-MX';
   return <div className="nico-narration" data-narration-status={n.status}>
-    {(n.status==='speaking'||n.status==='paused')&&<div className="nico-narration__transport"><button type="button" onClick={n.pause}>{n.status==='paused'?(es?'Continuar voz':'Resume voice'):(es?'Pausar voz':'Pause voice')}</button><button type="button" onClick={n.stop}>{es?'Detener voz':'Stop voice'}</button></div>}
+    {(n.status==='speaking'||n.status==='paused')&&<div className="nico-narration__transport">{allowPause&&<button type="button" onClick={n.pause}>{n.status==='paused'?(es?'Continuar voz':'Resume voice'):(es?'Pausar voz':'Pause voice')}</button>}<button type="button" onClick={n.stop}>{es?'Detener voz':'Stop voice'}</button></div>}
     <details><summary>{es?'Voz y lectura':'Voice & reading'}</summary>
-      <p>{es?'Solo voces del dispositivo. Se elige primero una voz mejorada cuando está instalada. No es una imitación de la voz real de Nico.':'Device voices only. An enhanced voice is preferred when installed. This is not an imitation of Nico’s real voice.'}</p>
+      <p>{es?'Solo voces locales del dispositivo. La etiqueta indica la variante real del idioma. Es un guía por computadora, no una persona real.':'Local device voices only. Locale labels show the actual voice language. This is a computer guide, not a real person.'}</p>
       {!n.enabled&&<p role="status">{es?'La voz está apagada en los ajustes de Nico.':'Speech is turned off in Nico’s settings.'}</p>}
-      <label>{es?'Narrador':'Narrator'}<select value={n.voice?.voiceURI??''} disabled={!n.voices.length||!n.enabled} onChange={e=>n.choose(e.target.value)}>{!n.voices.length&&<option value="">{es?'No hay voces locales':'No local voices available'}</option>}{n.voices.map(v=><option key={v.voiceURI} value={v.voiceURI}>{v.name} · {v.lang}</option>)}</select></label>
+      <label>{es?'Narrador':'Narrator'}<select value={n.voice?.voiceURI??''} disabled={!n.voices.length||!n.enabled} onChange={e=>n.choose(e.target.value)}>{!n.voice&&<option value="">{es?'Elige una voz local':'Choose a local voice'}</option>}{n.voices.map(v=><option key={v.voiceURI} value={v.voiceURI}>{v.name} · {v.lang}</option>)}</select></label>
       <label>{es?'Velocidad':'Reading speed'}<select value={n.rate} onChange={e=>n.speed(Number(e.target.value))}><option value={.8}>{es?'Tranquila':'Gentle'}</option><option value={.92}>{es?'Cuentacuentos':'Storyteller'}</option><option value={1}>{es?'Normal':'Normal'}</option><option value={1.1}>{es?'Ágil':'Lively'}</option></select></label>
-      <button type="button" disabled={!n.canSpeak} onClick={()=>n.speak([{text:es?'¡Hola! Soy Nico. ¿Listos para descubrir algo increíble?':'Hi! I’m Nico. Ready to discover something amazing?'}])}>{es?'Probar voz':'Preview voice'}</button>
-      {!n.voices.length&&<p>{es?'Las voces dependen del dispositivo. Descarga una voz mejorada en sus ajustes de accesibilidad o voz. La lectura en pantalla sigue funcionando.':'Voice choices depend on your device. Download an enhanced voice in its accessibility or speech settings. On-screen reading still works.'}</p>}
+      <button type="button" disabled={!n.canSpeak} onClick={()=>n.speak([{text:language==='es-MX'?'¡Hola! Soy Nico. ¿Listos para descubrir algo increíble?':'Hi! I’m Nico. Ready to discover something amazing?'}])}>{es?'Probar voz':'Preview voice'}</button>
+      {!n.voice&&<p>{es?'Modo de texto: no hay una voz local adecuada seleccionada. Las voces dependen del dispositivo. Debes elegir una voz de otra región si la deseas; su etiqueta no indica español mexicano.':'Text mode: no suitable local voice selected. Voices depend on the device. A Spanish voice from another region requires selection; its label is not Mexican Spanish.'}</p>}
     </details>{n.error&&<p role="status">{n.error}</p>}
   </div>;
 }

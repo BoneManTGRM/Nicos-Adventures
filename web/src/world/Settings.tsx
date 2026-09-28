@@ -1,3 +1,6 @@
+import { lazy, Suspense } from "react";
+import { learningLabEnabled } from "../learning/enabled";
+const LearningParent = lazy(() => import("../learning/LearningLab").then(m => ({ default: m.LearningParent })));
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createProfile, exportProfile, importProfile } from "../storage";
 import type { Language, LocalProfile, LocalSaveStore } from "../types";
@@ -119,6 +122,7 @@ export function Settings({
         </label>
       </section>
 
+      {learningLabEnabled && <Suspense fallback={null}><LearningParent key={profile.id}/></Suspense>}
       <section className="settings-card" aria-labelledby="settings-profile-heading">
         <header><span aria-hidden="true">👤</span><div><small>{store.profiles.length}/12</small><h2 id="settings-profile-heading">{language === "es-MX" ? "Perfiles locales" : "Local profiles"}</h2></div></header>
         <label>

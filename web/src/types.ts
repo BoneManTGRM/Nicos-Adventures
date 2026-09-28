@@ -24,6 +24,7 @@ export type Robot = {
 };
 
 export type SectionId =
+  | "learning-lab"
   | "world-map"
   | "robo-lab"
   | "animal-forest"
@@ -225,6 +226,7 @@ export type LocalProfile = {
   badges: string[];
   movieProjects: MovieProject[];
   adventures: GoldenAdventureProgress;
+  learningLab?: import("./learning/engine").Progress;
   nico: NicoPreferences;
   lastBackupAt: string | null;
   createdAt: string;

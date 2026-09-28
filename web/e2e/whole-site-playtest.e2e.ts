@@ -459,6 +459,7 @@ test("all destinations keep their main local interactions working", async ({ pag
   const clubhouse = page.getByRole("dialog", { name: text.clubhouse, exact: true });
   await expect(clubhouse).toBeVisible();
   await expect(page.getByRole("button", { name: text.closeClubhouse, exact: true })).toBeFocused();
+  await clubhouse.locator(".discovery-help summary").click();
   await page.getByRole("button", { name: text.suggestion, exact: true }).click();
   const answer = clubhouse.locator(".nico-chat-answer").last();
   await expect(answer).toBeVisible();

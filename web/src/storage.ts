@@ -1,3 +1,4 @@
+import { normalizeProgress } from "./learning/engine";
 import { normalizeShots } from "./showtime/director";
 import professionData from "./catalogs/nico-professions.json";
 import additionalProfessions from "./catalogs/nico-professions-phase2-extra.json";
@@ -41,7 +42,7 @@ const professionIds = [...professionData, ...additionalProfessions].map((item) =
 const characterKinds: MovieCharacterKind[] = ["nico", "robot", "monster", "pet", "animal", "friend"];
 const moviePoses: MoviePose[] = ["idle", "wave", "celebrate", "launch", "dance", "spin", "bounce", "roar", "sleep"];
 const sectionIds: SectionId[] = [
-  "world-map", "robo-lab", "animal-forest", "becca-corner", "cousins-adventure", "monster-lab", "monster-habitats",
+  "learning-lab", "world-map", "robo-lab", "animal-forest", "becca-corner", "cousins-adventure", "monster-lab", "monster-habitats",
   "art-studio", "story-castle", "game-arcade", "dinosaur-valley", "pet-workshop",
   "robot-home", "memory-book", "badge-book", "parent-settings",
 ];
@@ -520,6 +521,7 @@ function normalizeProfile(candidate: unknown): LocalProfile | null {
       key.length <= 80 && Number.isInteger(slot) && Number(slot) >= 0 && Number(slot) < 9).slice(0, 100).map(([key, slot]) => [key, Number(slot)])),
     movieProjects,
     adventures: normalizeGoldenAdventureProgress(value.adventures),
+    ...(value.learningLab ? { learningLab: normalizeProgress(value.learningLab) } : {}),
     nico: normalizeNico(value.nico),
     lastBackupAt: nullableText(value.lastBackupAt, 50),
     createdAt: clampText(value.createdAt, 50, fresh.createdAt),

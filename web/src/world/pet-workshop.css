@@ -155,3 +155,5 @@
 
   .pet-haven__species-grid > button > span:not(.pet-art) { font-size: 12px; }
 }
+/* Keep the 44px hit area stable during the shared pressed-button effect. */
+.fw-app .pet-haven button:active { transform: none; }
