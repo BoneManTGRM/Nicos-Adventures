@@ -131,3 +131,27 @@ test('all six missions in both bands teach, retry, check and reward once',async(
   }
  }
 });
+
+test('keyboard lesson controls and enlarged narrow-screen text stay usable',async({page},info)=>{
+ const es=info.project.metadata.language==='es-MX';await boot(page,es?'es-MX':'en');
+ const lab=page.getByTestId('learning-lab');
+ const start=lab.getByRole('button',{name:es?'Me toca':'My turn',exact:true});
+ await start.focus();await page.keyboard.press('Enter');
+ await expect(lab.locator('.learning-answers')).toBeVisible();
+ const hint=lab.getByRole('button',{name:/Give me a hint|Dame una pista/});
+ await hint.focus();await page.keyboard.press('Space');await expect(lab.locator('.learning-hint')).toBeVisible();
+ await lab.locator('[data-answer-id="3"]').focus();await page.keyboard.press('Enter');
+ await expect(lab.locator('.learning-feedback')).toContainText(es?'¡Funciona!':'It works!');
+ await page.setViewportSize({width:320,height:568});
+ // CSS text enlargement is a reproducible layout check, not physical Safari zoom certification.
+ await page.addStyleTag({content:'html { font-size: 200% !important; } .learning-lab { font-size: 1rem !important; }'});
+ const continueButton=lab.getByRole('button',{name:es?'Continuar':'Continue',exact:true});
+ await continueButton.scrollIntoViewIfNeeded();await continueButton.focus();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
+ const previous=await lab.getAttribute('data-item-id');
+ await page.keyboard.press('Enter');await expect(lab).not.toHaveAttribute('data-item-id',previous!);
+ await expect(lab.locator('.learning-feedback')).toHaveCount(0);
+ await page.setViewportSize({width:844,height:390});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
+ await info.attach('enlarged-text-synthetic',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});
+});
