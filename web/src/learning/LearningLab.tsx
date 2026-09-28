@@ -2,12 +2,10 @@ import { LanguageRescue } from './LanguageRescue';
 import { WorkedDemo } from './WorkedDemo';
 import { TeachingWorkbench } from './TeachingWorkbench';
 import { LessonVisual } from './LessonVisual';
-import { speechText } from "./speechText";
 import { applyLearningAction, resetLearning } from './profile';
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../app/AppStoreContext';
 import { NicoCostumeFigure } from '../nico/NicoCostumeFigure';
-import { NarrationControls, useNarration } from '../nico/Narration';
 import { cancelNarration } from '../nico/speechCoordinator';
 import { demonstrated, normalizeProgress, type Action } from './engine';
 import { lessonItem, missions, workedExample } from './lessons';
@@ -16,14 +14,12 @@ import './learning-lab.css';
 export function LearningParent() {
  const {profile,commitProfile}=useAppStore();const es=profile.language==='es-MX';
  const p=normalizeProgress(profile.learningLab);
- const n=useNarration(profile.language,profile.nico.speechEnabled);
  return <section className="settings-card learning-parent" aria-label={es?'Aprendizaje local':'Local learning'}>
   <h2>{es?'Laboratorio de Aprendizaje de Nico':'Nico’s Learning Lab'}</h2>
   <p>{es?'Estas actividades registran práctica, ayuda y dos comprobaciones sin ayuda, incluida una de aplicación. No son una evaluación educativa validada ni demuestran dominio general.':'These activities record practice, help, and two unassisted checks, including transfer. They are not a validated educational assessment or evidence of general mastery.'}</p>
   <ul>{missions.map((m,index)=><li key={m.id}><strong>{m.title[profile.language]}</strong>: {(['gentle','challenge'] as const).map(b=><span key={b}> {b==='gentle'?(es?'Inicial':'Gentle'):(es?'Reto':'Challenge')} — {demonstrated(p,index,b)?(es?'demostrado en estas actividades':'demonstrated in these activities'):(es?'aún no demostrado':'not yet demonstrated')}; </span>)}</li>)}</ul>
   <h3>{es?'Rescate de palabras':'Word rescue'}</h3><ul>{(['en','es-MX'] as const).map(target=><li key={target}>{target==='en'?(es?'Inglés':'English'):(es?'Español':'Spanish')}: {es?'comprobaciones sin ayuda':'unassisted checks'} {Object.values(p.languageRescue?.[target]?.results??{}).filter(r=>r.independent).length} / 2</li>)}</ul>
   <p>{es?'El respaldo de perfil incluye este progreso. Usa los controles de respaldo y restauración de esta página. No hay sincronización entre dispositivos. Usa una sola pestaña para evitar cambios simultáneos.':'Profile backups include this progress. Use this page’s backup and restore controls. There is no cross-device sync. Use one tab to avoid simultaneous edits.'}</p>
-  <NarrationControls allowPause={false} narrator={n} language={profile.language}/>
   <button type="button" onClick={()=>{
    if(!window.confirm(es?'¿Borrar solo el progreso del laboratorio? Las estrellas y los demás juegos se conservan.':'Reset only Learning Lab progress? Stars and other games are preserved.'))return;
    cancelNarration();const id=profile.id;
@@ -36,17 +32,15 @@ export default function LearningLab() {
  const [activity,setActivity]=useState<'robots'|'words'>('words');
  const {profile,commitProfile,saveState}=useAppStore();const language=profile.language,es=language==='es-MX';
  const p=normalizeProgress(profile.learningLab),m=missions[p.mission],item=lessonItem(p.mission,p.position,p.band);
- const narrator=useNarration(language,profile.nico.speechEnabled);
  const result=p.results[item.id];const fingerprint=JSON.stringify(p);
  const send=(action:Action)=>{
-  narrator.stop();const id=profile.id;
+  cancelNarration();const id=profile.id;
   commitProfile(current=>applyLearningAction(current,id,fingerprint,action));
  };
- useEffect(()=>()=>cancelNarration(),[]);
+ useEffect(()=>{cancelNarration();return ()=>cancelNarration();},[]);
  const intro=p.phase==='introduction',complete=p.phase==='completion',feedback=p.phase==='feedback';
  const explanation=workedExample(p.mission,p.band)[language];
  const response=feedback?(result?.correct?(es?'¡Funciona! Comprobaste tu respuesta.':'It works! You checked your answer.'):(item.feedback[p.lastAnswer]?.[language]??item.hints[0][language])):'';
- const readText=[m.title[language],intro?m.objective[language]:'',intro?explanation:item.prompt[language],!intro&&!complete?item.visual[language]:'',response,p.hints?item.hints[p.hints-1][language]:'',p.alternative?item.alternative[language]:''].filter(Boolean).join('. ');
  return <div className="learning-lab" data-testid="learning-lab" data-item-id={item.id}>
   <header className="learning-hero">
    <div className="learning-guide"><NicoCostumeFigure profession="teacher" wardrobe={profile.nico.wardrobe} alt={es?'Nico, guía por computadora':'Nico, a computer learning guide'}/></div>
@@ -70,14 +64,8 @@ export default function LearningLab() {
    </>}
    <div className="learning-tools"><button type="button" disabled={p.nextBand==='gentle'} onClick={()=>send({type:'difficulty',band:'gentle'})}>{es?'Más fácil':'Make it easier'}</button><button type="button" disabled={p.nextBand==='challenge'} onClick={()=>send({type:'difficulty',band:'challenge'})}>{es?'Más difícil':'Make it harder'}</button></div>
    <p>{es?'Nivel del próximo ejercicio: ':'Next exercise difficulty: '}{p.nextBand==='gentle'?(es?'Inicial':'Gentle'):(es?'Reto':'Challenge')}. {es?'La respuesta actual no cambia.':'The current answer stays the same.'}</p>
-   <div className="learning-audio">
-   {language==='en'&&narrator.voices.some(v=>(v.lang.toLowerCase()==='en-us'&&/enhanced|premium/i.test(v.name))||['Daniel','Rishi'].includes(v.name))&&<div className="learning-voice-picks"><span>English voice choices</span>{narrator.voices.filter(v=>(v.lang.toLowerCase()==='en-us'&&/enhanced|premium/i.test(v.name))||['Daniel','Rishi'].includes(v.name)).map(v=><button type="button" key={v.voiceURI} aria-pressed={narrator.voice?.voiceURI===v.voiceURI} onClick={()=>narrator.choose(v.voiceURI)}>{v.name} · {v.lang}</button>)}</div>}
-   <div className="learning-tools"><button type="button" disabled={!narrator.canSpeak||complete} onClick={()=>narrator.speak([{text:speechText(readText,language)}])}>{es?'Repetir':'Repeat'}</button><button type="button" onClick={narrator.stop}>{es?'Detener':'Stop'}</button></div>
-   {!narrator.canSpeak&&<p role="status">{es?'Modo de texto. Abre Voz y lectura para ver las voces locales disponibles.':'Text mode. Open Voice & reading to see available local voices.'}</p>}
-   <NarrationControls allowPause={false} narrator={narrator} language={language}/>
-   </div>
   </section>
   </>}
-  <p className="learning-offline-note">{es?'Sin micrófono ni chat. Las lecciones ya cargadas pueden funcionar sin internet cuando el navegador las haya guardado. La voz sin conexión depende del dispositivo.':'No microphone or chat. Loaded lessons can work offline once cached by the browser. Offline speech depends on the device.'}</p>
+  <p className="learning-offline-note">{es?'Sin micrófono ni chat. Las lecciones ya cargadas pueden funcionar sin internet cuando el navegador las haya guardado.':'No microphone or chat. Loaded lessons can work offline once cached by the browser.'}</p>
  </div>;
 }

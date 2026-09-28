@@ -233,3 +233,9 @@ Owner rejected the presentation despite green CI. Sentence Builder placed settin
 - Content self-review covered all displayed translations and token sequences. Repeated identical tiles exposed identity-only grading: failing regression reproduced rejection of a valid sequence, then value-based comparison plus unique bounded tile IDs repaired it. Feedback now uses the same comparison. Invalid reused tiles remain rejected.
 - Executed: bank expansion regression red (4 vs 48); repeated-word regression red; final 480 unit tests pass. Build includes application/e2e type checks, release and performance gates. Added browser coverage for switching level and round; execution awaits candidate CI.
 - No voice, network, service, or deployment-setting change. Owner iPhone voice-quality gate remains unresolved. Production activation remains gated.
+
+## 2026-09-28 — Owner removes tutor voices
+
+Owner explicitly requested voice removal after rejecting quality. This supersedes the original tutor voice requirement: Learning Lab, Word Rescue and Learning Lab parent panel now have no narration hook, playback buttons or voice selection. Entering/exiting the Lab cancels shared narration. Text, visuals, lessons, scores and existing unrelated character speech remain intact. No migration or paid replacement.
+
+Replaced tutor speech acceptance cases with absence-of-controls and no-speech-API lesson operation checks; shared speech-controller unit coverage retained for other app features. 480 unit tests and clean build/type/release/performance checks passed. Candidate browser checks remain pending. Voice naturalness is no longer a gate for this owner-requested text/visual tutor; other release gates and exact-target approval remain applicable. Not yet activated on production.
