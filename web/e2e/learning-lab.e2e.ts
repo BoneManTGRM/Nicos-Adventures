@@ -5,7 +5,9 @@ async function boot(page:Page,language:'en'|'es-MX',origin='/'){
  await page.goto(origin);await expect(page.getByTestId('continue-world')).toBeVisible();
  await page.evaluate(({key,language})=>{const store=JSON.parse(localStorage.getItem(key)!);const p=store.profiles[0];p.playerName='Synthetic learner';p.language=language;p.selectedSection='learning-lab';localStorage.setItem(key,JSON.stringify(store));},{key,language});
  await page.reload();await expect(page.getByTestId('learning-lab')).toBeVisible();
+ await page.getByRole('button',{name:/Robot Rescue · numbers|Rescate Robot · números/}).click();
 }
+
 test('lesson hint, checked answer, locale, reload and phone geometry',async({page},info)=>{
  const es=info.project.metadata.language==='es-MX';await boot(page,es?'es-MX':'en');
  const lab=page.getByTestId('learning-lab');await lab.getByRole('button',{name:es?'Me toca':'My turn',exact:true}).click();
@@ -13,7 +15,7 @@ test('lesson hint, checked answer, locale, reload and phone geometry',async({pag
  const before=await lab.getAttribute('data-item-id');
  await lab.getByLabel(es?'Idioma':'Language',{exact:true}).selectOption(es?'en':'es-MX');
  await expect(lab).toHaveAttribute('data-item-id',before!);
- await page.reload();await expect(lab).toHaveAttribute('data-item-id',before!);await expect(lab.locator('.learning-hint')).toBeVisible();
+ await page.reload();await page.getByRole('button',{name:/Robot Rescue · numbers|Rescate Robot · números/}).click();await expect(lab).toHaveAttribute('data-item-id',before!);await expect(lab.locator('.learning-hint')).toBeVisible();
  await lab.locator('[data-answer-id="3"]').click();
  await expect(lab.locator('.learning-feedback')).toBeVisible();
  const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].learningLab,key);
@@ -53,7 +55,7 @@ test('cached lesson survives Chromium offline or WebKit origin outage',async({pa
   const restored=await page.reload({waitUntil:'domcontentloaded'});
   expect(restored?.status()).toBe(200);expect(restored?.fromServiceWorker()).toBe(true);
   await expect(page.getByTestId('learning-lab')).toBeVisible();
-  await page.getByRole('button',{name:/^My turn$|^Me toca$/}).click();await expect(page.locator('.learning-answers')).toBeVisible();
+  await page.getByRole('button',{name:/Robot Rescue · numbers|Rescate Robot · números/}).click();await page.getByRole('button',{name:/^My turn$|^Me toca$/}).click();await expect(page.locator('.learning-answers')).toBeVisible();
  }finally{await mirror?.stop();}
 });
 test('local speech cancels stale callbacks, handles delayed voices and a stalled engine',async({page},info)=>{
@@ -121,7 +123,7 @@ test('all six missions in both bands teach, retry, check and reward once',async(
     if(position===0)expect(record.assisted).toBe(true);
    }
    await expect(lab.getByRole('heading',{name:es?'¡Misión completada!':'Mission complete!',exact:true})).toBeVisible();
-   await page.reload();
+   await page.reload();await page.getByRole('button',{name:/Robot Rescue · numbers|Rescate Robot · números/}).click();
    const rewards=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].learningLab.rewarded,key);
    expect(rewards).toHaveLength(band?6:mission+1);expect(new Set(rewards).size).toBe(rewards.length);
    const canonical=await page.evaluate(k=>{const p=JSON.parse(localStorage.getItem(k)!).profiles[0];return {stars:p.stars,completed:p.completedMissions.filter((id:string)=>id.startsWith('learning-lab:'))};},key);
@@ -154,4 +156,48 @@ test('keyboard lesson controls and enlarged narrow-screen text stay usable',asyn
  await page.setViewportSize({width:844,height:390});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
  await info.attach('enlarged-text-synthetic',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});
+});
+
+test('hands-on workspace records assistance and clears marks on next item',async({page},info)=>{
+ const es=info.project.metadata.language==='es-MX';await boot(page,es?'es-MX':'en');
+ const lab=page.getByTestId('learning-lab');
+ await lab.getByRole('button',{name:es?'Ver siguiente paso':'Show next step',exact:true}).click();
+ await expect(lab.locator('.learning-demo')).toContainText('2 / 3');
+ await lab.getByRole('button',{name:es?'Me toca':'My turn',exact:true}).click();
+ await lab.getByRole('button',{name:es?'Explícalo de otra manera':'Explain another way',exact:true}).click();
+ const workspace=lab.locator('.learning-workbench');
+ await workspace.locator('.learning-manipulatives button').first().click();
+ await expect(workspace).toContainText(es?'Marcados: 1':'Marked: 1');
+ await lab.locator('[data-answer-id="3"]').click();
+ await lab.getByRole('button',{name:es?'Continuar':'Continue',exact:true}).click();
+ await expect(workspace).toHaveCount(0);
+ const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].learningLab,key);
+ expect(saved.results['supplies:gentle:0'].assisted).toBe(true);
+});
+test('English and Spanish word rescue stays separate and saves its phrase checks',async({page},info)=>{
+ const es=info.project.metadata.language==='es-MX';await boot(page,es?'es-MX':'en');
+ await page.getByRole('button',{name:/Word rescue · English|Rescate de palabras · inglés/}).click();
+ const game=page.locator('.language-rescue');
+ for(const target of ['en','es-MX']){
+  await game.getByRole('button',{name:target==='en'?(es?'Aprender inglés':'Learn English'):(es?'Aprender español':'Learn Spanish'),exact:true}).click();
+  for(const [i,answer] of ['robot','key','door','battery','key','battery'].entries()){
+   if(i<4)await game.getByRole('button',{name:es?'Buscar la imagen':'Find the picture',exact:true}).click();
+   if(i===0){
+    await game.locator('[data-word-answer="door"]').click();
+    await game.getByRole('button',{name:es?'Volver a buscar':'Look again',exact:true}).click();
+   }
+   await game.locator(`[data-word-answer="${answer}"]`).click();
+   await game.getByRole('button',{name:es?'Continuar':'Continue',exact:true}).click();
+  }
+  await expect(game).toContainText(es?'¡El robot está listo!':'The robot is ready!');
+ }
+ await page.reload();
+ const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].learningLab,key);
+ for(const target of ['en','es-MX']){
+  expect(saved.languageRescue[target].complete).toBe(true);
+  expect(saved.languageRescue[target].results.robot.assisted).toBe(true);
+  expect(saved.languageRescue[target].results['door-check'].independent).toBe(true);
+  expect(saved.languageRescue[target].results['rescue-transfer'].independent).toBe(true);
+ }
+ expect(saved.rewarded).toEqual([]);
 });

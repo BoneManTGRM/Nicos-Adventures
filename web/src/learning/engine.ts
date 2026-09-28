@@ -1,7 +1,8 @@
+import { normalizeLanguageProgress, type LanguageSaves } from './languageRescue';
 import { lessonItem, missions, type Band } from './lessons';
 export type Result = { attempts: number; assisted: boolean; correct: boolean; independent: boolean };
 export type Progress = {
- version: 1; mission: number; position: number; band: Band; nextBand: Band;
+ languageRescue?:LanguageSaves; version: 1; mission: number; position: number; band: Band; nextBand: Band;
  phase: 'introduction'|'attempt'|'hint'|'feedback'|'check'|'completion';
  hints: number; alternative: boolean; lastAnswer: string; results: Record<string,Result>; rewarded: string[];
 };
@@ -55,5 +56,6 @@ export function normalizeProgress(raw:unknown):Progress {
  if(phase==='completion'&&!(position===3&&results[current.id]?.correct))phase='introduction';
  const hints=integer(v.hints,2),alternative=v.alternative===true;
  if(hints||alternative){const r=results[current.id]??{attempts:0,correct:false,assisted:true,independent:false};results[current.id]={...r,assisted:true};}
- return {version:1,mission,position,band,nextBand:v.nextBand==='challenge'?'challenge':'gentle',phase,hints,alternative,lastAnswer,results,rewarded:missions.map(m=>m.id).filter(id=>Array.isArray(v.rewarded)&&v.rewarded.includes(id))};
+ const languages=v.languageRescue&&typeof v.languageRescue==='object'?v.languageRescue as Record<string,unknown>:null;
+ return {...(languages?{languageRescue:{en:normalizeLanguageProgress(languages.en),'es-MX':normalizeLanguageProgress(languages['es-MX'])}}:{}),version:1,mission,position,band,nextBand:v.nextBand==='challenge'?'challenge':'gentle',phase,hints,alternative,lastAnswer,results,rewarded:missions.map(m=>m.id).filter(id=>Array.isArray(v.rewarded)&&v.rewarded.includes(id))};
 }

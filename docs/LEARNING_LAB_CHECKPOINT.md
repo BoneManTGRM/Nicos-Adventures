@@ -180,3 +180,31 @@ once visually. All 465 existing units passed before the final three diagram chec
 three focused diagram cases pass. Build/type/release/performance results are in PR.
 No full redesign or owner approval is claimed. Previous version30fa7809 Learning Lab
 CI36376924772 completed successfully. This presentation revision needs hosted review.
+
+## Teaching and bilingual word rescue expansion
+
+Owner requested more effective, playful English and Spanish teaching. Added Word
+Rescue as the initial Lab activity: four authored words (robot/key/door/battery),
+picture practice, and two distinct sentence checks, including a new robot-needs-a-
+battery context. Both learning directions have separate bounded local records under
+optional learningLab.languageRescue. No age, microphone, raw writing or service.
+This small activity is vocabulary practice, not a complete language course or a
+fluency assessment. Replay retains historical results, without new rewards.
+
+Math retains all 48 items. Twelve three-step worked demonstrations and assisted
+object/sequence/debug workspaces now support explanations. Opening a workspace
+uses existing alternative-help transition before interaction; independent credit
+cannot be earned from that assisted attempt. Disposable workspace marks are not
+stored. Incorrect responses remain retryable; specific correct feedback now appears.
+
+Separate read-only reviewer found wrong English 'second C' instruction and ambiguous
+subtraction wording; both corrected to step-two symbol and total eighteen seats.
+Reviewer also requested replay and interface-language voice controls; both added.
+Voice narration continues in the learning target language with local voices only.
+Voice controls default to existing behavior for other destinations.
+
+Rollback precaution: old engine normalization drops the new languageRescue field.
+Disable the activity/UI while retaining current normalization for data-compatible
+rollback. Do not deploy an older parser after language progress exists without a
+backup/preservation migration. Existing canonical backup/reset/profile boundaries
+remain; simultaneous-tab last-write-wins limitation is unchanged.

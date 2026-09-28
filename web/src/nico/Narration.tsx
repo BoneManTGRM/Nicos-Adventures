@@ -68,8 +68,8 @@ export function useNarration(language: Language, enabled = true) {
   };
 }
 export type Narrator = ReturnType<typeof useNarration>;
-export function NarrationControls({ narrator:n, language, allowPause = true }: { narrator:Narrator;language:Language;allowPause?:boolean }) {
-  const es=language==='es-MX';
+export function NarrationControls({ narrator:n, language, uiLanguage = language, allowPause = true }: { narrator:Narrator;language:Language;uiLanguage?:Language;allowPause?:boolean }) {
+  const es=uiLanguage==='es-MX';
   return <div className="nico-narration" data-narration-status={n.status}>
     {(n.status==='speaking'||n.status==='paused')&&<div className="nico-narration__transport">{allowPause&&<button type="button" onClick={n.pause}>{n.status==='paused'?(es?'Continuar voz':'Resume voice'):(es?'Pausar voz':'Pause voice')}</button>}<button type="button" onClick={n.stop}>{es?'Detener voz':'Stop voice'}</button></div>}
     <details><summary>{es?'Voz y lectura':'Voice & reading'}</summary>
@@ -77,7 +77,7 @@ export function NarrationControls({ narrator:n, language, allowPause = true }: {
       {!n.enabled&&<p role="status">{es?'La voz está apagada en los ajustes de Nico.':'Speech is turned off in Nico’s settings.'}</p>}
       <label>{es?'Narrador':'Narrator'}<select value={n.voice?.voiceURI??''} disabled={!n.voices.length||!n.enabled} onChange={e=>n.choose(e.target.value)}>{!n.voice&&<option value="">{es?'Elige una voz local':'Choose a local voice'}</option>}{n.voices.map(v=><option key={v.voiceURI} value={v.voiceURI}>{v.name} · {v.lang}</option>)}</select></label>
       <label>{es?'Velocidad':'Reading speed'}<select value={n.rate} onChange={e=>n.speed(Number(e.target.value))}><option value={.8}>{es?'Tranquila':'Gentle'}</option><option value={.92}>{es?'Cuentacuentos':'Storyteller'}</option><option value={1}>{es?'Normal':'Normal'}</option><option value={1.1}>{es?'Ágil':'Lively'}</option></select></label>
-      <button type="button" disabled={!n.canSpeak} onClick={()=>n.speak([{text:es?'¡Hola! Soy Nico. ¿Listos para descubrir algo increíble?':'Hi! I’m Nico. Ready to discover something amazing?'}])}>{es?'Probar voz':'Preview voice'}</button>
+      <button type="button" disabled={!n.canSpeak} onClick={()=>n.speak([{text:language==='es-MX'?'¡Hola! Soy Nico. ¿Listos para descubrir algo increíble?':'Hi! I’m Nico. Ready to discover something amazing?'}])}>{es?'Probar voz':'Preview voice'}</button>
       {!n.voice&&<p>{es?'Modo de texto: no hay una voz local adecuada seleccionada. Las voces dependen del dispositivo. Debes elegir una voz de otra región si la deseas; su etiqueta no indica español mexicano.':'Text mode: no suitable local voice selected. Voices depend on the device. A Spanish voice from another region requires selection; its label is not Mexican Spanish.'}</p>}
     </details>{n.error&&<p role="status">{n.error}</p>}
   </div>;

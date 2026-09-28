@@ -24,3 +24,19 @@
 .learning-tile[data-symbol="red"]{color:#b92738;background:#ffe8eb}
 .learning-tile[data-symbol="blue"]{color:#1659bb;background:#e6efff}
 .learning-visual-text--assistive{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.learning-demo,.learning-workbench{background:#edf8f5;border:2px solid #69a49c;border-radius:20px;padding:18px;margin:18px 0;color:#173d42}
+.learning-demo-visual{font-size:clamp(1.5rem,5vw,2.5rem);font-weight:800;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border-radius:14px;padding:14px}
+.learning-workspace-groups{display:flex;flex-wrap:wrap;gap:16px}
+.learning-workspace-group{flex:1;min-width:120px}
+.learning-manipulatives{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.learning-manipulatives button{min-width:48px;min-height:48px;background:white}
+.learning-manipulatives button[aria-pressed="true"]{background:#18595f;border-color:#18595f;color:white}
+.learning-built-order{min-height:48px;background:white;padding:12px;border-radius:12px;font-weight:800}
+.learning-help-note{font-size:.9rem}
+.learning-activity-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}
+.learning-activity-choice button[aria-pressed="true"],.language-rescue button[aria-pressed="true"]{background:#194a59;color:white;border-color:#194a59}
+.language-picture{display:block;font-size:4rem;line-height:1.4}
+.language-picture-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}
+.language-picture-choices button{display:grid;gap:8px;justify-items:center;background:#edf8f5}
+.language-picture-choices button>span:first-child{font-size:3rem}
+@media(max-width:420px){.learning-activity-choice{grid-template-columns:1fr}}
