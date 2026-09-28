@@ -84,6 +84,7 @@ test('all six missions in both bands teach, retry, check and reward once',async(
  test.setTimeout(240000);
  const es=info.project.metadata.language==='es-MX';await boot(page,es?'es-MX':'en');
  const lab=page.getByTestId('learning-lab');
+ const initialStars=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].stars,key);
  // Literal independently reviewed answers, not values read from the lesson generator.
  const answers=[
   [['3','left','5','right'],['12','right','15','left']],
@@ -123,6 +124,10 @@ test('all six missions in both bands teach, retry, check and reward once',async(
    await page.reload();
    const rewards=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].learningLab.rewarded,key);
    expect(rewards).toHaveLength(band?6:mission+1);expect(new Set(rewards).size).toBe(rewards.length);
+   const canonical=await page.evaluate(k=>{const p=JSON.parse(localStorage.getItem(k)!).profiles[0];return {stars:p.stars,completed:p.completedMissions.filter((id:string)=>id.startsWith('learning-lab:'))};},key);
+   expect(canonical.stars-initialStars).toBe(2*(band?6:mission+1));
+   expect(canonical.completed).toHaveLength(band?6:mission+1);
+   expect(new Set(canonical.completed).size).toBe(canonical.completed.length);
   }
  }
 });
