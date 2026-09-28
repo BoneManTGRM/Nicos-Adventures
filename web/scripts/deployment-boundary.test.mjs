@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 const run = (overrides) => spawnSync(process.execPath, ['scripts/validate-deployment-boundary.mjs'], { cwd: import.meta.dirname + '/..', env: { PATH: process.env.PATH, ...overrides }, encoding: 'utf8' });
