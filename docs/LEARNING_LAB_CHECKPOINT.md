@@ -108,3 +108,29 @@ The guard must be observed stopping an actual Cloudflare branch build before fur
 - CI Creative Studio showed missing Pause control. Restored the existing control by default; tutor explicitly opts out and keeps Stop/Repeat. Existing browser regression retained for verification.
 - CI lesson language selection timed out despite a visible combobox. Added explicit bilingual aria-label; the same exact-label test is retained.
 - CI WebKit offline reload returned an internal engine error. Existing pet offline suite documents the same pinned WebKit limitation (Playwright #42775). Extracted its loopback-only stopped-origin helper for reuse; lesson test requires successful service-worker navigation with origin stopped and failed navigation in a separate context with workers blocked. Chromium retains browser offline mode. This is a test-mechanism correction with explicit limits, not physical offline certification. Browser rerun pending.
+
+## Owner configuration evidence and continued qualification
+
+Owner screenshots IMG_2969/IMG_2970 show production branch main but Version command
+`npx wrangler deploy`. This explains why non-production builds could activate the
+production Worker despite the main setting. Official Cloudflare deployment-management
+documentation distinguishes deploy from versions upload. Owner reported saving
+`npx wrangler versions upload` on September 27 around 20:40 Mexico City time.
+This is owner-reported configuration, not an independent dashboard readback; shared
+browser access still encounters human verification. Do not mislabel that report as
+an executed preview or restored production. Preserve the source guard until a safe
+preview path is qualified, including the second nicos-adventures integration.
+
+Application candidate 48040adb passed all 13 GitHub workflows, 458 unit tests and
+20 browser cases. The 20 cases include all six missions in both bands, both locales,
+worked examples, hints, alternative explanations, retries, independent checks,
+completion/reload and exact canonical star/completion totals without repeat grants.
+New accessibility test candidate 4151fa09 adds keyboard Enter/Space interaction,
+320px text-enlargement geometry and landscape checks; its result is pending.
+
+Accessibility red run 36370860196: 20 prior cases passed, four enlarged-text cases
+failed horizontal overflow. Failure screenshot showed the sticky world-header
+language button extending beyond the narrow viewport; the lesson hero also needed
+shrinkable grid tracks. Small repair scopes wrapping topbar controls, heading text,
+voice selects and shrinkable hero columns to the Learning Lab; no overflow clipping
+or acceptance threshold reduction. Same regression is retained for rerun.
