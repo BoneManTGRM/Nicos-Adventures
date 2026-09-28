@@ -201,3 +201,36 @@ test('English and Spanish word rescue stays separate and saves its phrase checks
  }
  expect(saved.rewarded).toEqual([]);
 });
+
+test('Arcade learning games complete by touch or keyboard and preserve best results',async({page},info)=>{
+ const es=info.project.metadata.language==='es-MX';await boot(page,es?'es-MX':'en');
+ await page.getByRole('button',{name:es?'Mapa del mundo':'World Map',exact:true}).click();
+ await page.getByRole('button',{name:es?/Abrir destino: Sala de juegos/:/Open destination: Game Arcade/}).click();
+ await page.getByTestId('open-word-match').click();
+ const game=page.getByTestId('learning-arcade');
+ await expect(game).toBeVisible();
+ await game.locator('[data-memory-card="robot:word"]').click();
+ await game.locator('[data-memory-card="key:picture"]').click();
+ await game.getByRole('button',{name:es?'Volver a voltear':'Turn them back',exact:true}).click();
+ for(const word of ['robot','key','door','battery']){
+  await game.locator(`[data-memory-card="${word}:word"]`).click();
+  await game.locator(`[data-memory-card="${word}:picture"]`).focus();await page.keyboard.press('Enter');
+ }
+ await expect(game).toContainText(es?'¡Rescate completado!':'Rescue complete!');
+ await game.getByRole('button',{name:es?'← Todos los juegos':'← All games',exact:true}).click();
+ await page.getByTestId('open-sentence-builder').click();
+ for(const length of [3,3,5,4]){
+  for(let i=0;i<length;i++)await game.locator(`[data-word-tile="${i}"]`).click();
+  await game.getByRole('button',{name:es?'Probar mensaje':'Try message',exact:true}).click();
+  await game.getByRole('button',{name:es?'Siguiente':'Next',exact:true}).click();
+ }
+ await expect(game).toContainText(es?'¡Rescate completado!':'Rescue complete!');
+ await page.reload();
+ const target=es?'en':'es-MX';
+ const scores=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].arcadeScores,key);
+ expect(scores[`learning:word-match:${target}`]).toBe(4);
+ expect(scores[`learning:sentence-builder:${target}`]).toBe(4);
+ await page.getByTestId('open-word-match').click();
+ await page.setViewportSize({width:320,height:568});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
+});

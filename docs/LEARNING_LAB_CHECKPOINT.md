@@ -208,3 +208,11 @@ Disable the activity/UI while retaining current normalization for data-compatibl
 rollback. Do not deploy an older parser after language progress exists without a
 backup/preservation migration. Existing canonical backup/reset/profile boundaries
 remain; simultaneous-tab last-write-wins limitation is unchanged.
+
+## Arcade language practice — 2026-09-28
+
+Added preview-only Word Match (eight bilingual words in two four-pair rounds) and Sentence Builder (four English/Mexican Spanish phrases). Touch and keyboard controls, useful mismatch feedback, optional examples, no timers or mandatory speech. Completion bests use existing canonical `arcadeScores` keys `learning:<game>:<target-language>`; round state is intentionally session-only. No new rewards, dependencies, network services, microphone, or paid resources. Existing Arcade games remain present.
+
+Verification: red missing-module test, then three new deterministic engine tests green; full suite 476/476 across 84 files. Type checking caught an unsupported `saving` status; removed that branch to match the canonical store. Clean production build/type/release/performance checks passed: main JS 131876 gzip bytes, CSS 29209. An initial build saw stale duplicate output chunks; repeated clean output passed without changing budgets. Local browser execution blocked by missing Playwright browser executables (four launch failures, not application assertions); browser CI must run on the published candidate. Prior candidate ab0b831d had all 32 Learning Lab browser tests pass.
+
+Owner says voices are still poor. A5 remains FAIL / not accepted. Arcade games require no speech; this does not resolve the tutor voice-quality gate. Production activation remains pending. Rollback: keep the existing feature disabled; additive score keys do not change profile schema or erase other games.
