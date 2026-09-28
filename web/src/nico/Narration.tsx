@@ -57,7 +57,7 @@ export function useNarration(language: Language, enabled = true) {
       utterance.onstart=()=>{if(token===session.current&&active.current===utterance){setCurrent(part);setStatus('speaking');}};
       utterance.onend=()=>{if(token===session.current&&active.current===utterance){utterance.onend=null;utterance.onerror=null;index.current++;next();}};
       utterance.onerror=e=>{if(token!==session.current||active.current!==utterance)return;stop();if(e.error==='canceled'||e.error==='interrupted')return;setStatus('error');setError(language==='es-MX'?'La voz se detuvo. Prueba otra voz o vuelve a pulsar Leer.':'Narration stopped. Try another voice or press Read again.');};
-      timeout.current=setTimeout(()=>{if(token!==session.current)return;stop();setStatus('error');setError(language==='es-MX'?'La voz no terminó. Pulsa Repetir o continúa leyendo.':'Speech did not finish. Press Repeat or keep reading.');},30000);
+      timeout.current=setTimeout(()=>{if(token!==session.current||active.current!==utterance)return;stop();setStatus('error');setError(language==='es-MX'?'La voz no terminó. Pulsa Repetir o continúa leyendo.':'Speech did not finish. Press Repeat or keep reading.');},30000);
       try { window.speechSynthesis.cancel();window.speechSynthesis.speak(utterance); } catch { stop();setStatus('error');setError(language==='es-MX'?'No se pudo iniciar la voz. Continúa leyendo.':'Speech could not start. Keep reading.'); }
     }; next();
   };

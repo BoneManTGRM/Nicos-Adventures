@@ -35,6 +35,8 @@ unassisted check flags are historical evidence from these activities and remain
 recorded when a later replay uses help. Two distinct checks in the same mission
 and band, including transfer, are needed for the bounded “demonstrated” label.
 This is not validated educational assessment or a claim of general mastery.
+Assisted check IDs remain assisted on retries; there are no fresh randomized check
+variants. Tutor reset clears these practice records while preserving rewards.
 
 Profile-ID and progress-fingerprint guards reject stale and duplicate actions.
 Completion uses existing `completeOnce` plus a bounded tutor reward ledger. Reset

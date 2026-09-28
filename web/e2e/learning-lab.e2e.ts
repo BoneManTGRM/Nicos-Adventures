@@ -17,7 +17,7 @@ test('lesson hint, checked answer, locale, reload and phone geometry',async({pag
  await expect(lab.locator('.learning-feedback')).toBeVisible();
  const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].learningLab,key);
  expect(saved.results[before!].assisted).toBe(true);
- const geometry=await lab.evaluate(el=>({overflow:document.documentElement.scrollWidth>innerWidth+2,small:[...el.querySelectorAll('button')].filter(e=>{const r=e.getBoundingClientRect();return r.width<44||r.height<44;}).length}));
+ const geometry=await lab.evaluate(el=>({overflow:document.documentElement.scrollWidth>innerWidth+2,small:[...el.querySelectorAll('button')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&(r.width<44||r.height<44);}).length}));
  expect(geometry).toEqual({overflow:false,small:0});
  await info.attach('learning-lab-synthetic',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});
 });
@@ -38,4 +38,25 @@ test('cached lesson survives offline reload',async({page,context},info)=>{
  await page.reload();await expect(page.getByTestId('learning-lab')).toBeVisible();
  await context.setOffline(true);await page.reload();await expect(page.getByTestId('learning-lab')).toBeVisible();
  await page.getByRole('button',{name:/^My turn$|^Me toca$/}).click();await expect(page.locator('.learning-answers')).toBeVisible();
+});
+test('local speech cancels stale callbacks, handles delayed voices and a stalled engine',async({page},info)=>{
+ await page.addInitScript(()=>{
+  const bus=new EventTarget();let voices:SpeechSynthesisVoice[]=[];
+  const state={spoken:[] as SpeechSynthesisUtterance[],cancels:0,load:()=>{voices=[{voiceURI:'synthetic-en',name:'Test local English',lang:'en-US',localService:true,default:false},{voiceURI:'synthetic-mx',name:'Test local Spanish',lang:'es-MX',localService:true,default:false}] as SpeechSynthesisVoice[];bus.dispatchEvent(new Event('voiceschanged'));}};
+  Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{getVoices:()=>voices,addEventListener:bus.addEventListener.bind(bus),removeEventListener:bus.removeEventListener.bind(bus),cancel:()=>{state.cancels++;},speak:(u:SpeechSynthesisUtterance)=>{state.spoken.push(u);}}});
+  (window as unknown as {testSpeech:typeof state}).testSpeech=state;
+ });
+ const es=info.project.metadata.language==='es-MX';await boot(page,es?'es-MX':'en');
+ const lab=page.getByTestId('learning-lab'),repeat=lab.getByRole('button',{name:es?'Repetir':'Repeat',exact:true});
+ await expect(repeat).toBeDisabled();
+ await page.evaluate(()=>{(window as unknown as {testSpeech:{load:()=>void}}).testSpeech.load();});
+ await expect(repeat).toBeEnabled();await repeat.click();
+ const first=await page.evaluate(()=>{const s=(window as unknown as {testSpeech:{spoken:SpeechSynthesisUtterance[]}}).testSpeech;return {count:s.spoken.length,voice:s.spoken[0].voice?.localService,text:s.spoken[0].text};});
+ expect(first.count).toBe(1);expect(first.voice).toBe(true);expect(first.text).not.toContain('Synthetic learner');
+ await page.evaluate(()=>{const w=window as unknown as {testSpeech:{spoken:SpeechSynthesisUtterance[];stale?:()=>void}};const u=w.testSpeech.spoken[0],end=u.onend;w.testSpeech.stale=()=>end?.call(u,{} as SpeechSynthesisEvent);});
+ await lab.getByRole('button',{name:es?'Detener':'Stop',exact:true}).click();
+ await page.evaluate(()=>{(window as unknown as {testSpeech:{stale:()=>void}}).testSpeech.stale();});
+ expect(await page.evaluate(()=>(window as unknown as {testSpeech:{spoken:unknown[]}}).testSpeech.spoken.length)).toBe(1);
+ await page.clock.install();await repeat.click();await page.clock.fastForward(31000);
+ await expect(lab.getByText(es?'La voz no terminó. Pulsa Repetir o continúa leyendo.':'Speech did not finish. Press Repeat or keep reading.',{exact:true})).toBeVisible();
 });

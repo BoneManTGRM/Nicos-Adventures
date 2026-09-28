@@ -6,3 +6,6 @@ it('reads quantities and ordered symbols without changing their values',()=>{
  expect(speechText('○ → △ → □','es-MX')).toBe('círculo después triángulo después cuadrado');
  expect(speechText('● ● ●','en')).toBe('dot dot dot');
 });
+it('does not turn hyphenated instructional words into subtraction',()=>{
+ expect(speechText('Choose a four-step plan. 8 - 5 = 3','en')).toBe('Choose a four-step plan. 8 minus 5 equals 3');
+});

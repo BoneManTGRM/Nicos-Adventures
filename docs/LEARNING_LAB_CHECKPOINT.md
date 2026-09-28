@@ -10,11 +10,11 @@ from main through Cloudflare Workers Builds; this candidate does not enable prod
 
 - Baseline: 436 tests / 73 files passed. Isolated baseline build passed all release,
   type and unchanged size gates. Main JS gzip 122,466 B; main CSS gzip 29,209 B.
-- Candidate: 450 tests / 78 files passed. TypeScript app and e2e checks passed.
+- Candidate: 451 tests / 78 files passed. TypeScript app and e2e checks passed.
 - Preview build passed before final documentation; final candidate build is recorded
-  by the commit/CI status. First measured preview main JS gzip 131,220 B (+8,754 B),
+  by the commit/CI status. Measured preview main JS gzip 131,204 B (+8,738 B),
   main CSS unchanged. Content normalization is currently eager; UI/CSS is lazy.
-- Browser test collection: 12 tests, desktop Chromium and automated iPhone WebKit,
+- Browser test collection: 16 tests, desktop Chromium and automated iPhone WebKit,
   both languages. Collection is not an execution pass.
 - Local Chromium install failed: downloaded browser archive was invalid/truncated.
   The cloud browser rejected the workspace localhost URL with ERR_BLOCKED_BY_CLIENT.
@@ -37,7 +37,20 @@ from main through Cloudflare Workers Builds; this candidate does not enable prod
 7. Old-profile fixture expected unnormalized robot fields → preserve original fields
    with partial structural comparison (baseline normalization adds upgrades/optional keys).
 8. Browser test imported JSON-bearing storage through Node → use browser-created
-   synthetic profile fixture → test discovery now collects all 12 cases.
+   synthetic profile fixture → test discovery collected all initial 12 cases; four delayed/stalled speech cases were then added.
+
+9. Word hyphens sounded like subtraction → convert ASCII minus only between numbers →
+   explicit four-step/arithmetic red-to-green regression.
+
+Published draft PR: https://github.com/BoneManTGRM/Nicos-Adventures/pull/150.
+Initial published commit: dece07ec898f5d80e0be0fd3ec48c8b47180b13f (tree identical
+to local 1fd1122). Git transport push lacked credentials; authorized GitHub connector
+published the same verified tree. CI run 36363290667 installed both browsers and
+passed unit tests; browser execution was in progress at this checkpoint. Core CI, Toy Store and Cutout
+Artwork workflows passed on the initial commit. Existing Cloudflare nicos-world
+build was in progress; the legacy nicos-adventures service reported failure.
+Cloudflare dashboard access remains blocked by its human-verification screen after
+one reload; no challenge was bypassed and no hosting settings were changed.
 
 ## Acceptance matrix
 
