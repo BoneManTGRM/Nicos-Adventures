@@ -68,10 +68,10 @@ export function useNarration(language: Language, enabled = true) {
   };
 }
 export type Narrator = ReturnType<typeof useNarration>;
-export function NarrationControls({ narrator:n, language }: { narrator:Narrator;language:Language }) {
+export function NarrationControls({ narrator:n, language, allowPause = true }: { narrator:Narrator;language:Language;allowPause?:boolean }) {
   const es=language==='es-MX';
   return <div className="nico-narration" data-narration-status={n.status}>
-    {(n.status==='speaking'||n.status==='paused')&&<div className="nico-narration__transport"><button type="button" onClick={n.stop}>{es?'Detener voz':'Stop voice'}</button></div>}
+    {(n.status==='speaking'||n.status==='paused')&&<div className="nico-narration__transport">{allowPause&&<button type="button" onClick={n.pause}>{n.status==='paused'?(es?'Continuar voz':'Resume voice'):(es?'Pausar voz':'Pause voice')}</button>}<button type="button" onClick={n.stop}>{es?'Detener voz':'Stop voice'}</button></div>}
     <details><summary>{es?'Voz y lectura':'Voice & reading'}</summary>
       <p>{es?'Solo voces locales del dispositivo. La etiqueta indica la variante real del idioma. Es un guía por computadora, no una persona real.':'Local device voices only. Locale labels show the actual voice language. This is a computer guide, not a real person.'}</p>
       {!n.enabled&&<p role="status">{es?'La voz está apagada en los ajustes de Nico.':'Speech is turned off in Nico’s settings.'}</p>}

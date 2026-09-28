@@ -85,3 +85,12 @@ Cloudflare deployed draft branch commit dece07ec898f5d80e0be0fd3ec48c8b47180b13f
 A repository prebuild guard now rejects Workers Builds unless WORKERS_CI_BRANCH is exactly main, including missing branch metadata. It uses the documented WORKERS_CI variables (https://developers.cloudflare.com/changelog/post/2025-06-10-default-env-vars/). Seven command-level tests failed before implementation and pass afterward. The actual npm build command with synthetic Workers feature-branch metadata exits 1 during prebuild, before assets are built. This is defense in depth, not proof of dashboard configuration, restoration, or preview isolation. Local/GitHub validation is allowed. Known-good rollback revision remains 2edf1458813442756253c8b81369fa8a3b23ccb8.
 
 The guard must be observed stopping an actual Cloudflare branch build before further candidate publishing. Existing running builds are not canceled by this source change. Cloudflare account access is still needed to inspect triggers and restore a known-good deployment safely. Physical iPhone voice quality remains NOT TESTED.
+
+### Follow-up verification and repairs
+
+- Live release.json subsequently identified d4673aedea3a03b74328a7b45278a14c84c4cfaa. Do not infer that production is still at the initial leaked branch revision.
+- Guard-only remote candidate: b9160f015aa6023f639020db154fb20127532463, tree 4984a0538bfd75b50f83e042c88c8cf547242bc7. No tutor activation.
+- Local unit suite: 458 tests / 79 files PASS after integrating the seven guard tests into Vitest. App and e2e typechecks, build, release-manifest validation and unchanged performance budgets PASS.
+- CI Creative Studio showed missing Pause control. Restored the existing control by default; tutor explicitly opts out and keeps Stop/Repeat. Existing browser regression retained for verification.
+- CI lesson language selection timed out despite a visible combobox. Added explicit bilingual aria-label; the same exact-label test is retained.
+- CI WebKit offline reload returned an internal engine error. Existing pet offline suite documents the same pinned WebKit limitation (Playwright #42775). Extracted its loopback-only stopped-origin helper for reuse; lesson test requires successful service-worker navigation with origin stopped and failed navigation in a separate context with workers blocked. Chromium retains browser offline mode. This is a test-mechanism correction with explicit limits, not physical offline certification. Browser rerun pending.

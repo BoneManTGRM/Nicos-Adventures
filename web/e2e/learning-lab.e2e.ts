@@ -1,7 +1,8 @@
+import { ownedOrigin } from './ownedOrigin';
 import { expect,test,type Page } from '@playwright/test';
 const key='nicos-world-local-save-v4';
-async function boot(page:Page,language:'en'|'es-MX'){
- await page.goto('/');await expect(page.getByTestId('continue-world')).toBeVisible();
+async function boot(page:Page,language:'en'|'es-MX',origin='/'){
+ await page.goto(origin);await expect(page.getByTestId('continue-world')).toBeVisible();
  await page.evaluate(({key,language})=>{const store=JSON.parse(localStorage.getItem(key)!);const p=store.profiles[0];p.playerName='Synthetic learner';p.language=language;p.selectedSection='learning-lab';localStorage.setItem(key,JSON.stringify(store));},{key,language});
  await page.reload();await expect(page.getByTestId('learning-lab')).toBeVisible();
 }
@@ -32,15 +33,33 @@ test('remote-only voices stay in text mode with no new outbound calls',async({pa
  await lab.getByRole('button',{name:/Give me a hint|Dame una pista/}).click();
  expect(calls).toEqual([]);
 });
-test('cached lesson survives offline reload',async({page,context},info)=>{
- await boot(page,info.project.metadata.language==='es-MX'?'es-MX':'en');
- await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
- await page.reload();await expect(page.getByTestId('learning-lab')).toBeVisible();
- await context.setOffline(true);await page.reload();await expect(page.getByTestId('learning-lab')).toBeVisible();
- await page.getByRole('button',{name:/^My turn$|^Me toca$/}).click();await expect(page.locator('.learning-answers')).toBeVisible();
+test('cached lesson survives Chromium offline or WebKit origin outage',async({page,context,browser,browserName},info)=>{
+ const upstream=info.project.use.baseURL;
+ if(!upstream)throw new Error('Preview origin required');
+ // Same independently controlled outage fixture as the existing pet regression.
+ // Pinned WebKit setOffline rejects SW navigation (Playwright #42775).
+ const mirror=browserName==='webkit'?await ownedOrigin(upstream):null;
+ const origin=mirror?.url??upstream;
+ try {
+  await boot(page,info.project.metadata.language==='es-MX'?'es-MX':'en',origin);
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload();await expect(page.getByTestId('learning-lab')).toBeVisible();
+  if(mirror){
+   await mirror.stop();expect(mirror.listening()).toBe(false);
+   const negative=await browser.newContext({serviceWorkers:'block'});
+   try{const control=await negative.newPage();expect(await control.goto(origin,{timeout:10000}).then(()=>false,()=>true)).toBe(true);}finally{await negative.close();}
+   info.annotations.push({type:'qualification-scope',description:'Real origin outage, not OS offline or physical iPhone certification.'});
+  }else await context.setOffline(true);
+  const restored=await page.reload({waitUntil:'domcontentloaded'});
+  expect(restored?.status()).toBe(200);expect(restored?.fromServiceWorker()).toBe(true);
+  await expect(page.getByTestId('learning-lab')).toBeVisible();
+  await page.getByRole('button',{name:/^My turn$|^Me toca$/}).click();await expect(page.locator('.learning-answers')).toBeVisible();
+ }finally{await mirror?.stop();}
 });
 test('local speech cancels stale callbacks, handles delayed voices and a stalled engine',async({page},info)=>{
  await page.addInitScript(()=>{
+  // Use a matching utterance fake: native voice setters reject plain test voices.
+  Object.defineProperty(window,'SpeechSynthesisUtterance',{configurable:true,value:class {text:string;constructor(text:string){this.text=text;}}});
   const bus=new EventTarget();let voices:SpeechSynthesisVoice[]=[];
   const state={spoken:[] as SpeechSynthesisUtterance[],cancels:0,load:()=>{voices=[{voiceURI:'synthetic-en',name:'Test local English',lang:'en-US',localService:true,default:false},{voiceURI:'synthetic-mx',name:'Test local Spanish',lang:'es-MX',localService:true,default:false}] as SpeechSynthesisVoice[];bus.dispatchEvent(new Event('voiceschanged'));}};
   Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{getVoices:()=>voices,addEventListener:bus.addEventListener.bind(bus),removeEventListener:bus.removeEventListener.bind(bus),cancel:()=>{state.cancels++;},speak:(u:SpeechSynthesisUtterance)=>{state.spoken.push(u);}}});
