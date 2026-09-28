@@ -1,3 +1,4 @@
+import {UnicornPlayground} from './UnicornPlayground';
 import { useMemo, useState, type CSSProperties } from "react";
 import beccaArt from "../assets/art/becca-premium-v2.webp";
 import luaArt from "../assets/art/lua-premium-v2.webp";
@@ -104,6 +105,8 @@ export function BeccaCorner({ language }: { language: Language }) {
           </div>
         </div>
       </section>
+
+      <UnicornPlayground key={created.generation} language={language} name={unicornName} poses={unicornPoses}/>
 
       <section className="becca-team-showcase" aria-labelledby="becca-team-title">
         <header>

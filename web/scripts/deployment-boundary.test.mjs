@@ -17,3 +17,5 @@ test('local and GitHub validation builds pass', () => {
 test('other Workers metadata fails closed without branch', () => assert.match(run({ WORKERS_CI_BUILD_UUID: 'synthetic-build' }).stderr, /Deployment boundary/));
 
 test('approved tutor version build passes', () => assert.equal(run({ WORKERS_CI: '1', WORKERS_CI_BRANCH: 'feat/learning-lab-robot-rescue' }).status, 0));
+
+test('approved unicorn version build passes', () => assert.equal(run({ WORKERS_CI: '1', WORKERS_CI_BRANCH: 'feat/becca-unicorn-play' }).status, 0));
