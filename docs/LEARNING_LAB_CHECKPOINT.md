@@ -134,3 +134,30 @@ language button extending beyond the narrow viewport; the lesson hero also neede
 shrinkable grid tracks. Small repair scopes wrapping topbar controls, heading text,
 voice selects and shrinkable hero columns to the Learning Lab; no overflow clipping
 or acceptance threshold reduction. Same regression is retained for rerun.
+
+## Version qualification path — September 28
+
+Owner screenshots confirm nicos-world Version command `npx wrangler versions upload`.
+Owner reports saving non-production builds OFF on the separate nicos-adventures Worker
+(after IMG_2977 showed the unchecked setting awaiting Save). The source allowlist now
+admits only main and feat/learning-lab-robot-rescue; all other/missing Workers branches
+still fail closed. This intentionally supersedes the temporary main-only hold.
+
+The tutor branch builds with a version-only runtime hostname check. Custom production
+domains and the unprefixed Worker URL remain disabled even if this bundle is mistakenly
+activated. Local explicitly enabled test builds keep their existing behavior. Wrangler
+explicitly enables version URLs; name remains nicos-world. This uses the existing
+versions-upload workflow to inspect a specific static version, not a new Worker or
+resource-isolated environment. There are no Worker bindings in the repository config.
+Cloudflare describes version URLs as sharing configured resources; no backend resource
+is introduced here. Reference: https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/.
+
+Red: approved branch rejected and hostname helper absent. Small change: exact branch
+allowlist, Vite version flags and pure hostname boundary. Counterexamples: production
+custom/Worker hostnames, unrelated hosts and deceptive suffixes. Focused checks: 10 pass.
+Actual Workers-metadata build passes type/release/performance gates; main JS 131367 B
+gzip, CSS 29209 B. Full unit results and uploaded revision follow in PR evidence.
+A successful version upload and unchanged production release must still be checked.
+No merge or production activation is authorized by this qualification step; physical
+iPhone audio and offline listening remain pending. Shared Cloudflare dashboard still
+requires human verification. No paid services activated.
