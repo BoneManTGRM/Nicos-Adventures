@@ -3,8 +3,8 @@
 Baseline: main `2edf1458813442756253c8b81369fa8a3b23ccb8`, clean initial checkout.
 Branch: `feat/learning-lab-robot-rescue`. Baseline schema v4; supported Node >=22.12;
 local test runtime Node 24.19.0; CI pins 22.12.0. No AGENTS.md found in repository.
-Main remained at the baseline at the last remote check. Existing production deploys
-from main through Cloudflare Workers Builds; this candidate does not enable production.
+The documented main-only deployment assumption proved false: Cloudflare deployed the
+unmerged branch. The tutor flag remains off. See the incident and latest evidence below.
 
 ## Executed local evidence
 
@@ -19,8 +19,8 @@ from main through Cloudflare Workers Builds; this candidate does not enable prod
 - Local Chromium install failed: downloaded browser archive was invalid/truncated.
   The cloud browser rejected the workspace localhost URL with ERR_BLOCKED_BY_CLIENT.
   No browser layout, network, offline or audible-success claim is based on these attempts.
-- No paid service, provider key, account, hosting setting or production deployment
-  was activated. Existing hosting/account costs were not inspected.
+- No paid service, provider key, account or hosting upgrade was activated. Branch
+  publishing unexpectedly triggered production deployment. Hosting costs were not inspected.
 
 ## Repair ledger
 
@@ -52,31 +52,45 @@ build was in progress; the legacy nicos-adventures service reported failure.
 Cloudflare dashboard access remains blocked by its human-verification screen after
 one reload; no challenge was bypassed and no hosting settings were changed.
 
+## Current verified candidate — 2026-09-28 01:15 UTC
+
+Remote `b8f70259ef5fb404d7e29a7e8546e0c64fc43917`; local `7d5d01684ea2a68663bc8a6468cec484506ce062`; identical tree `74609239ad8ebe535aa4b8cc24b2e219534cc81f`.
+All 13 GitHub Actions workflows completed successfully. Learning Lab run 36364508853,
+job 108748133611: 458 unit tests /79 files and 16 Chromium/WebKit browser cases PASS.
+Creative Studio regression and all existing triggered browser suites PASS. Local final
+build/typechecks/release manifest/performance budgets PASS; main JS 131,202 B gzip,
+main CSS 29,209 B gzip. These results supersede historical pending results above.
+
+Cloudflare reports failed deployments for both b9160f01 and b8f70259. Latest live
+release.json still identifies d4673aedea3a03b74328a7b45278a14c84c4cfaa. Exact Cloudflare
+failure logs remain inaccessible; failure attribution to the guard is not proven.
+No merge, hosted enabled preview, rollback or tutor activation occurred.
+
 ## Acceptance matrix
 
 | Gate | Status | Evidence / remaining gate |
 | --- | --- | --- |
-| A1 Integration | BLOCKED | Integrated nav and lazy route build; rendered browser verification pending. |
-| A2 Lessons | BLOCKED | 48 literal answer checks pass; all content authored; complete rendered interaction run pending. |
+| A1 Integration | BLOCKED | Preview route renders in both languages; complete navigation acceptance remains. |
+| A2 Lessons | BLOCKED | All 48 literal answer checks pass; full six-mission rendered interaction coverage remains. |
 | A3 Learning records | PASS | Assisted checks, historical independent results, transfer and idempotent rewards unit tested. |
-| A4 Voice safety | BLOCKED | Local-only selection, shared ownership and fallback code/tests; hook/browser failure injection pending. |
+| A4 Voice safety | PASS | Local selection, remote fallback, delayed voices, stale callbacks and stalled-engine browser checks pass; physical OS behavior is outside this evidence. |
 | A5 Actual voice quality | NOT TESTED | Physical iPhone owner listening required in both languages. |
-| A6 Data integrity | BLOCKED | Unit import/reset/quota/profile/stale/reward checks pass; browser and simultaneous-tab conflicts outstanding. |
-| A7 Offline | NOT TESTED | Existing cache strategy retained; authored browser test not yet executed. |
-| A8 Privacy/cost | BLOCKED | No new service/dependency/permission or paid activation; differential network and device offline tests pending. |
-| A9 Accessibility | BLOCKED | Semantic controls, focus, 44px targets, responsive styles implemented; browser/physical checks pending. |
-| A10 Engineering | BLOCKED | Local unit/type/preview build pass; CI and browser execution pending. |
-| A11 Regressions | BLOCKED | All existing unit tests pass; rendered game/pet/profile/backup comparison pending. |
-| A12 Release | BLOCKED | Default-off candidate; no merge, hosted preview, production activation, or deployed verification yet. |
+| A6 Data integrity | BLOCKED | Unit import/reset/quota/profile/stale/reward checks and browser reload pass; simultaneous-tab conflicts outstanding. |
+| A7 Offline | BLOCKED | Chromium offline reload and WebKit stopped-origin/negative-control pass; physical iPhone offline voice remains untested. |
+| A8 Privacy/cost | BLOCKED | Remote-only browser no-new-outbound check passes; full differential network and device offline tests pending. No new paid services activated. |
+| A9 Accessibility | BLOCKED | Browser geometry, target sizes and language selector pass; text enlargement, keyboard and physical-device review incomplete. |
+| A10 Engineering | PASS | 458 unit tests, 16 feature browser tests, build/typechecks and all 13 triggered CI workflows pass on identified candidate. |
+| A11 Regressions | BLOCKED | All triggered existing suites pass; complete frozen baseline/candidate differential coverage remains. |
+| A12 Release | BLOCKED | Unintended earlier production deployment; guard candidates failed deployment; dashboard inaccessible. No isolated enabled preview or authorized activation. |
 
 ## Next concrete work
 
-Publish draft PR, inspect its exact candidate CI and existing preview checks. Execute
-browser tests in CI if browser installation succeeds. Resolve findings before owner
-listening. Hosted preview must explicitly set VITE_LEARNING_LAB_PREVIEW=true without
-changing main/production. No physical iPhone is connected to this execution. Do not
-ask the owner to approve production until there is a working phone preview and all
-other release gates have evidence. Keep UI disabled and preserve additive data reader.
+Restore Cloudflare dashboard access through legitimate owner sign-in; inspect exact
+build commands, branch triggers and failure logs. Restore the known-good deployment
+with the documented data precaution, then configure the existing authorized preview
+process. Do not remove the branch guard to make an unsafe deployment green. Finish
+remaining acceptance evidence before requesting exact-target production approval.
+The owner needs a phone-friendly preview for listening, not terminal work or secrets.
 
 ## Deployment incident and protective guard — 2026-09-28 UTC
 

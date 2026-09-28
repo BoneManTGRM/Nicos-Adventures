@@ -56,8 +56,8 @@ local English voices. No browser default/remote fallback is sent text.
 
 Only explicit Repeat/Preview starts Lab audio. Navigation, profile/language change,
 page hiding, reset, new playback and errors invalidate old callbacks. Each chunk
-has a 30-second watchdog and no automatic retry. Stop/Replay is exposed; the former
-Pause control is removed. Authored symbols have explicit spoken equivalents.
+has a 30-second watchdog and no automatic retry. Stop/Replay is exposed in the tutor; existing non-tutor
+Pause controls are preserved. Authored symbols have explicit spoken equivalents.
 Voice preferences retain the existing browser-local preference store and rate
 bounds. They are device preferences, not claimed to travel with profile backups.
 The historical unused CreativeWorld StoryCastle speech path now uses the same hook.
@@ -74,8 +74,8 @@ is still required. No zero-hosting-cost claim is made. Lesson UI/CSS is lazy loa
 small bounded content is currently included with persistence normalization, adding
 to the main bundle rather than being entirely lazy. Existing budgets are unchanged.
 The current service worker caches delivered assets and the generated offline manifest.
-First-load and offline speech limits are shown in the UI. Offline browser acceptance
-must execute before release.
+First-load and offline speech limits are shown in the UI. Chromium offline reload and automated WebKit origin-outage checks pass. Physical
+iPhone offline text and voice acceptance remain required before release.
 
 ## Verification and release gate
 
