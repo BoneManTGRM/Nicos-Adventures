@@ -161,3 +161,22 @@ A successful version upload and unchanged production release must still be check
 No merge or production activation is authorized by this qualification step; physical
 iPhone audio and offline listening remain pending. Shared Cloudflare dashboard still
 requires human verification. No paid services activated.
+
+## Owner listening feedback and presentation repair
+
+Owner listened on iPhone and found Daniel en-GB and Rishi en-IN acceptable; other
+tried voices were disliked. This is partial English listening evidence, not acceptance
+of Spanish, offline audio, pacing or Stop/Replay. Owner requests a better en-US voice.
+Apple settings voice list and actual Safari availability remain device-only evidence.
+No voice is assumed installed or human-sounding based on its name.
+
+Screenshot also shows dark supporting text against the dark page. Repair adds a
+contrasting footer panel, moves speech controls above the exercise, and offers explicit
+shortcuts only for browser-reported available local Daniel/Rishi or enhanced/premium
+en-US voices. No automatic voice override or remote fallback. Authored counting,
+comparison, arithmetic, pattern and debug values now have object/tile representations;
+answer IDs, scoring, hints and progression remain unchanged. Count dots appear only
+once visually. All 465 existing units passed before the final three diagram checks;
+three focused diagram cases pass. Build/type/release/performance results are in PR.
+No full redesign or owner approval is claimed. Previous version30fa7809 Learning Lab
+CI36376924772 completed successfully. This presentation revision needs hosted review.

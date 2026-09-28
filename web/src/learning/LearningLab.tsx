@@ -1,3 +1,4 @@
+import { LessonVisual } from './LessonVisual';
 import { speechText } from "./speechText";
 import { applyLearningAction, resetLearning } from './profile';
 import { useEffect } from 'react';
@@ -49,9 +50,15 @@ export default function LearningLab() {
   <nav className="learning-missions" aria-label={es?'Misiones de rescate':'Rescue missions'}>{missions.map((mission,index)=><button type="button" key={mission.id} aria-current={p.mission===index?'step':undefined} onClick={()=>send({type:'mission',mission:index})}><span>{index+1}</span>{mission.title[language]}{p.rewarded.includes(mission.id)?' ✓':''}</button>)}</nav>
   <section className="learning-station" aria-labelledby="learning-objective">
    <div className="learning-heading"><div><small>{es?'MISIÓN':'MISSION'} {p.mission+1} / 6 · {p.band==='gentle'?(es?'INICIAL':'GENTLE'):(es?'RETO':'CHALLENGE')}</small><h2 id="learning-objective">{m.title[language]}</h2></div><label>{es?'Idioma':'Language'}<select aria-label={es?'Idioma':'Language'} value={language} onChange={e=>{cancelNarration();const next=e.target.value==='es-MX'?'es-MX':'en',id=profile.id;commitProfile(c=>c.id===id?{...c,language:next}:c);}}><option value="en">English</option><option value="es-MX">Español de México</option></select></label></div>
+   <div className="learning-audio">
+   {language==='en'&&narrator.voices.some(v=>(v.lang.toLowerCase()==='en-us'&&/enhanced|premium/i.test(v.name))||['Daniel','Rishi'].includes(v.name))&&<div className="learning-voice-picks"><span>English voice choices</span>{narrator.voices.filter(v=>(v.lang.toLowerCase()==='en-us'&&/enhanced|premium/i.test(v.name))||['Daniel','Rishi'].includes(v.name)).map(v=><button type="button" key={v.voiceURI} aria-pressed={narrator.voice?.voiceURI===v.voiceURI} onClick={()=>narrator.choose(v.voiceURI)}>{v.name} · {v.lang}</button>)}</div>}
+   <div className="learning-tools"><button type="button" disabled={!narrator.canSpeak||complete} onClick={()=>narrator.speak([{text:speechText(readText,language)}])}>{es?'Repetir':'Repeat'}</button><button type="button" onClick={narrator.stop}>{es?'Detener':'Stop'}</button></div>
+   {!narrator.canSpeak&&<p role="status">{es?'Modo de texto. Abre Voz y lectura para ver las voces locales disponibles.':'Text mode. Open Voice & reading to see available local voices.'}</p>}
+   <NarrationControls allowPause={false} narrator={narrator} language={language}/>
+   </div>
    {intro?<div className="learning-example"><h3>{es?'Tu objetivo':'Your objective'}</h3><p>{m.objective[language]}</p><h3>{es?'Veamos un ejemplo':'Let’s try an example'}</h3><p>{explanation}</p><button className="fw-primary" type="button" onClick={()=>send({type:'begin'})}>{es?'Me toca':'My turn'}</button></div>:complete?<div className="learning-example"><h3>{es?'¡Misión completada!':'Mission complete!'}</h3><p>{es?'La recompensa celebra tu esfuerzo. Aprender con ayuda también cuenta como práctica.':'The reward celebrates your effort. Learning with help counts as practice too.'}</p><p>{demonstrated(p,p.mission,p.band)?(es?'Dos comprobaciones distintas sin ayuda, incluida una de aplicación.':'Two distinct unassisted checks, including a transfer question.'):(es?'Completaste la misión. Todavía no hay dos comprobaciones sin ayuda en este nivel.':'You completed the mission. Two unassisted checks are not yet recorded in this band.')}</p><button type="button" onClick={()=>send({type:'mission',mission:(p.mission+1)%6})}>{p.mission===5?(es?'Volver a explorar':'Explore again'):(es?'Siguiente misión':'Next mission')}</button></div>:<>
     <p className="learning-stage">{item.transfer?(es?'APLICA LO APRENDIDO':'USE WHAT YOU LEARNED'):item.check?(es?'COMPRUEBA SIN AYUDA':'CHECK ON YOUR OWN'):(es?'PRACTICA':'PRACTICE')} · {p.position+1} / 4</p>
-    <h3>{item.prompt[language]}</h3><div className="learning-visual">{item.visual[language]}</div>
+    <h3>{item.prompt[language]}</h3><LessonVisual item={item} language={language}/>
     <div className="learning-answers" role="group" aria-label={es?'Elige una respuesta':'Choose an answer'}>{item.options.map(option=><button type="button" key={option.id} disabled={feedback} data-answer-id={option.id} onClick={()=>send({type:'answer',item:item.id,answer:option.id})}>{option.label[language]}</button>)}</div>
     {feedback&&<div className="learning-feedback" role="status"><p>{response}</p>{!result?.correct&&(result?.attempts??0)>=2&&<p>{item.alternative[language]}</p>}<button className="fw-primary" type="button" onClick={()=>send({type:result?.correct?'next':'retry',item:item.id})}>{result?.correct?(es?'Continuar':'Continue'):(es?'Intentar con esta pista':'Retry with this clue')}</button></div>}
     {p.hints>0&&<aside className="learning-hint">{item.hints[p.hints-1][language]}</aside>}{p.alternative&&<aside className="learning-hint">{item.alternative[language]}</aside>}
@@ -60,10 +67,7 @@ export default function LearningLab() {
    </>}
    <div className="learning-tools"><button type="button" disabled={p.nextBand==='gentle'} onClick={()=>send({type:'difficulty',band:'gentle'})}>{es?'Más fácil':'Make it easier'}</button><button type="button" disabled={p.nextBand==='challenge'} onClick={()=>send({type:'difficulty',band:'challenge'})}>{es?'Más difícil':'Make it harder'}</button></div>
    <p>{es?'Nivel del próximo ejercicio: ':'Next exercise difficulty: '}{p.nextBand==='gentle'?(es?'Inicial':'Gentle'):(es?'Reto':'Challenge')}. {es?'La respuesta actual no cambia.':'The current answer stays the same.'}</p>
-   <div className="learning-tools"><button type="button" disabled={!narrator.canSpeak||complete} onClick={()=>narrator.speak([{text:speechText(readText,language)}])}>{es?'Repetir':'Repeat'}</button><button type="button" onClick={narrator.stop}>{es?'Detener':'Stop'}</button></div>
-   {!narrator.canSpeak&&<p role="status">{es?'Modo de texto. Abre Voz y lectura para ver las voces locales disponibles.':'Text mode. Open Voice & reading to see available local voices.'}</p>}
-   <NarrationControls allowPause={false} narrator={narrator} language={language}/>
   </section>
-  <p>{es?'Sin micrófono ni chat. Las lecciones ya cargadas pueden funcionar sin internet cuando el navegador las haya guardado. La voz sin conexión depende del dispositivo.':'No microphone or chat. Loaded lessons can work offline once cached by the browser. Offline speech depends on the device.'}</p>
+  <p className="learning-offline-note">{es?'Sin micrófono ni chat. Las lecciones ya cargadas pueden funcionar sin internet cuando el navegador las haya guardado. La voz sin conexión depende del dispositivo.':'No microphone or chat. Loaded lessons can work offline once cached by the browser. Offline speech depends on the device.'}</p>
  </div>;
 }
