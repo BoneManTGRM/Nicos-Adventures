@@ -89,7 +89,7 @@
 .pet-haven__milestones { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; font-size: 11px; color: #b4c7d3; }
 .pet-haven__milestones .earned { color: #d5f9cf; }
 .pet-haven__editor > p { font-size: 14px; }
-.pet-haven__editor label { display: grid; gap: 7px; color: #cde1ed; font-size: 14px; margin-bottom: 14px; }
+.pet-haven__editor label { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 7px; color: #cde1ed; font-size: 14px; margin-bottom: 14px; }
 .pet-haven__editor input, .pet-haven__editor select { width: 100%; max-width: 100%; min-width: 0; min-height: 46px; padding: 11px 12px; font-size: 16px; border: 1px solid #42677e; border-radius: 13px; background: #09172b; color: #f1f9ff; }
 .pet-haven__editor .fw-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; }
 .pet-haven__actions .fw-primary, .pet-haven__welcome > button { background: #a3ead7; color: #072c28; border-color: #b9f1e3; }
