@@ -77,3 +77,11 @@ listening. Hosted preview must explicitly set VITE_LEARNING_LAB_PREVIEW=true wit
 changing main/production. No physical iPhone is connected to this execution. Do not
 ask the owner to approve production until there is a working phone preview and all
 other release gates have evidence. Keep UI disabled and preserve additive data reader.
+
+## Deployment incident and protective guard — 2026-09-28 UTC
+
+Cloudflare deployed draft branch commit dece07ec898f5d80e0be0fd3ec48c8b47180b13f to nicos-world.com despite the documented main-only process. The Learning Lab flag remained off, but shared code changed. Dashboard access is blocked by a recurring human-verification challenge. No merge or activation was authorized or performed.
+
+A repository prebuild guard now rejects Workers Builds unless WORKERS_CI_BRANCH is exactly main, including missing branch metadata. It uses the documented WORKERS_CI variables (https://developers.cloudflare.com/changelog/post/2025-06-10-default-env-vars/). Seven command-level tests failed before implementation and pass afterward. The actual npm build command with synthetic Workers feature-branch metadata exits 1 during prebuild, before assets are built. This is defense in depth, not proof of dashboard configuration, restoration, or preview isolation. Local/GitHub validation is allowed. Known-good rollback revision remains 2edf1458813442756253c8b81369fa8a3b23ccb8.
+
+The guard must be observed stopping an actual Cloudflare branch build before further candidate publishing. Existing running builds are not canceled by this source change. Cloudflare account access is still needed to inspect triggers and restore a known-good deployment safely. Physical iPhone voice quality remains NOT TESTED.
