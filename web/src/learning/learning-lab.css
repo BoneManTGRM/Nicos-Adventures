@@ -40,3 +40,4 @@
 .language-picture-choices button{display:grid;gap:8px;justify-items:center;background:#edf8f5}
 .language-picture-choices button>span:first-child{font-size:3rem}
 @media(max-width:420px){.learning-activity-choice{grid-template-columns:1fr}}
+@media(max-width:540px){.learning-hero{grid-template-columns:54px minmax(0,1fr);padding:10px}.learning-guide{height:76px}.learning-hero h2{font-size:1.45rem}.learning-hero p{margin:4px 0}.learning-hero small{font-size:.65rem}.learning-activity-choice{grid-template-columns:repeat(2,minmax(0,1fr));margin:10px 0;gap:8px}.learning-activity-choice button{font-size:.85rem;padding:8px}.language-rescue .learning-tools{margin-top:8px}.language-picture{font-size:3rem}.language-rescue .learning-demo{padding:12px}.language-rescue h3{margin:6px 0}.language-rescue p{margin:8px 0}}
