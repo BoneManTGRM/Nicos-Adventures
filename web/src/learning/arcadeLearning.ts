@@ -31,3 +31,5 @@ export const phrases=[
  {id:'water',picture:'🐱 💧',tokens:{en:['The','cat','drinks','water'],'es-MX':['El','gato','bebe','agua']}},
 ] as const;
 export function checkSentence(tokens:readonly string[],order:readonly number[]):boolean{return order.length===tokens.length&&order.every((id,i)=>id===i);}
+
+export function hasScoreCapacity(scores:Record<string,number>,key:string):boolean{return Object.hasOwn(scores,key)||Object.keys(scores).length<100;}

@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {makeDeck,turnCard,clearMismatch,initialMatch,phrases,checkSentence} from './arcadeLearning';
+import {makeDeck,turnCard,clearMismatch,initialMatch,phrases,checkSentence,hasScoreCapacity} from './arcadeLearning';
 it('creates repeatable decks with one word and picture per pair',()=>{
  for(let seed=0;seed<50;seed++){
   const deck=makeDeck(seed,seed%2);
@@ -25,3 +25,5 @@ it('grades token identities and rejects missing or duplicate tiles in both langu
  expect(phrases[0].tokens.en.join(' ')).toBe('Open the door');
  expect(phrases[0].tokens['es-MX'].join(' ')).toBe('Abre la puerta');
 });
+
+it('preserves full score tables and allows updates of existing keys',()=>{const scores=Object.fromEntries(Array.from({length:100},(_,i)=>['game'+i,i]));expect(hasScoreCapacity(scores,'new')).toBe(false);expect(hasScoreCapacity(scores,'game0')).toBe(true);expect(hasScoreCapacity({},'new')).toBe(true);});
