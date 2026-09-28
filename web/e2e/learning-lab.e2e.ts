@@ -225,6 +225,12 @@ test('Arcade learning games complete by touch or keyboard and preserve best resu
   await game.getByRole('button',{name:es?'Siguiente':'Next',exact:true}).click();
  }
  await expect(game).toContainText(es?'¡Rescate completado!':'Rescue complete!');
+ await game.getByRole('combobox',{name:es?'Nivel de práctica de inglés':'English practice level'}).selectOption('a2');
+ await expect(game.locator('[data-word-tile]')).toHaveCount(7);
+ await game.getByRole('combobox',{name:es?'Ronda de frases':'Sentence round'}).selectOption('3');
+ await expect(game.locator('[data-word-tile]')).toHaveCount(6);
+ await game.getByRole('combobox',{name:es?'Nivel de práctica de inglés':'English practice level'}).selectOption('pre-a1');
+ await expect(game.locator('[data-word-tile]')).toHaveCount(3);
  await page.reload();
  const target=es?'en':'es-MX';
  const scores=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)!).profiles[0].arcadeScores,key);
