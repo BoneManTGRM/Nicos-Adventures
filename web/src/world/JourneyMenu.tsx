@@ -1,3 +1,4 @@
+import { learningLabEnabled } from "../learning/enabled";
 import { useEffect, useRef, type KeyboardEvent } from 'react';
 import type { Language, SectionId } from '../types';
 import type { JourneyMenuKind } from './JourneyNavigation';
@@ -33,7 +34,7 @@ export function JourneyMenu({kind,language,open,close}:{kind:JourneyMenuKind;lan
     else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
   }
   if(!kind) return null;
-  const ids:SectionId[]=kind==='create'?['art-studio','story-castle','monster-lab','pet-workshop']:['world-map','memory-book','badge-book','parent-settings'];
+  const ids:SectionId[]=kind==='create'?['art-studio','story-castle','monster-lab','pet-workshop']:['world-map',...(learningLabEnabled?['learning-lab' as const]:[]),'memory-book','badge-book','parent-settings'];
   const visit=(id:SectionId)=>{close();open(id);};
   return <dialog className="journey-dialog" ref={dialog} aria-labelledby="journey-menu-title" onCancel={close} onKeyDown={keepFocus} onClick={event=>{if(event.target===event.currentTarget){const r=event.currentTarget.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)close();}}}>
     <header><div><small>{es?'TU MUNDO':'YOUR WORLD'}</small><h2 id="journey-menu-title">{kind==='create'?(es?'¿Qué vas a crear?':'What will you create?'):(es?'Más de tu mundo':'More of your world')}</h2></div><button type="button" onClick={close} aria-label={es?'Cerrar menú':'Close menu'}>×</button></header>
