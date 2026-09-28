@@ -141,7 +141,17 @@ async function assertPageChrome(page: Page, title: string, label: string, expect
   // WebKit can retain the previous route's scrollWidth briefly after React swaps destinations.
   // Keep the width assertion, but wait for layout to settle before reporting overflow.
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
-    { message: `${label}: document overflow (${metrics.overflowingElements.join(", ")})`, timeout: 2000 }).toBeLessThanOrEqual(2);
+    { message: `${label}: document overflow (${metrics.overflowingElements.join(", ")})`, timeout: 2000 }).toBeLessThanOrEqual(2).catch(async (error) => {
+      const overflow = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('body *')]
+        .filter(element => element.scrollWidth > element.clientWidth + 2)
+        .map(element => ({ tag: element.tagName, className: element.getAttribute('class'),
+          width: element.clientWidth, scroll: element.scrollWidth,
+          right: element.getBoundingClientRect().right,
+          overflow: getComputedStyle(element).overflow,
+          after: getComputedStyle(element, '::after').content })));
+      console.log(`${label} overflow diagnostics: ${JSON.stringify(overflow)}`);
+      throw error;
+    });
   expect(metrics.bodyWidth, `${label}: body overflow (${metrics.overflowingElements.join(", ")})`).toBeLessThanOrEqual(metrics.clientWidth + 2);
   expect(metrics.brokenImages, `${label}: broken images`).toEqual([]);
 }
@@ -283,6 +293,23 @@ test("all destinations keep their main local interactions working", async ({ pag
   await expect(page.locator(".becca-unicorn")).not.toHaveAttribute("src", initialPoseSource ?? "");
   await expect(page.locator(".becca-unicorn")).toHaveCSS("background-image", "none");
   await attachVisual(page, testInfo, "becca-corner-unicorn");
+  const play = page.locator('.unicorn-playground');
+  const spanish = testInfo.project.metadata.language === 'es-MX';
+  await play.getByRole('button', {name: /Feed an apple|Dar una manzana/}).click();
+  await expect(play.getByRole('status')).toContainText(spanish ? 'manzana' : 'apple');
+  await play.getByRole('button', {name: /Magic dance|Baile mágico/}).click();
+  await play.getByRole('button', {name: /Let’s dance!|¡A bailar!/}).click();
+  await play.getByRole('button', {name: /Rest|Descansar/}).click();
+  await expect(play.getByRole('status')).toContainText(spanish ? 'siguiente paso' : 'next step');
+  for (const move of [/Prance|Trotar/, /Turn|Voltear/, /Float|Flotar/]) await play.getByRole('button', {name:move}).click();
+  await expect(play.getByRole('status')).toContainText(spanish ? '¡Lo lograste!' : 'You did it!');
+  await play.getByRole('button', {name: /Star hunt|Busca estrellas/}).click();
+  for (const n of [1,5,9]) {
+    const star=play.getByRole('button',{name: `${spanish?'Estrella':'star'} ${n}`,exact:true});
+    await star.focus(); await page.keyboard.press('Enter'); await expect(star).toBeDisabled();
+  }
+  await expect(play.getByRole('status')).toContainText(spanish ? '¡Lo lograste!' : 'You did it!');
+
 
   await openDestination(page, text.world, text.cousinsAdventure, `${testInfo.project.name} Cousins' Adventure Map`);
   await expect(page.locator(".cousins-hero__team .nico-costume")).not.toHaveClass(/nico-costume--compact/);

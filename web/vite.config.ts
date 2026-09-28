@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  define: process.env.WORKERS_CI_BRANCH === 'feat/learning-lab-robot-rescue' ? {
+  define: ['feat/learning-lab-robot-rescue', 'feat/becca-unicorn-play'].includes(process.env.WORKERS_CI_BRANCH ?? '') ? {
     'import.meta.env.VITE_LEARNING_LAB_PREVIEW': JSON.stringify('true'),
     'import.meta.env.VITE_LEARNING_LAB_VERSION_BUILD': JSON.stringify('true'),
   } : process.env.WORKERS_CI_BRANCH === 'main' ? {

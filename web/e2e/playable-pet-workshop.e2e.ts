@@ -36,6 +36,11 @@ test('retains an existing mastered pet, completes fetch, and saves style without
   expect((await profile(page)).stars).toBe(20);
   await expect(page.getByRole('button', { name: es(info) ? 'Otra vez' : 'Play again', exact: true })).toBeVisible();
   await tab(page, es(info) ? 'Diseño' : 'Style');
+  // WebKit must not retain the select's intrinsic option width in an auto grid track.
+  for (const field of await page.locator('.pet-haven__editor label').all()) {
+    await expect.poll(() => field.evaluate(element => element.scrollWidth - element.clientWidth),
+      { message: 'Pet design field must fit its grid column' }).toBeLessThanOrEqual(2);
+  }
   await page.locator('.pet-haven__editor input').fill('Luna');
   await page.locator('.pet-haven__editor select').nth(0).selectOption('Purple');
   await page.getByRole('button', { name: /Save pet$|Guardar mascota$/ }).click();
