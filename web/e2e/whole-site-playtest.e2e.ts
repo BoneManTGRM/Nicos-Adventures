@@ -141,7 +141,17 @@ async function assertPageChrome(page: Page, title: string, label: string, expect
   // WebKit can retain the previous route's scrollWidth briefly after React swaps destinations.
   // Keep the width assertion, but wait for layout to settle before reporting overflow.
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
-    { message: `${label}: document overflow (${metrics.overflowingElements.join(", ")})`, timeout: 2000 }).toBeLessThanOrEqual(2);
+    { message: `${label}: document overflow (${metrics.overflowingElements.join(", ")})`, timeout: 2000 }).toBeLessThanOrEqual(2).catch(async (error) => {
+      const overflow = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('body *')]
+        .filter(element => element.scrollWidth > element.clientWidth + 2)
+        .map(element => ({ tag: element.tagName, className: element.getAttribute('class'),
+          width: element.clientWidth, scroll: element.scrollWidth,
+          right: element.getBoundingClientRect().right,
+          overflow: getComputedStyle(element).overflow,
+          after: getComputedStyle(element, '::after').content })));
+      console.log(`${label} overflow diagnostics: ${JSON.stringify(overflow)}`);
+      throw error;
+    });
   expect(metrics.bodyWidth, `${label}: body overflow (${metrics.overflowingElements.join(", ")})`).toBeLessThanOrEqual(metrics.clientWidth + 2);
   expect(metrics.brokenImages, `${label}: broken images`).toEqual([]);
 }
