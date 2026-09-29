@@ -1,14 +1,10 @@
 import {box,disk,line,shape,star} from './carArt';
 import {friendPosition,GROUND,magicPlatforms,padAt,PADS,type Ride} from './kingdomPhysics';
 type C=CanvasRenderingContext2D;
-const colors=['#d7a0fa','#71d6db','#ffb2c8','#eed77e'];
-export function unicornArt(c:C,x:number,y:number,t:number,color=0,direction=1){
- c.save();c.translate(x,y);c.scale(direction,1);const mane=colors[color],ink='#66558b',step=Math.sin(t*9)*8;
- c.beginPath();c.moveTo(-28,-35);c.bezierCurveTo(-70,-70,-30,-70,-57,-23);c.strokeStyle='#8ddcd4';c.lineWidth=11;c.lineCap='round';c.stroke();c.beginPath();c.moveTo(-28,-35);c.bezierCurveTo(-68,-52,-29,-54,-52,-18);c.strokeStyle=mane;c.lineWidth=8;c.stroke();
- for(let i=0;i<4;i++){const xx=i<2?-18:19,phase=i%2?step:-step;line(c,xx+(i%2?6:0),-22,xx+phase, -4, i%2?'#ddcee9':'#fff5fa',9);line(c,xx+phase,-4,xx+phase+7,0,'#a899cb',6);}
- c.beginPath();c.ellipse(0,-31,34,21,0,0,Math.PI*2);c.fillStyle='#fff5fa';c.fill();c.strokeStyle=ink;c.lineWidth=2.5;c.stroke();
- shape(c,[[13,-33],[18,-60],[32,-66],[45,-56],[49,-37],[34,-30]],'#fff5fa',ink,2.5);shape(c,[[21,-60],[20,-77],[31,-65]],'#fff5fa',ink,2);shape(c,[[34,-62],[44,-85],[43,-57]],'#ffe5a1',ink,2);line(c,39,-72,43,-69,'#d6ad65',1.5);
- for(let j=0;j<4;j++)disk(c,17-j*2,-61+j*9,8,j%2?'#89dcd6':mane,ink,1);box(c,34,-49,24,17,'#fff5fa',8,ink,2);disk(c,37,-53,3.5,ink,ink,0);disk(c,38,-54,1,'#fff','#fff',0);line(c,35,-58,40,-60,ink,1.5);disk(c,46,-40,3,'#efb5cd','#efb5cd',0);star(c,-1,-32,8,'#d5ae69');c.restore();
+export {loadUnicornArt} from './unicornSprite';
+import {drawUnicornSprite,unicornMotion,type UnicornPose} from './unicornSprite';
+export function unicornArt(c:C,x:number,y:number,t:number,color=0,direction=1,pose:UnicornPose='turn',reduced=false){
+ return drawUnicornSprite(c,x,y,t,color,direction,pose,reduced);
 }
 export function creatureArt(c:C,x:number,y:number,kind:number,rescued=false){
  c.save();c.translate(x,y);const fill=['#dff6ff','#ffd9a1','#d9b4f5'][kind];if(rescued)c.globalAlpha=.55;
@@ -40,7 +36,7 @@ export function drawKingdom(c:C,r:Ride,layout:number[],island:number,color:numbe
  for(const p of magicPlatforms(layout,island,r.t)){if(p.id===0)continue;if(p.id===8){if(p.x!==padAt(p.pad,island).x-80)continue;const xy=padAt(p.pad,island);magicArt(c,8,xy.x,xy.y,130,r.t);}else magicArt(c,p.id,p.x+p.w/2,p.y,p.w,reduced?0:r.t);}
  if(buildPad!==null){PADS.forEach((_,i)=>{const p=padAt(i,island);c.setLineDash([5,5]);disk(c,p.x,p.y-28,i===buildPad?34:25,i===buildPad?'#fff1be22':'#fff7ff11',i===buildPad?'#fff0bc':'#eee4fa',2);c.setLineDash([]);c.font='bold 17px sans-serif';c.textAlign='center';c.fillStyle='#ffffff';c.fillText(String(i+1),p.x,p.y-23);});}
  for(let i=0;i<3;i++){const p=friendPosition(i,island);creatureArt(c,p.x,p.y+(reduced?0:Math.sin(r.t*2+i)*3),island,r.found.includes(i));if(!r.found.includes(i))star(c,p.x,p.y-41,7,'#fff0b5');}
- if(buildPad===null){if(island===2&&layout.includes(11)){const glow=c.createRadialGradient(r.x,r.y-25,5,r.x,r.y-25,140);glow.addColorStop(0,'#fff6c938');glow.addColorStop(1,'#fff6c900');c.fillStyle=glow;c.fillRect(r.x-140,r.y-165,280,280);}unicornArt(c,r.x,r.y,reduced?0:r.t,color);}
+ if(buildPad===null){if(island===2&&layout.includes(11)){const glow=c.createRadialGradient(r.x,r.y-25,5,r.x,r.y-25,140);glow.addColorStop(0,'#fff6c938');glow.addColorStop(1,'#fff6c900');c.fillStyle=glow;c.fillRect(r.x-140,r.y-165,280,280);}const motion=unicornMotion(r);unicornArt(c,r.x,r.y,reduced?0:r.t,color,motion.direction,motion.pose,reduced);}
  else{const p=padAt(buildPad,island);unicornArt(c,p.x-72,Math.min(328,p.y-12),0,color);}
  c.restore();
 }

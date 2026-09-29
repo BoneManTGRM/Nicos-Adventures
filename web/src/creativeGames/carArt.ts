@@ -12,12 +12,13 @@ export function wheelArt(c:C,id:number,x:number,y:number,r:number,angle=0){
  const p=PARTS[id-1]??PARTS[10],v=(id-11)%10;c.save();c.translate(x,y);c.rotate(angle);
  disk(c,0,0,r,'#0b1527',ink,3);disk(c,0,0,r*.81,v===2?'#8fcff4':'#28384a','#59697b',2);
  for(let i=0;i<12+(v%4)*2;i++){const a=i*Math.PI*2/(12+(v%4)*2);c.save();c.rotate(a);box(c,-r*.13,-r*.96,r*.26,r*.2,v===1?'#ff7549':v===2?'#d7f7ff':'#46576b',2,ink,1);c.restore();}
- disk(c,0,0,r*.58,p.color,ink,3);for(let i=0;i<5+v%3;i++){const a=i*Math.PI*2/(5+v%3);line(c,Math.cos(a)*r*.18,Math.sin(a)*r*.18,Math.cos(a)*r*.47,Math.sin(a)*r*.47,p.accent,r*.1);}
+ disk(c,0,0,r*.64,'#b8d0dd',ink,2);disk(c,0,0,r*.58,p.color,ink,2);c.beginPath();c.arc(0,0,r*.7,-2.6,-.8);c.strokeStyle='#f1f8ff66';c.lineWidth=2;c.stroke();for(let i=0;i<5+v%3;i++){const a=i*Math.PI*2/(5+v%3);line(c,Math.cos(a)*r*.18,Math.sin(a)*r*.18,Math.cos(a)*r*.47,Math.sin(a)*r*.47,p.accent,r*.1);}
  disk(c,0,0,r*.18,'#e8f2f8',ink,2);disk(c,-r*.13,-r*.25,r*.07,'#ffffff','#ffffff',0);c.restore();
 }
-export function partArt(c:C,id:number,x:number,y:number,scale=1,t=0){
+export function partArt(c:C,id:number,x:number,y:number,scale=1,t=0,paint?:number){
  if(!id)return;const p=PARTS[id-1];if(!p)return;const v=(id-1)%10;c.save();c.translate(x,y);c.scale(scale,scale);
- const color=p.color,accent=p.accent,metal='#8294a7';
+ const material=p.group===7&&paint!==undefined?PALETTES[Math.max(0,Math.min(5,paint))]:null;
+ const color=material?.[0]??p.color,accent=material?.[1]??p.accent,metal='#8294a7';
  switch(p.group){
  case 0:{const widths=[62,84,78,64,62,88,72,68,58,78],w=widths[v];shape(c,[[-w,-9],[-w+12,-20],[w-15,-20],[w,0],[w-5,12],[-w+3,12]],'#334c66');line(c,-w+12,-10,w-15,-10,color,8);for(let i=-1;i<=1;i++)disk(c,i*w*.65,3,4,'#b9cada',ink,1);if(v===7||v===9)line(c,-w*.55,-17,w*.55,-28,color,7);break;}
  case 1:wheelArt(c,id,0,0,32,t);break;
@@ -40,7 +41,7 @@ export function drawCar(c:C,r:Drive,studio=false){
  if(!r.broken.includes(12))partArt(c,b.parts[8],-s.width*.65,-37,.72,r.t);
  partArt(c,b.parts[0],0,7,s.width/64);line(c,-s.width*.7,1,s.width*.7,1,color,5);
  if(!r.broken.includes(14))partArt(c,b.parts[2],b.engineX*32,b.engineY*22-10,.55,r.t);
- if(!r.broken.includes(11))partArt(c,b.parts[7],-3,-15,s.width/70,r.t);
+ if(!r.broken.includes(11))partArt(c,b.parts[7],-3,-15,s.width/70,r.t,b.paint);
  if(!r.ended){c.save();c.translate(-7,-48);driver(c,b.driver,r.t);c.restore();}
  if(!r.broken.includes(15))partArt(c,b.parts[5],s.width-8,-2,.7,r.t);
  if(!r.broken.includes(13))partArt(c,b.parts[9],8,-64,.62,r.t);
@@ -68,7 +69,7 @@ export function drawTrack(c:C,r:Drive,width:number,height:number,best:number,red
  if(best>0){const x=90+best*12,y=terrainAt(x,theme);line(c,x,y,x,y-86,'#fff0b5',4);shape(c,[[x,y-86],[x+44,y-76],[x,y-56]],'#ffc765','#fff0b5',2);star(c,x+13,y-74,6,'#fff8d9');}
  if(!reduced&&Math.abs(r.vx)>65&&r.contacts>0)for(let i=0;i<6;i++){const t=(r.t*2+i*.19)%1,x=r.x-70-t*60,y=terrainAt(x,theme)-4-t*18;disk(c,x,y,3+t*9,`rgba(238,203,143,${(1-t)*.26})`,ink,0);}
  if(r.rope>r.t){const post=Math.ceil((r.x+50)/500)*500;line(c,r.x+30,r.y,post,terrainAt(post,theme)-60,'#ffe8a7',3);}
- drawCar(c,r);for(const d of r.debris){c.save();c.translate(d.x,d.y);c.rotate(d.a);if(d.kind<3)wheelArt(c,d.id,0,0,d.r,d.a);else partArt(c,d.id,0,0,.6,r.t);c.restore();}
+ drawCar(c,r);for(const d of r.debris){c.save();c.translate(d.x,d.y);c.rotate(d.a);if(d.kind<3)wheelArt(c,d.id,0,0,d.r,d.a);else partArt(c,d.id,0,0,.6,r.t,r.build.paint);c.restore();}
  if(theme===2&&has(r.build,66)){c.globalCompositeOperation='screen';const glow=c.createLinearGradient(r.x+25,0,r.x+310,0);glow.addColorStop(0,'#ffe7ad55');glow.addColorStop(1,'#ffe7ad00');c.fillStyle=glow;c.beginPath();c.moveTo(r.x+25,r.y-35);c.lineTo(r.x+310,r.y-145);c.lineTo(r.x+310,r.y+60);c.closePath();c.fill();c.globalCompositeOperation='source-over';}
  c.restore();
 }
