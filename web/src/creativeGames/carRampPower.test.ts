@@ -22,8 +22,10 @@ describe('usable starter-truck climbing power',()=>{
    expect(run.broken.some(id=>id<3||id===14)).toBe(false);
   });
  }
- it('keeps the existing top-speed cap rather than adding runaway speed',()=>{
-  expect(carStats(STARTER_BUILD).speed).toBe(345);
+ it('caps motor thrust above the intentionally increased speed limit',()=>{
+  // The owner requested a modest speed increase after the original ramp repair.
+  // Preserve the actual no-thrust-above-cap assertion, not the obsolete 345 value.
+  expect(carStats(STARTER_BUILD).speed).toBe(345*1.08);
   const powered=makeDrive(STARTER_BUILD);powered.vx=450;powered.y=286;
   const coasting=structuredClone(powered);stepDrive(powered,gas);stepDrive(coasting,idle);
   expect(powered.vx).toBe(coasting.vx);
