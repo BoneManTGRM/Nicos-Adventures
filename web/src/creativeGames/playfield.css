@@ -1,0 +1,22 @@
+/* A real play surface on phones: the website header/footer must not cover the
+ * pedals or the unicorn. This is an in-page view, not the Fullscreen API. */
+body:has(.cg-drive),body:has(.cg-unicorn-controls){overflow:hidden}
+.cg-shell:has(.cg-drive),.cg-shell:has(.cg-unicorn-controls){position:fixed;inset:0;z-index:200;max-width:none;margin:0;border:0;border-radius:0;overflow:auto;overscroll-behavior:contain;padding:16px max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));padding-top:max(12px,env(safe-area-inset-top))}
+.cg-shell:has(.cg-unicorn-controls)>.cg-intro,.cg-shell:has(.cg-unicorn-controls)>.cg-kingdom-toolbar{display:none}
+.cg-shell:has(.cg-unicorn-controls)>.cg-kingdom-stage{margin-top:14px}
+.cg-shell:has(.cg-drive) .cg-track,.cg-shell:has(.cg-unicorn-controls) .cg-kingdom-canvas{height:clamp(160px,calc(100dvh - 330px),480px)}
+.cg-shell:has(.cg-drive) .cg-topbar,.cg-shell:has(.cg-unicorn-controls) .cg-topbar{padding-bottom:10px}
+@media(min-width:1000px){.cg-shell:has(.cg-drive),.cg-shell:has(.cg-unicorn-controls){padding-left:max(24px,calc((100vw - 1250px)/2));padding-right:max(24px,calc((100vw - 1250px)/2))}}
+@media(max-height:600px){
+ .cg-shell:has(.cg-drive),.cg-shell:has(.cg-unicorn-controls){padding-top:max(6px,env(safe-area-inset-top));padding-bottom:6px}
+ .cg-shell:has(.cg-drive) .cg-topbar,.cg-shell:has(.cg-unicorn-controls) .cg-topbar{padding-bottom:5px}
+ .cg-shell:has(.cg-drive) .cg-topbar>button,.cg-shell:has(.cg-unicorn-controls) .cg-topbar>button{min-height:36px;padding:7px 10px}
+ .cg-shell:has(.cg-drive) .cg-drive{padding-top:6px}
+ .cg-shell:has(.cg-drive) .cg-drive-hud{padding-bottom:6px}
+ .cg-shell:has(.cg-drive) .cg-drive-hud strong{font-size:21px}
+ .cg-shell:has(.cg-drive) .cg-drive-hud button{min-height:34px;padding:6px 10px}
+ .cg-shell:has(.cg-drive) .cg-track,.cg-shell:has(.cg-unicorn-controls) .cg-kingdom-canvas{height:clamp(100px,calc(100dvh - 205px),280px)}
+ .cg-shell:has(.cg-drive) .cg-controls,.cg-shell:has(.cg-unicorn-controls) .cg-controls{margin:7px 0}
+ .cg-shell:has(.cg-drive) .cg-pedal,.cg-shell:has(.cg-unicorn-controls) .cg-pedal{min-height:48px;padding:8px 16px}
+ .cg-shell:has(.cg-unicorn-controls)>.cg-kingdom-stage{margin-top:7px}
+}

@@ -14,3 +14,21 @@ test('a free unowned-part trial never displays or changes a previous earned rewa
  const saved=await page.evaluate(key=>{const s=JSON.parse(localStorage.getItem(key)!);return s.profiles.find((p:{id:string})=>p.id===s.activeProfileId).creativeGames.garage;},key);
  expect(saved.bolts).toBe(42);expect(saved.owned).not.toContain(12);expect(saved.sequence).toBe(1);expect(saved.last).toEqual(games.garage.last);
 });
+
+test('the active playfield and pedals fit the viewport without site navigation covering them',async({page},info)=>{
+ await page.goto('/');await expect(page.getByTestId('continue-world')).toBeVisible();
+ await page.evaluate(({key,language})=>{const s=JSON.parse(localStorage.getItem(key)!);const p=s.profiles.find((p:{id:string})=>p.id===s.activeProfileId);p.selectedSection='game-arcade';p.language=language;p.nico.speechEnabled=false;localStorage.setItem(key,JSON.stringify(s));},{key,language:info.project.metadata.language});
+ await page.reload();await page.getByTestId('open-monster-garage').click();await page.getByTestId('garage-drive').click();
+ const check=async(selector:string)=>{
+  const boxes=await page.locator(selector).evaluateAll(elements=>elements.map(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {top:r.top,bottom:r.bottom,width:r.width,height:r.height,viewport:window.innerHeight,visible:hit===el||el.contains(hit)};}));
+  expect(boxes.length).toBeGreaterThan(0);for(const b of boxes){expect(b.top).toBeGreaterThanOrEqual(0);expect(b.bottom).toBeLessThanOrEqual(b.viewport);expect(b.visible).toBe(true);}
+ };
+ await check('.cg-track,[data-control="gas"],[data-control="brake"]');
+ const gas=await page.locator('[data-control="gas"]').boundingBox();expect(gas).not.toBeNull();
+ await page.mouse.move(gas!.x+gas!.width/2,gas!.y+gas!.height/2);await page.mouse.down();await page.waitForTimeout(1600);await page.mouse.up();
+ await expect.poll(async()=>Number((await page.getByTestId('garage-distance').innerText()).replace(/[^0-9]/g,''))).toBeGreaterThan(0);
+ await info.attach('garage-actual-viewport',{body:await page.screenshot(),contentType:'image/png'});
+ await page.locator('.cg-topbar button').click();await page.getByTestId('open-rainbow-kingdom').click();await page.getByTestId('kingdom-ride').click();
+ await check('.cg-kingdom-canvas,[data-control="left"],[data-control="jump"],[data-control="right"]');
+ await info.attach('kingdom-actual-viewport',{body:await page.screenshot(),contentType:'image/png'});
+});
