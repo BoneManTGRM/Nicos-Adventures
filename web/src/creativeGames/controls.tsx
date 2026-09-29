@@ -1,4 +1,4 @@
-import {useEffect,useRef,type MutableRefObject} from 'react';
+import {useEffect,useRef,type MutableRefObject,type ReactNode} from 'react';
 export type Held=Record<string,boolean>;
 export function useHeldControls(keys:Record<string,string>,pause:()=>void,enabled=true){
  const held=useRef<Held>({}),pauseRef=useRef(pause);pauseRef.current=pause;
@@ -12,10 +12,10 @@ export function useHeldControls(keys:Record<string,string>,pause:()=>void,enable
   return()=>{held.current={};window.removeEventListener('keydown',down);window.removeEventListener('keyup',up);window.removeEventListener('blur',lost);document.removeEventListener('visibilitychange',visibility);};
  },[mapping,enabled]);return held;
 }
-export function HoldButton({held,action,children,label,className='',disabled=false}:{held:MutableRefObject<Held>;action:string;children:React.ReactNode;label:string;className?:string;disabled?:boolean}){
+export function HoldButton({held,action,children,label,className='',disabled=false}:{held:MutableRefObject<Held>;action:string;children:ReactNode;label:string;className?:string;disabled?:boolean}){
  return <button type="button" className={`cg-pedal ${className}`} aria-label={label} data-control={action} disabled={disabled}
  onPointerDown={e=>{e.preventDefault();e.currentTarget.focus({preventScroll:true});e.currentTarget.setPointerCapture(e.pointerId);held.current[action]=true;}}
  onPointerUp={()=>{held.current[action]=false;}} onPointerCancel={()=>{held.current[action]=false;}} onLostPointerCapture={()=>{held.current[action]=false;}}
- onKeyDown={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();held.current[action]=true;}}} onKeyUp={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();held.current[action]=false;}}} onBlur={()=>{held.current[action]=false;}}>{children}</button>;
+ onKeyDown={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();e.stopPropagation();held.current[action]=true;}}} onKeyUp={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();e.stopPropagation();held.current[action]=false;}}} onBlur={()=>{held.current[action]=false;}}>{children}</button>;
 }
 export function useReducedMotion(){const value=useRef(false);useEffect(()=>{const media=window.matchMedia('(prefers-reduced-motion: reduce)');const change=()=>{value.current=media.matches;};change();media.addEventListener('change',change);return()=>media.removeEventListener('change',change);},[]);return value;}
