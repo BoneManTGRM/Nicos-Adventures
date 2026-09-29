@@ -1,16 +1,17 @@
 import {chromium,webkit} from 'playwright';
 import {mkdir,writeFile} from 'node:fs/promises';
+import {matchesExpectedRelease} from './creative-release.mjs';
 const expected=process.env.EXPECTED_SHA;
 if(!/^[a-f0-9]{40}$/.test(expected??''))throw new Error('EXPECTED_SHA must identify the exact merged commit.');
 const origin='https://nicos-world.com',out='creative-production-proof',key='nicos-world-local-save-v4';
 await mkdir(out,{recursive:true});
 let release=null;const deadline=Date.now()+15*60_000;
 while(Date.now()<deadline){
- try{const response=await fetch(`${origin}/release.json?verification=${Date.now()}`,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(response.ok){release=await response.json();if(release.sha===expected)break;}}catch(error){console.log('Waiting for production:',error.message);}
- console.log(`Awaiting ${expected}; observed ${release?.sha??'no release'}`);await new Promise(resolve=>setTimeout(resolve,15000));
+ try{const response=await fetch(`${origin}/release.json?verification=${Date.now()}`,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(response.ok){release=await response.json();if(matchesExpectedRelease(release,expected))break;}}catch(error){console.log('Waiting for production:',error.message);}
+ console.log(`Awaiting ${expected}; observed ${release?.commitSha??'no release'}`);await new Promise(resolve=>setTimeout(resolve,15000));
 }
 await writeFile(`${out}/release.json`,JSON.stringify(release,null,2));
-if(release?.sha!==expected)throw new Error(`Production did not serve the approved commit: ${release?.sha??'unavailable'}`);
+if(!matchesExpectedRelease(release,expected))throw new Error(`Production did not serve the approved commit: ${release?.commitSha??'unavailable'}`);
 const results=[];
 for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])for(const language of ['en','es-MX']){
  const name=`${engine}-${language}`,browser=await type.launch(),context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,locale:language==='en'?'en-US':'es-MX'}),page=await context.newPage(),errors=[];
@@ -37,7 +38,7 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])for(const la
   await page.screenshot({path:`${out}/${name}-ride.png`});
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);if(overflow>2)throw new Error(`Phone page overflow: ${overflow}`);
   if(errors.length)throw new Error(errors.join('\n'));
-  results.push({name,passed:true,distance,bolts,unicornX:x,sha:release.sha});
+  results.push({name,passed:true,distance,bolts,unicornX:x,sha:release.commitSha});
  }catch(error){results.push({name,passed:false,error:String(error),errors});await page.screenshot({path:`${out}/${name}-failure.png`,fullPage:true}).catch(()=>{});}
  finally{await browser.close();await writeFile(`${out}/results.json`,JSON.stringify(results,null,2));}
 }
