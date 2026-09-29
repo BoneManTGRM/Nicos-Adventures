@@ -59,7 +59,9 @@ test('real driving supports pause, resume after reload, and exactly one earned p
  // Reload must run the app's ordinary timers, including lazy-route scheduling.
  // A globally paused test clock otherwise strands React in its loading fallback.
  await page.clock.resume();await page.reload();await page.getByTestId('open-monster-garage').click();await expect(page.locator('.cg-resume')).toBeVisible();
- await page.clock.pauseAt(new Date(await page.evaluate(()=>Date.now())+100));
+ // The previous 100 ms deadline could pass during WebKit's protocol round trip.
+ // Advance the test clock safely while still in the garage; do not change game timeouts or assertions.
+ await page.clock.pauseAt(new Date(await page.evaluate(()=>Date.now())+60_000));
  await page.locator('.cg-resume').getByRole('button',{name:es(info)?'Continuar recorrido':'Resume drive',exact:true}).click();await page.clock.runFor(200);
  await page.locator('.cg-return').click();await expect(page.locator('.cg-receipt')).toBeVisible();const paid=(await active(page)).creativeGames!.garage;expect(paid.bolts).toBeGreaterThan(0);expect(paid.paidThrough).toBe(1);expect(paid.resume).toBeNull();expect(paid.owned).toEqual(saved.owned);
  await page.clock.resume();await page.reload();await page.getByTestId('open-monster-garage').click();expect((await active(page)).creativeGames!.garage.bolts).toBe(paid.bolts);
@@ -103,7 +105,7 @@ test('a complete unicorn ride earns real rescues and a replay reward without men
   const state=await stage.evaluate(el=>({x:Number(el.getAttribute('data-world-x')),y:Number(el.getAttribute('data-world-y')),grounded:el.getAttribute('data-grounded')==='true',found:Number(el.getAttribute('data-friends'))}));
   if(state.x>1975&&state.found===3){completed=true;break;}
   const target=state.found<3?[694,1244,1784][state.found]:2010;
-  if(state.x<target-12){await page.keyboard.down('ArrowRight');await page.keyboard.up('ArrowLeft');}else if(state.x>target+12){await page.keyboard.up('ArrowRight');await page.keyboard.down('ArrowLeft');}else{await page.keyboard.up('ArrowRight');await page.keyboard.up('ArrowLeft');}
+  if(state.x<target-12){await page.keyboard.down('ArrowRight');await page.keyboard.up('ArrowLeft');}else if(state.x>target+12){await page.keyboard.up('ArrowRight');await page.keyboard.down('ArrowLeft');}else{await page.keyboard.up('ArrowRight');await page.keyboard.down('ArrowLeft');}
   if(state.grounded)await page.keyboard.down('Space');else await page.keyboard.up('Space');
   await page.clock.runFor(120);
  }
