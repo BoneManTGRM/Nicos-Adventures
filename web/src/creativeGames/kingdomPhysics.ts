@@ -4,7 +4,11 @@ export type MagicPlatform={x:number;y:number;w:number;id:number;pad:number;vx:nu
 export const STARTER_COURSE=[1,1,2,1,1,2,1,1,2,1];
 export const PADS=[{x:360,y:302},{x:470,y:255},{x:680,y:252},{x:930,y:302},{x:1020,y:255},{x:1230,y:242},{x:1460,y:297},{x:1570,y:249},{x:1770,y:245},{x:1880,y:190}];
 export const GROUND=[[0,320],[540,840],[1100,1360],[1610,2070]];
-export function padAt(i:number,island:number){const p=PADS[i];return {x:p.x,y:p.y-(island===1&&i%2?18:island===2&&i%3===0?25:0)};}
+export function padAt(i:number,island:number){
+ const p=PADS[i];
+ // Keep the final bridge low enough to reach the third friend in every starter garden.
+ return {x:p.x,y:p.y-(island===1&&i%2?18:island===2&&i%3===0&&i!==9?25:0)};
+}
 export function magicPlatforms(layout:number[],island:number,t:number):MagicPlatform[]{
  const result:MagicPlatform[]=GROUND.map(([x,right],i)=>({x,y:335,w:right-x,id:0,pad:-i-1,vx:0,vy:0}));
  layout.forEach((id,i)=>{if(!id||!PADS[i])return;const p=padAt(i,island),w=id===1||id===4?190:id===9?115:90;let x=p.x-w/2,y=p.y,vx=0,vy=0;

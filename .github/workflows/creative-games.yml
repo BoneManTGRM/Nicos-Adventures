@@ -33,7 +33,7 @@ jobs:
         run: npx playwright install --with-deps chromium webkit
       - name: Real controls, rewards, saves, crashes and mobile layout
         run: npx playwright test --config playwright.creative-games.config.ts
-      - name: Preserve acceptance evidence
+      - name: Preserve acceptance evidence and exact public build
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -43,4 +43,4 @@ jobs:
             web/creative-games-report
             web/creative-games-test-results
             web/creative-games-results.json
-            web/dist/release.json
+            web/dist
