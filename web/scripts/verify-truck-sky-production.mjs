@@ -24,12 +24,13 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])for(const la
   const earlyCount=Number(await page.locator('.cg-drive').getAttribute('data-sky-count'));if(earlyCount!==0)throw new Error('Object spawned before the safe opening ended');
   await page.locator('.cg-drive[data-sky-phase="warning"]').waitFor({timeout:15000});
   const warnedAt=Number((await page.getByTestId('garage-distance').innerText()).replace(/[^0-9]/g,''));if(warnedAt<300)throw new Error('Warning appeared before 300 meters');
-  await page.mouse.up();await page.screenshot({path:`${out}/${name}-warning.png`});
+  // Keep the actual pedal held so the camera approaches the fixed drop target.
+  await page.screenshot({path:`${out}/${name}-warning.png`});
   await page.locator('.cg-drive[data-sky-phase="falling"]').waitFor({timeout:6000});
   await page.waitForTimeout(450);await page.screenshot({path:`${out}/${name}-falling.png`});
   await page.waitForFunction(()=>{const e=document.querySelector('.cg-drive');return Number(e?.getAttribute('data-sky-hits'))+Number(e?.getAttribute('data-sky-dodged'))>=1;},null,{timeout:6000});
   const hits=Number(await page.locator('.cg-drive').getAttribute('data-sky-hits')),dodged=Number(await page.locator('.cg-drive').getAttribute('data-sky-dodged'));
-  await page.screenshot({path:`${out}/${name}-outcome.png`});await page.locator('.cg-return').click();
+  await page.mouse.up();await page.screenshot({path:`${out}/${name}-outcome.png`});await page.locator('.cg-return').click();
   const bolts=Number(await page.getByTestId('garage-bolts').innerText());if(bolts<=0)throw new Error('Missing earned bolts');
   await page.reload({waitUntil:'networkidle'});await page.getByTestId('open-monster-garage').click();
   if(Number(await page.getByTestId('garage-bolts').innerText())!==bolts)throw new Error('Rewards did not survive reload');

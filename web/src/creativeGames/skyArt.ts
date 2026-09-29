@@ -26,16 +26,19 @@ export function drawSkyObjects(c:C,r:Drive,width:number,height:number,reduced=fa
   c.fillStyle='#ffbc6f55';c.strokeStyle='#ffe0aa';c.lineWidth=2;c.beginPath();c.ellipse(a.x,ground-4,a.radius+16,6,0,0,Math.PI*2);c.fill();c.stroke();
   c.save();c.setLineDash([5,7]);c.strokeStyle='#ffe3a386';c.beginPath();c.moveTo(a.x,cy+48);c.lineTo(a.x,ground-18);c.stroke();c.restore();
  }
- if(a.phase==='warning'){
-  // Offscreen target arrows remain visible on narrow phones; the physical target never follows the car.
+ const offscreen=a.x<camera+24||a.x>camera+width-24;
+ if(a.phase==='warning'||a.phase==='falling'&&offscreen){
+  // Keep the direction cue until an offscreen drop resolves. Its target never
+  // follows the car; braking may intentionally leave the object ahead of view.
   const edgeX=Math.max(camera+24,Math.min(camera+width-24,a.x)),y=cy+82;
   c.fillStyle='#ffe1a0';c.strokeStyle='#3d4050';c.lineWidth=2;
   c.beginPath();c.moveTo(edgeX-12,y);c.lineTo(edgeX+12,y);c.lineTo(edgeX,y+20);c.closePath();c.fill();c.stroke();
   c.font='bold 13px sans-serif';c.textAlign='center';c.fillStyle='#fff3cf';c.fillText(a.x>camera+width-24?'→':a.x<camera+24?'←':String(Math.max(1,Math.ceil(SKY_WARNING_SECONDS-a.age))),edgeX,y-8);
- }else if(a.phase==='falling'){
+ }
+ if(a.phase==='falling'){
   if(!reduced){c.strokeStyle=a.kind===2?'#99f6ff80':'#ffdfa955';c.lineWidth=8;c.lineCap='round';c.beginPath();c.moveTo(a.x,a.y-a.radius-12);c.lineTo(a.x,a.y-a.radius-42);c.stroke();}
   obstacle(c,a);
- }else{
+ }else if(a.phase==='burst'){
   const fade=Math.max(0,1-a.age/.65);c.globalAlpha=fade;
   for(let i=0;i<5;i++){const angle=i*Math.PI*2/5,dist=reduced?20:12+a.age*60;const x=a.x+Math.cos(angle)*dist,y=a.y+Math.sin(angle)*dist*.45;c.beginPath();c.arc(x,y,6+fade*6,0,Math.PI*2);c.fillStyle=a.hit?'#ffe7b7':'#bce6e5';c.fill();}
  }
