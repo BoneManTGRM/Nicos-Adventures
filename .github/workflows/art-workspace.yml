@@ -1,0 +1,31 @@
+name: Art workspace preparation
+on:
+  push:
+    branches: [feat/creative-games-art-polish]
+    paths: [.github/workflows/art-workspace.yml]
+permissions:
+  contents: read
+jobs:
+  workspace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --prefix web --no-audit --no-fund
+      - run: cd web && npx playwright install chromium
+      - name: Archive only source and public locked dependencies
+        run: |
+          mkdir -p /tmp/art-workspace
+          git archive HEAD -o /tmp/art-workspace/source.tar
+          tar -czf /tmp/art-workspace/node-modules.tgz web/node_modules
+          tar -czf /tmp/art-workspace/browsers.tgz -C "$HOME/.cache" ms-playwright
+      - uses: actions/upload-artifact@v4
+        with:
+          name: art-workspace-${{ github.sha }}
+          retention-days: 1
+          path: /tmp/art-workspace
