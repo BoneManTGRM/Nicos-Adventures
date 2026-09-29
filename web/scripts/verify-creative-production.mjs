@@ -24,8 +24,15 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])for(const la
   await page.screenshot({path:`${out}/${name}-arcade.png`,fullPage:true});
   await page.getByTestId('open-monster-garage').click();await page.getByTestId('garage-drive').waitFor();
   await page.screenshot({path:`${out}/${name}-garage.png`,fullPage:true});
-  await page.getByTestId('garage-drive').click();await page.keyboard.down('ArrowRight');await page.waitForTimeout(3000);await page.keyboard.up('ArrowRight');
-  const distance=Number((await page.getByTestId('garage-distance').innerText()).replace(/[^0-9]/g,''));if(distance<=2)throw new Error(`Vehicle did not travel: ${distance}`);
+  await page.getByTestId('garage-drive').click();await page.keyboard.down('ArrowRight');
+  try{
+   await page.waitForFunction(key=>{
+    const store=JSON.parse(localStorage.getItem(key));
+    const run=store.profiles.find(p=>p.id===store.activeProfileId).creativeGames?.garage?.resume;
+    return run&&!run.ended&&run.x>1990&&run.contacts>0&&Math.abs(run.a)<.7;
+   },key,{timeout:30000});
+  }finally{await page.keyboard.up('ArrowRight');}
+  const distance=Number((await page.getByTestId('garage-distance').innerText()).replace(/[^0-9]/g,''));if(distance<=158)throw new Error(`Starter truck did not clear the second ramp: ${distance}`);
   await page.screenshot({path:`${out}/${name}-drive.png`});await page.locator('.cg-return').click();
   const bolts=Number(await page.getByTestId('garage-bolts').innerText());if(bolts<=0)throw new Error('Completed drive did not bank earned rewards');
   await page.reload({waitUntil:'networkidle'});await page.getByTestId('open-monster-garage').click();if(Number(await page.getByTestId('garage-bolts').innerText())!==bolts)throw new Error('Garage rewards did not survive reload');
@@ -38,7 +45,7 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])for(const la
   await page.screenshot({path:`${out}/${name}-ride.png`});
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);if(overflow>2)throw new Error(`Phone page overflow: ${overflow}`);
   if(errors.length)throw new Error(errors.join('\n'));
-  results.push({name,passed:true,distance,bolts,unicornX:x,sha:release.commitSha});
+  results.push({name,passed:true,secondRampCleared:true,distance,bolts,unicornX:x,sha:release.commitSha});
  }catch(error){results.push({name,passed:false,error:String(error),errors});await page.screenshot({path:`${out}/${name}-failure.png`,fullPage:true}).catch(()=>{});}
  finally{await browser.close();await writeFile(`${out}/results.json`,JSON.stringify(results,null,2));}
 }

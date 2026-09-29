@@ -2,7 +2,7 @@ import {defineConfig} from '@playwright/test';
 import base from './playwright.config';
 export default defineConfig({
  ...base,
- testMatch: ['creative-games.e2e.ts','creative-games-receipts.e2e.ts','creative-games-unicorn.e2e.ts'],
+ testMatch: ['creative-games.e2e.ts','creative-games-receipts.e2e.ts','creative-games-unicorn.e2e.ts','creative-games-ramp-power.e2e.ts'],
  testIgnore: [],
  timeout: 90_000,
  fullyParallel: true,
