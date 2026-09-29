@@ -1,5 +1,6 @@
 import {num,type Build,type Drive} from './save';
-export type DriveInput={gas:boolean;brake:boolean;tool:boolean};
+import {tickTurbo} from './turbo';
+export type DriveInput={gas:boolean;brake:boolean;tool:boolean;boost?:boolean};
 export const has=(b:Build,id:number)=>b.parts.includes(id);
 export function carStats(b:Build){
  const f=b.parts[0]-1,w=b.parts[1]-11,m=b.parts[2]-21,s=b.parts[3]-31;
@@ -19,7 +20,7 @@ export function terrainAt(x:number,track=0,bridges:number[]=[]):number{
  for(let i=1;i<profile.length;i++)if(p<=profile[i][0]){const [a,ay]=profile[i-1],[b,by]=profile[i];const h=ay+(by-ay)*(p-a)/(b-a);return 330+h*scale+(track===1?Math.sin(p*.018)*9:track===2?Math.sin(p*.038)*5:0);}
  return 330;
 }
-export function makeDrive(build:Build,id=1,track=0,practice=false):Drive{const st=carStats(build);return {id,track,practice,build:structuredClone(build),t:0,x:90,y:330-st.radius-st.clearance-4,vx:0,vy:0,a:0,av:0,air:0,launchX:90,bestJump:0,distance:0,broken:[],debris:[],ended:false,reason:0,landings:0,contacts:0,cargo:true,bridges:[],toolAt:-100,rope:0};}
+export function makeDrive(build:Build,id=1,track=0,practice=false):Drive{const st=carStats(build);return {id,track,practice,build:structuredClone(build),t:0,x:90,y:330-st.radius-st.clearance-4,vx:0,vy:0,a:0,av:0,air:0,launchX:90,bestJump:0,distance:0,broken:[],debris:[],ended:false,reason:0,landings:0,contacts:0,cargo:true,bridges:[],toolAt:-100,rope:0,boostCharge:100,boostLocked:false,boostActive:false};}
 export function wheelPoints(r:Drive){const s=carStats(r.build);return Array.from({length:s.wheelCount},(_,i)=>{const localX=(i===0?-s.wheelbase:i===1?s.wheelbase:0)-s.comX,localY=s.clearance-s.comY;return {i,lx:localX,ly:localY,x:r.x+Math.cos(r.a)*localX-Math.sin(r.a)*localY,y:r.y+Math.sin(r.a)*localX+Math.cos(r.a)*localY};});}
 function detach(r:Drive,kind:number,id:number,x:number,y:number,radius=18){if(!id||r.broken.includes(kind))return;r.broken.push(kind);r.debris.push({id,kind,x,y,vx:r.vx+(kind%2?80:-65),vy:Math.min(r.vy,-60)-80-kind*5,a:r.a,av:kind%2?4:-3,r:radius});if(r.debris.length>22)r.debris.shift();}
 function impact(r:Drive,s:ReturnType<typeof carStats>,speed:number,roof=false){
@@ -33,7 +34,11 @@ function impact(r:Drive,s:ReturnType<typeof carStats>,speed:number,roof=false){
 export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
  dt=num(dt,0,1/60,1/120);if(!dt)return;r.t+=dt;const s=carStats(r.build),b=r.build,wasEnded=r.ended;
  for(const d of r.debris){d.vy+=850*dt;d.x+=d.vx*dt;d.y+=d.vy*dt;d.a+=d.av*dt;const ground=terrainAt(d.x,r.track,r.bridges);if(d.y+d.r>ground){d.y=ground-d.r;if(d.vy>0)d.vy*=-.36;d.vx*=.985;d.av*=.988;}d.vx*=.999;}
- if(wasEnded){r.vx*=.98;r.av*=.96;return;}
+ if(wasEnded){r.boostActive=false;r.vx*=.98;r.av*=.96;return;}
+ // The turbo pedal also accelerates, so children can use it with one thumb.
+ const gas=input.gas||!!input.boost;
+ const poweredContact=r.contacts>0&&wheelPoints(r).some(w=>!r.broken.includes(w.i)&&(w.i===0||has(b,44)||has(b,45))&&w.y+s.radius>=terrainAt(w.x,r.track,r.bridges)-3);
+ const boosting=tickTurbo(r,!!input.boost,input.brake,dt,poweredContact);
  if(input.tool&&r.t-r.toolAt>1.2){const phase=((r.x-280)%2000+2000)%2000;
   if(has(b,61)){const post=Math.ceil((r.x+50)/500)*500;if(post-r.x<300){r.vx+=110;r.vy-=80;r.rope=r.t+.65;r.toolAt=r.t;}}
   if(has(b,62)&&phase>1150&&phase<1720){const cell=Math.floor((r.x-280)/2000);if(!r.bridges.includes(cell))r.bridges.push(cell);r.bridges=r.bridges.slice(-12);r.toolAt=r.t;}
@@ -52,11 +57,11 @@ export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
   if(penetration>0){contacts++;maxImpact=Math.max(maxImpact,-(pvx*nx+pvy*ny));
    const k=s.mass*90*s.spring/s.wheelCount,damp=s.mass*7*s.damping/s.wheelCount,normal=num(k*penetration-damp*(pvx*nx+pvy*ny),0,s.mass*6500/s.wheelCount);
    let wx=normal*nx,wy=normal*ny;const powered=w.i===0||has(b,44)||has(b,45),gear=has(b,43)?(slope<-.2?1.3:.93):1;
-   let drive=powered&&input.gas&&!r.broken.includes(14)?s.power*21*lowSpeedPull*gear*s.grip/s.wheelCount:0;if(r.vx>s.speed)drive=0;
+   let drive=powered&&gas&&!r.broken.includes(14)?s.power*21*lowSpeedPull*gear*s.grip*(boosting?1.65:1)/s.wheelCount:0;if(r.vx>s.speed*(boosting?1.15:1))drive=0;
    if(input.brake)drive=r.vx>12?-s.mass*(has(b,47)?300:600)/s.wheelCount:-s.mass*150/s.wheelCount;
-   if(!input.gas&&!input.brake&&has(b,46))drive=-s.mass*r.vx*8/s.wheelCount;drive-=pvx*s.mass*.4/s.wheelCount;
+   if(!gas&&!input.brake&&has(b,46))drive=-s.mass*r.vx*8/s.wheelCount;drive-=pvx*s.mass*.4/s.wheelCount;
    if(waterGap(w.x)&&!has(b,63)&&!has(b,64))drive-=pvx*s.mass*(b.parts[1]===16?.35:.8)/s.wheelCount;
-   if(has(b,63)&&!waterGap(w.x))drive*=.87;if(has(b,64)&&waterGap(w.x)&&input.gas)drive+=s.mass*190/s.wheelCount;
+   if(has(b,63)&&!waterGap(w.x))drive*=.87;if(has(b,64)&&waterGap(w.x)&&gas)drive+=s.mass*190/s.wheelCount;
    wx+=drive/len;wy+=drive*slope/len;fx+=wx;fy+=wy;torque+=rx*wy-ry*wx;
   }
  }
