@@ -31,7 +31,20 @@ test('one-tap rebuild starts the same car and route without charging or double-p
  Object.assign(r,{x:600,y:-180,vy:1100,air:1,distance:42,boostCharge:25});games.garage.sequence=1;games.garage.resume=r;
  await page.clock.install();await enter(page,info,games);await freeze(page);
  await page.locator('.cg-resume').getByRole('button',{name:spanish(info)?'Continuar recorrido':'Resume drive',exact:true}).click();await page.clock.runFor(2500);
- await expect(page.locator('.cg-crash-card')).toBeVisible();const paid=(await current(page)).garage;
+ await expect(page.locator('.cg-crash-card')).toBeVisible();
+ const assertCrashBounds=async()=>{
+  const bounds=await page.locator('.cg-crash-card').evaluate(card=>{const parent=card.parentElement!.getBoundingClientRect(),r=card.getBoundingClientRect();return {top:r.top-parent.top,bottom:parent.bottom-r.bottom};});
+  expect(bounds.top).toBeGreaterThanOrEqual(0);expect(bounds.bottom).toBeGreaterThanOrEqual(0);
+  for(const button of await page.locator('.cg-crash-card button').all()){
+   await button.scrollIntoViewIfNeeded();
+   expect(await button.evaluate(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===el||el.contains(hit);})).toBe(true);
+  }
+ };
+ await assertCrashBounds();await info.attach('crash-menu-portrait',{body:await page.screenshot(),contentType:'image/png'});
+ const size=page.viewportSize();await page.setViewportSize({width:844,height:390});await page.clock.runFor(160);await assertCrashBounds();
+ await info.attach('crash-menu-landscape',{body:await page.screenshot(),contentType:'image/png'});
+ if(size)await page.setViewportSize(size);await page.clock.runFor(160);
+ const paid=(await current(page)).garage;
  await page.getByTestId('garage-race-again').click();await page.clock.runFor(200);
  await expect(page.locator('.cg-crash-card')).toHaveCount(0);await expect(page.getByTestId('garage-turbo-charge')).toHaveText('100%');
  const retry=(await current(page)).garage;expect(retry.bolts).toBe(paid.bolts);expect(retry.sequence).toBe(2);expect(retry.paidThrough).toBe(1);
