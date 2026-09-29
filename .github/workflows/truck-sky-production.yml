@@ -1,0 +1,39 @@
+name: Truck Sky Production Verification
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: truck-sky-production
+  cancel-in-progress: true
+jobs:
+  truck-sky-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Actual starter drive, warning, falling object and reward persistence
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: node scripts/verify-truck-sky-production.mjs
+      - name: Preserve exact live evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: truck-sky-production-${{ github.sha }}
+          path: web/truck-sky-production-proof
+          retention-days: 14
+          if-no-files-found: warn
