@@ -227,6 +227,7 @@ export type LocalProfile = {
   movieProjects: MovieProject[];
   adventures: GoldenAdventureProgress;
   learningLab?: import("./learning/engine").Progress;
+  creativeGames?: import("./creativeGames/save").CreativeGamesSave;
   nico: NicoPreferences;
   lastBackupAt: string | null;
   createdAt: string;

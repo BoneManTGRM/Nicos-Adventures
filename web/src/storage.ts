@@ -1,3 +1,4 @@
+import { normalizeGames } from "./creativeGames/save";
 import { normalizeProgress } from "./learning/engine";
 import { normalizeShots } from "./showtime/director";
 import professionData from "./catalogs/nico-professions.json";
@@ -522,6 +523,7 @@ function normalizeProfile(candidate: unknown): LocalProfile | null {
     movieProjects,
     adventures: normalizeGoldenAdventureProgress(value.adventures),
     ...(value.learningLab ? { learningLab: normalizeProgress(value.learningLab) } : {}),
+    ...(value.creativeGames ? { creativeGames: normalizeGames(value.creativeGames) } : {}),
     nico: normalizeNico(value.nico),
     lastBackupAt: nullableText(value.lastBackupAt, 50),
     createdAt: clampText(value.createdAt, 50, fresh.createdAt),

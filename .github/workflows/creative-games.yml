@@ -1,0 +1,46 @@
+name: Creative Games Acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: creative-games-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  games:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: All existing and new unit tests
+        run: npm test
+      - name: Build and preserve performance budgets
+        run: npm run build
+      - name: Install desktop and phone browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Real controls, rewards, saves, crashes and mobile layout
+        run: npx playwright test --config playwright.creative-games.config.ts
+      - name: Preserve acceptance evidence and exact public build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: creative-games-${{ github.sha }}
+          retention-days: 7
+          path: |
+            web/creative-games-report
+            web/creative-games-test-results
+            web/creative-games-results.json
+            web/dist
