@@ -38,8 +38,13 @@ export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
   if(has(b,61)){const post=Math.ceil((r.x+50)/500)*500;if(post-r.x<300){r.vx+=110;r.vy-=80;r.rope=r.t+.65;r.toolAt=r.t;}}
   if(has(b,62)&&phase>1150&&phase<1720){const cell=Math.floor((r.x-280)/2000);if(!r.bridges.includes(cell))r.bridges.push(cell);r.bridges=r.bridges.slice(-12);r.toolAt=r.t;}
   if(has(b,70)){r.av=-r.a*3;r.vy=-200;r.toolAt=r.t;}}
- let fx=-r.vx*s.mass*.09,fy=900*s.mass,torque=-r.av*s.mass*75,contacts=0,maxImpact=0;
  const inertia=s.mass*(s.width*s.width/3+600),c=Math.cos(r.a),sn=Math.sin(r.a);
+ // Scale pitch damping with inertia so extra climbing torque does not turn
+ // ordinary launches into uncontrolled spins. Impacts and air controls remain active.
+ let fx=-r.vx*s.mass*.09,fy=900*s.mass,torque=-r.av*inertia*6,contacts=0,maxImpact=0;
+ // More pulling force at low speed, tapering back to the original drive force.
+ // Keep each motor's top-speed limit, mass, grip and gearbox trade-offs.
+ const lowSpeedPull=1+4.5*Math.max(0,1-Math.abs(r.vx)/260);
  const ground=(x:number)=>waterGap(x)&&has(b,63)?Math.min(terrainAt(x,r.track,r.bridges),333):terrainAt(x,r.track,r.bridges);
  for(const w of wheelPoints(r)){
   if(r.broken.includes(w.i))continue;const gy=ground(w.x),slope=num((ground(w.x+3)-ground(w.x-3))/6,-2,2),len=Math.hypot(1,slope),nx=slope/len,ny=-1/len;
@@ -47,7 +52,7 @@ export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
   if(penetration>0){contacts++;maxImpact=Math.max(maxImpact,-(pvx*nx+pvy*ny));
    const k=s.mass*90*s.spring/s.wheelCount,damp=s.mass*7*s.damping/s.wheelCount,normal=num(k*penetration-damp*(pvx*nx+pvy*ny),0,s.mass*6500/s.wheelCount);
    let wx=normal*nx,wy=normal*ny;const powered=w.i===0||has(b,44)||has(b,45),gear=has(b,43)?(slope<-.2?1.3:.93):1;
-   let drive=powered&&input.gas&&!r.broken.includes(14)?s.power*21*gear*s.grip/s.wheelCount:0;if(r.vx>s.speed)drive=0;
+   let drive=powered&&input.gas&&!r.broken.includes(14)?s.power*21*lowSpeedPull*gear*s.grip/s.wheelCount:0;if(r.vx>s.speed)drive=0;
    if(input.brake)drive=r.vx>12?-s.mass*(has(b,47)?300:600)/s.wheelCount:-s.mass*150/s.wheelCount;
    if(!input.gas&&!input.brake&&has(b,46))drive=-s.mass*r.vx*8/s.wheelCount;drive-=pvx*s.mass*.4/s.wheelCount;
    if(waterGap(w.x)&&!has(b,63)&&!has(b,64))drive-=pvx*s.mass*(b.parts[1]===16?.35:.8)/s.wheelCount;
