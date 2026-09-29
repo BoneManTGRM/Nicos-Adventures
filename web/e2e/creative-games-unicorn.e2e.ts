@@ -15,7 +15,7 @@ test('the real site unicorn is painted in the game, portrait and card; poses and
  // poses, alter controls, or substitute artwork in the application.
  await page.addInitScript(()=>{
   const original=CanvasRenderingContext2D.prototype.drawImage;
-  CanvasRenderingContext2D.prototype.drawImage=function(...args:Parameters<CanvasRenderingContext2D['drawImage']>){
+  CanvasRenderingContext2D.prototype.drawImage=function(this:CanvasRenderingContext2D,...args:Parameters<CanvasRenderingContext2D['drawImage']>){
    const image=args[0];
    const source=image instanceof HTMLImageElement?image.currentSrc:image instanceof HTMLCanvasElement?image.dataset.testUnicornSource:'';
    if(source?.includes('unicorn-')&&this.canvas instanceof HTMLCanvasElement)this.canvas.dataset.testUnicornSource=source;
