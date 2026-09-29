@@ -3,13 +3,15 @@ import type {Language} from '../types';
 import type {Drive} from './save';
 import {carStats,has,stepDrive} from './carPhysics';
 import {drawTrack} from './carArt';
+import {drawSkyObjects} from './skyArt';
+import SkyAlert from './SkyAlert';
 import {HoldButton,useHeldControls,useReducedMotion} from './controls';
 import {landingFeedback,nextRampDistance,runHint,wheelsRemaining} from './garageExperience';
 import './truck-upgrade.css';
 
 type Props={initial:Drive;language:Language;best:number;onSample:(r:Drive)=>void;onCheckpoint:(r:Drive)=>void;onEnd:(r:Drive)=>void;onReturn:(r:Drive)=>void;onRetry:(r:Drive)=>void};
 const copy=(run:Drive)=>structuredClone(run);
-const snapshot=(r:Drive)=>({distance:Math.floor(r.distance),jump:Math.floor(r.bestJump),broken:r.broken.length,ended:r.ended,charge:Math.floor(r.boostCharge??100),boosting:r.boostActive===true,x:r.x,air:r.air,hint:runHint(r),wheels:wheelsRemaining(r)});
+const snapshot=(r:Drive)=>({distance:Math.floor(r.distance),jump:Math.floor(r.bestJump),broken:r.broken.length,ended:r.ended,charge:Math.floor(r.boostCharge??100),boosting:r.boostActive===true,x:r.x,air:r.air,hint:runHint(r),wheels:wheelsRemaining(r),sky:r.sky?structuredClone(r.sky):null});
 
 /** Rendering and ephemeral feedback never own the reward ledger or save data. */
 export default function TruckDriveStage(props:Props) {
@@ -38,7 +40,9 @@ export default function TruckDriveStage(props:Props) {
       if(replay.current>=0){
         replay.current+=delta*8;
         const index=Math.min(history.current.length-1,Math.floor(replay.current));
-        drawTrack(c,history.current[index]??run.current,w/scale,h/scale,recordToBeat.current,true);
+        const replayFrame=history.current[index]??run.current;
+        drawTrack(c,replayFrame,w/scale,h/scale,recordToBeat.current,true);
+        drawSkyObjects(c,replayFrame,w/scale,h/scale,true);
         if(index===history.current.length-1){replay.current=-1;setReplaying(false);}
       }else{
         if(!pausedRef.current){
@@ -55,6 +59,7 @@ export default function TruckDriveStage(props:Props) {
           if(sample>.08&&!run.current.ended){sample=0;history.current.push(copy(run.current));if(history.current.length>150)history.current.shift();}
         }
         drawTrack(c,run.current,w/scale,h/scale,recordToBeat.current,reduced.current);
+        drawSkyObjects(c,run.current,w/scale,h/scale,reduced.current);
         if(run.current.boostActive&&!run.current.ended&&!reduced.current){
           const r=run.current,camera=Math.max(0,r.x-(w/scale)*.28),cy=Math.min(0,r.y-180),rear=-carStats(r.build).width-8;
           c.save();c.translate(r.x-camera,r.y-cy);c.rotate(r.a);
@@ -76,7 +81,7 @@ export default function TruckDriveStage(props:Props) {
   },[initial.id]);
   const ramp=nextRampDistance(view.x),newBest=!initial.practice&&view.distance>recordToBeat.current;
   const tools=has(initial.build,61)||has(initial.build,62)||has(initial.build,70);
-  return <div className="cg-drive cg-drive-v2" data-boosting={view.boosting}>
+  return <div className="cg-drive cg-drive-v2" data-boosting={view.boosting} data-sky-phase={view.sky?.active?.phase??'none'} data-sky-count={view.sky?.spawnCount??0} data-sky-hits={view.sky?.hits??0} data-sky-dodged={view.sky?.dodged??0}>
     <div className="cg-drive-hud">
       <div><small>{es?'DISTANCIA':'DISTANCE'}</small><strong data-testid="garage-distance">{view.distance}<span> m</span></strong></div>
       <div><small>{es?'RÉCORD A SUPERAR':'RECORD TO BEAT'}</small><strong>{recordToBeat.current}<span> m</span></strong></div>
@@ -84,7 +89,8 @@ export default function TruckDriveStage(props:Props) {
       <button type="button" onClick={togglePause} data-testid="garage-pause" disabled={view.ended||replaying}>{paused?(es?'Continuar':'Resume'):(es?'Pausa':'Pause')}</button>
     </div>
     <div className="cg-track-wrap">
-      <canvas ref={canvas} className="cg-track" role="img" aria-label={es?'Tu auto en una pista con rampas. Los controles están debajo.':'Your car on a ramp course. Controls are below.'}/>
+      <canvas ref={canvas} className="cg-track" role="img" aria-label={es?'Tu auto en una pista con rampas y objetos que caen después de 300 metros. Los controles están debajo.':'Your car on a ramp course with falling objects after 300 meters. Controls are below.'}/>
+      {!view.ended&&!paused&&!replaying&&<SkyAlert sky={view.sky} spanish={es}/>}
       {!view.ended&&!paused&&<div className="cg-track-chips" aria-hidden="true">
         {newBest&&recordToBeat.current>0?<span className="cg-best-chip">{es?'NUEVO RÉCORD':'NEW PERSONAL BEST'}</span>:<span>{es?'RUEDAS':'WHEELS'} {view.wheels.remaining}/{view.wheels.total}</span>}
         {landing&&landing.until>run.current.t?<span className="cg-landing-chip">{es?'BUEN ATERRIZAJE':'NICE LANDING'} · {landing.meters} m</span>:ramp<26&&view.air<.18?<span>{es?'RAMPA EN':'RAMP IN'} {ramp} m</span>:null}
@@ -93,6 +99,7 @@ export default function TruckDriveStage(props:Props) {
       {paused&&!view.ended&&<div className="cg-pause-card">
         <strong>{es?'Tu aventura está en pausa':'Your adventure is paused'}</strong>
         <p>{es?'Turbo: mantén el botón o Mayús para acelerar. Se recarga mientras manejas sin turbo.':'Turbo: hold the button or Shift to accelerate. Recharges while you drive without turbo.'}</p>
+        <p>{es?'Después de 300 m pueden caer objetos. La flecha marca un punto fijo: frena o acelera para esquivarlo. La práctica no tiene objetos.':'After 300 m, objects may fall. The arrow marks a fixed target: brake or accelerate to dodge. Practice has no falling objects.'}</p>
         <button type="button" className="cg-primary" onClick={togglePause}>{es?'Seguir manejando':'Keep driving'}</button>
         <button type="button" onClick={returnToGarage}>{es?'Cobrar y editar auto':'Bank rewards & edit car'}</button>
       </div>}
@@ -120,6 +127,6 @@ export default function TruckDriveStage(props:Props) {
       {tools&&<HoldButton held={held} action="tool" label={es?'Usar herramienta':'Use tool'} disabled={paused||view.ended||replaying}>{es?'Herramienta':'Tool'}</HoldButton>}
       <button type="button" className="cg-return" onClick={returnToGarage}>{es?'Guardar y volver':'Bank & return'}</button>
     </div>
-    <p className="cg-help">{initial.practice?(es?'Práctica: sin premios ni cambios de récord.':'Practice: no rewards or record changes.'):(es?'Turbo gratis. Suéltalo y sigue manejando para recargar. Flechas ← → · Mayús: turbo.':'Free turbo. Release it and keep driving to recharge. ← → pedals · Shift: turbo.')} {view.broken>0?(es?`${view.broken} piezas desprendidas.`:`${view.broken} detached pieces.`):''}</p>
+    <p className="cg-help">{initial.practice?(es?'Práctica: sin premios, cambios de récord ni objetos que caen.':'Practice: no rewards, record changes, or falling objects.'):(es?'Turbo gratis. Objetos que caen después de 300 m: observa la flecha. Flechas ← → · Mayús: turbo.':'Free turbo. Falling objects after 300 m: watch the arrow. ← → pedals · Shift: turbo.')} {view.broken>0?(es?`${view.broken} piezas desprendidas.`:`${view.broken} detached pieces.`):''}</p>
   </div>;
 }

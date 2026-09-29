@@ -1,0 +1,6 @@
+/* One readable warning replaces secondary chips; it never covers the pedals. */
+.cg-drive[data-sky-phase=warning] .cg-track-chips,.cg-drive[data-sky-phase=falling] .cg-track-chips,.cg-drive[data-sky-phase=burst] .cg-track-chips{display:none}
+.cg-sky-alert{position:absolute;top:10px;left:12px;right:12px;width:fit-content;max-width:calc(100% - 24px);margin:auto;padding:9px 13px;display:flex;gap:9px;align-items:center;justify-content:center;border:1px solid #ffe4ad;border-radius:12px;background:#302b24f2;color:#fff0c9;font-size:13px;font-weight:800;line-height:1.35;pointer-events:none;text-align:center;box-shadow:0 3px 12px #0003}
+.cg-sky-alert>span{font-size:20px;flex:none}.cg-sky-burst{background:#203c43ef;border-color:#bde9df;color:#d6fff1}
+.cg-drive .cg-pause-card{max-height:calc(100% - 12px);overflow:auto;overscroll-behavior:contain}
+@media(max-height:500px){.cg-sky-alert{top:4px;padding:5px 10px;font-size:11px;line-height:1.2}.cg-sky-alert>span{font-size:15px}}
