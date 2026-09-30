@@ -65,3 +65,28 @@ test('Nico TV defers video transfer until play', async ({ page }) => {
   await expect.poll(() => transfers.some(url => url.endsWith('.mp4'))).toBe(true);
   expect(transfers.some(url => url.includes('.b64'))).toBe(false);
 });
+
+
+test('world map stays single-column in narrow and desktop-request phone viewports', async ({ page }) => {
+  await page.setViewportSize({ width: 980, height: 900 });
+  await page.goto('/');
+  await expect(page.getByTestId('continue-world')).toBeVisible();
+  await expect(page.locator('.world-atlas')).toBeVisible();
+
+  const geometry = await page.evaluate(() => {
+    const grid = document.querySelector('.fw-grid--map')!.getBoundingClientRect();
+    const welcome = document.querySelector('.world-welcome')!.getBoundingClientRect();
+    const atlas = document.querySelector('.world-atlas')!.getBoundingClientRect();
+    const destinations = document.querySelector('.fw-grid--map > .fw-destination-grid')!.getBoundingClientRect();
+    const video = document.querySelector('.fw-grid--map > .nico-video-card')!.getBoundingClientRect();
+    const hero = document.querySelector('.fw-grid--map > .fw-hero-card')!.getBoundingClientRect();
+    return {
+      gridWidth: grid.width,
+      widths: [welcome.width, atlas.width, destinations.width, video.width, hero.width],
+      overflow: document.documentElement.scrollWidth > innerWidth + 2,
+    };
+  });
+
+  for (const width of geometry.widths) expect(Math.abs(width - geometry.gridWidth)).toBeLessThanOrEqual(2);
+  expect(geometry.overflow).toBe(false);
+});

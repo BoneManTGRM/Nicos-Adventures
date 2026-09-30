@@ -29,6 +29,15 @@
 .creation-next button,.home-creation-shelf button {font:inherit;min-height:44px;padding:10px 14px;border:1px solid #6f91a8;border-radius:12px;background:#19354a;color:#edf7ff;cursor:pointer;}
 .story-home-next {grid-column:1/-1;}
 .robot-home-control-grid>article>div>button {min-height:44px;max-width:100%;padding:10px 14px;font:inherit;background:#16344a;color:#e9f6ff;border:1px solid #6f91a8;border-radius:12px;}
+@media(max-width:1100px){
+ .fw-grid--map {grid-template-columns:minmax(0,1fr);}
+ .fw-grid--map>.world-welcome,
+ .fw-grid--map>.world-atlas,
+ .fw-grid--map>.fw-destination-grid,
+ .fw-grid--map>.fw-hero-card,
+ .fw-grid--map>.nico-video-card {grid-column:1/-1;}
+ .fw-grid--map>.fw-destination-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
 @media(max-width:700px){
  .fw-app[data-active-section=world-map] .fw-page-header {padding:18px 2px 14px;gap:12px;}
  .fw-app[data-active-section=world-map] .fw-page-header>span {font-size:32px;}
