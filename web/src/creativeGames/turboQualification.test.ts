@@ -52,6 +52,7 @@ describe('survival, save receipts and state ordering',()=>{
   next.run.distance=200;const again=finishDrive(next.garage,next.run);expect(again.last!.bolts).toBe(0);expect(finishDrive(again,next.run)).toBe(again);
  });
  it('pause → resume → shield impact keeps the exact warning and timer',()=>{const r=fixture();r.sky!.active=planSkyAttack(r,geometry,0,1);r.survival!.shield=true;const before=structuredClone(r);for(let i=0;i<100;i++)stepDrive(r,idle,0);expect(r).toEqual(before);for(let i=0;i<480;i++)stepDrive(r,idle);expect(r.sky!.hits).toBe(1);expect(r.survival!.health).toBe(100);expect(r.broken).toEqual([]);});
+ it('freezes the seed across the launch preparation and persistence passes',()=>{const g=normalizeGames(null).garage,prepared=startGarageAttempt(g,{track:0,seed:1077});const saved=startGarageAttempt(g,{track:0,seed:prepared.run.sky!.seed});expect(saved.garage.resume).toEqual(prepared.run);});
  it('normalizes old health/mute fields without changing saved vehicles or wallet',()=>{const old=normalizeGames(null);old.garage.bolts=123;old.garage.blueprints=[{...STARTER_BUILD,name:'Saved truck',paint:3}];const r=makeDrive(STARTER_BUILD);delete r.survival;old.garage.sequence=1;old.garage.resume=r;const restored=normalizeGames(JSON.parse(JSON.stringify(old)));expect(restored.garage.resume!.survival).toEqual(initialSurvival());expect(restored.garage.blueprints).toEqual(old.garage.blueprints);expect(restored.garage.bolts).toBe(123);expect(restored.garage.muted).toBe(false);});
 });
 type Event={step:number;action:'gas'|'brake'|'idle'};

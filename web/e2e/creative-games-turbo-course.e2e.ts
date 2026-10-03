@@ -56,11 +56,24 @@ test('shield consumes once on impact and repair is collected once',async({page},
  await page.getByTestId('garage-pause').click();const after=(await saved(page)).resume;expect(after.survival.shield).toBe(false);expect(after.broken).toEqual([]);
 });
 test('starter boosted jump produces a clean real landing and capped stunt reward',async({page},info)=>{
- await garage(page,info);await page.keyboard.down('ArrowRight');let boosted=false,landed=false;
+ await garage(page,info);await page.keyboard.down('ArrowRight');let boosted=false,landed=false,airCaptured=false;
  for(let i=0;i<220;i++){await page.clock.runFor(50);const d=Number(await page.locator('.cg-drive').getAttribute('data-active-seconds'));const r=(await saved(page)).resume;
   if(!boosted&&r?.x>420&&r.x<760){await page.keyboard.down('ShiftLeft');boosted=true;}
   if(boosted&&r?.x>880)await page.keyboard.up('ShiftLeft');
+  if(boosted&&!airCaptured&&r?.air>.2){airCaptured=true;await visual(page,info,'boosted-jump-airborne');}
   if(r?.survival.stunts.length){landed=true;await visual(page,info,'boosted-clean-landing');break;}expect(d).toBeLessThan(15);
  }
  await page.keyboard.up('ShiftLeft');await page.keyboard.up('ArrowRight');expect(boosted).toBe(true);expect(landed).toBe(true);await page.getByTestId('garage-pause').click();const r=(await saved(page)).resume;expect(r.broken.some((id:number)=>id<3)).toBe(false);expect(r.survival.stunts).toContain(1);expect(r.survival.reward).toBeGreaterThanOrEqual(5);
+});
+
+test('the visible new run and initial saved run share the same recorded seed',async({page},info)=>{
+ await garage(page,info);const visible=Number(await page.locator('.cg-drive').getAttribute('data-run-seed'));const g=await saved(page);expect(g.resume.sky.seed).toBe(visible);
+ await page.getByTestId('garage-pause').click();const before=(await saved(page)).resume;await page.clock.runFor(3000);expect((await saved(page)).resume).toEqual(before);
+});
+test('storage failure leaves the previous good save intact, shows recovery guidance and does not crash',async({page},info)=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await garage(page,info);await page.getByTestId('garage-pause').click();const good=await page.evaluate(key=>localStorage.getItem(key),key);
+ await page.evaluate(()=>{const set=Storage.prototype.setItem;Object.defineProperty(window,'__restoreTruckStorage',{value:()=>{Storage.prototype.setItem=set;}});Storage.prototype.setItem=function(){throw new DOMException('Isolated quota fixture','QuotaExceededError');};});
+ await page.getByTestId('garage-mute').click();await expect(page.locator('.cg-save-error')).toBeVisible();expect(await page.evaluate(key=>localStorage.getItem(key),key)).toBe(good);expect(errors).toEqual([]);
+ await page.evaluate(()=>(window as unknown as {__restoreTruckStorage:()=>void}).__restoreTruckStorage());await page.clock.resume();await page.reload();await page.getByTestId('open-monster-garage').click();
+ const restored=await saved(page);const original=JSON.parse(good!);const old=original.profiles.find((p:{id:string})=>p.id===original.activeProfileId).creativeGames.garage;expect(restored.bolts).toBe(old.bolts);expect(restored.owned).toEqual(old.owned);expect(restored.blueprints).toEqual(old.blueprints);expect(restored.build).toEqual(old.build);
 });

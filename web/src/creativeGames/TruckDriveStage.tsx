@@ -27,9 +27,9 @@ export default function TruckDriveStage(props:Props) {
   const metrics=useRef({frames:0,slow:0,total:0,max:0});
   const [paused,setPaused]=useState(false),[replaying,setReplaying]=useState(false),[view,setView]=useState(()=>snapshot(initial));
   const [landing,setLanding]=useState<{meters:number;until:number}|null>(null);
-  const pause=()=>{clearHeld(held);pausedRef.current=true;setPaused(true);callbacks.current.onCheckpoint(copy(run.current));};
+  const pause=()=>{clearHeld(held);pausedRef.current=true;setPaused(true);setView(snapshot(run.current));callbacks.current.onCheckpoint(copy(run.current));};
   const held=useHeldControls({ArrowRight:'gas',KeyD:'gas',ArrowLeft:'brake',KeyA:'brake',Space:'tool',ShiftLeft:'boost',ShiftRight:'boost',KeyB:'boost'},pause);
-  const togglePause=()=>{pausedRef.current=!pausedRef.current;clearHeld(held);setPaused(pausedRef.current);callbacks.current.onCheckpoint(copy(run.current));};
+  const togglePause=()=>{pausedRef.current=!pausedRef.current;clearHeld(held);setPaused(pausedRef.current);setView(snapshot(run.current));callbacks.current.onCheckpoint(copy(run.current));};
   const returnToGarage=()=>{clearHeld(held);callbacks.current.onReturn(copy(run.current));};
   const retry=()=>{clearHeld(held);callbacks.current.onRetry(copy(run.current));};
   useEffect(()=>{
@@ -52,7 +52,7 @@ export default function TruckDriveStage(props:Props) {
         const index=Math.min(history.current.length-1,Math.floor(replay.current));
         const replayFrame=history.current[index]??run.current;
         drawTrack(c,replayFrame,w/scale,h/scale,recordToBeat.current,true);
-        drawSkyObjects(c,replayFrame,w/scale,h/scale,true);
+        drawSkyObjects(c,replayFrame,w/scale,h/scale,true,scale);
         if(index===history.current.length-1){replay.current=-1;setReplaying(false);}
       }else{
         const skyPhaseBefore=run.current.sky?.active?.phase,smashBefore=run.current.smash?.cleared.length??0,shieldBefore=run.current.survival?.shield,healthBefore=run.current.survival?.health??100;
@@ -76,7 +76,7 @@ export default function TruckDriveStage(props:Props) {
         // Show safety-critical phase changes on their simulation frame, not the next 10 Hz HUD sample.
         if(skyPhaseBefore!==run.current.sky?.active?.phase)setView(snapshot(run.current));
         drawTrack(c,run.current,w/scale,h/scale,recordToBeat.current,reduced.current||low);
-        drawSkyObjects(c,run.current,w/scale,h/scale,reduced.current||low);
+        drawSkyObjects(c,run.current,w/scale,h/scale,reduced.current||low,scale);
         if(run.current.boostActive&&!run.current.ended&&!reduced.current&&!low){
           const r=run.current,cam=truckCamera(r,w/scale,h/scale),camera=cam.x,cy=cam.y,rear=-carStats(r.build).width-8;
           c.save();c.translate(r.x-camera,r.y-cy);c.rotate(r.a);

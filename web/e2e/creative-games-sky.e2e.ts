@@ -52,7 +52,7 @@ test('accelerating away from the warned target dodges a real drop without damage
 
 test('warning and gas/turbo/brake controls fit portrait and landscape, including reduced motion',async({page},info)=>{
  await page.emulateMedia({reducedMotion:'reduce'});await garage(page,info,dropFixture());
- for(const viewport of [{width:390,height:844},{width:844,height:390}]){await page.setViewportSize(viewport);await page.clock.runFor(100);await expect(page.getByTestId('sky-warning')).toBeVisible();await controlsFit(page);
+ for(const viewport of [{width:375,height:667},{width:430,height:932},{width:390,height:844},{width:844,height:390}]){await page.setViewportSize(viewport);await page.clock.runFor(100);await expect(page.getByTestId('sky-warning')).toBeVisible();await controlsFit(page);
   const geometry=await page.getByTestId('sky-warning').evaluate(el=>{const a=el.getBoundingClientRect(),p=el.closest('.cg-track-wrap')!.getBoundingClientRect();return {a:{top:a.top,bottom:a.bottom,left:a.left,right:a.right},p:{top:p.top,bottom:p.bottom,left:p.left,right:p.right}};});expect(geometry.a.top).toBeGreaterThanOrEqual(geometry.p.top);expect(geometry.a.bottom).toBeLessThanOrEqual(geometry.p.bottom);expect(geometry.a.left).toBeGreaterThanOrEqual(geometry.p.left);expect(geometry.a.right).toBeLessThanOrEqual(geometry.p.right);await capture(page,info,`sky-controls-${viewport.width}`);
  }
 });

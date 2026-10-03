@@ -21,7 +21,7 @@ function obstacle(c:C,a:SkyObject){
  c.restore();
 }
 /** Draw the exact physics object and fixed target. Never advances the simulation. */
-export function drawSkyObjects(c:C,r:Drive,width:number,height:number,reduced=false){
+export function drawSkyObjects(c:C,r:Drive,width:number,height:number,reduced=false,scale=1){
  const a=r.sky?.active;if(!a||r.ended||r.practice)return;
  const cam=truckCamera(r,width,height),camera=cam.x,cy=cam.y,ground=terrainAt(a.targetX??a.x,r.track,r.bridges);
  c.save();c.translate(-camera,-cy);
@@ -33,11 +33,11 @@ export function drawSkyObjects(c:C,r:Drive,width:number,height:number,reduced=fa
  if(a.phase==='warning'||a.phase==='falling'&&offscreen){
   // Keep the direction cue until an offscreen drop resolves. Its target never
   // follows the car; braking may intentionally leave the object ahead of view.
-  const edgeX=Math.max(camera+24,Math.min(camera+width-24,target)),y=cy+82;
-  c.fillStyle='#ffe1a0';c.strokeStyle='#3d4050';c.lineWidth=2;
-  c.beginPath();c.moveTo(edgeX-12,y);c.lineTo(edgeX+12,y);c.lineTo(edgeX,y+20);c.closePath();c.fill();c.stroke();
-  c.font='bold 13px sans-serif';c.textAlign='center';c.fillStyle='#fff3cf';c.fillText(target>camera+width-24?'→':target<camera+24?'←':String(Math.max(1,Math.ceil((a.warning??SKY_WARNING_SECONDS)-a.age))),edgeX,y-8);
-  c.save();c.globalAlpha=.85;obstacle(c,{...a,x:edgeX,y:cy+120,radius:Math.min(18,a.radius)});c.restore();
+  const edgeX=Math.max(camera+24/scale,Math.min(camera+width-24/scale,target)),y=cy+Math.min(44/scale,ground-cy-70);
+  c.fillStyle='#ffe1a0';c.strokeStyle='#3d4050';c.lineWidth=2/scale;
+  c.beginPath();c.moveTo(edgeX-9/scale,y);c.lineTo(edgeX+9/scale,y);c.lineTo(edgeX,y+15/scale);c.closePath();c.fill();c.stroke();
+  c.font='bold '+(10/scale)+'px sans-serif';c.textAlign='center';c.fillStyle='#fff3cf';c.fillText(target>camera+width-24?'→':target<camera+24?'←':String(Math.max(1,Math.ceil((a.warning??SKY_WARNING_SECONDS)-a.age))),edgeX,y-8/scale);
+  c.save();c.globalAlpha=.9;c.translate(edgeX,cy+Math.min(72/scale,ground-cy-28));c.scale(1/scale,1/scale);obstacle(c,{...a,x:0,y:0,radius:12,age:0});c.restore();
  }
  if(a.phase==='falling'){
   if(!reduced){c.strokeStyle=a.kind===2?'#99f6ff80':'#ffdfa955';c.lineWidth=8;c.lineCap='round';c.beginPath();c.moveTo(a.x-(a.vx??0)*.03,a.y-a.radius-12);c.lineTo(a.x-(a.vx??0)*.15,a.y-a.radius-42);c.stroke();}

@@ -56,6 +56,6 @@
 .cg-garage .cg-track-chips span{padding:5px 7px;font-size:9px}
 .cg-garage .cg-drive-support button{min-width:38px;min-height:40px;padding:6px;font-size:11px}
 .cg-garage .cg-drive-support>span{font-size:10px}
-.cg-garage .cg-sky-alert{top:48px;font-size:11px;max-width:calc(100% - 20px);padding:7px 10px}
+.cg-garage .cg-sky-alert{top:8px;font-size:11px;max-width:calc(100% - 20px);padding:7px 10px}
 .cg-garage .cg-controls{padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(max-height:600px){.cg-garage .cg-track-chips span{font-size:8px;padding:3px 5px}.cg-garage .cg-sky-alert{top:29px;font-size:9px;padding:4px 7px}.cg-garage .cg-drive-support button{min-height:34px}.cg-garage .cg-drive-support>span{max-height:25px;overflow:hidden}}
+@media(max-height:600px){.cg-garage .cg-track-chips span{font-size:8px;padding:3px 5px}.cg-garage .cg-sky-alert{top:4px;font-size:9px;padding:4px 7px}.cg-garage .cg-drive-support button{min-height:34px}.cg-garage .cg-drive-support>span{max-height:25px;overflow:hidden}}

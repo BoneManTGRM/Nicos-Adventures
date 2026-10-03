@@ -14,11 +14,11 @@ export function findGarageParts(g:GarageSave,group:number,query:string,filter:Pa
 }
 
 /** Prepare a new run and settle the preceding one through the existing one-payment ledger. */
-export function startGarageAttempt(g:GarageSave,options:{build?:Build;track:number;practice?:boolean;trial?:boolean;previous?:Drive|null;recovery?:boolean}) {
+export function startGarageAttempt(g:GarageSave,options:{build?:Build;track:number;practice?:boolean;trial?:boolean;previous?:Drive|null;recovery?:boolean;seed?:number}) {
   const trial=options.trial===true;
   const settled=trial?g:options.previous?finishDrive(g,options.previous):g.resume?finishDrive(g,g.resume):g;
   const build=normalizeBuild(options.build??g.build,trial?PARTS.map(p=>p.id):g.owned);
-  const run=makeDrive(build,trial?0:settled.sequence+1,Math.max(0,Math.min(2,Math.floor(options.track))),trial||options.practice===true);
+  const run=makeDrive(build,trial?0:settled.sequence+1,Math.max(0,Math.min(2,Math.floor(options.track))),trial||options.practice===true,options.seed);
   if(options.recovery&&options.previous){
    const previous=options.previous,stats=carStats(previous.build),copyRun=structuredClone(previous);
    Object.assign(run,copyRun,{id:run.id,bankedDistance:previous.distance,ended:false,reason:0});

@@ -69,7 +69,7 @@ function planSkyCandidate(r:Drive,g:SkyGeometry,kind:SkyObject['kind'],hash:numb
  return {id:1,kind,phase:'warning',x:originX,y:originY,vy,radius,age:0,hit:false,vx,gravity,warning,targetX,targetY,originX,originY,threatened:Math.abs(r.x+speed*total-targetX)<g.width+radius,closest:100000,safeAction:brakeSafe?'brake':'gas'};
 }
 export function planSkyAttack(r:Drive,g:SkyGeometry,kind:SkyObject['kind'],hash:number):SkyObject|null{
- for(const cap of [460,300,180]){const a=planSkyCandidate(r,g,kind,hash,cap);if(a)return a;}
+ for(const cap of [700,460,300,180]){const a=planSkyCandidate(r,g,kind,hash,cap);if(a)return a;}
  return null;
 }
 /** One active object, no catch-up waves; burst second shot is planned and
