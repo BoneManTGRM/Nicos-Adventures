@@ -77,3 +77,18 @@ test('storage failure leaves the previous good save intact, shows recovery guida
  await page.evaluate(()=>(window as unknown as {__restoreTruckStorage:()=>void}).__restoreTruckStorage());await page.clock.resume();await page.reload();await page.getByTestId('open-monster-garage').click();
  const restored=await saved(page);const original=JSON.parse(good!);const old=original.profiles.find((p:{id:string})=>p.id===original.activeProfileId).creativeGames.garage;expect(restored.bolts).toBe(old.bolts);expect(restored.owned).toEqual(old.owned);expect(restored.blueprints).toEqual(old.blueprints);expect(restored.build).toEqual(old.build);
 });
+
+test('two fast cartoon bolts each start their own locked visible warning',async({page},info)=>{
+ const r=attack(3);r.sky!.burstRemaining=1;await garage(page,info,r);const firstId=await page.locator('.cg-drive').getAttribute('data-sky-id');await page.keyboard.down('ArrowRight');let second=false;
+ for(let i=0;i<45;i++){await page.clock.runFor(100);if(await page.locator('.cg-drive').getAttribute('data-sky-phase')==='warning'&&await page.locator('.cg-drive').getAttribute('data-sky-id')!==firstId){second=true;break;}}
+ expect(second).toBe(true);const target=await page.locator('.cg-drive').getAttribute('data-sky-target');expect(Number(await page.locator('.cg-drive').getAttribute('data-sky-duration'))).toBeGreaterThanOrEqual(1.5);await visual(page,info,'bolt-second-warning');
+ await page.clock.runFor(1000);await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-phase','warning');await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-target',target!);await page.clock.runFor(3000);await page.keyboard.up('ArrowRight');
+ await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-dodged','2');await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-hits','0');await expect(page.locator('.cg-drive')).toHaveAttribute('data-health','100');
+});
+test('normal starter plays all three sections, finishes, preserves end bounds and immediately replays',async({page},info)=>{
+ await page.emulateMedia({reducedMotion:'reduce'});await garage(page,info);await page.keyboard.down('ArrowRight');const sections=new Set<number>([0]);let clear=false;
+ for(let i=0;i<55;i++){await page.clock.runFor(1000);const d=Number((await page.getByTestId('garage-distance').innerText()).replace(/[^0-9]/g,''));sections.add(d<350?0:d<650?1:2);if(await page.locator('.cg-crash-card').count()){clear=true;break;}}
+ await page.keyboard.up('ArrowRight');expect(clear).toBe(true);expect([...sections].sort()).toEqual([0,1,2]);await expect(page.locator('.cg-crash-card')).toContainText(isEs(info)?'¡RETO COMPLETADO!':'COURSE CLEARED!');
+ await expect(page.locator('.cg-drive')).toHaveAttribute('data-checkpoint','3');expect(Number(await page.locator('.cg-drive').getAttribute('data-history'))).toBeLessThanOrEqual(150);const paid=await saved(page);expect(paid.best[0]).toBeGreaterThanOrEqual(1000);expect(paid.bolts).toBeGreaterThan(0);expect(paid.resume).toBeNull();await visual(page,info,'full-course-summary');
+ await page.getByTestId('garage-race-again').click();await page.clock.runFor(150);await expect(page.locator('.cg-drive')).toHaveAttribute('data-health','100');await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-phase','none');await page.getByTestId('garage-pause').click();await page.locator('.cg-return').click();expect((await saved(page)).bolts).toBe(paid.bolts);
+});

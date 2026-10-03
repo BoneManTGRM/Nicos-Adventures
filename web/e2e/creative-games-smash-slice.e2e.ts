@@ -1,7 +1,7 @@
 import {expect,test} from '@playwright/test';
 const key='nicos-world-local-save-v4';
 test('minimal real-route smash → ramps → warning → visible safe response → one bank → reload',async({page},info)=>{
- await page.addInitScript(()=>{const original=crypto.getRandomValues.bind(crypto);Object.defineProperty(crypto,'getRandomValues',{value:<T extends ArrayBufferView|null>(array:T):T=>{if(array instanceof Uint32Array&&array.length===1){array[0]=17;return array;}return original(array);}});});
+ await page.addInitScript(()=>{const original=crypto.getRandomValues.bind(crypto);Object.defineProperty(crypto,'getRandomValues',{value:<T extends ArrayBufferView<ArrayBuffer>>(array:T):T=>{if(array instanceof Uint32Array&&array.length===1){array[0]=17;return array;}return original(array);}});});
  await page.clock.install();await page.goto('/');await expect(page.getByTestId('continue-world')).toBeVisible();
  await page.evaluate(({key,language})=>{const s=JSON.parse(localStorage.getItem(key)!);const p=s.profiles.find((p:{id:string})=>p.id===s.activeProfileId);p.language=language;p.selectedSection='game-arcade';p.nico.speechEnabled=false;localStorage.setItem(key,JSON.stringify(s));},{key,language:info.project.metadata.language});
  await page.reload();await page.getByTestId('open-monster-garage').click();
