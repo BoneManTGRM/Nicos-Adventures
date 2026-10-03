@@ -45,6 +45,7 @@ export default function TruckDriveStage(props:Props) {
         drawSkyObjects(c,replayFrame,w/scale,h/scale,true);
         if(index===history.current.length-1){replay.current=-1;setReplaying(false);}
       }else{
+        const skyPhaseBefore=run.current.sky?.active?.phase;
         if(!pausedRef.current){
           accumulator+=delta;let steps=0;
           while(accumulator>=1/120&&steps++<10){
@@ -58,6 +59,8 @@ export default function TruckDriveStage(props:Props) {
           sample+=delta;
           if(sample>.08&&!run.current.ended){sample=0;history.current.push(copy(run.current));if(history.current.length>150)history.current.shift();}
         }
+        // Show safety-critical phase changes on their simulation frame, not the next 10 Hz HUD sample.
+        if(skyPhaseBefore!==run.current.sky?.active?.phase)setView(snapshot(run.current));
         drawTrack(c,run.current,w/scale,h/scale,recordToBeat.current,reduced.current);
         drawSkyObjects(c,run.current,w/scale,h/scale,reduced.current);
         if(run.current.boostActive&&!run.current.ended&&!reduced.current){
