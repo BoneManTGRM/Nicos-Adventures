@@ -552,15 +552,22 @@ export const normalizeStore = (candidate: unknown): LocalSaveStore => {
   return { schemaVersion: SCHEMA_VERSION, activeProfileId, profiles };
 };
 
+// A denied/corrupt read must not turn a temporary default into an overwrite.
+// One immediate retry handles transient browser denial; after two failures,
+// writes remain blocked until a successful load recovers the save boundary.
+let unsafeLocalRead=false;
 export const loadLocalStore = (): LocalSaveStore => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-      ?? LEGACY_KEYS.map((key) => localStorage.getItem(key)).find((value) => value !== null)
-      ?? null;
-    return saved ? normalizeStore(JSON.parse(saved)) : createDefaultStore();
-  } catch {
-    return createDefaultStore();
+  for (let attempt=0;attempt<2;attempt++) {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+        ?? LEGACY_KEYS.map((key) => localStorage.getItem(key)).find((value) => value !== null)
+        ?? null;
+      const store = saved ? normalizeStore(JSON.parse(saved)) : createDefaultStore();
+      unsafeLocalRead=false;
+      return store;
+    } catch { unsafeLocalRead=true; }
   }
+  return createDefaultStore();
 };
 
 export type ProfileEventDetail = {
@@ -569,6 +576,7 @@ export type ProfileEventDetail = {
 };
 
 export const saveLocalStore = (store: LocalSaveStore, source: ProfileEventDetail["source"] = "shared"): boolean => {
+  if (unsafeLocalRead) return false;
   try {
     const normalized = normalizeStore(store);
     const next = JSON.stringify(normalized);

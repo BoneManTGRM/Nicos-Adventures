@@ -10,6 +10,8 @@ test('600 real seconds of truck chaos/reset/navigation with frame and resource m
   EventTarget.prototype.removeEventListener=function(type,callback,options){const k=key(this,type,callback,options);if(k)installed.delete(k);remove.call(this,type,callback,options);};
   Object.defineProperty(window,'__truckGlobalListeners',{get:()=>installed.size});
  });
+ const rafProbe=()=>page.evaluate(()=>new Promise<{frames:number;durationMs:number;meanMs:number;maxMs:number}>(resolve=>{let last=0,start=0;const gaps:number[]=[];const sample=(now:number)=>{if(!start)start=now;if(last)gaps.push(now-last);last=now;if(now-start>=2000)resolve({frames:gaps.length,durationMs:now-start,meanMs:gaps.reduce((a,b)=>a+b,0)/gaps.length,maxMs:Math.max(...gaps)});else requestAnimationFrame(sample);};requestAnimationFrame(sample);}));
+ await page.goto('about:blank');const blankFrameCadence=await rafProbe();
  await page.goto('/?play=monster-garage');await expect(page.getByTestId('garage-drive')).toBeVisible();await page.getByTestId('garage-drive').click();await page.keyboard.down('ArrowRight');
  const start=Date.now();let iterations=0,resets=0,navigations=0,rotations=0,pauses=0,baseline=0;
  while(Date.now()-start<600_000){
@@ -31,6 +33,6 @@ test('600 real seconds of truck chaos/reset/navigation with frame and resource m
  }
  await page.keyboard.up('ArrowRight');await page.keyboard.up('ShiftLeft');await page.keyboard.up('ArrowLeft');
  expect(errors).toEqual([]);expect(assets).toEqual([]);expect(Date.now()-start).toBeGreaterThanOrEqual(600_000);expect(navigations).toBeGreaterThanOrEqual(10);expect(rotations).toBeGreaterThanOrEqual(10);
- const report={revision:process.env.GITHUB_SHA,project:info.project.name,engine:info.project.use.browserName,viewport:info.project.use.viewport,actualDevice:false,durationMs:Date.now()-start,iterations,resets,navigations,rotations,pauses,errors,assets,samples};
+ const report={blankFrameCadence,revision:process.env.GITHUB_SHA,project:info.project.name,engine:info.project.use.browserName,viewport:info.project.use.viewport,actualDevice:false,durationMs:Date.now()-start,iterations,resets,navigations,rotations,pauses,errors,assets,samples};
  console.log('TRUCK_STRESS '+JSON.stringify(report));await info.attach('truck-stress-metrics',{body:Buffer.from(JSON.stringify(report,null,2)),contentType:'application/json'});
 });

@@ -92,3 +92,29 @@ test('normal starter plays all three sections, finishes, preserves end bounds an
  await expect(page.locator('.cg-drive')).toHaveAttribute('data-checkpoint','3');expect(Number(await page.locator('.cg-drive').getAttribute('data-history'))).toBeLessThanOrEqual(150);const paid=await saved(page);expect(paid.best[0]).toBeGreaterThanOrEqual(1000);expect(paid.bolts).toBeGreaterThan(0);expect(paid.resume).toBeNull();await visual(page,info,'full-course-summary');
  await page.getByTestId('garage-race-again').click();await page.clock.runFor(150);await expect(page.locator('.cg-drive')).toHaveAttribute('data-health','100');await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-phase','none');await page.getByTestId('garage-pause').click();await page.locator('.cg-return').click();expect((await saved(page)).bolts).toBe(paid.bolts);
 });
+
+test('denied save reads preserve the exact previous profile until a normal reload can recover it',async({page},info)=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await garage(page,info);await page.getByTestId('garage-pause').click();const original=await page.evaluate(key=>localStorage.getItem(key),key);await page.clock.resume();
+ await page.addInitScript(key=>{
+  const get=Storage.prototype.getItem;
+  Object.defineProperty(window,'__readTruckOriginal',{value:()=>get.call(localStorage,key)});
+  Storage.prototype.getItem=function(k:string){if(this===localStorage&&k===key&&get.call(sessionStorage,'truck-isolated-deny-read')==='yes')throw new DOMException('Isolated read denial','SecurityError');return get.call(this,k);};
+ },key);
+ await page.evaluate(()=>sessionStorage.setItem('truck-isolated-deny-read','yes'));await page.reload();await expect(page.getByTestId('continue-world')).toBeVisible();
+ expect(await page.evaluate(()=>(window as unknown as {__readTruckOriginal:()=>string}).__readTruckOriginal())).toBe(original);expect(errors).toEqual([]);
+ await page.evaluate(()=>sessionStorage.removeItem('truck-isolated-deny-read'));await page.reload();await page.getByTestId('open-monster-garage').click();const restored=await saved(page),s=JSON.parse(original!),old=s.profiles.find((p:{id:string})=>p.id===s.activeProfileId).creativeGames.garage;
+ expect(restored.bolts).toBe(old.bolts);expect(restored.build).toEqual(old.build);expect(restored.blueprints).toEqual(old.blueprints);expect(restored.owned).toEqual(old.owned);
+});
+test('a suspended animation loop resumes without advancing a paused warning by the hidden time',async({page},info)=>{
+ await garage(page,info,attack(2));
+ await page.evaluate(()=>{
+  const frame=window.requestAnimationFrame.bind(window);let blocked=false,pending:FrameRequestCallback|null=null;
+  window.requestAnimationFrame=callback=>frame(t=>{if(blocked)pending=callback;else callback(t);});
+  Object.defineProperty(window,'__blockTruckFrame',{value:()=>{blocked=true;}});
+  Object.defineProperty(window,'__releaseTruckFrame',{value:()=>{blocked=false;const callback=pending;pending=null;if(callback)frame(callback);}});
+ });
+ await page.clock.runFor(50);await page.evaluate(()=>(window as unknown as {__blockTruckFrame:()=>void}).__blockTruckFrame());await page.clock.runFor(50);
+ await page.getByTestId('garage-pause').click();const before=Number(await page.locator('.cg-drive').getAttribute('data-active-seconds')),target=await page.locator('.cg-drive').getAttribute('data-sky-target');
+ await page.clock.runFor(60_000);await page.getByTestId('garage-pause').click();await page.evaluate(()=>(window as unknown as {__releaseTruckFrame:()=>void}).__releaseTruckFrame());await page.clock.runFor(20);await page.getByTestId('garage-pause').click();
+ expect(Number(await page.locator('.cg-drive').getAttribute('data-active-seconds'))-before).toBeLessThanOrEqual(.025);await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-phase','warning');await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-target',target!);await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-hits','0');
+});

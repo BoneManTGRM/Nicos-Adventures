@@ -1,81 +1,83 @@
-# Turbo Smash Truck durable handoff
+# Turbo Smash Truck handoff
 
-**Stage2 candidate; NOT release-ready.** Full owner brief stays frozen. No merge/deploy, spending, paid browser calls, real-save clearing, force push, physical iPhone or independent review.
+Status: stage 3 qualification. **Not merged or deployed.** No extra spending; no physical iPhone or independent reviewer. Use this document and current PR state on continuation.
 
-## Identity and exact next action
-Repository BoneManTGRM/Nicos-Adventures only. Baseline main aadc44cae98722894907f50caee3ee315fae1432. Branch mission/turbo-smash-truck; draft [PR159](https://github.com/BoneManTGRM/Nicos-Adventures/pull/159). Reused15files from PR157 SHA528502b4fce8d5739e200fbaa4d976b396a37ffc; original PR untouched.
-This commit advances parent455ab5e6c8c766c903985f7efa742a57eaa10f0c. Fetch PR159 current head and its Actions before continuing. **Next: exact full candidate unit/build and browser logs; fix/retest failures, inspect new actual screenshots, then add/run sustained10minute wall-clock stress and complete release qualification.** Do not inherit prior proof for changed behavior.
-Intended game URL https://nicos-world.com/?play=monster-garage. New deep-link fix not deployed. Production still baseline main. Historical Sept30 nicos-world build dc044d49-f0f6-4d7a-8f66-b418b3dec20c/version60ec9506-8b08-40f5-a312-07ee73e6cfe6 is not Oct3 verification. Branch Workers Builds check fails; inspect real protection/build logs before merge, never bypass or remove infrastructure.
-Canonical React PWA: main.tsx→AppShell→FullApp→world/Arcade→MonsterGarage→TruckDriveStage. Main Cloudflare nicos-world Workers Builds/static SPA. No new engine/backend/dependencies.
+## Source and release identity
 
-## Qualified previous milestones
-Minimal slice source c82586202e0adb4705afb9a25728b1567fb1a719, merge d9c23d5b29d07da889a3e95a40e96fdccb63a7d1: CI37155274934 success; dedicated37155274935 200passed/0skips.
-Six-type/save-migration source455ab5e, merge8733334aa8b0918a3802af875f3a8848ea399623: CI37157113937 success; dedicated37157113830 all4shards62/62, **248passed/0skips**, games111304393589 success. Broader37157113886 success (fetch logs for exact totals).
-Evidence docs/evidence/turbo-smash-{baseline,initial-checks,warning-threshold,slice-model,slice-qualification,six-types-model}.json. Six retained actual slice JPEGs in docs/evidence/turbo-smash-93be193/. Parent455 six renders inspected from TRUCK_VISUAL records: coherent procedural six types, centered action, unobstructed controls; new full draft must capture again.
-Browser environments: Chromium desktop1440×900/Pixel7 emulation; desktop WebKit iPhone13/iPadPro11 emulation; English/es-MX; explicit390×844 and844×390, reduced motion. Not realiPhone/owner fun acceptance.
-Baseline12ramp cases pass original main and parent455: tracks0/1/2,wheels11/12,normalx90/checkpointx1350,gas120Hz25s,groundedx>1990 and|angle|<.7. Historical low-power issue not reproduced. Kept regression for floating1.6s warning (192steps=1.5999999999999968) before1ns tolerance/immediate HUD fix. First input failure Gas loses hold on Turbo focus reproduced/repaired.
-Old source8da had613/614units, old stationary4450 fixture displaced by new crate. Fixed migration separately clears new behind/overlap colliders with no new rewards; moved stationary-hit fixture to clear level5600 while retaining hit assertions.
-Previous dedicated matrix90s WebKit timeouts twice; split4shards2workers, identical assertions/90s limit, fail-closed aggregate; parent455 passes. Old artifact11285625403 SHAaa9001ce038527aea641e4aa354e37debcb06ce1c8303a0c092bab1b33e3713e preserves evidence.
-Pre-existing unrelated issues: EnglishWebKit unicorn movement issue156; production verifier detached locator; obsolete nicos-adventures Worker check. Do not mislabel as introduced.
+Repository: BoneManTGRM/Nicos-Adventures only. Baseline main `aadc44cae98722894907f50caee3ee315fae1432`; canonical React canvas game is FullApp → Arcade → MonsterGarage → TruckDriveStage. Existing main Cloudflare `nicos-world` static SPA workflow remains. No new engine, dependencies, backend or currency.
 
-## New full candidate implementation
-Six smash types18fixed objects, distinct thresholds/rewards/shape art, swept collisions, once-only cleared/paid IDs,8decorative noncolliding fragments latest. Three sections: original forgiving opening, level sky stretch, combined existing ramps with extra safe runways. Last layout changes bounded inter-ramp spacing and moves two later obstacles to avoid wall/landing traps. Original first four ramps/qualification unchanged. Finish1000m.
-Air restoring coefficient1.5 minimized route2 roof rollover at397.11m; tests0/1.5/3/4.5 in previous evidence. Cosmetic impact560 avoids normal starter detachment, extreme fracture remains.
-Four seeded attacks: verticalcrate, larger/slowerboulder, diagonalcrystal, separately warnedtwo-bolt burst. Oneactive/max32,0.5s rejected-candidate attempts,60–85m intervals, bounded1s/.65s quiet. Legacy committed objects retain8s cooldown. BOTH300m/20active seconds; warning1.6–2.4s, locked trajectory, unaided braking/gas reachability including.35s reaction, slope/wall/landing rejection. Unsafe second bolt cancels. Procedural exact object/target/path plus always-visible directional preview. No homing.
-Health100, rechargeable existing turbo, shield/repair once IDs, damage/shield continuous-contact guard, checkpoint recovery0/1/2/3 with3s visible protection/nearby hazard clear. Recovery banks through existing ledger, marks prior distance/smashes paid, preserves pickup/reward-action dedup. Near-miss actual threatening trajectory/close avoided pass pays2 once, clean boosted8m landing5 once per section. Combo max4/bonus10 cap.
-Original procedural truck trim/pickups/flags/four hazards/fragments; local WebAudio tones max4/.15s, mute save; no downloaded assets/licenses/remote generator/tracker/voice.
-Simulation120Hz, spawn/persistence/art/input separate. Per-frame state remains local refs/canvas. Shared camera terrain/sky/boost. Central pointer/key ownership sets, cancellation/background cleanup. HUD health/reward/section compact; end summary/checkpoint/free replay. ActualRAF diagnostic frame counts/raw times/slow frames/object/history/effects DOM only; low-effects removes cosmetic cost/DPR when>20%slow, warning clarity retained. **No measured FPS/stress result yet.**
-Changed modules in web/src/creativeGames plus focused tests/e2e and config. No unrelated redesign. FullApp deep-link prior change remains.
+Branch `mission/turbo-smash-truck`; [PR 159](https://github.com/BoneManTGRM/Nicos-Adventures/pull/159). This candidate advances `2c137339e283cbd99c2cc52616df6b9274e48ccb`; obtain the exact current head from PR159. Reused 15 files from existing PR157 source528502b4fce8d5739e200fbaa4d976b396a37ffc; original PR untouched. Game URL: https://nicos-world.com/?play=monster-garage (deep-link implementation is not yet deployed).
 
-## Save compatibility
-Schema/key v4/nicos-world-local-save-v4; legacy1/2/3 read-only. Ownership/builds/blueprints/profiles/bolts/best/goals/lang/settings untouched. Optional bounded survival/seed/run fields, muted defaultsfalse; normalize old collider positions adds paid/cleared newly introduced IDs, no coin grants. Existing sequence/paidThrough is sole receipt boundary; practice pays0. Storage-failure boundary remains existing; full browser injected-failure proof still pending. Tests use isolated contexts/fixtures.
+Production has not been verified for this mission. Historical Sept30 build/version identities are not current proof. The branch Workers Builds:nicos-world check fails (2c build f7ed1947-8931-413c-a8a3-97364eb1ea7c); authenticated Cloudflare build logs are unavailable. Protection read returns403 because the integration lacks administration scope. Use the normal protected merge API only after qualification, with the expected exact head; do not disable checks or remove infrastructure. A rejection is a release boundary, not permission to bypass it.
 
-## Iteration evidence and pending checks
-Method1 minimal source/browser slice already qualified; full candidate now integrates mechanics. Method2 frozen starter/tracks/input/120Hz/source identities; explicit later layout/rate changes recorded in docs/evidence/turbo-smash-full-model.json. Model tuning1/7/42 separate from qualification1001–1050. Fifty actual-source erased-model runs include37braking events, allfour patterns,1000m finish,health100/nohits; modelonly. New turboQualification.test.ts repeats throughrealTS with inputrecord/replay30/60/120Hz and75msboundedstalls; numerical tolerance x1e-5/time1e-7 (samefixedsteps, not cross-device bit identity).
-Four controlled coast paths each hit once; brake paths avoid without boost/shield. Bolt gas case produces two separately warned shots. Near-miss minimization preserves close diagonal/bolt hits vs genuine avoidance; tests oncepay/receipt/shield/repair/recovery/pause.
-Method3 second-pass SELF-review only: no independent reviewer available. Strong hypotheses still require actual browser falsification: warning visibility/phone layout, untouched hold aftercancel, storage failures, bolt pair, full1000m route, boosted clean landing, bad visual despite tests, particle/listener growth, production previous build.
-Method4 physics/input/gate/collision→safe scheduling→save/rewards→effects/browser→stress/release. Scheduler initially only1attack; record rate/runway tuning to2–3natural warnings without dropping trap rejection. Sky tests read longer explicit warning duration and choose visible safeAction; retained legacy1600ms and brake-fixture proofs, not silent assertion weakening.
-A1–A3 previous slice/types proof must rerun full; A4–A9 newfullmechanics/tests pending; A10 new actual finished images pending; A11 mandatory50TS qualification/10minstress/metrics pending; A12 safe merge/deploy/fresh plus ordinarycached return/save production verification pending. ActualiPhone/childfun acceptance pending.
+## Exact next action
 
-## Commands/tools
-Node22.12.0, existing lockfile:
+1. Fetch current CI and all four creative qualification shards plus both ten-minute stress jobs. Fix real failures, then rerun affected evidence on the changed candidate.
+2. Inspect the new blank-page versus game RAF measurements and reduced-resolution fallback; desktop WebKit previously measured about20FPS. The 30FPS fallback goal is not achieved/proven yet.
+3. Inspect actual current captures (stack smash, diagonal warning/dodge, boosted jump/landing), finish second-pass self-review, inspect full PR diff/required checks, mark ready and use protected merge when satisfied.
+4. Confirm merged revision and release.json on the actual domain. Existing production verifiers and the read-only returning-client observer must verify fresh and ordinary cached clients with preserved fixture saves. PENDING_NO_MERGE is not a pass.
+5. Genuine iPhone/owner fun acceptance remains pending. Never require owner developer tools.
+
+## Implemented frozen scope
+
+Three sections reuse the existing course: forgiving opening, sky dodge from350m, combined stunt gauntlet from650m; normal run finishes1000m, practice continues. Original early four ramps remain. Starter truck has tuned power/traction/air recovery, rechargeable free turbo, familiar brake/reverse/gas/boost and existing optional tool/midair controls. Input ownership supports simultaneous pointers/keys, cancellation, blur/visibility cleanup. Camera and sky art share one transform.
+
+Six original procedural smash types (crate stack, fence, non-explosive barrel, tires, inert robot scrap, brittle ice) use light/medium/heavy thresholds;18 bounded colliders, swept max-speed collisions, once-only cleared/paid IDs,8 decorative fragments with no colliders. Legacy saves clear newly inserted objects behind/overlapping the saved truck without paying.
+
+Four seeded sky patterns: vertical junk, slower large boulder, diagonal crystal, two separately warned cartoon bolts. BOTH300m and20 active seconds;1.6–2.4s visible warnings; locked target/trajectory. Conservative unaided brake/gas escape with.35s reaction; wall/slope/landing rejection, quiet intervals, one active object and max32 attacks. Production fresh seeds vary; gameplay RNG is separate from cosmetics. Natural lead700 makes a warned coasting attack threatening while braking remains safe.
+
+Health100, shield/repair once-only pickups, continuous-impact guards, checkpoint recovery with3s visible protection and nearby hazard clearing. Meaningful threatening close misses and clean boosted8m landings earn the existing bolts; combo max4/bonus10, total extra125 cap. Existing run sequence/paidThrough ledger banks exactly once; checkpoint/retry keeps prior paid distance/objects/action dedup. No grinding gate, no new shop/economy.
+
+Compact bilingual EN/es-MX HUD, warning shape/path/arrow/action text, clean landing feedback, summary/free replay; local short WebAudio tones max4 with saved mute. Reduced motion removes cosmetic animation, essential warnings remain. RAF/resource diagnostic data attributes carry no personal data or production debug powers. 120Hz local ref simulation avoids app-wide per-frame updates.
+
+Latest bounded fixes: retry one transient storage read; after repeated denied/corrupt reads block writes of temporary defaults until successful load. Isolated regression preserves wallet777 and saved vehicle. Pause/resume resets RAF timestamp/accumulator even if the animation loop was suspended; explicit60s suspension browser regression. Low-effects DPR reduced1.5→1 and reduced-motion mode usesDPR1; stress now measures blank-page cadence to distinguish rendering cost from environment scheduling.
+
+## Evidence and acceptance limits
+
+[2c qualification, input scripts and both real stress records](evidence/turbo-smash-2c-qualification.json) retains50 qualification seeds1001–1050, distinct tuning seeds1/7/42. Each actual Vitest replay checks30/60/120Hz plus bounded75ms stalls using the same120Hz accumulator; x tolerance1e-5/time1e-7. All50 finished1000m, health100, zero hits, all four patterns covered,51 actual brake events. Source2c CI37161484634/job111315657573: **686/686 unit tests, typecheck/build/asset budgets passed**. This is source2c evidence; new storage/resume/performance changes require current checks.
+
+2c creative run37161484652: **334 passed/2 failed**; both iPad EN/es-MX full-course runs timed out at the unchanged90s limit, twice each (job111315657948). No failed gameplay assertion was reached. Next candidate retains exact fixture/viewport/input/criteria, reduces cosmetic DPR under reduced motion, and runs the full-course case in all eight projects in its own single-worker job. Do not call this matrix qualified. Both actual600s stress jobs passed: Chromium111315657786 (600520ms,14 navigations,23 rotations,45 pauses,32 resets); WebKit111315657941 (600489ms,13 navigations,21 rotations,40 pauses,29 resets). No uncaught game errors/essential asset failures; global listener count stayed29. Bounds:1 hazard/22 debris/150 history/18 colliders/8 fragments/4 voices. Actual sampled cumulative-counter deltas: Chromium60.00FPS, no >33.3ms frames, max16.8ms; WebKit19.97FPS,99.97%slow, max960ms. These measure this CI environment, not actual iPhone performance. Do not claim stable30/60FPS universally.
+
+[Retained actual rendered captures](evidence/turbo-smash-2c1373/) identify source2c and tested merge e987af72778d6282394c05a35ecdd9849a974caf; self-reviewed coherent original art, readable warning previews under banner, unobstructed phone controls,14m boosted clean landing. Current exact candidate captures must also be inspected after changed behavior.
+
+Acceptance mapping:
+- A1 local route/start/pause/retry/exit/navigation covered; real-domain new-release checks pending.
+- A2 original baseline12 cases already passed (historical ramp-power issue not reproduced); retained normal/checkpoint starter regression and actual ramp-two capture.
+- A3 six types/collider removal/max-boost/once rewards/migration covered by unit and browser tests.
+- A4–A6 four patterns, separate bolt warning pair, full three-section1000m run, shielding/repair/combo/near/stunt/checkpoint/dedup covered; pending current exact candidate results.
+- A7 schema4/key nicos-world-local-save-v4 and legacy1/2/3 retained. Existing parts/builds/blueprints/wallet/profiles/settings preserved. Write quota browser test passed2c; denied-read regression/fix new candidate still needs actual CI.
+- A8 multi-pointer cancellation/keyboard/blur/resize/safe areas and pause order covered in emulation; actual OS background/iPhone touch unverified; suspended-RAF regression new candidate.
+- A9 EN/es-MX, mute/reduced motion and non-sound/non-color warning covered in browser matrix.
+- A10 actual Chromium/WebKit captures inspected; child fun remains owner acceptance.
+- A11 sustained stress and bounded counts passed2c; performance goal outstanding as above; rerun current candidate.
+- A12 no release/returning cached-client proof yet.
+
+Eight Playwright projects: Chromium desktop/Pixel7 and desktop WebKit iPhone13/iPad11, each EN/es-MX; additional375×667/430×932/390×844/844×390. These are emulations. No actual physical device session.
+
+## Iteration, critique and reproduction
+
+Method1: baseline ramp problem minimized before tuning; historical second-ramp failure not reproduced. Then actual route minimal slice ramp→smash→warning→brake/dodge→once bank/reload/retry qualified sourcec825862,200 browser passes. Six-type/save milestone455ab5e qualified248 passes. Related floating1.6s warning and Gas losing hold on Turbo focus were reproduced first.
+
+Method2: fixed starter/course/seed/input/browser/viewport/simulation criteria retained. Timing waits now use each declared warning duration; old collision/dedup assertions remain. Coupled course/runway changes and natural lead460→700 are recorded in evidence/turbo-smash-full-model.json and evidence/turbo-smash-ts-qualification-b50.json. No lowered assertions or bit-identical unrelated-device claims.
+
+Method3: **second-pass self-review**, no independent reviewer available. Minimized/fixed route2 rollover397.11m (air torque1.5), warning preview occlusion, paused HUD lag, initial live/save seed divergence, too-harmless natural coasting attack, read-failure autosave overwrite. New browser regressions address suspended animation resume; performance remains an explicit qualification issue.
+
+Method4: input/physics→collisions→fair spawning→reward/save→art→broad browsers/stress/release. After two equivalent WebKit90s contention timeouts,4 shards/2 workers retained identical assertions/timeouts and fail-closed aggregate. Reordering isolated slow browser environment from product failures. Tested pause→resume→impact, impact→checkpoint/retry, navigation→return, language/reload, storage denial/reload.
+
+Commands in web (Node22.12.0):
 ```sh
-cd web
 npm ci --no-audit --no-fund
 npm test
 npm run build
-npx playwright install --with-deps chromium webkit
-npx playwright test --config playwright.creative-games.config.ts --shard=1/4 --workers=2
+npx playwright test --config=playwright.creative-games.config.ts --shard=1/4 --workers=2 --grep-invert 'normal starter plays all three sections'
+npx playwright test --config=playwright.creative-games.config.ts creative-games-turbo-course.e2e.ts --workers=1 --grep 'normal starter plays all three sections'
+npx playwright test --config=playwright.truck-stress.config.ts --project=chromium-mobile-en
+npx playwright test --config=playwright.truck-stress.config.ts --project=webkit-iphone-en
 ```
-All4shards required. Existing workflow .github/workflows/creative-games.yml gates games on every shard. New turbo-course e2e covers pattern locks/escape, pause/recovery/mute/shield and boosted clean landing; inspect actual failures, no claims before passes.
-Available GitHub Git APIs/Actions; no local shell/game skill/browser runner. Firecrawl allowance exhausted(-1000/1000 periodSept16–Oct16): no metered calls/topups. Actual screenshots via completed job TRUCK_VISUAL JSON, display image({type:'image',data:record.image,mimeType:'image/jpeg'}); never printbase64. Base64 Git blobs + SHA-only tree works; guard.sha and preserve partial writes before retry.
-Keep PR draft until full exact source checks/critique pass. Then inspect protection/merge/deploy identity, verify domain without query-only-cache assumptions. Do not ask routinepermission, do not promise unattended continuation.
+Run shards2/4–4/4 as well. Existing public Actions execute these because this tool environment has no local shell/browser runner. No game skills are installed. Firecrawl allowance was exhausted; no paid automation/generation calls used.
 
-## Full candidate first exact checks and next stress gate
-Source32ff812f9eebc6dbde3bd66a25bf4cb4dc58344f: CI37159654357/job111310267477 **683passed/1failed of684**. All68 new turboQualification cases pass, including50 qualification seeds1001–1050 with actual TS input replays30/60/120Hz/75msstalls,37brake events/allfourpatterns and healthy1000m finishes. docs/evidence/turbo-smash-ts-qualification.json preserves actual logged input scripts/results. Sole failure old carPhysics deterministic test constructs two production-varied seeds and compares entire state. This commit freezes same recorded seed17 while retaining original deep equality and physics inputs; production variation remains. Browser checks pending/notcounted.
-Adds real600second stress on Chromium mobile and desktopWebKit iPhone-emulation, listener/object/audio bounds and raw RAF statistics; games aggregate now also fails closed on both stress jobs. No FPS result claimed before actual logs. Add only existingrepoActions allowances; no purchases.
-Sky text now says precisely Brake! or Speed up! for the proven safe response; old legacy fixtures retain either-action label. New counters are DOM diagnostics only, no production debug controls.
-Exact next action: inspect current head unit/build/dedicated/stress logs and fix all actual failures; inspect actual full screenshots, then remaining storage/touch/production/release acceptance. PR staysdraft.
+Changed scope: web/src/creativeGames modules/tests, shared storage boundary plus its safety regression, FullApp game link, e2e/config/workflows, this handoff and evidence. Inspect actual PR file list before release. Existing unrelated production unicorn movement issue156/detached-locator failure are historical and must not be misreported as truck regressions.
 
-## Pause/initial-seed defects minimized before repair
-Exact6ea284d0c3b86f06b7c2ca60515c855f42a9c97c CI37159876495/web111310924921 passed **684/684**, TS/e2e typecheck/Vite/asset/performance budgets; gzip main138121B/styles29247B. Dedicated37159876526 still pending at this edit.
-Stress job111310925082 Chromium failed34.5s: pause DOM time31.358333333332194→31.424999999998857. WebKit111310925194 failed43.6s:31.483333333332187→31.533333333332184. Simulation already paused;10Hz UI sample lagged the transition. Fix both pause entry points to snapshot actual run immediately. Original equality/time/duration criteria retained, no relaxed assertion or stress completion claimed. Artifacts11286584063/11287426713 preserve failure.
-Second-pass self-review found begin() prepares a run and then calls startGarageAttempt again for persistence, now producing different randomized seed until first checkpoint. Fix explicit optionalseed through second pass; browser test compares liveDOMseed to initialsavedseed before1.5sec. GaragePicture previously made a random run everyanimationframe; freeze procedural preview practice/id0/seed1 so cosmetics never consume gameplayseed generation.
-Add quota-failure browser case to preserve exact priorgoodlocalStorage, show existing save-error guidance, survive and reload ownedparts/vehicles/wallet; no realuserprofile altered. Extendphonewarningfit to375×667 and430×932 plusportrait/landscape. Actual browserpass pending.
-Exact next: fetch this candidate checks and actual TRUCK_VISUAL captures; if browser assertions fail, minimize/fix/retest before release. Tenminute stress must truly complete; noFPS achieved claim yet.
+## Asset provenance and spending
 
-## Slice adaptation and actual visual critique before repair
-Source6ea exactbrowser37159876526/shards1(job111310925227) and2(job111310925214): each74passed/2failed. All14newfullcases in each desktop/mobile bilingual shard pass (fourlockedpattern escapes, genuine diagonalnear reward/pause/recovery/mute, shieldonce, boostedcleanlanding). Only oldslice fails:3500ms ends before slowerboulder's2.4warning+~1.24fall; gasresponse also legitimately smashes IDs9/10, exact39bolts insteadoldbraked31. Freeze isolated browser crypto seed17, wait declaredwarningduration+1600ms, retainzeroHit/oneDodge/preciseIDs[1..10]/39bolts/oncebank/reload/oldrampassertions. This deliberately accommodates slowerdistinctpattern and visiblegasresponse; legacy1.6s fixedbrakefixture and fullslowerbrakepattern tests remain. No relaxed minimumwarning orrewarddedupcriteria.
-Actually displayed/inspected22fullChromiummobile images from source32ff812 testedmerge2d9f8cb3e50e1aea54d3bc32d08723ce0ed6a748, canceledbroaderjob111310267873 (rendersvalid, cancellation isnotpass). Also22newsource6ea images job111310925214 available. Trucktrim/art clear, health/reward compact, shieldshape,15mboostlandingchip, diagonaltrail/target, pedalsuncovered. Mediumvisualdefect: bannerpartlyoccludesdirectionpreview. Fixbanner8pxportrait/4pxlandscape andscreen-scaledarrow/miniicon clearofbanner/ground; mustinspectfreshcapturesafterchange. Imagesfromchangedprevioussource notfinalproof.
-Currentprotectionread403 Resource not accessible by integration; normalmergeAPI willenforceprotections, neverbypass. LatestbranchWorkers Builds:nicos-world failedcheck111311096328/build28378ba4-ce74-4f42-962b-3d70e822b6c4; authenticatedCloudflarelogs/toolsunavailable. Do not assumeoptional ordeleteinfrastructure; independentimplementation/qualificationcontinues.
-
-## Strongest gameplay critique: warnings that never threaten
-SELF-review minimized natural firstboulder under seed1/originalstarter/route0/120Hz. Lead460: releasegasafterwarning,coastproduces0hits. Increasedonlylargestleadcapto700 (fallback460/300/180 retaintrap rejection): samecoastnow1hit/health70; reachablebrake response remainshealth100/nohit and1000m finish across tuning1/7/42 ×3tracks,45.4–47.83s. docs/evidence/turbo-smash-hazard-engagement.json records comparison. This changes gameplay; all50qualification seeds/browser/stress rerun. Slowerfixedfourpattern fixtures unchanged.
-Natural firstresponse nowbrake, so slice retains originalexact8IDs/31bolts; onlyexplicitseed17 and declaredlongerwarning+1600mswait differ. Previous39proposal superseded beforecommit because meaningfulthreat was prerequisite. Do not editcriteriaagain tohidefailure.
-Add read-only real-domain cached-return observer workflow for PR159. It warms ordinary isolated Chromium/WebKit contexts beforemerge, keeps samecache/profilecontext, observes exactPRhead/mergedrelease, then ordinarynavigation/save/health/warning/bankreload. DoesNOT merge/deploy/bypass/clear data. Requires actualVERIFIED result; PENDING_NO_MERGE isexplicitlynotpass. It uses existingread-onlyGitHubActionstoken without exposingvalues and ends≤45min; no subscription. Stillindependentwork/technicalqualificationbeforemerge.
-
-## b50 exact outcome: test hook build error, qualification mechanics pass
-Sourceb50de0f8286cf8d8222b86ed556fb0bf00654173 testedmerge7f9be5e251c060e4ef99157a45f44817a6d9b263: CI37160957255/web111314099301 **685/685unitspass**, including50rerunqualifiedseeds aftercap700. BuildstoppedatTS2322/2345 in isolated crypto seedhook generic broadArrayBufferView|null; DOMAPIrequiresexactArrayBufferView<ArrayBuffer>. Fixonlytestsignature,no anyor weakenedassertion. Browser/stress didnotrun/qualifythishead. All685physics/save/unitresults genuine butnotbuildpass.
-Returningobserver37160957348/job111314099906 openedactualpublicgarage then failedfixturecreativeGamesundefined becauseoldUIlazilyinitializesonfirstmutation. Fixfixturebyrealstart/return beforeseedingitsown777wallet; addactualbaseline-release logging/artifact. Notproductiondefect/updateproof. No merge/deployment.
-Adds real-browserfull1000m/three-section/end-summary/retry/banked-save check andseparatelywarnedtwo-boltcase. Addhistoryendcap150 (oldendpushcouldmake151; originalstresscapassertretained),data-sky-id forlockedphaseevidence, shieldpickup→sameframeimpactguard unit. No newcontentbeyondbrief.
-Next: exactnewcandidate allchecks/screenshots/10minstress. Watchercanonly reportreturningVERIFIEDafterrealprotectedrelease; no phone/device claim.
+New truck trim, six obstacles, four hazards, pickups, checkpoint flags, fragments and scenery adjustments are original procedural Canvas2D source. Brief original local WebAudio effects are generated in truckAudio.ts. No external downloaded assets, paid generators, subscriptions, voices, trackers, runtime AI or license obligations were added. Established Nico’s World art/custom parts remain; no franchise assets introduced. Screenshots are actual test renders, not generated mockups. Extra spending: **none**.

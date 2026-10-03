@@ -24,12 +24,12 @@ export default function TruckDriveStage(props:Props) {
   callbacks.current=props;
   const recordToBeat=useRef(props.best),reduced=useReducedMotion(),pausedRef=useRef(false),endedSent=useRef(false);
   const history=useRef<Drive[]>([]),replay=useRef(-1),audio=useRef<TruckAudio|null>(null);
-  const metrics=useRef({frames:0,slow:0,total:0,max:0});
+  const metrics=useRef({frames:0,slow:0,total:0,max:0}),resetFrameClock=useRef(true);
   const [paused,setPaused]=useState(false),[replaying,setReplaying]=useState(false),[view,setView]=useState(()=>snapshot(initial));
   const [landing,setLanding]=useState<{meters:number;until:number}|null>(null);
-  const pause=()=>{clearHeld(held);pausedRef.current=true;setPaused(true);setView(snapshot(run.current));callbacks.current.onCheckpoint(copy(run.current));};
+  const pause=()=>{resetFrameClock.current=true;clearHeld(held);pausedRef.current=true;setPaused(true);setView(snapshot(run.current));callbacks.current.onCheckpoint(copy(run.current));};
   const held=useHeldControls({ArrowRight:'gas',KeyD:'gas',ArrowLeft:'brake',KeyA:'brake',Space:'tool',ShiftLeft:'boost',ShiftRight:'boost',KeyB:'boost'},pause);
-  const togglePause=()=>{pausedRef.current=!pausedRef.current;clearHeld(held);setPaused(pausedRef.current);setView(snapshot(run.current));callbacks.current.onCheckpoint(copy(run.current));};
+  const togglePause=()=>{resetFrameClock.current=true;pausedRef.current=!pausedRef.current;clearHeld(held);setPaused(pausedRef.current);setView(snapshot(run.current));callbacks.current.onCheckpoint(copy(run.current));};
   const returnToGarage=()=>{clearHeld(held);callbacks.current.onReturn(copy(run.current));};
   const retry=()=>{clearHeld(held);callbacks.current.onRetry(copy(run.current));};
   useEffect(()=>{
@@ -38,11 +38,12 @@ export default function TruckDriveStage(props:Props) {
     const unlock=()=>audio.current?.unlock();window.addEventListener('pointerdown',unlock);window.addEventListener('keydown',unlock);
     let raf=0,last=0,accumulator=0,ui=0,save=0,sample=0;
     const draw=(now:number)=>{
-      const raw=last?Math.max(0,(now-last)/1000):0,delta=Math.min(raw,.08);last=now;
+      const reset=resetFrameClock.current;resetFrameClock.current=false;if(reset)accumulator=0;
+      const raw=!reset&&last?Math.max(0,(now-last)/1000):0,delta=Math.min(raw,.08);last=now;
       if(raw>0&&!pausedRef.current){const m=metrics.current;m.frames++;m.total+=raw;m.max=Math.max(m.max,raw);if(raw>1/30)m.slow++;}
       if(audio.current)audio.current.muted=callbacks.current.muted;
       const low=metrics.current.frames>120&&metrics.current.slow/metrics.current.frames>.2;
-      const w=el.clientWidth||800,h=el.clientHeight||360,dpr=Math.min(low?1.5:2,window.devicePixelRatio||1);
+      const w=el.clientWidth||800,h=el.clientHeight||360,dpr=Math.min(low||reduced.current?1:2,window.devicePixelRatio||1);
       // Keep the ground visible on a short landscape phone as well as portrait.
       const scale=Math.min(Math.max(.7,Math.min(1.1,w/820)),h/400);
       if(el.width!==Math.round(w*dpr)||el.height!==Math.round(h*dpr)){el.width=Math.round(w*dpr);el.height=Math.round(h*dpr);}
