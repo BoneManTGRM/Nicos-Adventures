@@ -29,3 +29,12 @@ describe('mission sky introduction: BOTH distance and active time',()=>{
   expect(terrainAt(r.x+s.width+s.radius)).toBe(330);
  });
 });
+
+describe('warning threshold numerical tolerance (one nanosecond)',()=>{
+ it('remains warning through 191 complete 120 Hz steps, then falls on step 192',()=>{
+  const r=fixture(350,30);tickSkyObjects(r,1/120,geometry);
+  for(let i=0;i<191;i++)tickSkyObjects(r,1/120,geometry);
+  expect(r.sky!.active!.phase).toBe('warning');expect(r.sky!.active!.age).toBeLessThan(1.6);
+  tickSkyObjects(r,1/120,geometry);expect(r.sky!.active!.phase).toBe('falling');
+ });
+});
