@@ -64,7 +64,8 @@ export function tickSkyObjects(r:Drive,dt:number,g:SkyGeometry):SkyObject|null {
   const a=state.active;
   a.age+=dt;
   if(a.phase==='warning'){
-    if(a.age>=SKY_WARNING_SECONDS){a.phase='falling';a.age=0;}
+    // Bound IEEE-754 accumulation error without shortening the 1.6-second warning.
+    if(a.age+1e-9>=SKY_WARNING_SECONDS){a.phase='falling';a.age=0;}
     return null;
   }
   if(a.phase==='burst'){
