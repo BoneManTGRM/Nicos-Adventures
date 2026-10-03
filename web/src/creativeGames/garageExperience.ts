@@ -1,3 +1,4 @@
+import {courseRamps} from './courseLayout';
 import {PARTS,copy} from './catalog';
 import {carStats,makeDrive} from './carPhysics';
 import {finishDrive,normalizeBuild,type Build,type Drive,type GarageSave} from './save';
@@ -25,9 +26,8 @@ export function wheelsRemaining(r:Drive) {
   return {total,remaining:total-r.broken.filter(id=>id>=0&&id<total).length};
 }
 export function nextRampDistance(x:number):number {
-  const cell=Math.max(0,Math.floor((x-280)/2000));
-  const ramps=[cell*2000+815,cell*2000+1660,(cell+1)*2000+815];
-  return Math.max(0,Math.ceil((ramps.find(crest=>crest>x+6)!-x)/12));
+  const crest=courseRamps().find(crest=>crest>x+6);
+  return crest===undefined?999:Math.max(0,Math.ceil((crest-x)/12));
 }
 export function runHint(r:Drive) {
   if (r.broken.includes(14)) return copy('Motor lost — rebuild for free.','Motor desprendido — reconstruye gratis.');

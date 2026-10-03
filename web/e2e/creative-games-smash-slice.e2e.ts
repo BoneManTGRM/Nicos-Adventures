@@ -28,9 +28,9 @@ test('minimal real-route smash → ramps → warning → brake dodge → one ban
  await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-dodged','1');
  await page.keyboard.press('Escape');
  const run=await page.evaluate(key=>{const s=JSON.parse(localStorage.getItem(key)!);return s.profiles.find((p:{id:string})=>p.id===s.activeProfileId).creativeGames.garage.resume;},key);
- expect(run.smash.cleared).toEqual([1]);expect(run.smash.bolts).toBe(3);
+ expect(run.smash.cleared).toEqual([1,2,3,4,5,6,7,8]);expect(run.smash.bolts).toBe(31);
  await page.locator('.cg-return').click();
- const before=Number(await page.getByTestId('garage-bolts').innerText());expect(before).toBeGreaterThanOrEqual(3);
+ const before=Number(await page.getByTestId('garage-bolts').innerText());expect(before).toBeGreaterThanOrEqual(31);
  await page.clock.resume();await page.reload();await page.getByTestId('open-monster-garage').click();
  await expect(page.getByTestId('garage-bolts')).toHaveText(String(before));
  const g=await page.evaluate(key=>{const s=JSON.parse(localStorage.getItem(key)!);return s.profiles.find((p:{id:string})=>p.id===s.activeProfileId).creativeGames.garage;},key);

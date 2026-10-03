@@ -1,0 +1,685 @@
+{
+  "parent": "c82586202e0adb4705afb9a25728b1567fb1a719",
+  "execution": "V8 model probe of actual draft sources with explicit TypeScript annotation erasure and JSON clone, not npm/browser proof",
+  "frozenOpening": {
+    "stepsPerSecond": 120,
+    "seconds": 25,
+    "routes": [
+      0,
+      1,
+      2
+    ],
+    "wheels": [
+      11,
+      12
+    ],
+    "starts": [
+      90,
+      1350
+    ],
+    "gas": true,
+    "boost": false,
+    "clear": "grounded x>1990 and abs(angle)<.7, alive"
+  },
+  "types": [
+    {
+      "type": "crate",
+      "cleared": [
+        1
+      ],
+      "reward": 3,
+      "correct": true
+    },
+    {
+      "type": "fence",
+      "cleared": [
+        2
+      ],
+      "reward": 3,
+      "correct": true
+    },
+    {
+      "type": "ice",
+      "cleared": [
+        3
+      ],
+      "reward": 4,
+      "correct": true
+    },
+    {
+      "type": "barrel",
+      "cleared": [
+        4
+      ],
+      "reward": 4,
+      "correct": true
+    },
+    {
+      "type": "tires",
+      "cleared": [
+        5
+      ],
+      "reward": 5,
+      "correct": true
+    },
+    {
+      "type": "scrap",
+      "cleared": [
+        6
+      ],
+      "reward": 6,
+      "correct": true
+    }
+  ],
+  "opening": [
+    {
+      "track": 0,
+      "tire": 11,
+      "startX": 90,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 0,
+      "tire": 11,
+      "startX": 1350,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 0,
+      "tire": 12,
+      "startX": 90,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 0,
+      "tire": 12,
+      "startX": 1350,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 1,
+      "tire": 11,
+      "startX": 90,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 1,
+      "tire": 11,
+      "startX": 1350,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 1,
+      "tire": 12,
+      "startX": 90,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 1,
+      "tire": 12,
+      "startX": 1350,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 2,
+      "tire": 11,
+      "startX": 90,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 2,
+      "tire": 11,
+      "startX": 1350,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 2,
+      "tire": 12,
+      "startX": 90,
+      "clear": true,
+      "broken": []
+    },
+    {
+      "track": 2,
+      "tire": 12,
+      "startX": 1350,
+      "clear": true,
+      "broken": []
+    }
+  ],
+  "longBaselineCritique": [
+    {
+      "name": "slice",
+      "track": 0,
+      "t": 44.99999999999809,
+      "x": 10452.016147283379,
+      "distance": 863.5013456069482,
+      "ended": false,
+      "reason": 0,
+      "broken": [
+        12,
+        13,
+        11
+      ],
+      "sky": {
+        "nextDistance": 964.1099901854124,
+        "spawnCount": 3,
+        "cooldown": 0,
+        "active": {
+          "id": 3,
+          "kind": 0,
+          "phase": "warning",
+          "x": 10768.854810480865,
+          "y": -21.058213363739725,
+          "vy": 80,
+          "radius": 20,
+          "age": 0.8249999999999995,
+          "hit": false
+        },
+        "hits": 1,
+        "dodged": 1
+      },
+      "smash": {
+        "cleared": [
+          1
+        ],
+        "bolts": 3,
+        "impactAt": 1.166666666666665
+      }
+    },
+    {
+      "name": "slice",
+      "track": 1,
+      "t": 34.70833333333201,
+      "x": 8133.315185923177,
+      "distance": 670.2762654935981,
+      "ended": true,
+      "reason": 1,
+      "broken": [
+        12,
+        13,
+        11,
+        0,
+        1
+      ],
+      "sky": {
+        "nextDistance": 539.8801675161578,
+        "spawnCount": 1,
+        "cooldown": 0,
+        "active": null,
+        "hits": 0,
+        "dodged": 1
+      },
+      "smash": {
+        "cleared": [
+          1
+        ],
+        "bolts": 3,
+        "impactAt": 1.1583333333333317
+      }
+    },
+    {
+      "name": "slice",
+      "track": 2,
+      "t": 25.14166666666588,
+      "x": 4850.555515064378,
+      "distance": 396.69818432620997,
+      "ended": true,
+      "reason": 1,
+      "broken": [
+        12,
+        13,
+        11,
+        0,
+        1,
+        14
+      ],
+      "sky": {
+        "nextDistance": 300,
+        "spawnCount": 0,
+        "cooldown": 0,
+        "active": null,
+        "hits": 0,
+        "dodged": 0
+      },
+      "smash": {
+        "cleared": [
+          1
+        ],
+        "bolts": 3,
+        "impactAt": 1.1749999999999983
+      }
+    },
+    {
+      "name": "six",
+      "track": 0,
+      "t": 44.99999999999809,
+      "x": 10343.491315021569,
+      "distance": 854.4576095851307,
+      "ended": false,
+      "reason": 0,
+      "broken": [
+        12,
+        13,
+        11
+      ],
+      "sky": {
+        "nextDistance": 951.7357439760244,
+        "spawnCount": 3,
+        "cooldown": 0,
+        "active": {
+          "id": 3,
+          "kind": 0,
+          "phase": "falling",
+          "x": 10526.399555715627,
+          "y": 279.75000000000006,
+          "vy": 640.9999999999998,
+          "radius": 20,
+          "age": 0.8249999999999995,
+          "hit": false
+        },
+        "hits": 1,
+        "dodged": 1
+      },
+      "smash": {
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "bolts": 60,
+        "impactAt": 44.1916666666648,
+        "last": 15,
+        "contact": 0
+      }
+    },
+    {
+      "name": "six",
+      "track": 1,
+      "t": 34.98333333333199,
+      "x": 8016.193534417343,
+      "distance": 660.4438461156905,
+      "ended": true,
+      "reason": 1,
+      "broken": [
+        12,
+        13,
+        11,
+        0,
+        1,
+        14
+      ],
+      "sky": {
+        "nextDistance": 540.5681926962975,
+        "spawnCount": 1,
+        "cooldown": 0,
+        "active": null,
+        "hits": 0,
+        "dodged": 1
+      },
+      "smash": {
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "bolts": 44,
+        "impactAt": 29.174999999998985,
+        "last": 11,
+        "contact": 0
+      }
+    },
+    {
+      "name": "six",
+      "track": 2,
+      "t": 24.11666666666594,
+      "x": 4611.139223885371,
+      "distance": 376.8922187162825,
+      "ended": true,
+      "reason": 1,
+      "broken": [
+        12,
+        13,
+        11,
+        0,
+        1,
+        14
+      ],
+      "sky": {
+        "nextDistance": 300,
+        "spawnCount": 0,
+        "cooldown": 0,
+        "active": null,
+        "hits": 0,
+        "dodged": 0
+      },
+      "smash": {
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "bolts": 28,
+        "impactAt": 19.31666666666621,
+        "last": 7,
+        "contact": 0
+      }
+    }
+  ],
+  "isolatedCourseFailure": {
+    "track": 2,
+    "practice": true,
+    "dt": 0.008333333333333333,
+    "maxSeconds": 60,
+    "input": {
+      "gas": true,
+      "brake": false,
+      "tool": false
+    },
+    "beforeRestoration": {
+      "distance": 397.11056871368186,
+      "t": 24.533333333332582,
+      "ended": true,
+      "reason": "roof rollover and repeated impact"
+    },
+    "comparisons": [
+      {
+        "coefficient": 0,
+        "track": 0,
+        "t": 41.583333333331616,
+        "x": 11490.670083302713,
+        "distance": 950.0558402752262,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 0,
+        "track": 1,
+        "t": 42.52499999999823,
+        "x": 11491.622345062446,
+        "distance": 950.1351954218704,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 0,
+        "track": 2,
+        "t": 24.533333333332582,
+        "x": 4855.902957604662,
+        "distance": 397.11056871368186,
+        "ended": true,
+        "broken": [
+          12,
+          13,
+          11,
+          0,
+          1,
+          14
+        ]
+      },
+      {
+        "coefficient": 1.5,
+        "track": 0,
+        "t": 41.59999999999828,
+        "x": 11490.866470005076,
+        "distance": 950.0722058337564,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 1.5,
+        "track": 1,
+        "t": 42.4166666666649,
+        "x": 11490.522969612335,
+        "distance": 950.0435808010279,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 1.5,
+        "track": 2,
+        "t": 44.09166666666481,
+        "x": 11490.958976995971,
+        "distance": 950.0799147496642,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 3,
+        "track": 0,
+        "t": 41.56666666666495,
+        "x": 11491.198572702024,
+        "distance": 950.099881058502,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 3,
+        "track": 1,
+        "t": 42.31666666666491,
+        "x": 11491.52546801577,
+        "distance": 950.1271223346475,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 3,
+        "track": 2,
+        "t": 43.791666666664824,
+        "x": 11490.381662536938,
+        "distance": 950.0318052114116,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 4.5,
+        "track": 0,
+        "t": 41.54166666666495,
+        "x": 11490.295489056016,
+        "distance": 950.0246240880014,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 4.5,
+        "track": 1,
+        "t": 42.333333333331574,
+        "x": 11491.062870390359,
+        "distance": 950.0885725325298,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      },
+      {
+        "coefficient": 4.5,
+        "track": 2,
+        "t": 43.54166666666484,
+        "x": 11490.893874908837,
+        "distance": 950.0744895757365,
+        "ended": false,
+        "broken": [
+          12,
+          13
+        ]
+      }
+    ],
+    "chosen": 1.5,
+    "why": "Smallest tested restoring torque that clears all three routes while retaining signed air control."
+  },
+  "sectionDecision": "Opening profile through x4280 unchanged. x4280–7880 level sky teaching stretch. Existing ramp profile returns with x-7600 mapping in combined gauntlet. Same route selection/themes. This is an explicit new course design, not a lowered opening ramp assertion.",
+  "landingThreshold": {
+    "before": 470,
+    "after": 560,
+    "why": "Avoid cosmetic loss at ordinary ~483–519 severity landings; extreme-impact component fracture remains."
+  },
+  "after": [
+    {
+      "track": 0,
+      "distance": 950.0722058337564,
+      "ended": false,
+      "broken": []
+    },
+    {
+      "track": 1,
+      "distance": 950.0435808010279,
+      "ended": false,
+      "broken": [
+        12,
+        13
+      ]
+    },
+    {
+      "track": 2,
+      "distance": 950.0799147496642,
+      "ended": false,
+      "broken": []
+    }
+  ],
+  "naturalBrakeReplays": [
+    {
+      "track": 0,
+      "t": 20.00833333333284,
+      "distance": 434.1612840154996,
+      "smash": {
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "bolts": 31,
+        "impactAt": 19.116666666666223,
+        "last": 8,
+        "contact": 0
+      },
+      "broken": [],
+      "dodged": 1,
+      "hits": 0
+    },
+    {
+      "track": 1,
+      "t": 20.00833333333284,
+      "distance": 420.77536396880555,
+      "smash": {
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "bolts": 31,
+        "impactAt": 19.54999999999953,
+        "last": 8,
+        "contact": 0
+      },
+      "broken": [
+        12,
+        13
+      ],
+      "dodged": 1,
+      "hits": 0
+    },
+    {
+      "track": 2,
+      "t": 20.00833333333284,
+      "distance": 383.0741960178652,
+      "smash": {
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "bolts": 28,
+        "impactAt": 19.124999999999556,
+        "last": 7,
+        "contact": 0
+      },
+      "broken": [],
+      "dodged": 1,
+      "hits": 0
+    }
+  ],
+  "notProven": [
+    "browser candidate",
+    "screenshot candidate",
+    "fair four patterns",
+    "health",
+    "FPS/stress",
+    "release"
+  ]
+}

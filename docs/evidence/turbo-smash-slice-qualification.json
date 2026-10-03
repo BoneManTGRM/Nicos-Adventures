@@ -117,5 +117,37 @@
     "10 minute stress",
     "FPS",
     "production or returning cache"
-  ]
+  ],
+  "minimalSliceFinalQualification": {
+    "source": "c82586202e0adb4705afb9a25728b1567fb1a719",
+    "testedMerge": "d9c23d5b29d07da889a3e95a40e96fdccb63a7d1",
+    "run": 37155274935,
+    "conclusion": "success",
+    "passed": 200,
+    "skipped": 0,
+    "workersPerShard": 2,
+    "shards": [
+      {
+        "job": 111297284539,
+        "conclusion": "success",
+        "passed": 50
+      },
+      {
+        "job": 111297284674,
+        "conclusion": "success",
+        "passed": 50
+      },
+      {
+        "job": 111297284697,
+        "conclusion": "success",
+        "passed": 50
+      },
+      {
+        "job": 111297284728,
+        "conclusion": "success",
+        "passed": 50
+      }
+    ],
+    "retainedRequirements": "Original tests, assertions and 90s timeout; four shards replace single four-worker VM. No gameplay change. Physical iPhone untested."
+  }
 }

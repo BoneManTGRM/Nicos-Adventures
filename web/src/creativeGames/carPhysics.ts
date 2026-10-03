@@ -1,5 +1,6 @@
 import {num,type Build,type Drive} from './save';
-import {tickIntroSmash,INTRO_CRATE} from './smashObjects';
+import {tickSmash} from './smashObjects';
+import {coursePosition} from './courseLayout';
 import {tickTurbo} from './turbo';
 import {initialSkyState,tickSkyObjects,type SkyObject} from './skyObjects';
 export type DriveInput={gas:boolean;brake:boolean;tool:boolean;boost?:boolean};
@@ -14,8 +15,9 @@ export function carStats(b:Build){
  return {mass,radius,width,wheelbase:width*.76*b.span*(has(b,50)?1.2:1),clearance,power:power*1.07*(has(b,41)?1.35:has(b,42)?.75:1),speed:speed*1.08*(has(b,41)?.7:has(b,42)?1.2:1),spring:[1,1.45,.65,.8,.7,1.25,.8,1.1,1,.9][s],damping:[.85,1.2,1.05,.85,.75,1.1,.9,1.65,1.05,1][s],grip:[1.05,1,.48,.9,1,1.25,.9,1.12,1.3,.92][w],strength:[1,1.2,1.5,.85,1.45,1.1,1,1.05,1.25,1.2][f]*1.10*(b.parts[5]?1.12:1),comX:b.engineX*(has(b,49)?28:18)+(f===4?9:0)+(b.parts[5]===51?5:0),comY:b.engineY*18+(has(b,48)?12:0)-(f===9?7:0),wheelCount:has(b,39)||has(b,45)?3:2};
 }
 const profile=[[0,0],[300,0],[490,-90],[535,-90],[585,30],[780,30],[950,-15],[1090,0],[1170,0],[1340,-125],[1380,-125],[1420,35],[1680,35],[1840,-30],[2000,0]];
-export function waterGap(x:number){const p=((x-280)%2000+2000)%2000;return x>280&&p>1430&&p<1660;}
+export function waterGap(x:number){const mapped=coursePosition(x);if(mapped===null)return false;x=mapped;const p=((x-280)%2000+2000)%2000;return x>280&&p>1430&&p<1660;}
 export function terrainAt(x:number,track=0,bridges:number[]=[]):number{
+ const mapped=coursePosition(x);if(mapped===null)return 330;x=mapped;
  if(x<280)return 330;const cell=Math.floor((x-280)/2000),p=(x-280)%2000;
  if(bridges.includes(cell)&&p>=1390&&p<=1690)return 325;
  const scale=1+Math.min(cell*.08,.55)+(track===1?.12:track===2?.05:0);
@@ -26,7 +28,7 @@ export function makeDrive(build:Build,id=1,track=0,practice=false):Drive{const s
 export function wheelPoints(r:Drive){const s=carStats(r.build);return Array.from({length:s.wheelCount},(_,i)=>{const localX=(i===0?-s.wheelbase:i===1?s.wheelbase:0)-s.comX,localY=s.clearance-s.comY;return {i,lx:localX,ly:localY,x:r.x+Math.cos(r.a)*localX-Math.sin(r.a)*localY,y:r.y+Math.sin(r.a)*localX+Math.cos(r.a)*localY};});}
 function detach(r:Drive,kind:number,id:number,x:number,y:number,radius=18){if(!id||r.broken.includes(kind))return;r.broken.push(kind);r.debris.push({id,kind,x,y,vx:r.vx+(kind%2?80:-65),vy:Math.min(r.vy,-60)-80-kind*5,a:r.a,av:kind%2?4:-3,r:radius});if(r.debris.length>22)r.debris.shift();}
 function impact(r:Drive,s:ReturnType<typeof carStats>,speed:number,roof=false){
- const severity=speed/(s.strength*(.85+s.damping*.18));if(severity<470)return;const p=r.build.parts;
+ const severity=speed/(s.strength*(.85+s.damping*.18));if(severity<560)return;const p=r.build.parts;
  detach(r,12,p[8],r.x-45,r.y-30);detach(r,13,p[9],r.x+15,r.y-55);
  if(severity>580){detach(r,11,p[7],r.x,r.y-18,30);r.cargo=false;}
  if(severity>670){const w=wheelPoints(r).find(w=>!r.broken.includes(w.i));if(w)detach(r,w.i,p[1],w.x,w.y,s.radius);}
@@ -85,13 +87,13 @@ export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
  }
  for(const lx of [-s.width,s.width])for(const ly of [-28,8]){const rx=c*(lx-s.comX)-sn*(ly-s.comY),ry=sn*(lx-s.comX)+c*(ly-s.comY),x=r.x+rx,y=r.y+ry,pen=y-ground(x);if(pen>0){const vy=r.vy+r.av*rx,force=num(pen*s.mass*110-vy*s.mass*6,0,s.mass*7000);fy-=force;torque-=rx*force;fx-=r.vx*s.mass*(has(b,56)||has(b,60)||b.parts[0]===7?.8:2.5);if(vy>450)impact(r,s,vy,ly<0);if(pen>50){r.y-=Math.min(pen-45,8);r.vy=Math.min(r.vy,100);}}}
  if(has(b,58)&&r.a<-.35)torque+=Math.abs(r.a)*inertia*4;if(has(b,55)&&Math.abs(r.a)>1.65)torque+=Math.sign(r.a)*inertia*1.5;
- if(!contacts){if(r.contacts>0)r.launchX=r.x;r.air+=dt;if(input.gas)torque-=inertia*.55;if(input.brake)torque+=inertia*.55;if(has(b,65)&&r.air>.2&&r.vy>0&&Math.abs(r.vx)>90){fy*=.3;r.vy=Math.min(r.vy,140);}}
+ if(!contacts){torque-=r.a*inertia*1.5;if(r.contacts>0)r.launchX=r.x;r.air+=dt;if(input.gas)torque-=inertia*.55;if(input.brake)torque+=inertia*.55;if(has(b,65)&&r.air>.2&&r.vy>0&&Math.abs(r.vx)>90){fy*=.3;r.vy=Math.min(r.vy,140);}}
  else{if(r.air>.16){r.landings++;if(Math.abs(r.a)<.8)r.bestJump=Math.max(r.bestJump,Math.max(0,r.x-r.launchX)/12);impact(r,s,maxImpact);}r.air=0;}
  r.contacts=contacts;r.vx=num(r.vx+fx/s.mass*dt,-160,700);r.vy=num(r.vy+fy/s.mass*dt,-1000,1200);r.av=num(r.av+torque/inertia*dt,-8,8);r.x=Math.max(40,r.x+r.vx*dt);r.y+=r.vy*dt;r.a=Math.atan2(Math.sin(r.a+r.av*dt),Math.cos(r.a+r.av*dt));
  if(!r.ended)r.distance=Math.max(r.distance,Math.min(10000,Math.max(0,r.x-90)/12));
  if(r.y>1200||r.x>=120090||r.broken.filter(i=>i<3).length>=s.wheelCount){r.ended=true;r.reason=r.x>=120090?4:1;}
  if(!r.ended){
-  tickIntroSmash(r,previousX,s.width,terrainAt(INTRO_CRATE.x,r.track,r.bridges));
+  tickSmash(r,previousX,s.width,(x)=>terrainAt(x,r.track,r.bridges));
   const skyHit=tickSkyObjects(r,dt,{width:s.width,comX:s.comX,comY:s.comY,wheels:wheelPoints(r).filter(w=>!r.broken.includes(w.i)).map(w=>({x:w.x,y:w.y,r:s.radius})),ground:(x)=>terrainAt(x,r.track,r.bridges)});
   if(skyHit)skyImpact(r,s,skyHit);
   if(r.broken.filter(i=>i<3).length>=s.wheelCount){r.ended=true;r.reason=1;}

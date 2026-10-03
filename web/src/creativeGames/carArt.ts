@@ -1,3 +1,5 @@
+import {truckCamera} from './truckCamera';
+import {rampArtPositions} from './courseLayout';
 import {drawIntroSmash} from './smashArt';
 import {PALETTES,PARTS} from './catalog';
 import {carStats,has,terrainAt,waterGap,wheelPoints} from './carPhysics';
@@ -53,7 +55,7 @@ export function drawCar(c:C,r:Drive,studio=false){
  if(r.ended){c.save();c.translate(r.x+25,r.y-105);disk(c,0,0,29,'#d4f7ff88','#abecff',2);driver(c,b.driver,-1);c.restore();}
 }
 export function drawTrack(c:C,r:Drive,width:number,height:number,best:number,reduced=false){
- const camera=Math.max(0,r.x-width*.28),cy=Math.min(0,r.y-180),theme=r.track;
+ const cam=truckCamera(r,width,height),camera=cam.x,cy=cam.y,theme=r.track;
  const sky=c.createLinearGradient(0,0,0,height);sky.addColorStop(0,theme===2?'#13132f':theme===1?'#382346':'#142b46');sky.addColorStop(1,theme===2?'#3b2667':theme===1?'#eb9468':'#70b9b5');c.fillStyle=sky;c.fillRect(0,0,width,height);
  for(let layer=0;layer<3;layer++){const off=(camera*(.12+layer*.1))%300,cY=200+layer*38;c.beginPath();c.moveTo(-300,height);for(let x=-300;x<width+400;x+=70){const y=cY-Math.sin((x+off)*.012+layer)*38;c.lineTo(x-off,y);}c.lineTo(width+400,height);c.closePath();c.fillStyle=theme===2?['#2d244e','#42346a','#58437f'][layer]:theme===1?['#8b5e77','#b6737a','#d08672'][layer]:['#316171','#39787d','#438f88'][layer];c.fill();}
  if(theme!==2){disk(c,width-80,64,35,theme===1?'#ffd897':'#c6f3d4','#fff',0);for(let j=0;j<4;j++){const x=((j*240-camera*.15)%(width+180)+width+180)%(width+180)-70;box(c,x,68+(j%2)*32,95,15,'#e5ffff35',20,'#fff',0);}}
@@ -62,8 +64,8 @@ export function drawTrack(c:C,r:Drive,width:number,height:number,best:number,red
   const start=280+cell*2000;
   if(theme===2)for(let j=0;j<5;j++){const x=start+j*390+150,y=terrainAt(x,theme);shape(c,[[x-28,y],[x-18,y-55],[x,y-84],[x+23,y-32],[x+30,y]],j%2?'#a295ee':'#65c9d0','#d6bcff',2);line(c,x,y-73,x+6,y-6,'#ebd8ff',2);}
   else for(let j=0;j<4;j++){const x=start+j*450-80,y=terrainAt(x,theme);if(theme===0){line(c,x,y,x,y-63,'#304b45',9);shape(c,[[x-32,y-25],[x,y-93],[x+33,y-25]],'#316b65','#295958',2);shape(c,[[x-25,y-51],[x,y-108],[x+25,y-51]],'#52957b','#376e63',2);}else{line(c,x,y,x,y-48,'#476d60',10);line(c,x,y-20,x+22,y-30,'#476d60',9);line(c,x+22,y-30,x+22,y-46,'#476d60',9);}}
-  for(const ramp of [490,1340]){const x=start+ramp,y=terrainAt(x,theme);for(let j=0;j<4;j++)line(c,x-j*22,y+j*11,x-j*22,400,'#a47456',4);line(c,x-80,y+40,x+35,y,'#ffd493',6);}
  }
+ for(const x of rampArtPositions(camera,camera+width)){const y=terrainAt(x,theme);for(let j=0;j<4;j++)line(c,x-j*22,y+j*11,x-j*22,400,'#a47456',4);line(c,x-80,y+40,x+35,y,'#ffd493',6);}
  const left=Math.floor(camera/8)*8-16,right=camera+width+16;c.beginPath();c.moveTo(left,height+cy+100);for(let x=left;x<=right;x+=8)c.lineTo(x,terrainAt(x,theme,r.bridges));c.lineTo(right,height+cy+100);c.closePath();const dirt=c.createLinearGradient(0,300,0,600);dirt.addColorStop(0,theme===2?'#42345c':theme===1?'#b65f47':'#78644e');dirt.addColorStop(1,'#192237');c.fillStyle=dirt;c.fill();c.beginPath();for(let x=left;x<=right;x+=8)x===left?c.moveTo(x,terrainAt(x,theme,r.bridges)):c.lineTo(x,terrainAt(x,theme,r.bridges));c.strokeStyle=theme===2?'#ba99ee':theme===1?'#ffd5a0':'#b4e295';c.lineWidth=7;c.stroke();
  for(let x=left;x<right;x+=24){const y=terrainAt(x,theme,r.bridges);if(waterGap(x)&&!r.bridges.includes(Math.floor((x-280)/2000))){box(c,x,347,25,18,'#73d5edb0',0,'#72e8fa',0);line(c,x,349,x+18,349,'#d1fcff',2);}}
  for(let x=Math.ceil(left/500)*500;x<right;x+=500){const y=terrainAt(x,theme,r.bridges);line(c,x,y,x,y-62,'#e4cba9',4);box(c,x-18,y-64,36,23,'#264658',5,'#8dc2c8',2);c.font='bold 12px sans-serif';c.textAlign='center';c.fillStyle='#fff';c.fillText(String(Math.max(0,Math.round((x-90)/12))),x,y-48);}

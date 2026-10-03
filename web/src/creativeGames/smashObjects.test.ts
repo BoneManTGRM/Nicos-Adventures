@@ -13,7 +13,7 @@ describe('minimal smash slice',()=>{
  it('starter builds momentum, breaks the crate and lands past ramp two without upgrades',()=>{
   const r=makeDrive(STARTER_BUILD);let landed=false;
   for(let i=0;i<25*120&&!r.ended;i++){stepDrive(r,gas);if(r.x>1990&&r.contacts>0&&Math.abs(r.a)<.7){landed=true;break;}}
-  expect(landed).toBe(true);expect(r.smash!.cleared).toEqual([1]);expect(r.smash!.bolts).toBe(3);
+  expect(landed).toBe(true);expect(r.smash!.cleared).toEqual([1,2]);expect(r.smash!.bolts).toBe(6);
  });
  it('cleared crate and reward survive save normalization and the existing one-payment ledger',()=>{
   let r=makeDrive(STARTER_BUILD);r.x=480;r.y=280;r.vx=200;tickIntroSmash(r,350,64,330);

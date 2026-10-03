@@ -2,6 +2,7 @@ import {useEffect,useRef,useState} from 'react';
 import type {Language} from '../types';
 import type {Drive} from './save';
 import {carStats,has,stepDrive} from './carPhysics';
+import {truckCamera} from './truckCamera';
 import {drawTrack} from './carArt';
 import {drawSkyObjects} from './skyArt';
 import SkyAlert from './SkyAlert';
@@ -11,7 +12,7 @@ import './truck-upgrade.css';
 
 type Props={initial:Drive;language:Language;best:number;onSample:(r:Drive)=>void;onCheckpoint:(r:Drive)=>void;onEnd:(r:Drive)=>void;onReturn:(r:Drive)=>void;onRetry:(r:Drive)=>void};
 const copy=(run:Drive)=>structuredClone(run);
-const snapshot=(r:Drive)=>({elapsed:r.t,distance:Math.floor(r.distance),jump:Math.floor(r.bestJump),broken:r.broken.length,ended:r.ended,charge:Math.floor(r.boostCharge??100),boosting:r.boostActive===true,x:r.x,air:r.air,hint:runHint(r),wheels:wheelsRemaining(r),sky:r.sky?structuredClone(r.sky):null});
+const snapshot=(r:Drive)=>({smashIds:r.smash?.cleared.join(',')??'',smashBolts:r.smash?.bolts??0,elapsed:r.t,distance:Math.floor(r.distance),jump:Math.floor(r.bestJump),broken:r.broken.length,ended:r.ended,charge:Math.floor(r.boostCharge??100),boosting:r.boostActive===true,x:r.x,air:r.air,hint:runHint(r),wheels:wheelsRemaining(r),sky:r.sky?structuredClone(r.sky):null});
 
 /** Rendering and ephemeral feedback never own the reward ledger or save data. */
 export default function TruckDriveStage(props:Props) {
@@ -64,7 +65,7 @@ export default function TruckDriveStage(props:Props) {
         drawTrack(c,run.current,w/scale,h/scale,recordToBeat.current,reduced.current);
         drawSkyObjects(c,run.current,w/scale,h/scale,reduced.current);
         if(run.current.boostActive&&!run.current.ended&&!reduced.current){
-          const r=run.current,camera=Math.max(0,r.x-(w/scale)*.28),cy=Math.min(0,r.y-180),rear=-carStats(r.build).width-8;
+          const r=run.current,cam=truckCamera(r,w/scale,h/scale),camera=cam.x,cy=cam.y,rear=-carStats(r.build).width-8;
           c.save();c.translate(r.x-camera,r.y-cy);c.rotate(r.a);
           c.beginPath();c.moveTo(rear,-3);c.lineTo(rear-43-Math.sin(r.t*28)*7,8);c.lineTo(rear,19);c.closePath();c.fillStyle='#ffb361bb';c.fill();
           c.beginPath();c.moveTo(rear,2);c.lineTo(rear-26,8);c.lineTo(rear,14);c.closePath();c.fillStyle='#fff0bb';c.fill();c.restore();
@@ -84,7 +85,7 @@ export default function TruckDriveStage(props:Props) {
   },[initial.id]);
   const ramp=nextRampDistance(view.x),newBest=!initial.practice&&view.distance>recordToBeat.current;
   const tools=has(initial.build,61)||has(initial.build,62)||has(initial.build,70);
-  return <div data-active-seconds={view.elapsed} className="cg-drive cg-drive-v2" data-boosting={view.boosting} data-sky-phase={view.sky?.active?.phase??'none'} data-sky-count={view.sky?.spawnCount??0} data-sky-hits={view.sky?.hits??0} data-sky-dodged={view.sky?.dodged??0}>
+  return <div data-smash-ids={view.smashIds} data-smash-bolts={view.smashBolts} data-active-seconds={view.elapsed} className="cg-drive cg-drive-v2" data-boosting={view.boosting} data-sky-phase={view.sky?.active?.phase??'none'} data-sky-count={view.sky?.spawnCount??0} data-sky-hits={view.sky?.hits??0} data-sky-dodged={view.sky?.dodged??0}>
     <div className="cg-drive-hud">
       <div><small>{es?'DISTANCIA':'DISTANCE'}</small><strong data-testid="garage-distance">{view.distance}<span> m</span></strong></div>
       <div><small>{es?'RÉCORD A SUPERAR':'RECORD TO BEAT'}</small><strong>{recordToBeat.current}<span> m</span></strong></div>

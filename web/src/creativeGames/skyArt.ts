@@ -1,3 +1,4 @@
+import {truckCamera} from './truckCamera';
 import type {Drive} from './save';
 import {terrainAt} from './carPhysics';
 import {SKY_WARNING_SECONDS,type SkyObject} from './skyObjects';
@@ -20,7 +21,7 @@ function obstacle(c:C,a:SkyObject){
 /** Draw the exact physics object and fixed target. Never advances the simulation. */
 export function drawSkyObjects(c:C,r:Drive,width:number,height:number,reduced=false){
  const a=r.sky?.active;if(!a||r.ended||r.practice)return;
- const camera=Math.max(0,r.x-width*.28),cy=Math.min(0,r.y-180),ground=terrainAt(a.x,r.track,r.bridges);
+ const cam=truckCamera(r,width,height),camera=cam.x,cy=cam.y,ground=terrainAt(a.x,r.track,r.bridges);
  c.save();c.translate(-camera,-cy);
  if(a.phase==='warning'||a.phase==='falling'){
   c.fillStyle='#ffbc6f55';c.strokeStyle='#ffe0aa';c.lineWidth=2;c.beginPath();c.ellipse(a.x,ground-4,a.radius+16,6,0,0,Math.PI*2);c.fill();c.stroke();
