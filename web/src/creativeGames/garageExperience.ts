@@ -1,5 +1,7 @@
+import {recoverDrive} from './survival';
+import {courseRamps} from './courseLayout';
 import {PARTS,copy} from './catalog';
-import {carStats,makeDrive} from './carPhysics';
+import {carStats,makeDrive,terrainAt} from './carPhysics';
 import {finishDrive,normalizeBuild,type Build,type Drive,type GarageSave} from './save';
 
 export type PartFilter='all'|'owned'|'affordable';
@@ -12,11 +14,18 @@ export function findGarageParts(g:GarageSave,group:number,query:string,filter:Pa
 }
 
 /** Prepare a new run and settle the preceding one through the existing one-payment ledger. */
-export function startGarageAttempt(g:GarageSave,options:{build?:Build;track:number;practice?:boolean;trial?:boolean;previous?:Drive|null}) {
+export function startGarageAttempt(g:GarageSave,options:{build?:Build;track:number;practice?:boolean;trial?:boolean;previous?:Drive|null;recovery?:boolean;seed?:number}) {
   const trial=options.trial===true;
   const settled=trial?g:options.previous?finishDrive(g,options.previous):g.resume?finishDrive(g,g.resume):g;
   const build=normalizeBuild(options.build??g.build,trial?PARTS.map(p=>p.id):g.owned);
-  const run=makeDrive(build,trial?0:settled.sequence+1,Math.max(0,Math.min(2,Math.floor(options.track))),trial||options.practice===true);
+  const run=makeDrive(build,trial?0:settled.sequence+1,Math.max(0,Math.min(2,Math.floor(options.track))),trial||options.practice===true,options.seed);
+  if(options.recovery&&options.previous){
+   const previous=options.previous,stats=carStats(previous.build),copyRun=structuredClone(previous);
+   Object.assign(run,copyRun,{id:run.id,bankedDistance:previous.distance,ended:false,reason:0});
+   if(run.smash){run.smash.paid=[...run.smash.cleared];run.smash.bolts=0;}
+   if(run.survival)run.survival.reward=0;
+   recoverDrive(run,(x)=>terrainAt(x,run.track,run.bridges),stats.radius,stats.clearance);
+  }
   return {run,garage:trial?g:{...settled,sequence:run.id,resume:structuredClone(run),last:null}};
 }
 
@@ -25,9 +34,8 @@ export function wheelsRemaining(r:Drive) {
   return {total,remaining:total-r.broken.filter(id=>id>=0&&id<total).length};
 }
 export function nextRampDistance(x:number):number {
-  const cell=Math.max(0,Math.floor((x-280)/2000));
-  const ramps=[cell*2000+815,cell*2000+1660,(cell+1)*2000+815];
-  return Math.max(0,Math.ceil((ramps.find(crest=>crest>x+6)!-x)/12));
+  const crest=courseRamps().find(crest=>crest>x+6);
+  return crest===undefined?999:Math.max(0,Math.ceil((crest-x)/12));
 }
 export function runHint(r:Drive) {
   if (r.broken.includes(14)) return copy('Motor lost — rebuild for free.','Motor desprendido — reconstruye gratis.');

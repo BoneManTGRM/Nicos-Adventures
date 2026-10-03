@@ -57,7 +57,7 @@ export default function FullApp() {
  const lastNavigationInput = useRef<"keyboard" | "pointer">("pointer");
  const announce = (message: string) => setAnnouncement(current => ({ id: current.id + 1, message }));
  useEffect(() => {
-  if (new URLSearchParams(window.location.search).get("play") !== "number-dash") return;
+  if (!["number-dash", "monster-garage"].includes(new URLSearchParams(window.location.search).get("play") ?? "")) return;
   if (profile.selectedSection !== "game-arcade") commitProfile(current => ({ ...current, selectedSection: "game-arcade" }));
  // The link is interpreted once on arrival; later navigation follows the player's choice.
  }, []);
@@ -87,7 +87,7 @@ export default function FullApp() {
  }, [profile.selectedSection]);
  const presentSection = () => { pendingTitleFocus.current = lastNavigationInput.current; lastNavigationInput.current = "pointer"; window.scrollTo({ top: 0, left: 0, behavior: "auto" }); };
  const open = (sectionId: SectionId) => {
-  if (sectionId !== "game-arcade" && new URLSearchParams(window.location.search).get("play") === "number-dash") {
+  if (sectionId !== "game-arcade" && ["number-dash", "monster-garage"].includes(new URLSearchParams(window.location.search).get("play") ?? "")) {
    const url = new URL(window.location.href); url.searchParams.delete("play"); window.history.replaceState(null, "", url);
   }
   setBridgeRequested(false); setCreationIntent(null); setMenu(null);

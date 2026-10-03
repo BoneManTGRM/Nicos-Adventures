@@ -1,0 +1,423 @@
+{
+  "tuningSeeds": [
+    1,
+    7,
+    42
+  ],
+  "fixedStarter": {
+    "name": "Thunder Buggy",
+    "parts": [
+      1,
+      11,
+      26,
+      31,
+      0,
+      0,
+      0,
+      71,
+      81,
+      91,
+      0,
+      0
+    ],
+    "span": 1,
+    "engineX": 0,
+    "engineY": 0,
+    "paint": 0,
+    "driver": 0
+  },
+  "step": 0.008333333333333333,
+  "variable": "largest committed lead cap460→700; all other reachability/wall/landing/20s/300m/1.6+ warning constraints unchanged",
+  "comparison": [
+    {
+      "lead": 463,
+      "safe": "gas",
+      "hits": 0,
+      "health": 100
+    },
+    {
+      "lead": 703,
+      "safe": "brake",
+      "hits": 1,
+      "health": 70
+    }
+  ],
+  "runs": [
+    {
+      "seed": 1,
+      "track": 0,
+      "first": {
+        "target": 6002.935408185995,
+        "safe": "brake",
+        "threat": false
+      },
+      "distance": 1000.0759806585955,
+      "health": 100,
+      "hits": 0,
+      "reason": 4,
+      "t": 45.76666666666471,
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "safe": "brake",
+          "target": 6002.935408185995,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "safe": "gas",
+          "target": 6764.782357524642,
+          "warn": 2.3659960382558145
+        },
+        {
+          "id": 6,
+          "kind": 3,
+          "safe": "gas",
+          "target": 8533.029518599364,
+          "warn": 2.4000000000000004
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "track": 1,
+      "first": {
+        "target": 5842.304367625667,
+        "safe": "brake",
+        "threat": false
+      },
+      "distance": 1000.0839420114821,
+      "health": 100,
+      "hits": 0,
+      "reason": 4,
+      "t": 46.55833333333133,
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "safe": "brake",
+          "target": 5842.304367625667,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "safe": "gas",
+          "target": 6784.376186534394,
+          "warn": 2.387398670538645
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "safe": "gas",
+          "target": 8542.593054766865,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 8,
+          "kind": 2,
+          "safe": "gas",
+          "target": 9875.797356011872,
+          "warn": 2.4000000000000004
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "track": 2,
+      "first": {
+        "target": 5773.908531062871,
+        "safe": "brake",
+        "threat": false
+      },
+      "distance": 1000.0773263743739,
+      "health": 100,
+      "hits": 0,
+      "reason": 4,
+      "t": 47.82499999999793,
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "safe": "brake",
+          "target": 5773.908531062871,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "safe": "gas",
+          "target": 6688.94041986599,
+          "warn": 2.31309456602483
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "safe": "gas",
+          "target": 8465.304663259427,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 8,
+          "kind": 3,
+          "safe": "gas",
+          "target": 9945.9475951249,
+          "warn": 2.2625517313537347
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "track": 0,
+      "first": {
+        "target": 5986.935408185995,
+        "safe": "brake",
+        "threat": false
+      },
+      "distance": 1000.0759806585955,
+      "health": 100,
+      "hits": 0,
+      "reason": 4,
+      "t": 45.76666666666471,
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "safe": "brake",
+          "target": 5986.935408185995,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "safe": "gas",
+          "target": 6715.806488316469,
+          "warn": 2.3227466892995126
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "safe": "gas",
+          "target": 8476.383250671646,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 8,
+          "kind": 2,
+          "safe": "gas",
+          "target": 9966.90520640071,
+          "warn": 2.1510511576135176
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "track": 1,
+      "first": {
+        "target": 5826.304367625667,
+        "safe": "brake",
+        "threat": false
+      },
+      "distance": 1000.0839420114821,
+      "health": 100,
+      "hits": 0,
+      "reason": 4,
+      "t": 46.55833333333133,
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "safe": "brake",
+          "target": 5826.304367625667,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "safe": "gas",
+          "target": 6733.575337315258,
+          "warn": 2.345440241018932
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "safe": "gas",
+          "target": 8499.924491356735,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 8,
+          "kind": 1,
+          "safe": "gas",
+          "target": 9953.074424076398,
+          "warn": 2.4000000000000004
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "track": 2,
+      "first": {
+        "target": 5767.908531062871,
+        "safe": "brake",
+        "threat": false
+      },
+      "distance": 1000.0773263743739,
+      "health": 100,
+      "hits": 0,
+      "reason": 4,
+      "t": 47.82499999999793,
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "safe": "brake",
+          "target": 5767.908531062871,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "safe": "gas",
+          "target": 6775.955838926686,
+          "warn": 2.3792283244797634
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "safe": "gas",
+          "target": 8537.076804406975,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 8,
+          "kind": 1,
+          "safe": "gas",
+          "target": 9903.488542881538,
+          "warn": 2.3482019755353813
+        }
+      ]
+    },
+    {
+      "seed": 42,
+      "track": 0,
+      "first": {
+        "target": 5992.935408185995,
+        "safe": "brake",
+        "threat": false
+      },
+      "distance": 1000.1715482485906,
+      "health": 100,
+      "hits": 0,
+      "reason": 4,
+      "t": 45.399999999998066,
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "safe": "brake",
+          "target": 5992.935408185995,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "safe": "gas",
+          "target": 6692.753919907503,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "safe": "gas",
+          "target": 8454.76959790245,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 8,
+          "kind": 0,
+          "safe": "gas",
+          "target": 9916.481456655129,
+          "warn": 2.341573725536813
+        }
+      ]
+    },
+    {
+      "seed": 42,
+      "track": 1,
+      "first": {
+        "target": 5832.304367625667,
+        "safe": "brake",
+        "threat": false
+      },
+      "distance": 1000.1774183382407,
+      "health": 100,
+      "hits": 0,
+      "reason": 4,
+      "t": 46.14166666666469,
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "safe": "brake",
+          "target": 5832.304367625667,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "safe": "gas",
+          "target": 6700.613081848976,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 6,
+          "kind": 3,
+          "safe": "gas",
+          "target": 8489.038128827997,
+          "warn": 2.4000000000000004
+        }
+      ]
+    },
+    {
+      "seed": 42,
+      "track": 2,
+      "first": {
+        "target": 5756.908531062871,
+        "safe": "brake",
+        "threat": false
+      },
+      "distance": 1000.0773263743739,
+      "health": 100,
+      "hits": 0,
+      "reason": 4,
+      "t": 47.82499999999793,
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "safe": "brake",
+          "target": 5756.908531062871,
+          "warn": 2.4000000000000004
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "safe": "gas",
+          "target": 6656.005209167148,
+          "warn": 2.2664874020043992
+        },
+        {
+          "id": 6,
+          "kind": 3,
+          "safe": "gas",
+          "target": 8531.157993383125,
+          "warn": 2.4000000000000004
+        }
+      ]
+    }
+  ],
+  "claim": "Model evidence only. Longer safe lead creates a threatening natural boulder when coasting; warning brake response stays healthy and clears1000m on all3tracks. FullTS/browser qualification must rerun. Actual50qualification seeds not used for this tuning."
+}
