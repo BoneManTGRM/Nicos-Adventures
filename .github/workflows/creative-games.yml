@@ -9,7 +9,11 @@ concurrency:
   group: creative-games-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  games:
+  qualification:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     runs-on: ubuntu-latest
     timeout-minutes: 25
     defaults:
@@ -32,15 +36,25 @@ jobs:
       - name: Install desktop and phone browser engines
         run: npx playwright install --with-deps chromium webkit
       - name: Real controls, rewards, saves, crashes and mobile layout
-        run: npx playwright test --config playwright.creative-games.config.ts
+        run: npx playwright test --config playwright.creative-games.config.ts --shard=${{ matrix.shard }}/4 --workers=2
       - name: Preserve acceptance evidence and exact public build
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: creative-games-${{ github.sha }}
+          name: creative-games-${{ github.sha }}-shard-${{ matrix.shard }}
           retention-days: 7
           path: |
             web/creative-games-report
             web/creative-games-test-results
             web/creative-games-results.json
             web/dist
+  games:
+    needs: qualification
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every qualification shard
+        env:
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+        run: test "$QUALIFICATION_RESULT" = success

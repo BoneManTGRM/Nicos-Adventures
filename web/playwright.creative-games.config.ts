@@ -10,5 +10,5 @@ export default defineConfig({
  retries: process.env.CI ? 1 : 0,
  maxFailures: process.env.CI ? 6 : undefined,
  outputDir: 'creative-games-test-results',
- reporter: [['list'],['json',{outputFile:'creative-games-results.json'}],['html',{outputFolder:'creative-games-report',open:'never'}]],
+ reporter: [['list'],['./e2e/truck-diagnostic-reporter.ts'],['json',{outputFile:'creative-games-results.json'}],['html',{outputFolder:'creative-games-report',open:'never'}]],
 });

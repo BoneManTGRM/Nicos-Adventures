@@ -1,0 +1,121 @@
+{
+  "source": "93be193541db38192c550a892644f6c68c9bdd98",
+  "testedMerge": "1a7b585b879faae7c8821af9782fbb886bdbc96d",
+  "date": "2026-10-03",
+  "ci": {
+    "run": 37153375042,
+    "conclusion": "success",
+    "unitTests": 601,
+    "includes": [
+      "Python",
+      "full web validation/typecheck/build/budgets",
+      "root Worker dry-run"
+    ]
+  },
+  "broadBrowser": {
+    "run": 37153375016,
+    "conclusion": "success",
+    "passed": 270,
+    "skipped": 18,
+    "shards": [
+      111291694236,
+      111291694228,
+      111291694295,
+      111291693999
+    ]
+  },
+  "dedicatedGames": {
+    "run": 37153374995,
+    "job": 111291711146,
+    "conclusion": "cancelled",
+    "browserStarted": "20:59:12 UTC",
+    "canceled": "21:22:56 UTC",
+    "jobLimitMinutes": 25,
+    "failuresObserved": [
+      "webkit-iphone-es minimal slice test timed out twice",
+      "webkit-ipad-en natural warning and minimal slice timed out twice",
+      "webkit-ipad-es natural warning and minimal slice timed out twice"
+    ],
+    "artifact": 11285625403,
+    "artifactSHA256": "aa9001ce038527aea641e4aa354e37debcb06ce1c8303a0c092bab1b33e3713e",
+    "diagnosis": "90-second test durations suggest wall-clock timeout; no completed reporter summary in interrupted logs. Product/test/environment cause unproven. Change workload to four shards/two workers with identical assertions and timeouts; preserve games aggregate failure if any shard fails. Emit failure detail onTestEnd before any job cancellation."
+  },
+  "screenshots": [
+    {
+      "name": "intro-crate-impact",
+      "project": "chromium-mobile-en",
+      "testedMerge": "1a7b585b879faae7c8821af9782fbb886bdbc96d",
+      "jpeg": {
+        "width": 1082,
+        "height": 2202
+      }
+    },
+    {
+      "name": "ramp-two-grounded",
+      "project": "chromium-mobile-en",
+      "testedMerge": "1a7b585b879faae7c8821af9782fbb886bdbc96d",
+      "jpeg": {
+        "width": 1082,
+        "height": 2202
+      }
+    },
+    {
+      "name": "committed-sky-warning",
+      "project": "chromium-mobile-en",
+      "testedMerge": "1a7b585b879faae7c8821af9782fbb886bdbc96d",
+      "jpeg": {
+        "width": 1082,
+        "height": 2202
+      }
+    },
+    {
+      "name": "intro-crate-impact",
+      "project": "webkit-iphone-en",
+      "testedMerge": "1a7b585b879faae7c8821af9782fbb886bdbc96d",
+      "jpeg": {
+        "width": 1170,
+        "height": 1992
+      }
+    },
+    {
+      "name": "ramp-two-grounded",
+      "project": "webkit-iphone-en",
+      "testedMerge": "1a7b585b879faae7c8821af9782fbb886bdbc96d",
+      "jpeg": {
+        "width": 1170,
+        "height": 1992
+      }
+    },
+    {
+      "name": "committed-sky-warning",
+      "project": "webkit-iphone-en",
+      "testedMerge": "1a7b585b879faae7c8821af9782fbb886bdbc96d",
+      "jpeg": {
+        "width": 1170,
+        "height": 1992
+      }
+    }
+  ],
+  "selfReview": [
+    {
+      "severity": "medium",
+      "finding": "Tall portrait has large unused ground below truck; needs coherent shared vertical camera offset."
+    },
+    {
+      "severity": "medium",
+      "finding": "Cosmetic starter parts detach on early ramps; mandatory landing feel needs further tuning."
+    },
+    {
+      "severity": "mission-blocking pending",
+      "finding": "Only one crate and one vertical drop exist. No four trajectories/escape proof, health/near-miss/checkpoints, or full art moments."
+    }
+  ],
+  "notProven": [
+    "physical iPhone",
+    "child fun",
+    "50 seeded replays",
+    "10 minute stress",
+    "FPS",
+    "production or returning cache"
+  ]
+}
