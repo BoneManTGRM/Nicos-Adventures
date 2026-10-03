@@ -1,0 +1,3395 @@
+{
+  "source": "32ff812f9eebc6dbde3bd66a25bf4cb4dc58344f",
+  "run": 37159654357,
+  "job": 111310267477,
+  "testStatus": "68newtests pass; entire suite683pass/1oldtestseedfixturefailure",
+  "environment": "GitHubActionsUbuntu/Node22.12.0/Vitest actualTypeScript",
+  "tuningSeeds": [
+    1,
+    7,
+    42
+  ],
+  "qualificationSeeds": [
+    1001,
+    1050
+  ],
+  "step": 0.008333333333333333,
+  "frameRates": [
+    30,
+    60,
+    120
+  ],
+  "stallSeconds": 0.075,
+  "tolerances": {
+    "x": 0.00001,
+    "simulationSeconds": 1e-7
+  },
+  "runs": [
+    {
+      "seed": 1001,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3938,
+          "action": "idle"
+        },
+        {
+          "step": 3980,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5759.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7857.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "step": 3938,
+          "duration": 2.23163275758011,
+          "target": 9839.569374189852
+        }
+      ],
+      "steps": 5090,
+      "distance": 1000.1330945395576,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1002,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 625,
+          "action": "idle"
+        },
+        {
+          "step": 667,
+          "action": "gas"
+        },
+        {
+          "step": 1174,
+          "action": "idle"
+        },
+        {
+          "step": 1216,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5864.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 625,
+          "duration": 2.4000000000000004,
+          "target": 6698.761446617025
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "step": 1174,
+          "duration": 2.4000000000000004,
+          "target": 8444.637734718566
+        }
+      ],
+      "steps": 2930,
+      "distance": 1000.1521064652262,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1003,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 1016,
+          "action": "idle"
+        },
+        {
+          "step": 1058,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8341.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 1016,
+          "duration": 2.3201097137560023,
+          "target": 9858.235260309564
+        }
+      ],
+      "steps": 2177,
+      "distance": 1000.0337343544369,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1004,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3115,
+          "action": "idle"
+        },
+        {
+          "step": 3157,
+          "action": "gas"
+        },
+        {
+          "step": 3962,
+          "action": "idle"
+        },
+        {
+          "step": 4004,
+          "action": "gas"
+        },
+        {
+          "step": 4606,
+          "action": "idle"
+        },
+        {
+          "step": 4648,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5773.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 3115,
+          "duration": 2.334016730626854,
+          "target": 7909.583616780857
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 3962,
+          "duration": 2.347635407841455,
+          "target": 9926.746185228287
+        },
+        {
+          "id": 8,
+          "kind": 2,
+          "step": 4606,
+          "duration": 2.0774060117568682,
+          "target": 11183.474313336652
+        }
+      ],
+      "steps": 5102,
+      "distance": 1000.1360829247327,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1005,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 632,
+          "action": "idle"
+        },
+        {
+          "step": 674,
+          "action": "gas"
+        },
+        {
+          "step": 1255,
+          "action": "idle"
+        },
+        {
+          "step": 1297,
+          "action": "gas"
+        },
+        {
+          "step": 1850,
+          "action": "idle"
+        },
+        {
+          "step": 1892,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5892.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 632,
+          "duration": 2.322445056575384,
+          "target": 6713.483172865124
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "step": 1255,
+          "duration": 2.4000000000000004,
+          "target": 8533.168891392887
+        },
+        {
+          "id": 8,
+          "kind": 1,
+          "step": 1850,
+          "duration": 2.4000000000000004,
+          "target": 9837.50483803087
+        }
+      ],
+      "steps": 2989,
+      "distance": 1000.0763437163045,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1006,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 932,
+          "action": "idle"
+        },
+        {
+          "step": 974,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8314.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 3,
+          "step": 932,
+          "duration": 2.209027666706342,
+          "target": 9878.253595686996
+        }
+      ],
+      "steps": 2126,
+      "distance": 1000.0001346278723,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1007,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3921,
+          "action": "idle"
+        },
+        {
+          "step": 3963,
+          "action": "brake"
+        },
+        {
+          "step": 4008,
+          "action": "idle"
+        },
+        {
+          "step": 4275,
+          "action": "gas"
+        },
+        {
+          "step": 4331,
+          "action": "idle"
+        },
+        {
+          "step": 4373,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5758.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7835.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 3,
+          "step": 3921,
+          "duration": 2.1450671687127194,
+          "target": 9971.370363469321
+        },
+        {
+          "id": 7,
+          "kind": 3,
+          "step": 4331,
+          "duration": 2.0809329228957374,
+          "target": 9940.124636090375
+        }
+      ],
+      "steps": 5437,
+      "distance": 1000.0940434428753,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1008,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 667,
+          "action": "idle"
+        },
+        {
+          "step": 709,
+          "action": "gas"
+        },
+        {
+          "step": 1260,
+          "action": "idle"
+        },
+        {
+          "step": 1302,
+          "action": "gas"
+        },
+        {
+          "step": 1849,
+          "action": "idle"
+        },
+        {
+          "step": 1891,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5877.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 667,
+          "duration": 2.4000000000000004,
+          "target": 6684.165328431746
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 1260,
+          "duration": 2.4000000000000004,
+          "target": 8568.392837142768
+        },
+        {
+          "id": 8,
+          "kind": 2,
+          "step": 1849,
+          "duration": 2.4000000000000004,
+          "target": 9875.408710376265
+        }
+      ],
+      "steps": 2985,
+      "distance": 1000.1231513033619,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1009,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 953,
+          "action": "idle"
+        },
+        {
+          "step": 995,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8299.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 953,
+          "duration": 2.2598855009839127,
+          "target": 9919.614410434084
+        }
+      ],
+      "steps": 2124,
+      "distance": 1000.0025925959072,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1010,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3921,
+          "action": "idle"
+        },
+        {
+          "step": 3963,
+          "action": "brake"
+        },
+        {
+          "step": 4008,
+          "action": "idle"
+        },
+        {
+          "step": 4324,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5774.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7843.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 3921,
+          "duration": 2.1450671687127194,
+          "target": 9963.370363469321
+        }
+      ],
+      "steps": 5461,
+      "distance": 1000.0756214679544,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1011,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 617,
+          "action": "idle"
+        },
+        {
+          "step": 659,
+          "action": "gas"
+        },
+        {
+          "step": 1206,
+          "action": "idle"
+        },
+        {
+          "step": 1248,
+          "action": "gas"
+        },
+        {
+          "step": 1817,
+          "action": "idle"
+        },
+        {
+          "step": 1859,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5848.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 617,
+          "duration": 2.4000000000000004,
+          "target": 6790.464854415765
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "step": 1206,
+          "duration": 2.4000000000000004,
+          "target": 8534.109920034465
+        },
+        {
+          "id": 8,
+          "kind": 3,
+          "step": 1817,
+          "duration": 2.4000000000000004,
+          "target": 9892.852976947906
+        }
+      ],
+      "steps": 2938,
+      "distance": 1000.1125003125047,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1012,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 1003,
+          "action": "idle"
+        },
+        {
+          "step": 1045,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8327.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 1003,
+          "duration": 2.280016723088923,
+          "target": 9942.427312134358
+        }
+      ],
+      "steps": 2178,
+      "distance": 1000.1703877499012,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1013,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3115,
+          "action": "idle"
+        },
+        {
+          "step": 3157,
+          "action": "gas"
+        },
+        {
+          "step": 3962,
+          "action": "idle"
+        },
+        {
+          "step": 4004,
+          "action": "gas"
+        },
+        {
+          "step": 4606,
+          "action": "idle"
+        },
+        {
+          "step": 4648,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5757.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 3115,
+          "duration": 2.334016730626854,
+          "target": 7906.583616780857
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 3962,
+          "duration": 2.347635407841455,
+          "target": 9912.746185228287
+        },
+        {
+          "id": 8,
+          "kind": 2,
+          "step": 4606,
+          "duration": 2.0774060117568682,
+          "target": 11165.474313336652
+        }
+      ],
+      "steps": 5102,
+      "distance": 1000.1360829247327,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1014,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 664,
+          "action": "idle"
+        },
+        {
+          "step": 706,
+          "action": "gas"
+        },
+        {
+          "step": 1256,
+          "action": "idle"
+        },
+        {
+          "step": 1298,
+          "action": "gas"
+        },
+        {
+          "step": 1851,
+          "action": "idle"
+        },
+        {
+          "step": 1893,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5907.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 664,
+          "duration": 2.4000000000000004,
+          "target": 6793.0379989695
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "step": 1256,
+          "duration": 2.4000000000000004,
+          "target": 8555.995953946787
+        },
+        {
+          "id": 8,
+          "kind": 2,
+          "step": 1851,
+          "duration": 2.4000000000000004,
+          "target": 9876.428424717144
+        }
+      ],
+      "steps": 2980,
+      "distance": 1000.1080390759397,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1015,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 981,
+          "action": "idle"
+        },
+        {
+          "step": 1023,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8298.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 3,
+          "step": 981,
+          "duration": 2.3458255916451822,
+          "target": 9896.97940757638
+        }
+      ],
+      "steps": 2131,
+      "distance": 1000.1105061330348,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1016,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3921,
+          "action": "idle"
+        },
+        {
+          "step": 3963,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5744.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7847.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 3921,
+          "duration": 2.1450671687127194,
+          "target": 9956.370363469321
+        }
+      ],
+      "steps": 5096,
+      "distance": 1000.0965477685114,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1017,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 632,
+          "action": "idle"
+        },
+        {
+          "step": 674,
+          "action": "gas"
+        },
+        {
+          "step": 1181,
+          "action": "idle"
+        },
+        {
+          "step": 1223,
+          "action": "gas"
+        },
+        {
+          "step": 1831,
+          "action": "idle"
+        },
+        {
+          "step": 1873,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5849.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 632,
+          "duration": 2.4000000000000004,
+          "target": 6707.358006356337
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 1181,
+          "duration": 2.4000000000000004,
+          "target": 8480.849593723624
+        },
+        {
+          "id": 8,
+          "kind": 1,
+          "step": 1831,
+          "duration": 2.4000000000000004,
+          "target": 9947.630742286328
+        }
+      ],
+      "steps": 2937,
+      "distance": 1000.1316148314075,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1018,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 1031,
+          "action": "idle"
+        },
+        {
+          "step": 1073,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8357.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 1031,
+          "duration": 2.3637613521018253,
+          "target": 9899.120898139514
+        }
+      ],
+      "steps": 2165,
+      "distance": 1000.1267205571357,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1019,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3115,
+          "action": "idle"
+        },
+        {
+          "step": 3157,
+          "action": "gas"
+        },
+        {
+          "step": 3962,
+          "action": "idle"
+        },
+        {
+          "step": 4004,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5756.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 3115,
+          "duration": 2.334016730626854,
+          "target": 7907.583616780857
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "step": 3962,
+          "duration": 2.347635407841455,
+          "target": 9932.746185228287
+        }
+      ],
+      "steps": 5083,
+      "distance": 1000.1506545748381,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1020,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 680,
+          "action": "idle"
+        },
+        {
+          "step": 722,
+          "action": "gas"
+        },
+        {
+          "step": 1269,
+          "action": "idle"
+        },
+        {
+          "step": 1311,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5877.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 680,
+          "duration": 2.4000000000000004,
+          "target": 6723.285485208843
+        },
+        {
+          "id": 6,
+          "kind": 3,
+          "step": 1269,
+          "duration": 2.4000000000000004,
+          "target": 8498.431317770299
+        }
+      ],
+      "steps": 2972,
+      "distance": 1000.1538686734053,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1021,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 942,
+          "action": "idle"
+        },
+        {
+          "step": 984,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8299.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 942,
+          "duration": 2.233249063209238,
+          "target": 9904.857555631115
+        }
+      ],
+      "steps": 2137,
+      "distance": 1000.0654203077851,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1022,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3921,
+          "action": "idle"
+        },
+        {
+          "step": 3963,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5774.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7853.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "step": 3921,
+          "duration": 2.1450671687127194,
+          "target": 9805.370363469321
+        }
+      ],
+      "steps": 5096,
+      "distance": 1000.0965477685114,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1023,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 583,
+          "action": "idle"
+        },
+        {
+          "step": 625,
+          "action": "gas"
+        },
+        {
+          "step": 1204,
+          "action": "idle"
+        },
+        {
+          "step": 1246,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5848.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 583,
+          "duration": 2.3064841460860928,
+          "target": 6708.098906623729
+        },
+        {
+          "id": 6,
+          "kind": 3,
+          "step": 1204,
+          "duration": 2.4000000000000004,
+          "target": 8531.06227074183
+        }
+      ],
+      "steps": 2936,
+      "distance": 1000.1300716312343,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1024,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 966,
+          "action": "idle"
+        },
+        {
+          "step": 1008,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8308.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 966,
+          "duration": 2.3010193050578764,
+          "target": 9842.786365420789
+        }
+      ],
+      "steps": 2121,
+      "distance": 1000.1020301755992,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1025,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3917,
+          "action": "idle"
+        },
+        {
+          "step": 3959,
+          "action": "brake"
+        },
+        {
+          "step": 4003,
+          "action": "idle"
+        },
+        {
+          "step": 4317,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5753.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7850.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 3917,
+          "duration": 2.1219951324898187,
+          "target": 9952.006147576945
+        }
+      ],
+      "steps": 5458,
+      "distance": 1000.0617930432915,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1026,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 620,
+          "action": "idle"
+        },
+        {
+          "step": 662,
+          "action": "gas"
+        },
+        {
+          "step": 1212,
+          "action": "idle"
+        },
+        {
+          "step": 1254,
+          "action": "gas"
+        },
+        {
+          "step": 1801,
+          "action": "idle"
+        },
+        {
+          "step": 1843,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5859.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 620,
+          "duration": 2.4000000000000004,
+          "target": 6804.5271480851625
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 1212,
+          "duration": 2.4000000000000004,
+          "target": 8572.6658616672
+        },
+        {
+          "id": 8,
+          "kind": 1,
+          "step": 1801,
+          "duration": 2.4000000000000004,
+          "target": 9860.42612730872
+        }
+      ],
+      "steps": 2938,
+      "distance": 1000.1232393320652,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1027,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 1031,
+          "action": "idle"
+        },
+        {
+          "step": 1073,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8337.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 1031,
+          "duration": 2.3637613521018253,
+          "target": 9921.120898139514
+        }
+      ],
+      "steps": 2165,
+      "distance": 1000.1267205571357,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1028,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3115,
+          "action": "idle"
+        },
+        {
+          "step": 3157,
+          "action": "gas"
+        },
+        {
+          "step": 3962,
+          "action": "idle"
+        },
+        {
+          "step": 4004,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5774.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 3115,
+          "duration": 2.334016730626854,
+          "target": 7907.583616780857
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "step": 3962,
+          "duration": 2.347635407841455,
+          "target": 9922.746185228287
+        }
+      ],
+      "steps": 5083,
+      "distance": 1000.1506545748381,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1029,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 680,
+          "action": "idle"
+        },
+        {
+          "step": 722,
+          "action": "gas"
+        },
+        {
+          "step": 1273,
+          "action": "idle"
+        },
+        {
+          "step": 1315,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5894.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 680,
+          "duration": 2.4000000000000004,
+          "target": 6732.285485208843
+        },
+        {
+          "id": 6,
+          "kind": 3,
+          "step": 1273,
+          "duration": 2.4000000000000004,
+          "target": 8508.841967625996
+        }
+      ],
+      "steps": 2975,
+      "distance": 1000.1133166292716,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1030,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 957,
+          "action": "idle"
+        },
+        {
+          "step": 999,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8286.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 957,
+          "duration": 2.2727730258753547,
+          "target": 9954.293972926884
+        }
+      ],
+      "steps": 2136,
+      "distance": 1000.1614845673297,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1031,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3938,
+          "action": "idle"
+        },
+        {
+          "step": 3980,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5762.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7836.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "step": 3938,
+          "duration": 2.23163275758011,
+          "target": 9867.569374189852
+        }
+      ],
+      "steps": 5090,
+      "distance": 1000.1330945395576,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1032,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 640,
+          "action": "idle"
+        },
+        {
+          "step": 682,
+          "action": "gas"
+        },
+        {
+          "step": 1233,
+          "action": "idle"
+        },
+        {
+          "step": 1275,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5847.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 640,
+          "duration": 2.4000000000000004,
+          "target": 6742.188871652139
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "step": 1233,
+          "duration": 2.4000000000000004,
+          "target": 8525.859727884575
+        }
+      ],
+      "steps": 2928,
+      "distance": 1000.1139125762373,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1033,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 994,
+          "action": "idle"
+        },
+        {
+          "step": 1036,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8356.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 994,
+          "duration": 2.250994941506691,
+          "target": 9909.415233365056
+        }
+      ],
+      "steps": 2176,
+      "distance": 1000.1076846468978,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1034,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3115,
+          "action": "idle"
+        },
+        {
+          "step": 3157,
+          "action": "gas"
+        },
+        {
+          "step": 3941,
+          "action": "idle"
+        },
+        {
+          "step": 3983,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5756.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 3115,
+          "duration": 2.334016730626854,
+          "target": 7894.583616780857
+        },
+        {
+          "id": 6,
+          "kind": 3,
+          "step": 3941,
+          "duration": 2.259748724028983,
+          "target": 9879.567489885672
+        }
+      ],
+      "steps": 5090,
+      "distance": 1000.0831937371635,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1035,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 632,
+          "action": "idle"
+        },
+        {
+          "step": 674,
+          "action": "gas"
+        },
+        {
+          "step": 1255,
+          "action": "idle"
+        },
+        {
+          "step": 1297,
+          "action": "gas"
+        },
+        {
+          "step": 1866,
+          "action": "idle"
+        },
+        {
+          "step": 1908,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5907.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 632,
+          "duration": 2.322445056575384,
+          "target": 6719.483172865124
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "step": 1255,
+          "duration": 2.4000000000000004,
+          "target": 8551.168891392887
+        },
+        {
+          "id": 8,
+          "kind": 2,
+          "step": 1866,
+          "duration": 2.4000000000000004,
+          "target": 9900.133829904516
+        }
+      ],
+      "steps": 2987,
+      "distance": 1000.0211144855197,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1036,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 979,
+          "action": "idle"
+        },
+        {
+          "step": 1021,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8305.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 979,
+          "duration": 2.340011803888206,
+          "target": 9890.257531702073
+        }
+      ],
+      "steps": 2125,
+      "distance": 1000.0748447979817,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1037,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3917,
+          "action": "idle"
+        },
+        {
+          "step": 3959,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5750.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7846.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "step": 3917,
+          "duration": 2.1219951324898187,
+          "target": 9952.006147576945
+        }
+      ],
+      "steps": 5096,
+      "distance": 1000.1203916965493,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1038,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 628,
+          "action": "idle"
+        },
+        {
+          "step": 670,
+          "action": "gas"
+        },
+        {
+          "step": 1177,
+          "action": "idle"
+        },
+        {
+          "step": 1219,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5856.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 628,
+          "duration": 2.4000000000000004,
+          "target": 6702.97916432398
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "step": 1177,
+          "duration": 2.4000000000000004,
+          "target": 8466.46328191151
+        }
+      ],
+      "steps": 2928,
+      "distance": 1000.0932804877415,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1039,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 981,
+          "action": "idle"
+        },
+        {
+          "step": 1023,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8334.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 981,
+          "duration": 2.2244983518442556,
+          "target": 9889.693603555075
+        }
+      ],
+      "steps": 2183,
+      "distance": 1000.0783552782933,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1040,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3938,
+          "action": "idle"
+        },
+        {
+          "step": 3980,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5746.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7858.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "step": 3938,
+          "duration": 2.23163275758011,
+          "target": 9842.569374189852
+        }
+      ],
+      "steps": 5090,
+      "distance": 1000.1330945395576,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1041,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 640,
+          "action": "idle"
+        },
+        {
+          "step": 682,
+          "action": "gas"
+        },
+        {
+          "step": 1189,
+          "action": "idle"
+        },
+        {
+          "step": 1231,
+          "action": "gas"
+        },
+        {
+          "step": 1799,
+          "action": "idle"
+        },
+        {
+          "step": 1841,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5852.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 640,
+          "duration": 2.4000000000000004,
+          "target": 6731.188871652139
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "step": 1189,
+          "duration": 2.4000000000000004,
+          "target": 8490.351215620201
+        },
+        {
+          "id": 8,
+          "kind": 3,
+          "step": 1799,
+          "duration": 2.4000000000000004,
+          "target": 9957.476925556459
+        }
+      ],
+      "steps": 2940,
+      "distance": 1000.1391233197147,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1042,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 991,
+          "action": "idle"
+        },
+        {
+          "step": 1033,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8330.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 991,
+          "duration": 2.242543483083673,
+          "target": 9916.556275377818
+        }
+      ],
+      "steps": 2171,
+      "distance": 1000.1141272376568,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1043,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3115,
+          "action": "idle"
+        },
+        {
+          "step": 3157,
+          "action": "gas"
+        },
+        {
+          "step": 3945,
+          "action": "idle"
+        },
+        {
+          "step": 3987,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5761.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 3115,
+          "duration": 2.334016730626854,
+          "target": 7905.583616780857
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 3945,
+          "duration": 2.2779743179288685,
+          "target": 9888.279151696192
+        }
+      ],
+      "steps": 5089,
+      "distance": 1000.1568631529212,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1044,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 614,
+          "action": "idle"
+        },
+        {
+          "step": 656,
+          "action": "gas"
+        },
+        {
+          "step": 1231,
+          "action": "idle"
+        },
+        {
+          "step": 1273,
+          "action": "gas"
+        },
+        {
+          "step": 1885,
+          "action": "idle"
+        },
+        {
+          "step": 1927,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5887.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 614,
+          "duration": 2.2668990016817436,
+          "target": 6645.137041631356
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "step": 1231,
+          "duration": 2.4000000000000004,
+          "target": 8447.868784164824
+        },
+        {
+          "id": 8,
+          "kind": 2,
+          "step": 1885,
+          "duration": 2.4000000000000004,
+          "target": 9956.959244161273
+        }
+      ],
+      "steps": 2994,
+      "distance": 1000.1317485102451,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1045,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 979,
+          "action": "idle"
+        },
+        {
+          "step": 1021,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8310.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 1,
+          "step": 979,
+          "duration": 2.340011803888206,
+          "target": 9897.257531702073
+        }
+      ],
+      "steps": 2125,
+      "distance": 1000.0748447979817,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1046,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3098,
+          "action": "idle"
+        },
+        {
+          "step": 3140,
+          "action": "gas"
+        },
+        {
+          "step": 3917,
+          "action": "idle"
+        },
+        {
+          "step": 3959,
+          "action": "brake"
+        },
+        {
+          "step": 4003,
+          "action": "idle"
+        },
+        {
+          "step": 4268,
+          "action": "gas"
+        },
+        {
+          "step": 4324,
+          "action": "idle"
+        },
+        {
+          "step": 4366,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5755.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 2,
+          "step": 3098,
+          "duration": 2.2823634137534317,
+          "target": 7845.408673193727
+        },
+        {
+          "id": 6,
+          "kind": 3,
+          "step": 3917,
+          "duration": 2.1219951324898187,
+          "target": 9956.006147576945
+        },
+        {
+          "id": 7,
+          "kind": 3,
+          "step": 4324,
+          "duration": 2.081231389752164,
+          "target": 9931.5102601026
+        }
+      ],
+      "steps": 5433,
+      "distance": 1000.1292300026199,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1047,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 298,
+          "action": "gas"
+        },
+        {
+          "step": 628,
+          "action": "idle"
+        },
+        {
+          "step": 670,
+          "action": "gas"
+        },
+        {
+          "step": 1177,
+          "action": "idle"
+        },
+        {
+          "step": 1219,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5861.79193962237
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 628,
+          "duration": 2.4000000000000004,
+          "target": 6695.97916432398
+        },
+        {
+          "id": 6,
+          "kind": 0,
+          "step": 1177,
+          "duration": 2.4000000000000004,
+          "target": 8450.46328191151
+        }
+      ],
+      "steps": 2928,
+      "distance": 1000.0932804877415,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1048,
+      "track": 2,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 991,
+          "action": "idle"
+        },
+        {
+          "step": 1033,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 8349.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 991,
+          "duration": 2.242543483083673,
+          "target": 9918.556275377818
+        }
+      ],
+      "steps": 2171,
+      "distance": 1000.1141272376568,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1049,
+      "track": 0,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 2401,
+          "action": "idle"
+        },
+        {
+          "step": 2443,
+          "action": "gas"
+        },
+        {
+          "step": 3115,
+          "action": "idle"
+        },
+        {
+          "step": 3157,
+          "action": "gas"
+        },
+        {
+          "step": 3962,
+          "action": "idle"
+        },
+        {
+          "step": 4004,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 0,
+          "step": 2401,
+          "duration": 2.4000000000000004,
+          "target": 5749.935408186066
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 3115,
+          "duration": 2.334016730626854,
+          "target": 7905.583616780857
+        },
+        {
+          "id": 6,
+          "kind": 1,
+          "step": 3962,
+          "duration": 2.347635407841455,
+          "target": 9925.746185228287
+        }
+      ],
+      "steps": 5083,
+      "distance": 1000.1506545748381,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    },
+    {
+      "seed": 1050,
+      "track": 1,
+      "events": [
+        {
+          "step": 0,
+          "action": "gas"
+        },
+        {
+          "step": 1,
+          "action": "idle"
+        },
+        {
+          "step": 43,
+          "action": "brake"
+        },
+        {
+          "step": 59,
+          "action": "idle"
+        },
+        {
+          "step": 342,
+          "action": "gas"
+        },
+        {
+          "step": 672,
+          "action": "idle"
+        },
+        {
+          "step": 714,
+          "action": "gas"
+        },
+        {
+          "step": 1221,
+          "action": "idle"
+        },
+        {
+          "step": 1263,
+          "action": "gas"
+        },
+        {
+          "step": 1871,
+          "action": "idle"
+        },
+        {
+          "step": 1913,
+          "action": "gas"
+        }
+      ],
+      "warnings": [
+        {
+          "id": 2,
+          "kind": 1,
+          "step": 1,
+          "duration": 1.6,
+          "target": 5900.886114449786
+        },
+        {
+          "id": 4,
+          "kind": 0,
+          "step": 672,
+          "duration": 2.4000000000000004,
+          "target": 6698.506289346186
+        },
+        {
+          "id": 6,
+          "kind": 2,
+          "step": 1221,
+          "duration": 2.4000000000000004,
+          "target": 8473.339660411213
+        },
+        {
+          "id": 8,
+          "kind": 0,
+          "step": 1871,
+          "duration": 2.4000000000000004,
+          "target": 9942.830435648797
+        }
+      ],
+      "steps": 2981,
+      "distance": 1000.1651030334282,
+      "health": 100,
+      "hits": 0,
+      "reason": 4
+    }
+  ]
+}

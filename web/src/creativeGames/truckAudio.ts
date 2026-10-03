@@ -4,6 +4,7 @@ export class TruckAudio {
  private voices=new Set<OscillatorNode>();
  private last=-100;
  muted=false;
+ get activeCount(){return this.voices.size;}
  unlock(){
   if(this.muted)return;
   try{this.context??=new AudioContext();void this.context.resume().catch(()=>{});}catch{/* Gameplay remains silent if the device denies audio. */}

@@ -7,7 +7,7 @@ describe('Monster Garage real driving',()=>{
  it('drives the assembled chassis forward under pedal input',()=>{const r=makeDrive(STARTER_BUILD);for(let i=0;i<1200;i++)stepDrive(r,gas);expect(r.distance).toBeGreaterThan(15);expect(Number.isFinite(r.y)).toBe(true);});
  it('detaches equipped pieces on a hard landing, not generic crash art',()=>{const r=makeDrive(STARTER_BUILD);r.y=-200;r.vy=1100;r.air=1;for(let i=0;i<120;i++)stepDrive(r,idle);expect(r.broken.length).toBeGreaterThan(0);expect(r.debris.length).toBeGreaterThan(0);expect(r.debris.every(d=>r.build.parts.includes(d.id))).toBe(true);});
  it('never credits flying debris after the main car is wrecked',()=>{const r=makeDrive(STARTER_BUILD);r.ended=true;r.distance=40;r.vx=500;r.debris=[{id:11,kind:0,x:999,y:50,vx:600,vy:0,a:0,av:2,r:25}];for(let i=0;i<240;i++)stepDrive(r,gas);expect(r.distance).toBe(40);});
- it('uses deterministic routes and physics for the same build and input',()=>{const a=makeDrive(STARTER_BUILD),b=makeDrive(STARTER_BUILD);for(let i=0;i<600;i++){stepDrive(a,gas);stepDrive(b,gas);}expect(a).toEqual(b);});
+ it('uses deterministic routes and physics for the same build, recorded seed and input',()=>{const a=makeDrive(STARTER_BUILD,1,0,false,17),b=makeDrive(STARTER_BUILD,1,0,false,17);for(let i=0;i<600;i++){stepDrive(a,gas);stepDrive(b,gas);}expect(a).toEqual(b);});
 });
 describe('owned parts and earned rewards',()=>{
  it('contains 100 unique bilingual parts, not duplicate recolors',()=>{expect(PARTS).toHaveLength(100);expect(new Set(PARTS.map(p=>p.name.en)).size).toBe(100);expect(PARTS.filter(p=>p.functional)).toHaveLength(70);expect(PARTS.every(p=>p.name['es-MX']&&p.description['es-MX'])).toBe(true);});
