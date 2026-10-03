@@ -14,7 +14,7 @@ export const SMASH_TYPES:Record<SmashKind,Omit<SmashObject,'id'|'kind'|'x'>>={
 // Positions protect the original first two ramps and keep their landing runouts.
 export const COURSE_SMASH:SmashObject[]=Array.from({length:18},(_,i)=>{
  const kind=(['crate','fence','ice','barrel','tires','scrap'] as const)[i%6];
- const cell=Math.floor(i/3),slot=i%3,x=280+cell*2000+[170,770,1920][slot];
+ const cell=Math.floor(i/3),slot=i%3,x=i===11?7400:i===12?10650:280+cell*2000+[170,770,1920][slot];
  return {id:i+1,kind,x,...SMASH_TYPES[kind]};
 });
 export const INTRO_CRATE=COURSE_SMASH[0];

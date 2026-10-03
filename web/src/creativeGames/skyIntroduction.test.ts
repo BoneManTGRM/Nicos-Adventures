@@ -3,7 +3,7 @@ import {makeDrive,terrainAt,carStats} from './carPhysics';
 import {STARTER_BUILD} from './save';
 import {tickSkyObjects,initialSkyState} from './skyObjects';
 function fixture(distance:number,t:number){
- const r=makeDrive(STARTER_BUILD);Object.assign(r,{x:4450,y:280,vx:100,contacts:2,distance,t});
+ const r=makeDrive(STARTER_BUILD);Object.assign(r,{x:5600,y:280,vx:100,contacts:2,distance,t});
  r.sky=initialSkyState();return r;
 }
 const geometry={width:64,comX:0,comY:0,wheels:[],ground:()=>330};

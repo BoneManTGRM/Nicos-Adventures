@@ -1,6 +1,6 @@
 import {expect,test} from '@playwright/test';
 const key='nicos-world-local-save-v4';
-test('minimal real-route smash → ramps → warning → brake dodge → one bank → reload',async({page},info)=>{
+test('minimal real-route smash → ramps → warning → visible safe response → one bank → reload',async({page},info)=>{
  await page.clock.install();await page.goto('/');await expect(page.getByTestId('continue-world')).toBeVisible();
  await page.evaluate(({key,language})=>{const s=JSON.parse(localStorage.getItem(key)!);const p=s.profiles.find((p:{id:string})=>p.id===s.activeProfileId);p.language=language;p.selectedSection='game-arcade';p.nico.speechEnabled=false;localStorage.setItem(key,JSON.stringify(s));},{key,language:info.project.metadata.language});
  await page.reload();await page.getByTestId('open-monster-garage').click();
@@ -23,7 +23,7 @@ test('minimal real-route smash → ramps → warning → brake dodge → one ban
   await expect(page.locator('.cg-crash-card')).toHaveCount(0);
  }
  await page.mouse.up();expect(smashed).toBe(true);expect(landed).toBe(true);expect(warned).toBe(true);
- await page.keyboard.down('ArrowLeft');await page.clock.runFor(3500);await page.keyboard.up('ArrowLeft');
+ const action=(await page.locator('.cg-drive').getAttribute('data-sky-safe'))==='gas'?'ArrowRight':'ArrowLeft';await page.keyboard.down(action);await page.clock.runFor(3500);await page.keyboard.up(action);
  await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-hits','0');
  await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-dodged','1');
  await page.keyboard.press('Escape');
