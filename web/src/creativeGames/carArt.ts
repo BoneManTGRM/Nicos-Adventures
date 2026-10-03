@@ -1,3 +1,4 @@
+import {drawIntroSmash} from './smashArt';
 import {PALETTES,PARTS} from './catalog';
 import {carStats,has,terrainAt,waterGap,wheelPoints} from './carPhysics';
 import type {Drive} from './save';
@@ -69,7 +70,7 @@ export function drawTrack(c:C,r:Drive,width:number,height:number,best:number,red
  if(best>0){const x=90+best*12,y=terrainAt(x,theme);line(c,x,y,x,y-86,'#fff0b5',4);shape(c,[[x,y-86],[x+44,y-76],[x,y-56]],'#ffc765','#fff0b5',2);star(c,x+13,y-74,6,'#fff8d9');}
  if(!reduced&&Math.abs(r.vx)>65&&r.contacts>0)for(let i=0;i<6;i++){const t=(r.t*2+i*.19)%1,x=r.x-70-t*60,y=terrainAt(x,theme)-4-t*18;disk(c,x,y,3+t*9,`rgba(238,203,143,${(1-t)*.26})`,ink,0);}
  if(r.rope>r.t){const post=Math.ceil((r.x+50)/500)*500;line(c,r.x+30,r.y,post,terrainAt(post,theme)-60,'#ffe8a7',3);}
- drawCar(c,r);for(const d of r.debris){c.save();c.translate(d.x,d.y);c.rotate(d.a);if(d.kind<3)wheelArt(c,d.id,0,0,d.r,d.a);else partArt(c,d.id,0,0,.6,r.t,r.build.paint);c.restore();}
+ drawIntroSmash(c,r,reduced);drawCar(c,r);for(const d of r.debris){c.save();c.translate(d.x,d.y);c.rotate(d.a);if(d.kind<3)wheelArt(c,d.id,0,0,d.r,d.a);else partArt(c,d.id,0,0,.6,r.t,r.build.paint);c.restore();}
  if(theme===2&&has(r.build,66)){c.globalCompositeOperation='screen';const glow=c.createLinearGradient(r.x+25,0,r.x+310,0);glow.addColorStop(0,'#ffe7ad55');glow.addColorStop(1,'#ffe7ad00');c.fillStyle=glow;c.beginPath();c.moveTo(r.x+25,r.y-35);c.lineTo(r.x+310,r.y-145);c.lineTo(r.x+310,r.y+60);c.closePath();c.fill();c.globalCompositeOperation='source-over';}
  c.restore();
 }

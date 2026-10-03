@@ -1,4 +1,5 @@
 import {num,type Build,type Drive} from './save';
+import {tickIntroSmash,INTRO_CRATE} from './smashObjects';
 import {tickTurbo} from './turbo';
 import {initialSkyState,tickSkyObjects,type SkyObject} from './skyObjects';
 export type DriveInput={gas:boolean;brake:boolean;tool:boolean;boost?:boolean};
@@ -48,6 +49,7 @@ function skyImpact(r:Drive,s:ReturnType<typeof carStats>,drop:SkyObject){
 }
 /** Fixed 120 Hz simulation; the renderer is a read-only consumer. */
 export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
+ const previousX=r.x;
  dt=num(dt,0,1/60,1/120);if(!dt)return;r.t+=dt;const s=carStats(r.build),b=r.build,wasEnded=r.ended;
  for(const d of r.debris){d.vy+=850*dt;d.x+=d.vx*dt;d.y+=d.vy*dt;d.a+=d.av*dt;const ground=terrainAt(d.x,r.track,r.bridges);if(d.y+d.r>ground){d.y=ground-d.r;if(d.vy>0)d.vy*=-.36;d.vx*=.985;d.av*=.988;}d.vx*=.999;}
  if(wasEnded){r.boostActive=false;r.vx*=.98;r.av*=.96;return;}
@@ -89,6 +91,7 @@ export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
  if(!r.ended)r.distance=Math.max(r.distance,Math.min(10000,Math.max(0,r.x-90)/12));
  if(r.y>1200||r.x>=120090||r.broken.filter(i=>i<3).length>=s.wheelCount){r.ended=true;r.reason=r.x>=120090?4:1;}
  if(!r.ended){
+  tickIntroSmash(r,previousX,s.width,terrainAt(INTRO_CRATE.x,r.track,r.bridges));
   const skyHit=tickSkyObjects(r,dt,{width:s.width,comX:s.comX,comY:s.comY,wheels:wheelPoints(r).filter(w=>!r.broken.includes(w.i)).map(w=>({x:w.x,y:w.y,r:s.radius})),ground:(x)=>terrainAt(x,r.track,r.bridges)});
   if(skyHit)skyImpact(r,s,skyHit);
   if(r.broken.filter(i=>i<3).length>=s.wheelCount){r.ended=true;r.reason=1;}

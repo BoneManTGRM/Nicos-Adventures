@@ -1,0 +1,152 @@
+{
+  "environment": "functions V8 with explicit type erasure; not npm/browser evidence",
+  "source": "candidate applying smashObjects.ts to #157 physics; same frozen ramp conditions",
+  "ramps": [
+    {
+      "track": 0,
+      "wheels": 11,
+      "start": 90,
+      "pass": true,
+      "t": 7.641666666666836,
+      "x": 1991.3779821524497,
+      "cleared": [
+        1
+      ],
+      "bolts": 3,
+      "ended": false
+    },
+    {
+      "track": 0,
+      "wheels": 11,
+      "start": 1350,
+      "pass": true,
+      "t": 3.033333333333325,
+      "x": 1990.7901473041288,
+      "cleared": [],
+      "bolts": 0,
+      "ended": false
+    },
+    {
+      "track": 0,
+      "wheels": 12,
+      "start": 90,
+      "pass": true,
+      "t": 8.716666666666812,
+      "x": 1990.6893365514961,
+      "cleared": [
+        1
+      ],
+      "bolts": 3,
+      "ended": false
+    },
+    {
+      "track": 0,
+      "wheels": 12,
+      "start": 1350,
+      "pass": true,
+      "t": 3.4833333333333236,
+      "x": 1990.4276906394946,
+      "cleared": [],
+      "bolts": 0,
+      "ended": false
+    },
+    {
+      "track": 1,
+      "wheels": 11,
+      "start": 90,
+      "pass": true,
+      "t": 7.883333333333515,
+      "x": 1991.1171299072255,
+      "cleared": [
+        1
+      ],
+      "bolts": 3,
+      "ended": false
+    },
+    {
+      "track": 1,
+      "wheels": 11,
+      "start": 1350,
+      "pass": true,
+      "t": 3.2083333333333246,
+      "x": 1990.9316636070089,
+      "cleared": [],
+      "bolts": 0,
+      "ended": false
+    },
+    {
+      "track": 1,
+      "wheels": 12,
+      "start": 90,
+      "pass": true,
+      "t": 9.383333333333441,
+      "x": 1990.6543613086526,
+      "cleared": [
+        1
+      ],
+      "bolts": 3,
+      "ended": false
+    },
+    {
+      "track": 1,
+      "wheels": 12,
+      "start": 1350,
+      "pass": true,
+      "t": 3.883333333333322,
+      "x": 1990.1206134338286,
+      "cleared": [],
+      "bolts": 0,
+      "ended": false
+    },
+    {
+      "track": 2,
+      "wheels": 11,
+      "start": 90,
+      "pass": true,
+      "t": 7.908333333333516,
+      "x": 1990.059604713152,
+      "cleared": [
+        1
+      ],
+      "bolts": 3,
+      "ended": false
+    },
+    {
+      "track": 2,
+      "wheels": 11,
+      "start": 1350,
+      "pass": true,
+      "t": 3.2916666666666576,
+      "x": 1990.2009692799454,
+      "cleared": [],
+      "bolts": 0,
+      "ended": false
+    },
+    {
+      "track": 2,
+      "wheels": 12,
+      "start": 90,
+      "pass": true,
+      "t": 9.383333333333441,
+      "x": 1990.103439965865,
+      "cleared": [
+        1
+      ],
+      "bolts": 3,
+      "ended": false
+    },
+    {
+      "track": 2,
+      "wheels": 12,
+      "start": 1350,
+      "pass": true,
+      "t": 3.791666666666656,
+      "x": 1990.8816869790237,
+      "cleared": [],
+      "bolts": 0,
+      "ended": false
+    }
+  ],
+  "sliceBrowser": "creative-games-smash-slice.e2e.ts pending",
+  "qualification": false
+}
