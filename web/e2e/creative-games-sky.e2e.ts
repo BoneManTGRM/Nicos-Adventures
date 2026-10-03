@@ -25,10 +25,10 @@ function dropFixture(){
 }
 async function controlsFit(page:Page){const boxes=await page.locator('.cg-controls button').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {bottom:r.bottom,top:r.top,height:window.innerHeight,hit:n===hit||n.contains(hit)};}));for(const b of boxes){expect(b.top).toBeGreaterThanOrEqual(0);expect(b.bottom).toBeLessThanOrEqual(b.height);expect(b.hit).toBe(true);}}
 
-test('starter reaches the first natural falling warning only after 300 m',async({page},info)=>{
+test('starter reaches the first natural falling warning only after 300 m AND 20 active seconds',async({page},info)=>{
  await garage(page,info);const pedal=await page.locator('[data-control="gas"]').boundingBox();expect(pedal).not.toBeNull();await page.mouse.move(pedal!.x+pedal!.width/2,pedal!.y+pedal!.height/2);await page.mouse.down();
  let warned=false;for(let i=0;i<150;i++){await page.clock.runFor(150);const distance=Number((await page.getByTestId('garage-distance').innerText()).replace(/[^0-9]/g,''));const phase=await page.locator('.cg-drive').getAttribute('data-sky-phase');if(distance<299)expect(phase).toBe('none');if(phase==='warning'){expect(distance).toBeGreaterThanOrEqual(300);warned=true;break;}}
- expect(warned).toBe(true);await expect(page.getByTestId('sky-warning')).toBeVisible();await controlsFit(page);await capture(page,info,'natural-sky-warning-after-300m');
+ expect(warned).toBe(true);expect(Number(await page.locator('.cg-drive').getAttribute('data-active-seconds'))).toBeGreaterThanOrEqual(20);await expect(page.getByTestId('sky-warning')).toBeVisible();await controlsFit(page);await capture(page,info,'natural-sky-warning-after-300m');
  // Continue toward the actual drop so the gameplay screenshot includes it,
  // instead of stopping outside the viewport and photographing empty sky.
  await page.clock.runFor(1600);await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-phase','falling');await page.clock.runFor(300);await capture(page,info,'falling-object-on-track');

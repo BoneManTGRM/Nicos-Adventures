@@ -3,7 +3,7 @@ import {carStats,makeDrive,stepDrive,terrainAt} from './carPhysics';
 import {STARTER_BUILD,STARTER_PARTS,normalizeDrive,normalizeGames,finishDrive,type Drive} from './save';
 import {initialSkyState,normalizeSkyState,tickSkyObjects,segmentBoxContact} from './skyObjects';
 const gas={gas:true,brake:false,tool:false},idle={gas:false,brake:false,tool:false};
-function near(){const r=makeDrive(STARTER_BUILD);r.x=4290;r.distance=350;r.y=280;r.vx=100;r.contacts=2;return r;}
+function near(){const r=makeDrive(STARTER_BUILD);r.t=30;r.x=4290;r.distance=350;r.y=280;r.vx=100;r.contacts=2;return r;}
 const geometry=(r:Drive)=>({width:64,comX:0,comY:0,wheels:[],ground:(x:number)=>terrainAt(x,r.track,r.bridges)});
 describe('modest strength/speed tuning without an early ramp regression',()=>{
  it('adds 7% motor force, 8% speed ceiling and 10% structural strength',()=>{const s=carStats(STARTER_BUILD);expect(s.power).toBe(321);expect(s.speed).toBeCloseTo(372.6);expect(s.strength).toBe(1.1);expect(s.mass).toBe(13);});

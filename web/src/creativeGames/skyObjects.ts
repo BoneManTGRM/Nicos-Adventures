@@ -1,6 +1,7 @@
 import type {Drive} from './save';
 
 export const SKY_START_METERS=300;
+export const SKY_START_SECONDS=20;
 export const SKY_WARNING_SECONDS=1.6;
 export type SkyObject={id:number;kind:0|1|2;phase:'warning'|'falling'|'burst';x:number;y:number;vy:number;radius:number;age:number;hit:boolean};
 export type SkyState={nextDistance:number;spawnCount:number;cooldown:number;active:SkyObject|null;hits:number;dodged:number};
@@ -50,7 +51,7 @@ export function tickSkyObjects(r:Drive,dt:number,g:SkyGeometry):SkyObject|null {
   state.cooldown=Math.max(0,state.cooldown-dt);
   if(!state.active){
     // No catch-up barrages or repeated spawns from reversing across the same distance.
-    if(r.distance<state.nextDistance||state.cooldown>0||r.contacts===0||Math.abs(r.a)>.65||r.air>.1||r.vx<25)return null;
+    if(r.t<SKY_START_SECONDS||r.distance<state.nextDistance||state.cooldown>0||r.contacts===0||Math.abs(r.a)>.65||r.air>.1||r.vx<25)return null;
     const hash=seed(state.spawnCount,r.track);
     const x=r.x+Math.min(800,r.vx*2.45)+(hash%61-30);
     const slope=(g.ground(x+30)-g.ground(x-30))/60;

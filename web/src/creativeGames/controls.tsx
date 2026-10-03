@@ -14,9 +14,13 @@ export function useHeldControls(keys:Record<string,string>,pause:()=>void,enable
  },[mapping,enabled]);return held;
 }
 export function HoldButton({held,action,children,label,className='',disabled=false}:{held:MutableRefObject<Held>;action:string;children:ReactNode;label:string;className?:string;disabled?:boolean}){
+ const pointers=useRef(new Set<number>()),keyHeld=useRef(false);
+ const sync=()=>{held.current[action]=pointers.current.size>0||keyHeld.current;};
+ const release=(pointerId:number)=>{pointers.current.delete(pointerId);sync();};
+ useEffect(()=>{if(disabled){pointers.current.clear();keyHeld.current=false;held.current[action]=false;}},[disabled,action,held]);
  return <button type="button" className={`cg-pedal ${className}`} aria-label={label} data-control={action} disabled={disabled}
- onPointerDown={e=>{e.preventDefault();e.currentTarget.focus({preventScroll:true});e.currentTarget.setPointerCapture(e.pointerId);held.current[action]=true;}}
- onPointerUp={()=>{held.current[action]=false;}} onPointerCancel={()=>{held.current[action]=false;}} onLostPointerCapture={()=>{held.current[action]=false;}}
- onKeyDown={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();e.stopPropagation();held.current[action]=true;}}} onKeyUp={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();e.stopPropagation();held.current[action]=false;}}} onBlur={()=>{held.current[action]=false;}}>{children}</button>;
+ onPointerDown={e=>{e.preventDefault();pointers.current.add(e.pointerId);sync();e.currentTarget.focus({preventScroll:true});e.currentTarget.setPointerCapture(e.pointerId);}}
+ onPointerUp={e=>release(e.pointerId)} onPointerCancel={e=>release(e.pointerId)} onLostPointerCapture={e=>release(e.pointerId)}
+ onKeyDown={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();e.stopPropagation();keyHeld.current=true;sync();}}} onKeyUp={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();e.stopPropagation();keyHeld.current=false;sync();}}} onBlur={()=>{keyHeld.current=false;sync();}}>{children}</button>;
 }
 export function useReducedMotion(){const value=useRef(false);useEffect(()=>{const media=window.matchMedia('(prefers-reduced-motion: reduce)');const change=()=>{value.current=media.matches;};change();media.addEventListener('change',change);return()=>media.removeEventListener('change',change);},[]);return value;}
