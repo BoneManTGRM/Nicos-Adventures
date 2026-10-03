@@ -3,7 +3,7 @@ import {makeDrive,stepDrive,terrainAt,carStats} from './carPhysics';
 import {STARTER_BUILD,STARTER_PARTS,normalizeDrive} from './save';
 import {drawSkyObjects} from './skyArt';
 const idle={gas:false,brake:false,tool:false};
-function fixture(){const x=4450,r=makeDrive(STARTER_BUILD);Object.assign(r,{x,y:280,distance:(x-90)/12,vx:0,contacts:2});r.sky!.nextDistance=10000;r.sky!.spawnCount=1;r.sky!.active={id:1,kind:0,phase:'warning',x,y:-20,vy:80,radius:22,age:0,hit:false};return r;}
+function fixture(){const x=5600,r=makeDrive(STARTER_BUILD);Object.assign(r,{x,y:280,distance:(x-90)/12,vx:0,contacts:2});r.sky!.nextDistance=10000;r.sky!.spawnCount=1;r.sky!.active={id:1,kind:0,phase:'warning',x,y:-20,vy:80,radius:22,age:0,hit:false};return r;}
 describe('full warning and resume collision scenarios',()=>{
  it('keeps an unpowered fixture on flat ground until the real warned impact',()=>{
   let r=fixture();const s=carStats(r.build);expect(terrainAt(r.x-s.width-s.radius)).toBe(330);expect(terrainAt(r.x+s.width+s.radius)).toBe(330);

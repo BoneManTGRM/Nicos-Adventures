@@ -1,5 +1,5 @@
 import {num,type Build,type Drive} from './save';
-import {tickSmash} from './smashObjects';
+import {tickSmash,initialSmash} from './smashObjects';
 import {coursePosition} from './courseLayout';
 import {tickTurbo} from './turbo';
 import {initialSkyState,tickSkyObjects,type SkyObject} from './skyObjects';
@@ -24,7 +24,7 @@ export function terrainAt(x:number,track=0,bridges:number[]=[]):number{
  for(let i=1;i<profile.length;i++)if(p<=profile[i][0]){const [a,ay]=profile[i-1],[b,by]=profile[i];const h=ay+(by-ay)*(p-a)/(b-a);return 330+h*scale+(track===1?Math.sin(p*.018)*9:track===2?Math.sin(p*.038)*5:0);}
  return 330;
 }
-export function makeDrive(build:Build,id=1,track=0,practice=false):Drive{const st=carStats(build);return {id,track,practice,build:structuredClone(build),t:0,x:90,y:330-st.radius-st.clearance-4,vx:0,vy:0,a:0,av:0,air:0,launchX:90,bestJump:0,distance:0,broken:[],debris:[],ended:false,reason:0,landings:0,contacts:0,cargo:true,bridges:[],toolAt:-100,rope:0,boostCharge:100,boostLocked:false,boostActive:false,sky:initialSkyState()};}
+export function makeDrive(build:Build,id=1,track=0,practice=false):Drive{const st=carStats(build);return {id,track,practice,build:structuredClone(build),t:0,x:90,y:330-st.radius-st.clearance-4,vx:0,vy:0,a:0,av:0,air:0,launchX:90,bestJump:0,distance:0,broken:[],debris:[],ended:false,reason:0,landings:0,contacts:0,cargo:true,bridges:[],toolAt:-100,rope:0,boostCharge:100,boostLocked:false,boostActive:false,smash:initialSmash(),sky:initialSkyState()};}
 export function wheelPoints(r:Drive){const s=carStats(r.build);return Array.from({length:s.wheelCount},(_,i)=>{const localX=(i===0?-s.wheelbase:i===1?s.wheelbase:0)-s.comX,localY=s.clearance-s.comY;return {i,lx:localX,ly:localY,x:r.x+Math.cos(r.a)*localX-Math.sin(r.a)*localY,y:r.y+Math.sin(r.a)*localX+Math.cos(r.a)*localY};});}
 function detach(r:Drive,kind:number,id:number,x:number,y:number,radius=18){if(!id||r.broken.includes(kind))return;r.broken.push(kind);r.debris.push({id,kind,x,y,vx:r.vx+(kind%2?80:-65),vy:Math.min(r.vy,-60)-80-kind*5,a:r.a,av:kind%2?4:-3,r:radius});if(r.debris.length>22)r.debris.shift();}
 function impact(r:Drive,s:ReturnType<typeof carStats>,speed:number,roof=false){

@@ -1,7 +1,7 @@
 import type {Drive} from './save';
 export type SmashKind='crate'|'fence'|'barrel'|'tires'|'scrap'|'ice';
 export type SmashObject={id:number;kind:SmashKind;x:number;width:number;height:number;momentum:number;reward:number;weight:'light'|'medium'|'heavy'};
-export type SmashState={cleared:number[];bolts:number;impactAt:number;last?:number;contact?:number};
+export type SmashState={version?:1;paid?:number[];cleared:number[];bolts:number;impactAt:number;last?:number;contact?:number};
 export const SMASH_TYPES:Record<SmashKind,Omit<SmashObject,'id'|'kind'|'x'>>={
  crate:{width:26,height:44,momentum:45,reward:3,weight:'light'},
  fence:{width:14,height:65,momentum:65,reward:3,weight:'light'},
@@ -18,11 +18,17 @@ export const COURSE_SMASH:SmashObject[]=Array.from({length:18},(_,i)=>{
  return {id:i+1,kind,x,...SMASH_TYPES[kind]};
 });
 export const INTRO_CRATE=COURSE_SMASH[0];
-export function initialSmash():SmashState{return {cleared:[],bolts:0,impactAt:-100,last:0,contact:0};}
-export function normalizeSmash(raw:unknown):SmashState{
+export function initialSmash():SmashState{return {version:1,paid:[],cleared:[],bolts:0,impactAt:-100,last:0,contact:0};}
+export function normalizeSmash(raw:unknown,legacyX?:number):SmashState{
  const v=raw&&typeof raw==='object'?raw as Partial<SmashState>:{};
  const cleared=Array.isArray(v.cleared)?[...new Set(v.cleared.filter(id=>COURSE_SMASH.some(o=>o.id===id)))].slice(0,COURSE_SMASH.length):[];
- return {cleared,bolts:COURSE_SMASH.filter(o=>cleared.includes(o.id)).reduce((n,o)=>n+o.reward,0),impactAt:typeof v.impactAt==='number'&&Number.isFinite(v.impactAt)?Math.max(-100,Math.min(36000,v.impactAt)):-100,last:COURSE_SMASH.some(o=>o.id===v.last)?v.last:0,contact:0};
+ const paid=Array.isArray(v.paid)?[...new Set(v.paid.filter(id=>cleared.includes(id)))]:[];
+ if(v.version!==1&&typeof legacyX==='number'){
+  // The new course cannot insert a blocking object into an old saved truck.
+  // Migration clearing is not a smash and earns no reward.
+  for(const o of COURSE_SMASH)if(o.x-o.width<legacyX+100&&!cleared.includes(o.id)){cleared.push(o.id);paid.push(o.id);}
+ }
+ return {version:1,paid,cleared,bolts:COURSE_SMASH.filter(o=>cleared.includes(o.id)&&!paid.includes(o.id)).reduce((n,o)=>n+o.reward,0),impactAt:typeof v.impactAt==='number'&&Number.isFinite(v.impactAt)?Math.max(-100,Math.min(36000,v.impactAt)):-100,last:COURSE_SMASH.some(o=>o.id===v.last)?v.last:0,contact:0};
 }
 export function smashNearby(r:Drive,x:number,margin:number){return COURSE_SMASH.some(o=>!r.smash?.cleared.includes(o.id)&&Math.abs(o.x-x)<margin+o.width);}
 export function tickSmash(r:Drive,previousX:number,width:number,ground:(x:number)=>number,only?:SmashObject){

@@ -15,10 +15,10 @@ async function garage(page:Page,info:TestInfo,run?:Drive){
 async function saved(page:Page){return page.evaluate(key=>{const s=JSON.parse(localStorage.getItem(key)!);return s.profiles.find((p:{id:string})=>p.id===s.activeProfileId).creativeGames.garage;},key);}
 async function capture(page:Page,info:TestInfo,name:string){await info.attach(name,{body:await page.screenshot(),contentType:'image/png'});}
 function dropFixture(){
- // x=4290 straddles the preceding downslope: the unpowered car rolls away
- // during the warning and legitimately dodges. Put the intended stationary
- // collision fixture wholly on a flat section; do not change hit assertions.
- const x=4450,r=makeDrive(STARTER_BUILD),s=carStats(r.build);
+ // Keep the stationary collision fixture on clear, level ground. The expanded
+ // course now places a crate at the former x=4450 fixture. Stationary-hit and
+ // fixed-target assertions stay unchanged; migration clearing is tested separately.
+ const x=5600,r=makeDrive(STARTER_BUILD),s=carStats(r.build);
  expect(terrainAt(x-s.width-s.radius)).toBe(330);expect(terrainAt(x+s.width+s.radius)).toBe(330);
  Object.assign(r,{x,y:280,distance:(x-90)/12,contacts:2,vx:0});r.sky!.nextDistance=10000;r.sky!.spawnCount=1;
  r.sky!.active={id:1,kind:0,phase:'warning',x,y:-20,vy:80,radius:22,age:0,hit:false};return r;
