@@ -104,6 +104,8 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci --no-audit --no-fund
       - run: npx playwright install --with-deps chromium webkit
+      - name: Diagnose recording overhead with identical traced and untraced input
+        run: npx playwright test --config playwright.truck-performance.config.ts --project=${{ matrix.browser }}
       - name: Ten real minutes per browser engine
         run: npx playwright test --config playwright.truck-stress.config.ts --project=${{ matrix.browser }}
       - if: always()
@@ -114,6 +116,7 @@ jobs:
           path: |
             web/truck-stress-results
             web/truck-stress.json
+            web/truck-performance-results
   games:
     needs: [qualification, stress, full-course]
     if: always()

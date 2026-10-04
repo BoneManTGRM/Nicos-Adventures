@@ -1,0 +1,55 @@
+{
+  "captures": [
+    {
+      "path": "docs/evidence/turbo-smash-5952/crate-collider.jpg",
+      "source": "5952de339697e6536920e061f17a02f85971fba5",
+      "testedMerge": "e3db9b7262d8511e72ca0ab07d4795ae7683acbc",
+      "project": "chromium-mobile-en",
+      "job": 111319245015,
+      "blob": "4abf12f2bb1c024250f933ccef88e91a0978afb3"
+    },
+    {
+      "path": "docs/evidence/turbo-smash-5952/intro-crate-impact.jpg",
+      "source": "5952de339697e6536920e061f17a02f85971fba5",
+      "testedMerge": "e3db9b7262d8511e72ca0ab07d4795ae7683acbc",
+      "project": "chromium-mobile-en",
+      "job": 111319245015,
+      "blob": "b81550ebef56640e784a618e20639b03ab0552d6"
+    },
+    {
+      "path": "docs/evidence/turbo-smash-5952/diagonal-dodge.jpg",
+      "source": "5952de339697e6536920e061f17a02f85971fba5",
+      "testedMerge": "e3db9b7262d8511e72ca0ab07d4795ae7683acbc",
+      "project": "chromium-mobile-en",
+      "job": 111319245015,
+      "blob": "111338b240ccdb0fab6372dcef910d49ccaf7212"
+    },
+    {
+      "path": "docs/evidence/turbo-smash-5952/pattern-2-warning.jpg",
+      "source": "5952de339697e6536920e061f17a02f85971fba5",
+      "testedMerge": "e3db9b7262d8511e72ca0ab07d4795ae7683acbc",
+      "project": "webkit-iphone-en",
+      "job": 111319244888,
+      "blob": "8d7d9a2a82be5f6f82e077739d7349691e055c01"
+    },
+    {
+      "path": "docs/evidence/turbo-smash-5952/boosted-jump-airborne.jpg",
+      "source": "5952de339697e6536920e061f17a02f85971fba5",
+      "testedMerge": "e3db9b7262d8511e72ca0ab07d4795ae7683acbc",
+      "project": "webkit-iphone-en",
+      "job": 111319244888,
+      "blob": "4d829ed477bfa3ef40d8ee8819f53e74aa8e1663"
+    },
+    {
+      "path": "docs/evidence/turbo-smash-5952/boosted-clean-landing.jpg",
+      "source": "5952de339697e6536920e061f17a02f85971fba5",
+      "testedMerge": "e3db9b7262d8511e72ca0ab07d4795ae7683acbc",
+      "project": "webkit-iphone-en",
+      "job": 111319244888,
+      "blob": "07854459726aedcbf987f00d6ce7aa9f2cce6118"
+    }
+  ],
+  "actualDevice": false,
+  "review": "actual rendered results, second-pass self-review; no generated mockups",
+  "provenance": "original procedural Canvas2D and local WebAudio source; no external assets/new spending"
+}
