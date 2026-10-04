@@ -23,7 +23,7 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])for(const la
   await page.getByTestId('garage-pause').click();await page.getByTestId('garage-recover').click();await page.locator('.cg-drive[data-health="100"][data-sky-phase="none"]').waitFor();
   await page.locator('.cg-track-chips').getByText(/PROTECTION|PROTECCIÓN/).waitFor();await page.locator('.cg-return').click();await page.getByTestId('garage-drive').click();await page.locator('.cg-drive[data-health="100"]').waitFor();
   await page.locator('.cg-topbar button').click();await page.getByTestId('open-rainbow-kingdom').waitFor();
-  await page.goto(origin,{waitUntil:'networkidle'});await page.getByTestId('continue-world').waitFor();
+  await page.goto(origin,{waitUntil:'networkidle'});await page.getByTestId('open-monster-garage').waitFor();
   // Only this disposable browser's local profile is changed, not any existing child profile.
   await page.evaluate(({key,language})=>{const s=JSON.parse(localStorage.getItem(key));const p=s.profiles.find(p=>p.id===s.activeProfileId);p.language=language;p.selectedSection='game-arcade';p.nico.speechEnabled=false;localStorage.setItem(key,JSON.stringify(s));},{key,language});
   await page.reload({waitUntil:'networkidle'});await page.getByTestId('open-monster-garage').click();await page.getByTestId('garage-drive').click();
