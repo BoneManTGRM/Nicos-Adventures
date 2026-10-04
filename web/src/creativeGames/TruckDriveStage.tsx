@@ -11,6 +11,7 @@ import {COURSE_SMASH} from './smashObjects';
 import {courseSection} from './survival';
 import {HoldButton,clearHeld,useHeldControls,useReducedMotion} from './controls';
 import {landingFeedback,nextRampDistance,runHint,wheelsRemaining} from './garageExperience';
+import {recordFrame} from './truckRenderQuality';
 import './truck-upgrade.css';
 
 type Props={muted:boolean;onMute:()=>void;onRecover:(r:Drive)=>void;initial:Drive;language:Language;best:number;onSample:(r:Drive)=>void;onCheckpoint:(r:Drive)=>void;onEnd:(r:Drive)=>void;onReturn:(r:Drive)=>void;onRetry:(r:Drive)=>void};
@@ -24,7 +25,7 @@ export default function TruckDriveStage(props:Props) {
   callbacks.current=props;
   const recordToBeat=useRef(props.best),reduced=useReducedMotion(),pausedRef=useRef(false),endedSent=useRef(false);
   const history=useRef<Drive[]>([]),replay=useRef(-1),audio=useRef<TruckAudio|null>(null);
-  const metrics=useRef({frames:0,slow:0,total:0,max:0}),resetFrameClock=useRef(true);
+  const metrics=useRef({frames:0,slow:0,total:0,max:0,low:false}),resetFrameClock=useRef(true);
   const [paused,setPaused]=useState(false),[replaying,setReplaying]=useState(false),[view,setView]=useState(()=>snapshot(initial));
   const [landing,setLanding]=useState<{meters:number;until:number}|null>(null);
   const pause=()=>{resetFrameClock.current=true;clearHeld(held);pausedRef.current=true;setPaused(true);setView(snapshot(run.current));callbacks.current.onCheckpoint(copy(run.current));};
@@ -33,16 +34,16 @@ export default function TruckDriveStage(props:Props) {
   const returnToGarage=()=>{clearHeld(held);callbacks.current.onReturn(copy(run.current));};
   const retry=()=>{clearHeld(held);callbacks.current.onRetry(copy(run.current));};
   useEffect(()=>{
-    const el=canvas.current,c=el?.getContext('2d');if(!el||!c)return;
+    const el=canvas.current,c=el?.getContext('2d',{alpha:false});if(!el||!c)return;
     audio.current=new TruckAudio();audio.current.muted=callbacks.current.muted;
     const unlock=()=>audio.current?.unlock();window.addEventListener('pointerdown',unlock);window.addEventListener('keydown',unlock);
     let raf=0,last=0,accumulator=0,ui=0,save=0,sample=0;
     const draw=(now:number)=>{
       const reset=resetFrameClock.current;resetFrameClock.current=false;if(reset)accumulator=0;
       const raw=!reset&&last?Math.max(0,(now-last)/1000):0,delta=Math.min(raw,.08);last=now;
-      if(raw>0&&!pausedRef.current){const m=metrics.current;m.frames++;m.total+=raw;m.max=Math.max(m.max,raw);if(raw>1/30)m.slow++;}
+      if(raw>0&&!pausedRef.current)recordFrame(metrics.current,raw);
       if(audio.current)audio.current.muted=callbacks.current.muted;
-      const low=metrics.current.frames>120&&metrics.current.slow/metrics.current.frames>.2;
+      const low=metrics.current.low;
       const w=el.clientWidth||800,h=el.clientHeight||360,dpr=Math.min(low||reduced.current?1:2,window.devicePixelRatio||1);
       // Keep the ground visible on a short landscape phone as well as portrait.
       const scale=Math.min(Math.max(.7,Math.min(1.1,w/820)),h/400);
@@ -99,7 +100,7 @@ export default function TruckDriveStage(props:Props) {
   },[initial.id]);
   const section=courseSection(view.distance),ramp=nextRampDistance(view.x),newBest=!initial.practice&&view.distance>recordToBeat.current;
   const tools=has(initial.build,61)||has(initial.build,62)||has(initial.build,70);
-  return <div data-art-cache={wheelArtCacheSize()} data-colliders={COURSE_SMASH.length-(run.current.smash?.cleared.length??0)} data-fragments={run.current.t-(run.current.smash?.impactAt??-100)<.75?8:0} data-sounds={audio.current?.activeCount??0} data-effects={metrics.current.frames>120&&metrics.current.slow/metrics.current.frames>.2?'low':'full'} data-run-seed={run.current.sky?.seed} data-health={view.health} data-reward={view.reward} data-checkpoint={view.checkpoint} data-frame-count={metrics.current.frames} data-slow-frames={metrics.current.slow} data-frame-total={metrics.current.total} data-frame-max={metrics.current.max} data-hazards={run.current.sky?.active?1:0} data-debris={run.current.debris.length} data-history={history.current.length} data-smash-ids={view.smashIds} data-smash-bolts={view.smashBolts} data-active-seconds={view.elapsed} className="cg-drive cg-drive-v2" data-boosting={view.boosting} data-sky-id={view.sky?.active?.id??0} data-sky-duration={view.sky?.active?.warning??1.6} data-sky-safe={view.sky?.active?.safeAction??'brake'} data-sky-kind={view.sky?.active?.kind??-1} data-sky-target={view.sky?.active?.targetX??view.sky?.active?.x??0} data-sky-phase={view.sky?.active?.phase??'none'} data-sky-count={view.sky?.spawnCount??0} data-sky-hits={view.sky?.hits??0} data-sky-dodged={view.sky?.dodged??0}>
+  return <div data-art-cache={wheelArtCacheSize()} data-colliders={COURSE_SMASH.length-(run.current.smash?.cleared.length??0)} data-fragments={run.current.t-(run.current.smash?.impactAt??-100)<.75?8:0} data-sounds={audio.current?.activeCount??0} data-effects={metrics.current.low?'low':'full'} data-run-seed={run.current.sky?.seed} data-health={view.health} data-reward={view.reward} data-checkpoint={view.checkpoint} data-frame-count={metrics.current.frames} data-slow-frames={metrics.current.slow} data-frame-total={metrics.current.total} data-frame-max={metrics.current.max} data-hazards={run.current.sky?.active?1:0} data-debris={run.current.debris.length} data-history={history.current.length} data-smash-ids={view.smashIds} data-smash-bolts={view.smashBolts} data-active-seconds={view.elapsed} className="cg-drive cg-drive-v2" data-boosting={view.boosting} data-sky-id={view.sky?.active?.id??0} data-sky-duration={view.sky?.active?.warning??1.6} data-sky-safe={view.sky?.active?.safeAction??'brake'} data-sky-kind={view.sky?.active?.kind??-1} data-sky-target={view.sky?.active?.targetX??view.sky?.active?.x??0} data-sky-phase={view.sky?.active?.phase??'none'} data-sky-count={view.sky?.spawnCount??0} data-sky-hits={view.sky?.hits??0} data-sky-dodged={view.sky?.dodged??0}>
     <div className="cg-drive-hud">
       <div><small>{es?'DISTANCIA':'DISTANCE'}</small><strong data-testid="garage-distance">{view.distance}<span> m</span></strong></div>
       <div className="cg-health"><small>{es?'SALUD':'HEALTH'} {view.shield?'◇':''}</small><strong>{view.health}<span> /100</span></strong><meter min={0} max={100} value={view.health} aria-label={es?'Salud del camión':'Truck health'}/></div>

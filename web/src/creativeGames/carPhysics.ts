@@ -57,7 +57,7 @@ function skyImpact(r:Drive,s:ReturnType<typeof carStats>,drop:SkyObject){
 /** Fixed 120 Hz simulation; the renderer is a read-only consumer. */
 export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
  const previousX=r.x;
- dt=num(dt,0,1/60,1/120);if(!dt)return;r.t+=dt;const s=carStats(r.build),b=r.build,wasEnded=r.ended;
+ dt=num(dt,0,1/60,1/120);if(!dt)return;const brokenAtStart=r.broken.length,damageAtStart=r.survival?.lastDamage??-100;let stuntLanding=0;r.t+=dt;const s=carStats(r.build),b=r.build,wasEnded=r.ended;
  for(const d of r.debris){d.vy+=850*dt;d.x+=d.vx*dt;d.y+=d.vy*dt;d.a+=d.av*dt;const ground=terrainAt(d.x,r.track,r.bridges);if(d.y+d.r>ground){d.y=ground-d.r;if(d.vy>0)d.vy*=-.36;d.vx*=.985;d.av*=.988;}d.vx*=.999;}
  if(wasEnded){r.boostActive=false;r.vx*=.98;r.av*=.96;return;}
  // The turbo pedal also accelerates, so children can use it with one thumb.
@@ -93,7 +93,7 @@ export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
  for(const lx of [-s.width,s.width])for(const ly of [-28,8]){const rx=c*(lx-s.comX)-sn*(ly-s.comY),ry=sn*(lx-s.comX)+c*(ly-s.comY),x=r.x+rx,y=r.y+ry,pen=y-ground(x);if(pen>0){const vy=r.vy+r.av*rx,force=num(pen*s.mass*110-vy*s.mass*6,0,s.mass*7000);fy-=force;torque-=rx*force;fx-=r.vx*s.mass*(has(b,56)||has(b,60)||b.parts[0]===7?.8:2.5);if(vy>450)impact(r,s,vy,ly<0);if(pen>50){r.y-=Math.min(pen-45,8);r.vy=Math.min(r.vy,100);}}}
  if(has(b,58)&&r.a<-.35)torque+=Math.abs(r.a)*inertia*4;if(has(b,55)&&Math.abs(r.a)>1.65)torque+=Math.sign(r.a)*inertia*1.5;
  if(!contacts){torque-=r.a*inertia*1.5;if(r.contacts>0){r.launchX=r.x;r.boostJump=r.t-(r.lastBoostAt??-100)<.25;}r.air+=dt;if(input.gas)torque-=inertia*.55;if(input.brake)torque+=inertia*.55;if(has(b,65)&&r.air>.2&&r.vy>0&&Math.abs(r.vx)>90){fy*=.3;r.vy=Math.min(r.vy,140);}}
- else{if(r.air>.16){r.landings++;const brokenBefore=r.broken.length,healthBefore=r.survival?.health??100,shieldBefore=r.survival?.shield;const jump=Math.max(0,r.x-r.launchX)/12;if(Math.abs(r.a)<.8)r.bestJump=Math.max(r.bestJump,jump);impact(r,s,maxImpact);if(!r.ended&&r.broken.length===brokenBefore&&(r.survival?.health??100)===healthBefore&&r.survival?.shield===shieldBefore&&Math.abs(r.a)<.7&&r.boostJump&&jump>=8)rewardAction(r,'stunt',r.distance<350?1:r.distance<650?2:3);}r.air=0;}
+ else{if(r.air>.16){r.landings++;const jump=Math.max(0,r.x-r.launchX)/12;if(Math.abs(r.a)<.8)r.bestJump=Math.max(r.bestJump,jump);impact(r,s,maxImpact);if(Math.abs(r.a)<.7&&r.boostJump&&jump>=8)stuntLanding=r.distance<350?1:r.distance<650?2:3;}r.air=0;}
  r.contacts=contacts;r.vx=num(r.vx+fx/s.mass*dt,-160,700);r.vy=num(r.vy+fy/s.mass*dt,-1000,1200);r.av=num(r.av+torque/inertia*dt,-8,8);r.x=Math.max(40,r.x+r.vx*dt);r.y+=r.vy*dt;r.a=Math.atan2(Math.sin(r.a+r.av*dt),Math.cos(r.a+r.av*dt));
  if(!r.ended)r.distance=Math.max(r.distance,Math.min(10000,Math.max(0,r.x-90)/12));
  if(r.y>1200||r.x>=120090||r.broken.filter(i=>i<3).length>=s.wheelCount){r.ended=true;r.reason=r.x>=120090?4:1;}
@@ -106,6 +106,7 @@ export function stepDrive(r:Drive,input:DriveInput,dt=1/120):void{
   if(skyHit)skyImpact(r,s,skyHit);
   if(r.broken.filter(i=>i<3).length>=s.wheelCount){r.ended=true;r.reason=1;}
  }
+ if(stuntLanding&&!r.ended&&r.broken.length===brokenAtStart&&(r.survival?.lastDamage??-100)===damageAtStart)rewardAction(r,'stunt',stuntLanding);
  if(!r.practice&&r.distance>=1000&&!r.ended){r.ended=true;r.reason=4;r.boostActive=false;}
  if(r.ended&&r.reason===0)r.reason=1;
 }
