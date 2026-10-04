@@ -3,7 +3,7 @@ import type {Language} from '../types';
 import type {Drive} from './save';
 import {carStats,has,stepDrive} from './carPhysics';
 import {truckCamera} from './truckCamera';
-import {drawTrack} from './carArt';
+import {drawTrack,clearWheelArtCache,wheelArtCacheSize} from './carArt';
 import {drawSkyObjects} from './skyArt';
 import SkyAlert from './SkyAlert';
 import {TruckAudio} from './truckAudio';
@@ -95,11 +95,11 @@ export default function TruckDriveStage(props:Props) {
       raf=requestAnimationFrame(draw);
     };
     raf=requestAnimationFrame(draw);
-    return()=>{cancelAnimationFrame(raf);window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock);audio.current?.close();audio.current=null;if(!run.current.ended)callbacks.current.onCheckpoint(copy(run.current));};
+    return()=>{cancelAnimationFrame(raf);clearWheelArtCache();window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock);audio.current?.close();audio.current=null;if(!run.current.ended)callbacks.current.onCheckpoint(copy(run.current));};
   },[initial.id]);
   const section=courseSection(view.distance),ramp=nextRampDistance(view.x),newBest=!initial.practice&&view.distance>recordToBeat.current;
   const tools=has(initial.build,61)||has(initial.build,62)||has(initial.build,70);
-  return <div data-colliders={COURSE_SMASH.length-(run.current.smash?.cleared.length??0)} data-fragments={run.current.t-(run.current.smash?.impactAt??-100)<.75?8:0} data-sounds={audio.current?.activeCount??0} data-effects={metrics.current.frames>120&&metrics.current.slow/metrics.current.frames>.2?'low':'full'} data-run-seed={run.current.sky?.seed} data-health={view.health} data-reward={view.reward} data-checkpoint={view.checkpoint} data-frame-count={metrics.current.frames} data-slow-frames={metrics.current.slow} data-frame-total={metrics.current.total} data-frame-max={metrics.current.max} data-hazards={run.current.sky?.active?1:0} data-debris={run.current.debris.length} data-history={history.current.length} data-smash-ids={view.smashIds} data-smash-bolts={view.smashBolts} data-active-seconds={view.elapsed} className="cg-drive cg-drive-v2" data-boosting={view.boosting} data-sky-id={view.sky?.active?.id??0} data-sky-duration={view.sky?.active?.warning??1.6} data-sky-safe={view.sky?.active?.safeAction??'brake'} data-sky-kind={view.sky?.active?.kind??-1} data-sky-target={view.sky?.active?.targetX??view.sky?.active?.x??0} data-sky-phase={view.sky?.active?.phase??'none'} data-sky-count={view.sky?.spawnCount??0} data-sky-hits={view.sky?.hits??0} data-sky-dodged={view.sky?.dodged??0}>
+  return <div data-art-cache={wheelArtCacheSize()} data-colliders={COURSE_SMASH.length-(run.current.smash?.cleared.length??0)} data-fragments={run.current.t-(run.current.smash?.impactAt??-100)<.75?8:0} data-sounds={audio.current?.activeCount??0} data-effects={metrics.current.frames>120&&metrics.current.slow/metrics.current.frames>.2?'low':'full'} data-run-seed={run.current.sky?.seed} data-health={view.health} data-reward={view.reward} data-checkpoint={view.checkpoint} data-frame-count={metrics.current.frames} data-slow-frames={metrics.current.slow} data-frame-total={metrics.current.total} data-frame-max={metrics.current.max} data-hazards={run.current.sky?.active?1:0} data-debris={run.current.debris.length} data-history={history.current.length} data-smash-ids={view.smashIds} data-smash-bolts={view.smashBolts} data-active-seconds={view.elapsed} className="cg-drive cg-drive-v2" data-boosting={view.boosting} data-sky-id={view.sky?.active?.id??0} data-sky-duration={view.sky?.active?.warning??1.6} data-sky-safe={view.sky?.active?.safeAction??'brake'} data-sky-kind={view.sky?.active?.kind??-1} data-sky-target={view.sky?.active?.targetX??view.sky?.active?.x??0} data-sky-phase={view.sky?.active?.phase??'none'} data-sky-count={view.sky?.spawnCount??0} data-sky-hits={view.sky?.hits??0} data-sky-dodged={view.sky?.dodged??0}>
     <div className="cg-drive-hud">
       <div><small>{es?'DISTANCIA':'DISTANCE'}</small><strong data-testid="garage-distance">{view.distance}<span> m</span></strong></div>
       <div className="cg-health"><small>{es?'SALUD':'HEALTH'} {view.shield?'◇':''}</small><strong>{view.health}<span> /100</span></strong><meter min={0} max={100} value={view.health} aria-label={es?'Salud del camión':'Truck health'}/></div>

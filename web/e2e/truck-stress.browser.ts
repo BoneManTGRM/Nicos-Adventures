@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('600 real seconds of truck chaos/reset/navigation with frame and resource measurements',async({page},info)=>{
- const errors:string[]=[],assets:string[]=[],samples:{frames:number;slow:number;total:number;max:number;hazards:number;debris:number;history:number;colliders:number;fragments:number;sounds:number;listeners:number;effects:string}[]=[];
+ const errors:string[]=[],assets:string[]=[],samples:{frames:number;slow:number;total:number;max:number;hazards:number;debris:number;history:number;colliders:number;fragments:number;sounds:number;artCache:number;listeners:number;effects:string}[]=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400&&/\.(?:js|css|png|webp|svg)(?:\?|$)/.test(r.url()))assets.push(r.url()+':'+r.status());});
  await page.addInitScript(()=>{
   const installed=new Set<string>(),ids=new WeakMap<object,number>();let next=0;
@@ -18,8 +18,8 @@ test('600 real seconds of truck chaos/reset/navigation with frame and resource m
   await page.waitForTimeout(1000);iterations++;
   const drive=page.locator('.cg-drive');
   if(await drive.count()){
-   const s=await drive.evaluate(el=>{const n=(key:string)=>Number(el.getAttribute(key));return {frames:n('data-frame-count'),slow:n('data-slow-frames'),total:n('data-frame-total'),max:n('data-frame-max'),hazards:n('data-hazards'),debris:n('data-debris'),history:n('data-history'),colliders:n('data-colliders'),fragments:n('data-fragments'),sounds:n('data-sounds'),listeners:Number((window as unknown as {__truckGlobalListeners:number}).__truckGlobalListeners),effects:el.getAttribute('data-effects')!};});
-   samples.push(s);if(!baseline)baseline=s.listeners;expect(s.hazards).toBeLessThanOrEqual(1);expect(s.debris).toBeLessThanOrEqual(22);expect(s.history).toBeLessThanOrEqual(150);expect(s.colliders).toBeLessThanOrEqual(18);expect(s.fragments).toBeLessThanOrEqual(8);expect(s.sounds).toBeLessThanOrEqual(4);expect(s.listeners).toBeLessThanOrEqual(baseline+12);
+   const s=await drive.evaluate(el=>{const n=(key:string)=>Number(el.getAttribute(key));return {frames:n('data-frame-count'),slow:n('data-slow-frames'),total:n('data-frame-total'),max:n('data-frame-max'),hazards:n('data-hazards'),debris:n('data-debris'),history:n('data-history'),colliders:n('data-colliders'),fragments:n('data-fragments'),sounds:n('data-sounds'),artCache:n('data-art-cache'),listeners:Number((window as unknown as {__truckGlobalListeners:number}).__truckGlobalListeners),effects:el.getAttribute('data-effects')!};});
+   samples.push(s);if(!baseline)baseline=s.listeners;expect(s.hazards).toBeLessThanOrEqual(1);expect(s.debris).toBeLessThanOrEqual(22);expect(s.history).toBeLessThanOrEqual(150);expect(s.colliders).toBeLessThanOrEqual(18);expect(s.fragments).toBeLessThanOrEqual(8);expect(s.sounds).toBeLessThanOrEqual(4);expect(s.artCache).toBeLessThanOrEqual(24);expect(s.listeners).toBeLessThanOrEqual(baseline+12);
   }
   if(await page.locator('.cg-crash-card').count()){await page.keyboard.up('ArrowRight');await page.getByTestId('garage-race-again').click();await page.keyboard.down('ArrowRight');resets++;continue;}
   if(iterations%37===0){

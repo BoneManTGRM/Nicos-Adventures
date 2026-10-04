@@ -12,7 +12,24 @@ export function disk(c:C,x:number,y:number,r:number,fill:string,stroke=ink,width
 export function box(c:C,x:number,y:number,w:number,h:number,fill:string,r=5,stroke=ink,width=3){c.beginPath();c.roundRect(x,y,w,h,r);c.fillStyle=fill;c.fill();if(width){c.strokeStyle=stroke;c.lineWidth=width;c.stroke();}}
 export function line(c:C,x:number,y:number,xx:number,yy:number,color:string,width=3){c.beginPath();c.moveTo(x,y);c.lineTo(xx,yy);c.strokeStyle=color;c.lineWidth=width;c.lineCap='round';c.stroke();}
 export function star(c:C,x:number,y:number,r:number,color:string){const p=Array.from({length:10},(_,i)=>{const a=i*Math.PI/5-Math.PI/2,s=i%2?r*.45:r;return [x+Math.cos(a)*s,y+Math.sin(a)*s];});shape(c,p,color,color,0);}
+// Cache only the static wheel face; position, suspension and rotation remain live.
+// Each entry is a tiny local canvas, capped and discarded on stage cleanup.
+const wheelFaces=new Map<string,{canvas:HTMLCanvasElement;extent:number}>();
+export const wheelArtCacheSize=()=>wheelFaces.size;
+export const clearWheelArtCache=()=>wheelFaces.clear();
 export function wheelArt(c:C,id:number,x:number,y:number,r:number,angle=0){
+ const key=id+':'+r;let face=wheelFaces.get(key);
+ if(!face&&typeof document!=='undefined'){
+  const extent=Math.ceil(r+4),canvas=document.createElement('canvas');canvas.width=canvas.height=extent*4;
+  const painter=canvas.getContext('2d');if(painter){
+   painter.setTransform(2,0,0,2,extent*2,extent*2);drawWheelVector(painter,id,0,0,r);
+   face={canvas,extent};if(wheelFaces.size>=24)wheelFaces.delete(wheelFaces.keys().next().value!);wheelFaces.set(key,face);
+  }
+ }
+ if(!face){drawWheelVector(c,id,x,y,r,angle);return;}
+ c.save();c.translate(x,y);c.rotate(angle);c.drawImage(face.canvas,-face.extent,-face.extent,face.extent*2,face.extent*2);c.restore();
+}
+function drawWheelVector(c:C,id:number,x:number,y:number,r:number,angle=0){
  const p=PARTS[id-1]??PARTS[10],v=(id-11)%10;c.save();c.translate(x,y);c.rotate(angle);
  disk(c,0,0,r,'#0b1527',ink,3);disk(c,0,0,r*.81,v===2?'#8fcff4':'#28384a','#59697b',2);
  for(let i=0;i<12+(v%4)*2;i++){const a=i*Math.PI*2/(12+(v%4)*2);c.save();c.rotate(a);box(c,-r*.13,-r*.96,r*.26,r*.2,v===1?'#ff7549':v===2?'#d7f7ff':'#46576b',2,ink,1);c.restore();}
