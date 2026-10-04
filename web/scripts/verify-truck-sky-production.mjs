@@ -13,6 +13,16 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])for(const la
  const name=`${engine}-${language}`,browser=await type.launch(),page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,locale:language==='en'?'en-US':'es-MX'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  try{
+  // Fresh public link plus real pause/resume, checkpoint retry and navigation.
+  // This browser owns an isolated profile; no production user data is touched.
+  await page.goto(origin+'/?play=monster-garage',{waitUntil:'networkidle'});
+  await page.getByTestId('garage-drive').click();await page.locator('.cg-drive[data-health="100"]').waitFor();
+  await page.getByTestId('garage-pause').click();const pausedTime=await page.locator('.cg-drive').getAttribute('data-active-seconds');await page.waitForTimeout(250);
+  if(await page.locator('.cg-drive').getAttribute('data-active-seconds')!==pausedTime)throw new Error('Public pause advanced simulation');
+  await page.getByTestId('garage-pause').click();await page.waitForFunction(t=>Number(document.querySelector('.cg-drive')?.getAttribute('data-active-seconds'))>Number(t),pausedTime,{timeout:5000});
+  await page.getByTestId('garage-pause').click();await page.getByTestId('garage-recover').click();await page.locator('.cg-drive[data-health="100"][data-sky-phase="none"]').waitFor();
+  await page.locator('.cg-track-chips').getByText(/PROTECTION|PROTECCIÓN/).waitFor();await page.locator('.cg-return').click();await page.getByTestId('garage-drive').click();await page.locator('.cg-drive[data-health="100"]').waitFor();
+  await page.locator('.cg-topbar button').click();await page.getByTestId('open-rainbow-kingdom').waitFor();
   await page.goto(origin,{waitUntil:'networkidle'});await page.getByTestId('continue-world').waitFor();
   // Only this disposable browser's local profile is changed, not any existing child profile.
   await page.evaluate(({key,language})=>{const s=JSON.parse(localStorage.getItem(key));const p=s.profiles.find(p=>p.id===s.activeProfileId);p.language=language;p.selectedSection='game-arcade';p.nico.speechEnabled=false;localStorage.setItem(key,JSON.stringify(s));},{key,language});
@@ -37,7 +47,7 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])for(const la
   const saved=await page.evaluate(key=>{const s=JSON.parse(localStorage.getItem(key));return s.profiles.find(p=>p.id===s.activeProfileId).creativeGames.garage;},key);
   if(saved.owned.length!==7||saved.resume!==null)throw new Error('Ownership or settlement changed unexpectedly');
   if(errors.length)throw new Error(errors.join('\n'));
-  results.push({name,passed:true,sha:release.commitSha,warnedAt,hits,dodged,bolts,starterOnly:true});
+  results.push({name,passed:true,sha:release.commitSha,warnedAt,hits,dodged,bolts,starterOnly:true,publicLinkPauseResumeRecoverRetryExit:true});
  }catch(error){results.push({name,passed:false,error:String(error),errors});await page.mouse.up().catch(()=>{});await page.screenshot({path:`${out}/${name}-failure.png`,fullPage:true}).catch(()=>{});}
  finally{await browser.close();await writeFile(`${out}/results.json`,JSON.stringify(results,null,2));}
 }
