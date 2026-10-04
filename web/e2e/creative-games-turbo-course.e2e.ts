@@ -11,6 +11,8 @@ async function garage(page:Page,info:TestInfo,run?:Drive){
  await page.clock.pauseAt(new Date(await page.evaluate(()=>Date.now())+5000));
  if(run)await page.locator('.cg-resume').getByRole('button',{name:isEs(info)?'Continuar recorrido':'Resume drive',exact:true}).click();else await page.getByTestId('garage-drive').click();
  await page.clock.runFor(150);
+ await expect(page.locator('.fw-app>.fw-topbar')).toHaveCSS('visibility','hidden');
+ await expect(page.locator('.fw-app>.fw-bottom-nav')).toHaveCSS('visibility','hidden');
 }
 async function saved(page:Page){return page.evaluate(key=>{const s=JSON.parse(localStorage.getItem(key)!);return s.profiles.find((p:{id:string})=>p.id===s.activeProfileId).creativeGames.garage;},key);}
 async function capture(page:Page,info:TestInfo,name:string){await info.attach(name,{body:await page.screenshot(),contentType:'image/png'});}
@@ -49,7 +51,7 @@ test('close diagonal dodge earns once, mute persists and pause → recovery clea
  await page.clock.runFor(1200);await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-hits','0');await page.getByTestId('garage-pause').click();const before=(await saved(page)).resume;expect(before.survival.nearMisses).toEqual([1]);expect(before.survival.reward).toBe(2);await page.clock.runFor(3000);expect((await saved(page)).resume).toEqual(before);
  await page.getByTestId('garage-recover').click();await page.clock.runFor(150);await expect(page.locator('.cg-drive')).toHaveAttribute('data-health','100');await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-phase','none');
  await page.getByTestId('garage-pause').click();const next=(await saved(page)).resume;expect(next.survival.protectedUntil-next.t).toBeGreaterThan(2.5);expect(next.sky.active).toBeNull();
- await page.locator('.cg-return').click();const paid=await saved(page);await page.clock.resume();await page.reload();await page.getByTestId('open-monster-garage').click();const restored=await saved(page);expect(restored.muted).toBe(true);expect(restored.bolts).toBe(paid.bolts);expect(restored.owned).toEqual(paid.owned);
+ await page.locator('.cg-return').click();await expect(page.locator('.fw-app>.fw-topbar')).toHaveCSS('visibility','visible');await expect(page.locator('.fw-app>.fw-bottom-nav')).toHaveCSS('visibility','visible');const paid=await saved(page);await page.clock.resume();await page.reload();await page.getByTestId('open-monster-garage').click();const restored=await saved(page);expect(restored.muted).toBe(true);expect(restored.bolts).toBe(paid.bolts);expect(restored.owned).toEqual(paid.owned);
 });
 test('shield consumes once on impact and repair is collected once',async({page},info)=>{
  const r=dropFixture();r.t=30;r.survival!.shield=true;await garage(page,info,r);await page.clock.runFor(3000);await expect(page.locator('.cg-drive')).toHaveAttribute('data-sky-hits','1');await expect(page.locator('.cg-drive')).toHaveAttribute('data-health','100');

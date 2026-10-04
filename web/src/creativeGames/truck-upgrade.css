@@ -59,3 +59,12 @@
 .cg-garage .cg-sky-alert{top:8px;font-size:11px;max-width:calc(100% - 20px);padding:7px 10px}
 .cg-garage .cg-controls{padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(max-height:600px){.cg-garage .cg-track-chips span{font-size:8px;padding:3px 5px}.cg-garage .cg-sky-alert{top:4px;font-size:9px;padding:4px 7px}.cg-garage .cg-drive-support button{min-height:34px}.cg-garage .cg-drive-support>span{max-height:25px;overflow:hidden}}
+
+/* The fixed truck playfield covers this chrome. Avoid painting its blurred
+ * underlay while driving; leaving the stage restores navigation automatically. */
+.fw-app:has(.cg-drive-v2)>.fw-topbar,
+.fw-app:has(.cg-drive-v2)>.fw-bottom-nav,
+.fw-app:has(.cg-drive-v2)>.journey-nav,
+.fw-app:has(.cg-drive-v2)>.fw-site-footer,
+.fw-app:has(.cg-drive-v2)>.fw-skip-link,
+.fw-app:has(.cg-drive-v2) #main-content>.fw-page-header{visibility:hidden}

@@ -1,0 +1,530 @@
+{
+  "source": "5e37283b42f7bc8590330faabd2136f9cce0e6ed",
+  "baselineGameSource": "f5f60b24ed4e8c90586fd9e9ef60eea269230f0f",
+  "run": 37167840935,
+  "actualDevice": false,
+  "conditions": "Same seed17 starter controls12seconds, fresh contexts, viewport/browser/sim/assertions fixed. Default-repeat preserves warmed control. CSS changes test-only in measured revision.",
+  "results": [
+    {
+      "job": 111334522966,
+      "results": [
+        {
+          "cpu": {
+            "frames": 784,
+            "meanMs": 0.6682397959180258,
+            "maxMs": 10.89999999999418,
+            "p95Ms": 0.9000000000087311
+          },
+          "mode": "default",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "chromium",
+          "project": "chromium-mobile-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 412,
+            "height": 839
+          },
+          "durationMs": 12116,
+          "before": {
+            "frames": 33,
+            "total": 0.5666,
+            "slow": 1,
+            "max": 0.0335,
+            "effects": "full",
+            "hazards": 0,
+            "history": 6,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "after": {
+            "frames": 756,
+            "total": 12.632799999999976,
+            "slow": 1,
+            "max": 0.0335,
+            "effects": "full",
+            "hazards": 0,
+            "history": 150,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "fps": 59.91944439840226,
+          "errors": []
+        },
+        {
+          "cpu": {
+            "frames": 782,
+            "meanMs": 0.6218670076728054,
+            "maxMs": 6,
+            "p95Ms": 0.9000000000087311
+          },
+          "mode": "ancestor-effects-off",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "chromium",
+          "project": "chromium-mobile-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 412,
+            "height": 839
+          },
+          "durationMs": 12087,
+          "before": {
+            "frames": 27,
+            "total": 0.45000000000000007,
+            "slow": 0,
+            "max": 0.016799999999999954,
+            "effects": "full",
+            "hazards": 0,
+            "history": 5,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "after": {
+            "frames": 748,
+            "total": 12.466299999999977,
+            "slow": 0,
+            "max": 0.016800000000001092,
+            "effects": "full",
+            "hazards": 0,
+            "history": 149,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "fps": 60.001830846433705,
+          "errors": []
+        },
+        {
+          "cpu": {
+            "frames": 782,
+            "meanMs": 0.5960358056265501,
+            "maxMs": 5.7999999999883585,
+            "p95Ms": 0.8999999999941792
+          },
+          "mode": "hidden-underlay",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "chromium",
+          "project": "chromium-mobile-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 412,
+            "height": 839
+          },
+          "durationMs": 12080,
+          "before": {
+            "frames": 27,
+            "total": 0.4501,
+            "slow": 0,
+            "max": 0.01680000000000007,
+            "effects": "full",
+            "hazards": 0,
+            "history": 5,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "after": {
+            "frames": 749,
+            "total": 12.482899999999976,
+            "slow": 0,
+            "max": 0.016800000000001092,
+            "effects": "full",
+            "hazards": 0,
+            "history": 149,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "fps": 60.00265939764656,
+          "errors": []
+        },
+        {
+          "cpu": {
+            "frames": 779,
+            "meanMs": 0.6097560975613866,
+            "maxMs": 6,
+            "p95Ms": 0.8999999999941792
+          },
+          "mode": "combined-effects-off",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "chromium",
+          "project": "chromium-mobile-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 412,
+            "height": 839
+          },
+          "durationMs": 12079,
+          "before": {
+            "frames": 28,
+            "total": 0.4666,
+            "slow": 0,
+            "max": 0.016700000000000045,
+            "effects": "full",
+            "hazards": 0,
+            "history": 5,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "after": {
+            "frames": 748,
+            "total": 12.466099999999974,
+            "slow": 0,
+            "max": 0.016800000000001092,
+            "effects": "full",
+            "hazards": 0,
+            "history": 149,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "fps": 60.00250010417113,
+          "errors": []
+        },
+        {
+          "cpu": {
+            "frames": 780,
+            "meanMs": 0.6017948717950509,
+            "maxMs": 5.699999999982538,
+            "p95Ms": 0.8999999999941792
+          },
+          "mode": "default-repeat",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "chromium",
+          "project": "chromium-mobile-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 412,
+            "height": 839
+          },
+          "durationMs": 12077,
+          "before": {
+            "frames": 33,
+            "total": 0.5499999999999999,
+            "slow": 0,
+            "max": 0.016799999999999954,
+            "effects": "full",
+            "hazards": 0,
+            "history": 6,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "after": {
+            "frames": 754,
+            "total": 12.566199999999952,
+            "slow": 0,
+            "max": 0.016800000000001092,
+            "effects": "full",
+            "hazards": 0,
+            "history": 150,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 756,
+              "height": 940
+            }
+          },
+          "fps": 60.00233018758034,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "job": 111334522976,
+      "results": [
+        {
+          "cpu": {
+            "frames": 493,
+            "meanMs": 0.8012170385395537,
+            "maxMs": 10,
+            "p95Ms": 3
+          },
+          "mode": "default",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "webkit",
+          "project": "webkit-iphone-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 390,
+            "height": 664
+          },
+          "durationMs": 12279,
+          "before": {
+            "frames": 0,
+            "total": 0,
+            "slow": 0,
+            "max": 0,
+            "effects": "full",
+            "hazards": 0,
+            "history": 0,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "after": {
+            "frames": 466,
+            "total": 12.515999999999963,
+            "slow": 12,
+            "max": 0.559,
+            "effects": "full",
+            "hazards": 0,
+            "history": 122,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "fps": 37.23234260147023,
+          "errors": []
+        },
+        {
+          "cpu": {
+            "frames": 703,
+            "meanMs": 0.6998577524893315,
+            "maxMs": 10,
+            "p95Ms": 1
+          },
+          "mode": "ancestor-effects-off",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "webkit",
+          "project": "webkit-iphone-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 390,
+            "height": 664
+          },
+          "durationMs": 12191,
+          "before": {
+            "frames": 20,
+            "total": 0.4670000000000002,
+            "slow": 2,
+            "max": 0.092,
+            "effects": "full",
+            "hazards": 0,
+            "history": 4,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "after": {
+            "frames": 673,
+            "total": 12.579000000000013,
+            "slow": 5,
+            "max": 0.092,
+            "effects": "full",
+            "hazards": 0,
+            "history": 140,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "fps": 53.913474240422666,
+          "errors": []
+        },
+        {
+          "cpu": {
+            "frames": 709,
+            "meanMs": 0.692524682651622,
+            "maxMs": 9,
+            "p95Ms": 1
+          },
+          "mode": "hidden-underlay",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "webkit",
+          "project": "webkit-iphone-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 390,
+            "height": 664
+          },
+          "durationMs": 12193,
+          "before": {
+            "frames": 19,
+            "total": 0.4480000000000001,
+            "slow": 2,
+            "max": 0.095,
+            "effects": "full",
+            "hazards": 0,
+            "history": 4,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "after": {
+            "frames": 678,
+            "total": 12.587999999999994,
+            "slow": 5,
+            "max": 0.095,
+            "effects": "full",
+            "hazards": 0,
+            "history": 142,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "fps": 54.28336079077433,
+          "errors": []
+        },
+        {
+          "cpu": {
+            "frames": 729,
+            "meanMs": 0.6968449931412894,
+            "maxMs": 9,
+            "p95Ms": 1
+          },
+          "mode": "combined-effects-off",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "webkit",
+          "project": "webkit-iphone-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 390,
+            "height": 664
+          },
+          "durationMs": 12237,
+          "before": {
+            "frames": 20,
+            "total": 0.47000000000000014,
+            "slow": 2,
+            "max": 0.096,
+            "effects": "full",
+            "hazards": 0,
+            "history": 4,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "after": {
+            "frames": 692,
+            "total": 12.546999999999993,
+            "slow": 3,
+            "max": 0.096,
+            "effects": "full",
+            "hazards": 0,
+            "history": 142,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "fps": 55.64295768816763,
+          "errors": []
+        },
+        {
+          "cpu": {
+            "frames": 547,
+            "meanMs": 0.8244972577696527,
+            "maxMs": 10,
+            "p95Ms": 1
+          },
+          "mode": "default-repeat",
+          "revision": "a67d78ea12a1c04c18361832602a6b7c6708d488",
+          "engine": "webkit",
+          "project": "webkit-iphone-en",
+          "actualDevice": false,
+          "seed": 17,
+          "viewport": {
+            "width": 390,
+            "height": 664
+          },
+          "durationMs": 12205,
+          "before": {
+            "frames": 17,
+            "total": 0.48300000000000015,
+            "slow": 1,
+            "max": 0.098,
+            "effects": "full",
+            "hazards": 0,
+            "history": 4,
+            "colliders": 18,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "after": {
+            "frames": 518,
+            "total": 12.545999999999967,
+            "slow": 3,
+            "max": 0.098,
+            "effects": "full",
+            "hazards": 0,
+            "history": 133,
+            "colliders": 13,
+            "artCache": 11,
+            "canvas": {
+              "width": 712,
+              "height": 618
+            }
+          },
+          "fps": 41.531957224571116,
+          "errors": []
+        }
+      ]
+    }
+  ],
+  "decision": "Only hide occluded direct site chrome while cg-drive-v2 exists. WebKit hidden54.28 vs warmed41.53 FPS; Chrome60. Sustained rerun pending; do not claim achieved from short comparison."
+}

@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 test('isolated canvas and composition rendering measurements',async({browser},info)=>{
  const reports=[];
- for(const mode of ['default','ancestor-effects-off','hidden-underlay','combined-effects-off','default-repeat']){
+ for(const mode of ['default','underlay-restored','default-repeat']){
   const use=info.project.use;
   const context=await browser.newContext({viewport:use.viewport,deviceScaleFactor:use.deviceScaleFactor,isMobile:use.isMobile,hasTouch:use.hasTouch,locale:use.locale,reducedMotion:'no-preference',serviceWorkers:'allow'});
 
@@ -15,9 +15,7 @@ test('isolated canvas and composition rendering measurements',async({browser},in
 
   });
   await page.goto('/?play=monster-garage');await page.getByTestId('garage-drive').click();
-  if(mode==='ancestor-effects-off')await page.addStyleTag({content:'.fw-app,.fw-app>*{box-shadow:none!important;text-shadow:none!important;filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}'});
-  if(mode==='hidden-underlay')await page.addStyleTag({content:'.fw-app>.fw-topbar,.fw-app>.fw-bottom-nav,.fw-app>.journey-nav,.fw-app>.fw-site-footer,.fw-app>.fw-skip-link,#main-content>.fw-page-header{visibility:hidden!important}'});
-  if(mode==='combined-effects-off')await page.addStyleTag({content:'.fw-app,.fw-app *{box-shadow:none!important;text-shadow:none!important;filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}'});
+  if(mode==='underlay-restored')await page.addStyleTag({content:'.fw-app>.fw-topbar,.fw-app>.fw-bottom-nav,.fw-app>.journey-nav,.fw-app>.fw-site-footer,.fw-app>.fw-skip-link,#main-content>.fw-page-header{visibility:visible!important}'});
   const read=()=>page.locator('.cg-drive').evaluate(el=>{const n=(key:string)=>Number(el.getAttribute(key));return{frames:n('data-frame-count'),total:n('data-frame-total'),slow:n('data-slow-frames'),max:n('data-frame-max'),effects:el.getAttribute('data-effects'),hazards:n('data-hazards'),history:n('data-history'),colliders:n('data-colliders'),artCache:n('data-art-cache'),canvas:{width:el.querySelector('canvas')!.width,height:el.querySelector('canvas')!.height}};});
   await page.waitForTimeout(500);const before=await read(),started=Date.now();await page.keyboard.down('ArrowRight');await page.waitForTimeout(12_000);await page.keyboard.up('ArrowRight');const after=await read();await page.getByTestId('garage-pause').click();
   expect(Date.now()-started).toBeGreaterThanOrEqual(12_000);expect(after.frames-before.frames).toBeGreaterThan(100);expect(after.hazards).toBeLessThanOrEqual(1);expect(after.history).toBeLessThanOrEqual(150);expect(after.colliders).toBeLessThanOrEqual(18);expect(after.artCache).toBeLessThanOrEqual(24);expect(errors).toEqual([]);
