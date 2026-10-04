@@ -1,0 +1,33 @@
+{
+  "source": "2c137339e283cbd99c2cc52616df6b9274e48ccb",
+  "testedMerge": "e987af72778d6282394c05a35ecdd9849a974caf",
+  "captures": [
+    {
+      "file": "docs/evidence/turbo-smash-2c1373/crate-collider.jpg",
+      "blob": "4abf12f2bb1c024250f933ccef88e91a0978afb3"
+    },
+    {
+      "file": "docs/evidence/turbo-smash-2c1373/intro-crate-impact.jpg",
+      "blob": "3301e0ab8baeb38109366286149acc5b338a2fec"
+    },
+    {
+      "file": "docs/evidence/turbo-smash-2c1373/pattern-2-warning.jpg",
+      "blob": "8d7d9a2a82be5f6f82e077739d7349691e055c01"
+    },
+    {
+      "file": "docs/evidence/turbo-smash-2c1373/diagonal-dodge.jpg",
+      "blob": "8f8925bc9c892888699d6aedb131aab01f0398d7"
+    },
+    {
+      "file": "docs/evidence/turbo-smash-2c1373/boosted-jump-airborne.jpg",
+      "blob": "4d829ed477bfa3ef40d8ee8819f53e74aa8e1663"
+    },
+    {
+      "file": "docs/evidence/turbo-smash-2c1373/boosted-clean-landing.jpg",
+      "blob": "f200d69028bf7b01aa557e01f50e3322d29c6a04"
+    }
+  ],
+  "projects": "Chromium Pixel7 crate-collider; remaining captures desktop WebKit iPhone13 emulation, EN. See source CI job111315658078/111315657897. No physical device.",
+  "review": "second-pass self-review; actual image content inspected; no generated mockups or external assets",
+  "assetProvenance": "Original Canvas2D source and local WebAudio, existing Nico's World art preserved; no external assets/license credits added."
+}

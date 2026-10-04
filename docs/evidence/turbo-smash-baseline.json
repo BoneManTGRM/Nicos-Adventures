@@ -1,0 +1,182 @@
+{
+  "baseline": "aadc44cae98722894907f50caee3ee315fae1432",
+  "environment": "functions V8; explicit type erasure of production source; JSON clone injected; not browser/tsc/npm",
+  "frozen": {
+    "dt": 0.008333333333333333,
+    "limitSeconds": 25,
+    "gas": true,
+    "brake": false,
+    "tool": false,
+    "boost": false,
+    "pass": "x>1990, contacts>0, abs(a)<0.7, live, no wheel/engine loss",
+    "course": "unchanged production terrainAt"
+  },
+  "ramps": [
+    {
+      "track": 0,
+      "wheel": 11,
+      "start": 90,
+      "pass": true,
+      "t": 7.775000000000176,
+      "x": 1990.2392441336478,
+      "angle": -0.1866393204726385,
+      "broken": [
+        12,
+        13
+      ],
+      "ended": false
+    },
+    {
+      "track": 0,
+      "wheel": 11,
+      "start": 1350,
+      "pass": true,
+      "t": 3.0749999999999917,
+      "x": 1990.6937736507093,
+      "angle": -0.21566233523847705,
+      "broken": [
+        12,
+        13
+      ],
+      "ended": false
+    },
+    {
+      "track": 0,
+      "wheel": 12,
+      "start": 90,
+      "pass": true,
+      "t": 8.983333333333464,
+      "x": 1990.176141668642,
+      "angle": -0.31731600748171973,
+      "broken": [],
+      "ended": false
+    },
+    {
+      "track": 0,
+      "wheel": 12,
+      "start": 1350,
+      "pass": true,
+      "t": 3.6499999999999897,
+      "x": 1990.2625826677959,
+      "angle": -0.3158073336303911,
+      "broken": [],
+      "ended": false
+    },
+    {
+      "track": 1,
+      "wheel": 11,
+      "start": 90,
+      "pass": true,
+      "t": 7.958333333333519,
+      "x": 1991.0318817819673,
+      "angle": 0.4008258610310026,
+      "broken": [
+        12,
+        13,
+        11
+      ],
+      "ended": false
+    },
+    {
+      "track": 1,
+      "wheel": 11,
+      "start": 1350,
+      "pass": true,
+      "t": 3.241666666666658,
+      "x": 1990.9532029976338,
+      "angle": -0.06027596941558445,
+      "broken": [
+        12,
+        13,
+        11
+      ],
+      "ended": false
+    },
+    {
+      "track": 1,
+      "wheel": 12,
+      "start": 90,
+      "pass": true,
+      "t": 9.325000000000111,
+      "x": 1990.4006011747385,
+      "angle": -0.395052096692271,
+      "broken": [
+        12,
+        13
+      ],
+      "ended": false
+    },
+    {
+      "track": 1,
+      "wheel": 12,
+      "start": 1350,
+      "pass": true,
+      "t": 4.049999999999991,
+      "x": 1991.992847487211,
+      "angle": -0.4098912372988712,
+      "broken": [
+        12,
+        13
+      ],
+      "ended": false
+    },
+    {
+      "track": 2,
+      "wheel": 11,
+      "start": 90,
+      "pass": true,
+      "t": 7.908333333333516,
+      "x": 1990.6023073470863,
+      "angle": 0.007514086095677044,
+      "broken": [
+        12,
+        13
+      ],
+      "ended": false
+    },
+    {
+      "track": 2,
+      "wheel": 11,
+      "start": 1350,
+      "pass": true,
+      "t": 3.2833333333333243,
+      "x": 1990.7267412347642,
+      "angle": 0.32990845103600386,
+      "broken": [
+        12,
+        13
+      ],
+      "ended": false
+    },
+    {
+      "track": 2,
+      "wheel": 12,
+      "start": 90,
+      "pass": true,
+      "t": 9.725000000000088,
+      "x": 2037.7643347807511,
+      "angle": -0.6942639844279671,
+      "broken": [],
+      "ended": false
+    },
+    {
+      "track": 2,
+      "wheel": 12,
+      "start": 1350,
+      "pass": true,
+      "t": 4.550000000000016,
+      "x": 1990.8926858564103,
+      "angle": -0.6667410655910416,
+      "broken": [],
+      "ended": false
+    }
+  ],
+  "minimalFailure": {
+    "source": "528502b4fce8d5739e200fbaa4d976b396a37ffc",
+    "expected": "no warning below 20 simulation seconds",
+    "actual": "warning",
+    "t": 19.99,
+    "distance": 350,
+    "failed": true
+  }
+}

@@ -6,6 +6,7 @@ const spanish=(info:TestInfo)=>info.project.metadata.language==='es-MX';
 async function current(page:Page):Promise<CreativeGamesSave>{return page.evaluate(key=>{const s=JSON.parse(localStorage.getItem(key)!);return s.profiles.find((p:{id:string})=>p.id===s.activeProfileId).creativeGames;},key);}
 async function enter(page:Page,info:TestInfo,games=normalizeGames(null)){
  await page.goto('/');await expect(page.getByTestId('continue-world')).toBeVisible();
+ await page.waitForFunction(key=>localStorage.getItem(key)!==null,key);
  await page.evaluate(({key,games,language})=>{const s=JSON.parse(localStorage.getItem(key)!);const p=s.profiles.find((p:{id:string})=>p.id===s.activeProfileId);p.selectedSection='game-arcade';p.language=language;p.creativeGames=games;p.nico.speechEnabled=false;localStorage.setItem(key,JSON.stringify(s));},{key,games,language:info.project.metadata.language});
  await page.reload();await page.getByTestId('open-monster-garage').click();await expect(page.getByTestId('garage-drive')).toBeVisible();
 }

@@ -1,0 +1,323 @@
+{
+  "source": "1dcde1b3589052f2561461ffdaa676406a776238",
+  "testedMerge": "89dc2056668e6f312bdcaebfe89f08b1c1de48fd",
+  "actualDevice": false,
+  "webkit": [
+    {
+      "cpu": {
+        "frames": 357,
+        "meanMs": 0.988795518207283,
+        "maxMs": 15,
+        "p95Ms": 2
+      },
+      "mode": "default",
+      "revision": "89dc2056668e6f312bdcaebfe89f08b1c1de48fd",
+      "engine": "webkit",
+      "project": "webkit-iphone-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "durationMs": 12280,
+      "before": {
+        "frames": 0,
+        "total": 0,
+        "slow": 0,
+        "max": 0,
+        "effects": "full",
+        "hazards": 0,
+        "history": 0,
+        "colliders": 18,
+        "artCache": 11,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "after": {
+        "frames": 332,
+        "total": 12.46899999999999,
+        "slow": 106,
+        "max": 0.945,
+        "effects": "low",
+        "hazards": 0,
+        "history": 115,
+        "colliders": 14,
+        "artCache": 11,
+        "canvas": {
+          "width": 356,
+          "height": 309
+        }
+      },
+      "fps": 26.626032560750684,
+      "errors": []
+    },
+    {
+      "cpu": {
+        "frames": 411,
+        "meanMs": 0.8564476885644768,
+        "maxMs": 15,
+        "p95Ms": 2
+      },
+      "mode": "opaque-canvas",
+      "revision": "89dc2056668e6f312bdcaebfe89f08b1c1de48fd",
+      "engine": "webkit",
+      "project": "webkit-iphone-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "durationMs": 12281,
+      "before": {
+        "frames": 11,
+        "total": 0.48899999999999993,
+        "slow": 9,
+        "max": 0.127,
+        "effects": "full",
+        "hazards": 0,
+        "history": 4,
+        "colliders": 18,
+        "artCache": 11,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "after": {
+        "frames": 385,
+        "total": 12.502999999999997,
+        "slow": 104,
+        "max": 0.127,
+        "effects": "low",
+        "hazards": 0,
+        "history": 130,
+        "colliders": 13,
+        "artCache": 11,
+        "canvas": {
+          "width": 356,
+          "height": 309
+        }
+      },
+      "fps": 31.130347927418022,
+      "errors": []
+    },
+    {
+      "cpu": {
+        "frames": 428,
+        "meanMs": 0.9369158878504673,
+        "maxMs": 16,
+        "p95Ms": 2
+      },
+      "mode": "unclipped-layer",
+      "revision": "89dc2056668e6f312bdcaebfe89f08b1c1de48fd",
+      "engine": "webkit",
+      "project": "webkit-iphone-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "durationMs": 12210,
+      "before": {
+        "frames": 10,
+        "total": 0.5030000000000002,
+        "slow": 4,
+        "max": 0.171,
+        "effects": "full",
+        "hazards": 0,
+        "history": 3,
+        "colliders": 18,
+        "artCache": 11,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "after": {
+        "frames": 403,
+        "total": 12.580999999999973,
+        "slow": 81,
+        "max": 0.171,
+        "effects": "low",
+        "hazards": 0,
+        "history": 135,
+        "colliders": 13,
+        "artCache": 11,
+        "canvas": {
+          "width": 356,
+          "height": 309
+        }
+      },
+      "fps": 32.53849975161458,
+      "errors": []
+    },
+    {
+      "cpu": {
+        "frames": 798,
+        "meanMs": 0.2819548872180451,
+        "maxMs": 16,
+        "p95Ms": 1
+      },
+      "mode": "raster-disabled",
+      "revision": "89dc2056668e6f312bdcaebfe89f08b1c1de48fd",
+      "engine": "webkit",
+      "project": "webkit-iphone-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "durationMs": 12150,
+      "before": {
+        "frames": 24,
+        "total": 0.4670000000000003,
+        "slow": 1,
+        "max": 0.101,
+        "effects": "full",
+        "hazards": 0,
+        "history": 5,
+        "colliders": 18,
+        "artCache": 11,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "after": {
+        "frames": 771,
+        "total": 12.554999999999998,
+        "slow": 2,
+        "max": 0.101,
+        "effects": "full",
+        "hazards": 0,
+        "history": 139,
+        "colliders": 13,
+        "artCache": 11,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "fps": 61.79682329583059,
+      "errors": []
+    }
+  ],
+  "landingModel": {
+    "type": "Narrow V8 model only, actual new TS fixtures pending",
+    "remainingFailure": [
+      {
+        "y": 290,
+        "landings": 1,
+        "stunts": [],
+        "reward": 0,
+        "health": 88.51105773588326,
+        "broken": [
+          12,
+          13,
+          11,
+          0
+        ],
+        "ended": false,
+        "lastDamage": 30.008333333333333
+      },
+      {
+        "y": 335,
+        "landings": 1,
+        "stunts": [
+          2
+        ],
+        "reward": 5,
+        "health": 88.51105773588326,
+        "broken": [
+          12,
+          13,
+          11,
+          0
+        ],
+        "ended": false,
+        "lastDamage": 30.008333333333333
+      }
+    ],
+    "after": [
+      {
+        "y": 290,
+        "vy": 400,
+        "landings": 1,
+        "stunts": [
+          2
+        ],
+        "reward": 5,
+        "health": 100,
+        "broken": [],
+        "ended": false
+      },
+      {
+        "y": 290,
+        "vy": 750,
+        "landings": 1,
+        "stunts": [],
+        "reward": 0,
+        "health": 88.51105773588326,
+        "broken": [
+          12,
+          13,
+          11,
+          0
+        ],
+        "ended": false
+      },
+      {
+        "y": 290,
+        "vy": 1000,
+        "landings": 1,
+        "stunts": [],
+        "reward": 0,
+        "health": 77.18141031451101,
+        "broken": [
+          12,
+          13,
+          11,
+          0,
+          1,
+          14
+        ],
+        "ended": true
+      },
+      {
+        "y": 335,
+        "vy": 750,
+        "landings": 1,
+        "stunts": [],
+        "reward": 0,
+        "health": 88.51105773588326,
+        "broken": [
+          12,
+          13,
+          11,
+          0
+        ],
+        "ended": false
+      },
+      {
+        "y": 290,
+        "vy": 400,
+        "sky": true,
+        "landings": 1,
+        "stunts": [],
+        "reward": 0,
+        "health": 80,
+        "broken": [
+          13
+        ],
+        "hits": 1
+      }
+    ]
+  },
+  "decision": "Wheel-cache default26.63FPS vs previous24.93, modest effect. Preserve cache and test opaque main canvas plus latched fallback after61 measured frames (same slow-frame definition >1/30). Default/transparent-main/default-repeat isolate alpha and warm-order; raster-disabled remains diagnostic only. Resolve stunt payment after all body/wheel/sky impacts in each fixed step."
+}

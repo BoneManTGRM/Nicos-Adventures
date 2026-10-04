@@ -1,0 +1,52 @@
+{
+  "source": "6ea284d0c3b86f06b7c2ca60515c855f42a9c97c",
+  "review": "second-pass self-review, not independent",
+  "renderSource": "32ff812f9eebc6dbde3bd66a25bf4cb4dc58344f",
+  "findings": [
+    {
+      "severity": "blocking",
+      "repro": "realwallclock pause arounditeration29",
+      "evidence": "stress111310925082/111310925194",
+      "finding": "paused elapsed HUD sample changes afterpause thoughsimulationfrozen",
+      "decision": "snapshotimmediately, exacttimerassertionretained/retestbothengines"
+    },
+    {
+      "severity": "blocking",
+      "repro": "begin() prepare+persist two makeDrive calls before1.5s checkpoint",
+      "finding": "randomizedinitialsave seed differs fromvisiblerun",
+      "decision": "passthroughone seed;browsercompareinitialsavedandDOM"
+    },
+    {
+      "severity": "medium",
+      "repro": "390portrait diagonalwarningcapture",
+      "finding": "bannerpartlycoversdirectioncue",
+      "decision": "top8/4pixels andscaleawaremarker;capture/reviewagain"
+    },
+    {
+      "severity": "test",
+      "repro": "slice firstboulder warning2.4s +slowerfall",
+      "finding": "3500ms olddropwaittooearly; gasescapeencounters2moreobjects",
+      "decision": "seed17/declaredwarning+1600ms, exact10IDs/39/zeroHit/oneDodge;retainlegacy1600brake proof"
+    }
+  ],
+  "browserPriorResults": {
+    "shard1": {
+      "job": 111310925227,
+      "passed": 74,
+      "failed": 2
+    },
+    "shard2": {
+      "job": 111310925214,
+      "passed": 74,
+      "failed": 2
+    }
+  },
+  "unverified": [
+    "WebKitnewfullmatrix",
+    "10minutecompletion/FPS",
+    "storagequota fixture",
+    "finalcaptures",
+    "productionfresh+cachedupdate",
+    "physicaliPhone/ownerfun"
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "source": "a599dc390dcab78761214b19596fd1dc63a90ebf",
+  "testedMerge": "dd81e1ee788d78204bc125478bfce758e8f42a35",
+  "actualDevice": false,
+  "method": "Fixed seed17,starter,viewport and12s gas; test-only native painting/composition variants, no product change. RAF callback wall time recorded.",
+  "webkit": [
+    {
+      "cpu": {
+        "frames": 338,
+        "meanMs": 1.0739644970414202,
+        "maxMs": 15,
+        "p95Ms": 2
+      },
+      "mode": "default",
+      "revision": "dd81e1ee788d78204bc125478bfce758e8f42a35",
+      "engine": "webkit",
+      "project": "webkit-iphone-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "durationMs": 12390,
+      "before": {
+        "frames": 0,
+        "total": 0,
+        "slow": 0,
+        "max": 0,
+        "effects": "full",
+        "hazards": 0,
+        "history": 0,
+        "colliders": 18,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "after": {
+        "frames": 314,
+        "total": 12.593999999999983,
+        "slow": 142,
+        "max": 1.035,
+        "effects": "low",
+        "hazards": 0,
+        "history": 109,
+        "colliders": 14,
+        "canvas": {
+          "width": 356,
+          "height": 309
+        }
+      },
+      "fps": 24.932507543274607,
+      "errors": []
+    },
+    {
+      "cpu": {
+        "frames": 383,
+        "meanMs": 1.0757180156657964,
+        "maxMs": 14,
+        "p95Ms": 2
+      },
+      "mode": "opaque-canvas",
+      "revision": "dd81e1ee788d78204bc125478bfce758e8f42a35",
+      "engine": "webkit",
+      "project": "webkit-iphone-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "durationMs": 12288,
+      "before": {
+        "frames": 11,
+        "total": 0.5299999999999999,
+        "slow": 11,
+        "max": 0.139,
+        "effects": "full",
+        "hazards": 0,
+        "history": 4,
+        "colliders": 18,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "after": {
+        "frames": 358,
+        "total": 12.638000000000005,
+        "slow": 167,
+        "max": 0.139,
+        "effects": "low",
+        "hazards": 0,
+        "history": 124,
+        "colliders": 13,
+        "canvas": {
+          "width": 356,
+          "height": 309
+        }
+      },
+      "fps": 28.658738024446635,
+      "errors": []
+    },
+    {
+      "cpu": {
+        "frames": 403,
+        "meanMs": 1.0595533498759304,
+        "maxMs": 13,
+        "p95Ms": 2
+      },
+      "mode": "unclipped-layer",
+      "revision": "dd81e1ee788d78204bc125478bfce758e8f42a35",
+      "engine": "webkit",
+      "project": "webkit-iphone-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "durationMs": 12230,
+      "before": {
+        "frames": 11,
+        "total": 0.5640000000000001,
+        "slow": 10,
+        "max": 0.177,
+        "effects": "full",
+        "hazards": 0,
+        "history": 4,
+        "colliders": 18,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "after": {
+        "frames": 376,
+        "total": 12.582999999999986,
+        "slow": 146,
+        "max": 0.177,
+        "effects": "low",
+        "hazards": 0,
+        "history": 128,
+        "colliders": 13,
+        "canvas": {
+          "width": 356,
+          "height": 309
+        }
+      },
+      "fps": 30.36858307679511,
+      "errors": []
+    },
+    {
+      "cpu": {
+        "frames": 800,
+        "meanMs": 0.32125,
+        "maxMs": 12,
+        "p95Ms": 1
+      },
+      "mode": "raster-disabled",
+      "revision": "dd81e1ee788d78204bc125478bfce758e8f42a35",
+      "engine": "webkit",
+      "project": "webkit-iphone-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "durationMs": 12131,
+      "before": {
+        "frames": 24,
+        "total": 0.4650000000000003,
+        "slow": 1,
+        "max": 0.1,
+        "effects": "full",
+        "hazards": 0,
+        "history": 5,
+        "colliders": 18,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "after": {
+        "frames": 770,
+        "total": 12.505999999999995,
+        "slow": 2,
+        "max": 0.1,
+        "effects": "full",
+        "hazards": 0,
+        "history": 139,
+        "colliders": 13,
+        "canvas": {
+          "width": 712,
+          "height": 618
+        }
+      },
+      "fps": 61.954987127315036,
+      "errors": []
+    }
+  ],
+  "chromium": [
+    {
+      "cpu": {
+        "frames": 782,
+        "meanMs": 0.5400255754477044,
+        "maxMs": 7.899999999994179,
+        "p95Ms": 0.7999999999883585
+      },
+      "mode": "default",
+      "revision": "dd81e1ee788d78204bc125478bfce758e8f42a35",
+      "engine": "chromium",
+      "project": "chromium-mobile-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 412,
+        "height": 839
+      },
+      "durationMs": 12111,
+      "before": {
+        "frames": 28,
+        "total": 0.4666,
+        "slow": 0,
+        "max": 0.016700000000000045,
+        "effects": "full",
+        "hazards": 0,
+        "history": 5,
+        "colliders": 18,
+        "canvas": {
+          "width": 756,
+          "height": 940
+        }
+      },
+      "after": {
+        "frames": 750,
+        "total": 12.499399999999973,
+        "slow": 0,
+        "max": 0.016800000000001092,
+        "effects": "full",
+        "hazards": 0,
+        "history": 150,
+        "colliders": 13,
+        "canvas": {
+          "width": 756,
+          "height": 940
+        }
+      },
+      "fps": 60.00265939764657,
+      "errors": []
+    },
+    {
+      "cpu": {
+        "frames": 778,
+        "meanMs": 0.5365038560409365,
+        "maxMs": 5.900000000008731,
+        "p95Ms": 0.8000000000029104
+      },
+      "mode": "opaque-canvas",
+      "revision": "dd81e1ee788d78204bc125478bfce758e8f42a35",
+      "engine": "chromium",
+      "project": "chromium-mobile-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 412,
+        "height": 839
+      },
+      "durationMs": 12078,
+      "before": {
+        "frames": 27,
+        "total": 0.45010000000000006,
+        "slow": 0,
+        "max": 0.01680000000000007,
+        "effects": "full",
+        "hazards": 0,
+        "history": 5,
+        "colliders": 18,
+        "canvas": {
+          "width": 756,
+          "height": 940
+        }
+      },
+      "after": {
+        "frames": 750,
+        "total": 12.499499999999962,
+        "slow": 0,
+        "max": 0.016800000000001092,
+        "effects": "full",
+        "hazards": 0,
+        "history": 150,
+        "colliders": 13,
+        "canvas": {
+          "width": 756,
+          "height": 940
+        }
+      },
+      "fps": 60.00298770063259,
+      "errors": []
+    },
+    {
+      "cpu": {
+        "frames": 781,
+        "meanMs": 0.5244558258646008,
+        "maxMs": 5.900000000008731,
+        "p95Ms": 0.7999999999883585
+      },
+      "mode": "unclipped-layer",
+      "revision": "dd81e1ee788d78204bc125478bfce758e8f42a35",
+      "engine": "chromium",
+      "project": "chromium-mobile-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 412,
+        "height": 839
+      },
+      "durationMs": 12080,
+      "before": {
+        "frames": 27,
+        "total": 0.45009999999999994,
+        "slow": 0,
+        "max": 0.01680000000000007,
+        "effects": "full",
+        "hazards": 0,
+        "history": 5,
+        "colliders": 18,
+        "canvas": {
+          "width": 756,
+          "height": 940
+        }
+      },
+      "after": {
+        "frames": 752,
+        "total": 12.532899999999966,
+        "slow": 0,
+        "max": 0.016800000000001092,
+        "effects": "full",
+        "hazards": 0,
+        "history": 150,
+        "colliders": 13,
+        "canvas": {
+          "width": 756,
+          "height": 940
+        }
+      },
+      "fps": 60.00264839275681,
+      "errors": []
+    },
+    {
+      "cpu": {
+        "frames": 774,
+        "meanMs": 0.3313953488358932,
+        "maxMs": 3.2999999999883585,
+        "p95Ms": 0.5
+      },
+      "mode": "raster-disabled",
+      "revision": "dd81e1ee788d78204bc125478bfce758e8f42a35",
+      "engine": "chromium",
+      "project": "chromium-mobile-en",
+      "actualDevice": false,
+      "seed": 17,
+      "viewport": {
+        "width": 412,
+        "height": 839
+      },
+      "durationMs": 12058,
+      "before": {
+        "frames": 27,
+        "total": 0.45,
+        "slow": 0,
+        "max": 0.01680000000000007,
+        "effects": "full",
+        "hazards": 0,
+        "history": 5,
+        "colliders": 18,
+        "canvas": {
+          "width": 756,
+          "height": 940
+        }
+      },
+      "after": {
+        "frames": 746,
+        "total": 12.432799999999965,
+        "slow": 0,
+        "max": 0.016800000000001092,
+        "effects": "full",
+        "hazards": 0,
+        "history": 149,
+        "colliders": 13,
+        "canvas": {
+          "width": 756,
+          "height": 940
+        }
+      },
+      "fps": 60.002670494375444,
+      "errors": []
+    }
+  ],
+  "conclusion": "Default WebKit24.93FPS/JSmean1.07ms/p95=2ms; raster-disabled61.95FPS. Opaque28.66/unclipped-layer30.37 remain diagnostic-only. Native painting/composition cost narrowed, not solved.",
+  "untraced600s603": {
+    "webkit": {
+      "blankFrameCadence": {
+        "frames": 122,
+        "durationMs": 2010,
+        "meanMs": 16.475409836065573,
+        "maxMs": 59
+      },
+      "revision": "b13d641c351f7fb9eee60170492060dea6347bd6",
+      "project": "webkit-iphone-en",
+      "engine": "webkit",
+      "viewport": {
+        "width": 390,
+        "height": 664
+      },
+      "actualDevice": false,
+      "durationMs": 600863,
+      "iterations": 515,
+      "resets": 30,
+      "navigations": 13,
+      "rotations": 22,
+      "pauses": 43,
+      "errors": [],
+      "assets": [],
+      "samples": 515,
+      "frames": 12873,
+      "activeSeconds": 554.9730000000005,
+      "fps": 23.195723035174662,
+      "slow": 12237,
+      "slowFraction": 0.9505942670706129,
+      "maxima": {
+        "hazards": 1,
+        "debris": 0,
+        "history": 150,
+        "colliders": 18,
+        "fragments": 8,
+        "sounds": 2,
+        "listeners": 29,
+        "max": 0.295
+      },
+      "lowSamples": 372
+    },
+    "chromium": {
+      "blankFrameCadence": {
+        "frames": 121,
+        "durationMs": 2016.6000000000001,
+        "meanMs": 16.66611570247934,
+        "maxMs": 16.799999999999997
+      },
+      "revision": "b13d641c351f7fb9eee60170492060dea6347bd6",
+      "project": "chromium-mobile-en",
+      "engine": "chromium",
+      "viewport": {
+        "width": 412,
+        "height": 839
+      },
+      "actualDevice": false,
+      "durationMs": 600424,
+      "iterations": 548,
+      "resets": 32,
+      "navigations": 14,
+      "rotations": 23,
+      "pauses": 45,
+      "errors": [],
+      "assets": [],
+      "samples": 548,
+      "frames": 34779,
+      "activeSeconds": 579.627299999995,
+      "fps": 60.00234978580254,
+      "slow": 0,
+      "slowFraction": 0,
+      "maxima": {
+        "hazards": 1,
+        "debris": 0,
+        "history": 150,
+        "colliders": 18,
+        "fragments": 8,
+        "sounds": 2,
+        "listeners": 29,
+        "max": 0.016800000000046566
+      },
+      "lowSamples": 0
+    }
+  },
+  "landingOrder": {
+    "evidenceType": "Narrow TypeScript-erasure V8 model only, not actual Vitest/browser proof",
+    "sourceProduct": "5952de339697e6536920e061f17a02f85971fba5",
+    "fixture": {
+      "seed": 17,
+      "x": 5600,
+      "y": 290,
+      "vx": 200,
+      "air": 0.5,
+      "launchX": 5480,
+      "boostJump": true,
+      "t": 30,
+      "contacts": 0,
+      "distance": 459
+    },
+    "before": [
+      {
+        "vy": 400,
+        "landings": 1,
+        "stunts": [
+          2
+        ],
+        "reward": 5,
+        "health": 100,
+        "broken": [],
+        "ended": false
+      },
+      {
+        "vy": 600,
+        "landings": 1,
+        "stunts": [
+          2
+        ],
+        "reward": 5,
+        "health": 100,
+        "broken": [],
+        "ended": false
+      },
+      {
+        "vy": 750,
+        "landings": 1,
+        "stunts": [
+          2
+        ],
+        "reward": 5,
+        "health": 88.51105773588326,
+        "broken": [
+          12,
+          13,
+          11,
+          0
+        ],
+        "ended": false
+      },
+      {
+        "vy": 850,
+        "landings": 1,
+        "stunts": [
+          2
+        ],
+        "reward": 5,
+        "health": 83.97919876733437,
+        "broken": [
+          12,
+          13,
+          11,
+          0
+        ],
+        "ended": false
+      },
+      {
+        "vy": 1000,
+        "landings": 1,
+        "stunts": [
+          2
+        ],
+        "reward": 5,
+        "health": 77.18141031451101,
+        "broken": [
+          12,
+          13,
+          11,
+          0,
+          1,
+          14
+        ],
+        "ended": true
+      }
+    ],
+    "after": [
+      {
+        "vy": 400,
+        "landings": 1,
+        "stunts": [
+          2
+        ],
+        "reward": 5,
+        "health": 100,
+        "broken": [],
+        "ended": false
+      },
+      {
+        "vy": 750,
+        "landings": 1,
+        "stunts": [],
+        "reward": 0,
+        "health": 88.51105773588326,
+        "broken": [
+          12,
+          13,
+          11,
+          0
+        ],
+        "ended": false
+      },
+      {
+        "vy": 1000,
+        "landings": 1,
+        "stunts": [],
+        "reward": 0,
+        "health": 77.18141031451101,
+        "broken": [
+          12,
+          13,
+          11,
+          0,
+          1,
+          14
+        ],
+        "ended": true
+      }
+    ],
+    "decision": "Regression-first fixture authored before repairing: resolve impact then award only when health/shield/parts/ended show a clean outcome; actual TS tests pending"
+  }
+}

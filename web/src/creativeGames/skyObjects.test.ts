@@ -1,0 +1,31 @@
+import {describe,it,expect} from 'vitest';
+import {carStats,makeDrive,stepDrive,terrainAt} from './carPhysics';
+import {STARTER_BUILD,STARTER_PARTS,normalizeDrive,normalizeGames,finishDrive,type Drive} from './save';
+import {initialSkyState,normalizeSkyState,tickSkyObjects,segmentBoxContact} from './skyObjects';
+const gas={gas:true,brake:false,tool:false},idle={gas:false,brake:false,tool:false};
+function near(){const r=makeDrive(STARTER_BUILD);r.t=30;r.x=5600;r.distance=350;r.y=280;r.vx=100;r.contacts=2;return r;}
+const geometry=(r:Drive)=>({width:64,comX:0,comY:0,wheels:[],ground:(x:number)=>terrainAt(x,r.track,r.bridges)});
+describe('modest strength/speed tuning without an early ramp regression',()=>{
+ it('adds 7% motor force, 8% speed ceiling and 10% structural strength',()=>{const s=carStats(STARTER_BUILD);expect(s.power).toBe(321);expect(s.speed).toBeCloseTo(372.6);expect(s.strength).toBe(1.1);expect(s.mass).toBe(13);});
+ for(const route of [0,1,2])for(const tire of [11,12])it(`preserves ramp-two passage on route ${route} with tire ${tire} across six start delays`,()=>{
+  for(const delay of [0,.2,.5,1,2,4]){const b=structuredClone(STARTER_BUILD);b.parts[1]=tire;const r=makeDrive(b,1,route);let cleared=false;
+   for(let i=0;i<120*30&&!r.ended;i++){stepDrive(r,{...gas,gas:i>120*delay});if(r.x>2200&&r.contacts>0&&Math.abs(r.a)<.7){cleared=true;break;}}
+   expect(cleared,`delay ${delay}, stopped at ${r.distance}`).toBe(true);expect(r.sky!.spawnCount).toBe(0);
+  }
+ });
+ it('still breaks actual equipped pieces in a hard landing',()=>{const r=makeDrive(STARTER_BUILD);r.y=-200;r.vy=1100;r.air=1;for(let i=0;i<150;i++)stepDrive(r,idle);expect(r.broken.length).toBeGreaterThan(0);expect(r.debris.length).toBeGreaterThan(0);});
+});
+describe('fair distance-gated falling objects',()=>{
+ it('keeps early, practice, stopped, airborne and ended attempts clear',()=>{const changes:Partial<Drive>[]=[{distance:299.9},{practice:true},{vx:0},{contacts:0},{ended:true}];for(const change of changes){const r=Object.assign(near(),change);tickSkyObjects(r,1/120,geometry(r));expect(r.sky!.active).toBeNull();}});
+ it('warns for at least 1.6 simulation seconds and never tracks the car after aiming',()=>{const r=near();tickSkyObjects(r,1/120,geometry(r));expect(r.sky!.active!.phase).toBe('warning');const x=r.sky!.active!.x;for(let i=0;i<180;i++){r.x+=2;tickSkyObjects(r,1/120,geometry(r));}expect(r.sky!.active!.phase).toBe('warning');expect(r.sky!.active!.x).toBe(x);for(let i=0;i<20;i++)tickSkyObjects(r,1/120,geometry(r));expect(r.sky!.active!.phase).toBe('falling');expect(r.sky!.active!.x).toBe(x);});
+ it('does not advance a warning at zero elapsed time or after a wreck',()=>{const r=near();tickSkyObjects(r,1/120,geometry(r));const before=structuredClone(r.sky);tickSkyObjects(r,0,geometry(r));expect(r.sky).toEqual(before);r.ended=true;tickSkyObjects(r,.1,geometry(r));expect(r.sky).toEqual(before);});
+ it('one direct hit knocks off an equipped piece only once and preserves ownership',()=>{const r=near();r.vx=0;r.sky!.active={id:1,kind:0,phase:'falling',x:r.x,y:r.y-170,vy:650,radius:22,age:0,hit:false};r.sky!.nextDistance=10000;for(let i=0;i<80;i++)stepDrive(r,idle);expect(r.sky!.hits).toBe(1);expect(r.broken).toContain(13);expect(r.debris.some(d=>d.id===91)).toBe(true);const second=structuredClone(r);for(let i=0;i<80;i++)stepDrive(second,idle);expect(second.sky!.hits).toBe(1);const g={...normalizeGames(null).garage,sequence:1};const paid=finishDrive(g,r);expect(paid.owned).toEqual(STARTER_PARTS);expect(finishDrive(paid,r)).toBe(paid);});
+ it('misses when the car is outside the fixed drop zone',()=>{const r=near();r.sky!.active={id:1,kind:0,phase:'falling',x:r.x+400,y:-20,vy:150,radius:22,age:0,hit:false};for(let i=0;i<240;i++)tickSkyObjects(r,1/120,geometry(r));expect(r.sky!.hits).toBe(0);expect(r.sky!.dodged).toBe(1);expect(r.broken).toEqual([]);});
+ it('requires both a new distance threshold and a quiet interval, with no catch-up barrage',()=>{const r=near();tickSkyObjects(r,1/120,geometry(r));expect(r.sky!.nextDistance).toBeGreaterThanOrEqual(410);expect(r.sky!.nextDistance).toBeLessThanOrEqual(435);r.sky!.active!.phase='burst';r.sky!.active!.age=.6;r.distance=1000;tickSkyObjects(r,.1,geometry(r));expect(r.sky!.active).toBeNull();expect(r.sky!.cooldown).toBe(.65);for(let i=0;i<900;i++)tickSkyObjects(r,1/120,geometry(r));expect(r.sky!.spawnCount).toBe(1);});
+ it('uses swept rather than end-point-only collision checks',()=>{expect(segmentBoxContact(0,-200,0,200,-20,-20,20,20)).toBe(.45);expect(segmentBoxContact(100,-200,100,200,-20,-20,20,20)).toBeNull();});
+ it('preserves a warning, its target and timer across save normalization',()=>{const r=near();tickSkyObjects(r,1/120,geometry(r));for(let i=0;i<60;i++)tickSkyObjects(r,1/120,geometry(r));const saved=normalizeDrive(JSON.parse(JSON.stringify(r)),STARTER_PARTS)!;expect(saved.sky).toEqual(r.sky);expect(saved.boostCharge).toBe(r.boostCharge);});
+ it('gives legacy saves beyond 300 meters an 80-meter grace stretch',()=>{const r=near();delete r.sky;const saved=normalizeDrive(r,STARTER_PARTS)!;expect(saved.sky!.nextDistance).toBe(430);expect(saved.sky!.active).toBeNull();expect(initialSkyState().nextDistance).toBe(300);});
+ it('rejects malformed active objects and bounds counters',()=>{const state=normalizeSkyState({nextDistance:NaN,spawnCount:Infinity,cooldown:-100,hits:Infinity,active:{phase:'falling',x:NaN,y:1,age:1,vy:1}},400);expect(state.active).toBeNull();expect(state.nextDistance).toBe(480);expect(state.spawnCount).toBe(0);expect(state.cooldown).toBe(0);});
+ it('produces the same hazards for identical build, route and inputs',()=>{const a=makeDrive(STARTER_BUILD,1,0,false,17),b=makeDrive(STARTER_BUILD,1,0,false,17);for(let i=0;i<120*25;i++){stepDrive(a,gas);stepDrive(b,gas);}expect(a).toEqual(b);expect(a.sky!.spawnCount).toBeGreaterThan(0);});
+ it('never counts flying debris or hazard hits as distance or new reward currency',()=>{const a=near(),b=structuredClone(a);b.sky!.hits=50;b.sky!.dodged=100;const g={...normalizeGames(null).garage,sequence:1};expect(finishDrive(g,a)).toEqual(finishDrive(g,b));a.ended=true;a.distance=42;a.vx=500;for(let i=0;i<120;i++)stepDrive(a,gas);expect(a.distance).toBe(42);});
+});

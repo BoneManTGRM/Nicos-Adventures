@@ -1,0 +1,8 @@
+{
+  "duration": 1.6,
+  "phase": "warning",
+  "age": 1.5999999999999968,
+  "errorFromThreshold": -3.3306690738754696e-15,
+  "expected": "falling after 192 complete 120 Hz warning steps",
+  "actualSource": "same skyObjects source as current 934e60a, HUD-only fix cannot repair numerical threshold"
+}
