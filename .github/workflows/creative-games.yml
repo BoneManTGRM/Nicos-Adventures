@@ -104,8 +104,6 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci --no-audit --no-fund
       - run: npx playwright install --with-deps chromium webkit
-      - name: Diagnose recording overhead with identical traced and untraced input
-        run: npx playwright test --config playwright.truck-performance.config.ts --project=${{ matrix.browser }}
       - name: Ten real minutes per browser engine
         run: npx playwright test --config playwright.truck-stress.config.ts --project=${{ matrix.browser }}
       - if: always()
@@ -117,8 +115,37 @@ jobs:
             web/truck-stress-results
             web/truck-stress.json
             web/truck-performance-results
+  performance:
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium-mobile-en, webkit-iphone-en]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Isolate raster and composition costs on the actual route
+        run: npx playwright test --config playwright.truck-performance.config.ts --project=${{ matrix.browser }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: truck-render-control-${{ github.sha }}-${{ matrix.browser }}
+          retention-days: 7
+          path: web/truck-performance-results
   games:
-    needs: [qualification, stress, full-course]
+    needs: [qualification, stress, full-course, performance]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -128,7 +155,9 @@ jobs:
           QUALIFICATION_RESULT: ${{ needs.qualification.result }}
           STRESS_RESULT: ${{ needs.stress.result }}
           COURSE_RESULT: ${{ needs.full-course.result }}
+          PERFORMANCE_RESULT: ${{ needs.performance.result }}
         run: |
           test "$QUALIFICATION_RESULT" = success
           test "$STRESS_RESULT" = success
           test "$COURSE_RESULT" = success
+          test "$PERFORMANCE_RESULT" = success
