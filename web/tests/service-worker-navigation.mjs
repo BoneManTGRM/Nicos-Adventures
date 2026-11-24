@@ -5,12 +5,12 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
 const origin = 'https://nicos-world.com';
-function worker(cached) {
+function worker(cached, fishing) {
   const handlers = new Map(); let networkCalls = 0;
   const context = vm.createContext({
     URL, Response, Headers,
     self: { location: { origin }, addEventListener: (name, handler) => handlers.set(name, handler), skipWaiting() {}, clients: { claim() {} } },
-    caches: { match: async key => key === '/index.html' ? cached : undefined },
+    caches: { match: async key => key === '/index.html' ? cached : key === '/games/starfall-anglers/' ? fishing : undefined },
     fetch: async () => { networkCalls++; throw new TypeError('Offline'); },
   });
   vm.runInContext(source, context);
@@ -51,4 +51,14 @@ test('missing cached HTML fails closed', async () => {
 test('an error or non-HTML cache entry cannot become the offline document', async () => {
   assert.equal((await worker(shell({ status: 404 })).navigate()).type, 'error');
   assert.equal((await worker(shell({ contentType: 'application/json' })).navigate()).type, 'error');
+});
+
+test('offline fishing deep links load the game, and returning to the arcade loads the app', async () => {
+  const app = shell({ redirected: false });
+  const game = new Response('<title>Starfall Anglers</title>', {headers: {'content-type':'text/html'}});
+  const sw = worker(app, game);
+  for (const path of ['/games/starfall-anglers/', '/games/starfall-anglers/index.html', '/games/starfall-anglers']) {
+    assert.equal(await sw.navigate(path), game);
+  }
+  assert.equal(await sw.navigate('/?play=arcade'), app);
 });

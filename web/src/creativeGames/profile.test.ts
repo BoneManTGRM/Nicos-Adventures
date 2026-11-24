@@ -11,7 +11,7 @@ describe('approved creative games integration',()=>{
   const store=normalizeStore({schemaVersion:4,activeProfileId:p.id,profiles:[p]});
   expect(store.profiles[0]).toHaveProperty('creativeGames.garage.bolts',64);expect(store.profiles[0]).toHaveProperty('creativeGames.kingdom.petals',30);
  });
- it('offers both real games from the existing arcade',()=>{vi.stubGlobal('window',{location:{search:''}});const html=renderToStaticMarkup(createElement(Arcade,{profile:createProfile('Nico'),update:()=>{},announce:()=>{}}));expect(html).toContain('open-monster-garage');expect(html).toContain('open-rainbow-kingdom');expect(html).toContain('open-monster-rift');});
+ it('offers both real games from the existing arcade',()=>{vi.stubGlobal('window',{location:{search:''}});const html=renderToStaticMarkup(createElement(Arcade,{profile:createProfile('Nico'),update:()=>{},announce:()=>{}}));expect(html).toContain('open-monster-garage');expect(html).toContain('open-rainbow-kingdom');expect(html).toContain('open-monster-rift');expect(html).toContain('href="/games/starfall-anglers/"');});
  it('round-trips both games in the existing parent backup format without changing other creations',()=>{
   const p=createProfile('Nico');
   // Compare against the established import boundary, which supplies defaults such as upgrades: [].

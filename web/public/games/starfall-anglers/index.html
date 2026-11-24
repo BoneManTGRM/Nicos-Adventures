@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111d21"><meta name="description" content="Cast, reel, and discover the fish of ten illustrated lakes, coasts, and offshore waters in Nico’s World.">
+<title>Starfall Anglers · Nico’s World</title><link rel="icon" href="assets/brand.png"><link rel="preload" href="assets/pineglass.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="top-inner">
+ <a class="brand arcade-return" href="/?play=arcade"><img src="assets/brand.png" alt="" width="45" height="45"><div>Nico’s World<span data-msg="backArcade">← Back to arcade</span></div></a>
+ <nav class="tabs" aria-label="Game"><button class="tab active" id="tabFish"><i class="ico" data-i="lure"></i><span data-msg="fishing">Fishing</span></button><button class="tab" id="tabGuide"><i class="ico" data-i="book"></i><span data-msg="guide">Field guide</span></button><button class="tab" id="tabTank"><i class="ico" data-i="fish"></i><span data-msg="aquarium">Aquarium</span></button></nav>
+ <div class="tools"><button id="sound" class="tool" aria-label="Turn sound on" title="Turn sound on"><i class="ico" data-i="mute"></i></button><button id="lang" class="tool lang" aria-label="Cambiar a español">ES</button><button id="help" class="tool help" title="How to play" aria-label="How to play">?</button></div>
+</div></header>
+<main>
+ <section class="section-head"><div class="game-title"><h1>Starfall Anglers</h1><span class="sparkles" aria-hidden="true"><b>✦</b><em>✦</em></span></div>
+ <div class="stats"><div class="stat"><i class="ico" data-i="fish"></i><strong id="statTotal">0</strong><span data-msg="caught">caught</span></div><i class="divider"></i><button class="stat journalStat" id="guideStat"><i class="ico" data-i="book"></i><strong id="statSpecies">0/60</strong><span data-msg="species">species</span></button></div></section>
+ <div class="water-route"><div class="route-buttons" id="waterTypes" role="group" aria-label="Water type">
+  <button class="route-button inland" id="freshRoute" aria-pressed="true" data-msg="freshRoute">Freshwater</button>
+  <button class="route-button marine" id="saltRoute" aria-pressed="false" data-msg="oceanFishing">Ocean fishing</button>
+ </div><label class="route-port"><span data-msg="destination">Destination</span><select id="spotPicker"></select></label></div>
+ <div class="captain-strip" id="captainStrip"><img src="assets/panga.png" alt=""><div><strong data-msg="captain">Captain Nico’s boat</strong><span id="portReport"></span></div><button type="button" id="openHelm" data-msg="takeHelm">Take the helm</button></div>
+ <section id="game" aria-label="Fishing">
+  <div class="frame">
+   <div id="scene" class="scene pineglass">
+    <img id="panorama" src="assets/pineglass.png" alt="" fetchpriority="high">
+    <div class="scene-shade"></div>
+    <div class="scene-title"><div class="loc-label"><i class="ico" data-i="pin"></i><span data-msg="nowFishing">NOW FISHING</span></div><h2 id="locationName">Pineglass Lake</h2><div class="scene-weather"><i class="ico" id="weatherIcon" data-i="sun"></i><span id="weather">Daylight</span></div></div>
+    <button class="cam-button" id="dive"><i class="ico" data-i="wave"></i><span data-msg="diveCam">Dive cam</span></button>
+    <canvas id="water" aria-hidden="true"></canvas><img id="rod" src="assets/rod.png" alt="" draggable="false">
+    <button class="shutter" id="shutter" hidden><i class="ico" data-i="aim"></i><span data-msg="shutter">Take photo</span></button>
+    <div class="scene-tip" id="aimHint"><i class="ico" data-i="aim"></i><span data-msg="aim">Tap the water to aim</span></div>
+    <button id="aimPad" class="sr" type="button" aria-label="Change fishing target"></button>
+    <div id="chargeHud" class="charge-hud" hidden><strong data-msg="powerCast">Power cast</strong><span id="powerNumber">0%</span><div class="charge-track" id="powerMeter" role="meter" aria-label="Power" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><b></b><i id="chargeNeedle"></i></div><small data-msg="chargeHint">Release in the gold band.</small></div>
+    <div id="turnFlag" class="turn-flag" hidden><img id="turnToken" alt=""><span id="turnText"></span></div>
+    <div class="signal" id="signal" hidden></div>
+    <div id="castGrade" class="cast-grade" hidden></div>
+    <div id="fightHud" class="fight" hidden><div><span data-msg="landed">Reeled in</span><strong id="progressText"></strong></div><div class="track"><b id="progressBar"></b></div><div><span data-msg="tension">Line tension</span><strong id="tensionText"></strong></div><div class="track tensionTrack"><b id="tensionBar"></b></div></div>
+   </div>
+   <div class="controls"><div class="brief"><div class="status-icon"><i class="ico" id="statusIcon" data-i="bobber"></i></div><div><h3 id="statusTitle"></h3><p id="statusText"></p></div></div><div class="cast-buttons"><button id="powerCast" class="power-button" data-msg="powerCast">Power cast</button><button class="cast" id="action"><i class="ico" data-i="lure"></i><span id="actionText"></span></button></div></div>
+   <div id="counterDock" class="counter-dock" hidden><strong id="counterCue"></strong><div><button id="steerLeft" data-msg="rodLeft">Rod left</button><button id="steerRight" data-msg="rodRight">Rod right</button></div></div>
+   <section id="seaConsole" class="sea-console" hidden aria-labelledby="seaRigTitle">
+    <div class="sea-rig-title"><h3 id="seaRigTitle" data-msg="saltRig">Saltwater rig</h3><span id="tideState"></span></div>
+    <div id="seaDepths" class="sea-depths" role="group" aria-label="Lure depth"><button data-layer="0" data-msg="surfaceRig">Surface</button><button data-layer="1" data-msg="midRig">Midwater</button><button data-layer="2" data-msg="deepRig">Deep</button></div>
+    <p id="tideHint"></p>
+    <div class="ground-picker" id="groundPicker" hidden><strong id="groundTitle" data-msg="groundTitle">Fishing ground</strong><div class="ground-options" id="groundOptions" role="group" aria-labelledby="groundTitle"><button type="button"></button><button type="button"></button></div></div>
+    <div class="sea-targets"><img id="seaTargetImg" alt=""><span id="seaTargetText"></span></div><button id="troll" class="troll-button" data-msg="troll">Troll from boat</button>
+   </section>
+  </div>
+  <div class="field-tools">
+   <button id="cupOpen" class="field-tool cup-tool"><span class="tool-copy"><small id="cupTag">2 players · 1 phone</small><strong data-msg="cupTitle">Lantern Cup</strong></span><span class="cup-play" aria-hidden="true">▶</span></button>
+   <button id="exhibitOpen" class="field-tool exhibit-link"><img src="assets/butterfly.png" alt=""><span class="tool-copy"><strong data-msg="personalTank">Living aquarium</strong></span></button>
+   <button id="rigOpen" class="field-tool"><span class="gear-art"><img id="rigImg" src="assets/float.png" alt=""></span><span class="tool-copy"><small data-msg="tackleBox">Tackle box</small><strong id="rigName"></strong></span><span class="chevron" aria-hidden="true">›</span></button>
+   <button id="expOpen" class="field-tool expedition-tool"><span class="gear-art legend-art"><img id="legendIcon" src="assets/crown.png" alt=""></span><span class="tool-copy"><small data-msg="expedition">Legend hunt</small><strong id="expName"></strong></span><span class="exp-count" id="expCount"></span></button>
+  </div>
+ </section>
+ <section class="spots" aria-labelledby="spotsTitle"><div class="subhead"><h2 id="spotsTitle" data-msg="spots">Fishing spots</h2><span id="openCount"></span></div><div class="mapcards" id="mapCards"></div></section>
+</main>
+<dialog id="modal" aria-labelledby="modalTitle"><div class="dialog-body"><button id="closeModal" class="close" aria-label="Close">×</button><div id="dialogContent"></div></div></dialog>
+<div class="sr" aria-live="polite" id="announce"></div>
+<script src="waters.js" defer></script><script src="dive.js" defer></script><script src="lantern.js" defer></script><script src="postcard.js" defer></script><script src="aquarium.js" defer></script><script src="fishkeeper.js" defer></script><script src="rod.js" defer></script><script src="voyage.js" defer></script><script src="helm.js" defer></script><script src="legends.js" defer></script><script src="game.js" defer></script>
+</body></html>

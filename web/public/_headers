@@ -27,3 +27,6 @@
 
 /index.html
   Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/games/starfall-anglers/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform

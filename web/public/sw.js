@@ -1,5 +1,6 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v29";
+const CACHE = "nicos-world-static-v30";
+const FISHING_DOCUMENT = "/games/starfall-anglers/";
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
@@ -53,8 +54,8 @@ self.addEventListener("message", (event) => {
 
 // Cloudflare redirects /index.html to /. A cached followed redirect cannot be
 // returned directly to a navigation whose redirect mode is manual.
-async function offlineDocument() {
-  const cached = await caches.match("/index.html");
+async function offlineDocument(path = "/index.html") {
+  const cached = await caches.match(path);
   if (!cached || !cached.ok || !/text\/html\b/i.test(cached.headers.get("content-type") || "")) return Response.error();
   if (!cached.redirected) return cached;
   const headers = new Headers(cached.headers);
@@ -82,6 +83,8 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (event.request.mode === "navigate") {
+    const fishingNavigation = url.origin === self.location.origin
+      && [FISHING_DOCUMENT, FISHING_DOCUMENT.slice(0, -1), FISHING_DOCUMENT + "index.html"].includes(url.pathname);
     event.respondWith(
       fetch(event.request, { cache: "no-store" })
         .then(async (response) => {
@@ -96,7 +99,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(offlineDocument)
+        .catch(() => offlineDocument(fishingNavigation ? FISHING_DOCUMENT : "/index.html"))
     );
     return;
   }

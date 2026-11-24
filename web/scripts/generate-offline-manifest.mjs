@@ -32,9 +32,14 @@ for (const url of canonicalAssets) {
   }
 }
 
+// Keep the fishing page and its relative scripts, sprites and fonts available offline.
+const fishingRoot = "games/starfall-anglers";
+const fishingFiles = readdirSync(path.join(dist, fishingRoot), { recursive: true, withFileTypes: true })
+  .filter(entry => entry.isFile() && entry.name !== "index.html")
+  .map(entry => "/" + path.relative(dist, path.join(entry.parentPath, entry.name)).split(path.sep).join("/"));
 const manifest = {
   version: 1,
-  assets: [...new Set([...bundleUrls, ...canonicalAssets])].sort(),
+  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles])].sort(),
 };
 writeFileSync(path.join(dist, "offline-assets.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 console.log(`Generated offline-assets.json with ${manifest.assets.length} Golden Adventure assets.`);
