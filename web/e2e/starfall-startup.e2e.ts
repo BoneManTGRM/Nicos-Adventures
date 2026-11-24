@@ -38,3 +38,27 @@ test("aquarium dives draw the fish and restore the selected resident",async({pag
     await expect(page.getByRole("button",{name:"Resident shoal",exact:true})).toHaveAttribute("aria-pressed","true");
   }
 });
+
+test("retired hunting bookmarks open fishing and keep existing collections on save", async ({page})=>{
+  await page.addInitScript(()=>{
+    const key="nicos-world.starfall-anglers.v1";
+    if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify({
+      lang:"en",records:{brook:{n:2,best:1.4}},display:["brook"],fishHomes:{brook:"fresh"},
+      trails:{records:{fox:{count:3,best:98}}},expedition:{clues:[1,0,0]}
+    }));
+  });
+  const fishing="/games/starfall-anglers/?from=bookmark";
+  for(const link of ["#hunting","#expedition"]){
+    await page.goto(fishing+link);
+    await expect(page).toHaveURL(url=>url.pathname==="/games/starfall-anglers/"&&url.search==="?from=bookmark"&&!url.hash);
+    await expect(page.locator("#tabFish")).toHaveClass(/active/);
+    await expect(page.getByRole("button",{name:"Cast line",exact:true})).toBeVisible();
+    await expect(page.locator("#tabHunt,dialog[open]")).toHaveCount(0);
+  }
+  await page.locator("#sound").click();
+  const save=await page.evaluate(()=>JSON.parse(localStorage.getItem("nicos-world.starfall-anglers.v1")!));
+  expect(save.records.brook).toMatchObject({n:2,best:1.4});
+  expect(save.fishHomes.brook).toBe("fresh");
+  expect(save.trails.records.fox).toEqual({count:3,best:98});
+  expect(save.expedition.clues).toEqual([1,0,0]);
+});
