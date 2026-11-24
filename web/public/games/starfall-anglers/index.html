@@ -4,12 +4,12 @@
 <base href="/games/starfall-anglers/">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#111d21"><meta name="description" content="Cast, reel, and discover the fish of ten illustrated lakes, coasts, and offshore waters in Nico’s World.">
-<title>Starfall Anglers · Nico’s World</title><link rel="icon" href="assets/brand.png"><link rel="preload" href="assets/pineglass.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="style.css">
+<title>Starfall Anglers · Nico’s World</title><link rel="icon" href="assets/brand.png"><link rel="preload" href="assets/pineglass.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="trail-hunt.css">
 </head>
 <body>
 <header class="top"><div class="top-inner">
  <a class="brand arcade-return" href="/?play=arcade"><img src="assets/brand.png" alt="" width="45" height="45"><div>Nico’s World<span data-msg="backArcade">← Back to arcade</span></div></a>
- <nav class="tabs" aria-label="Game"><button class="tab active" id="tabFish"><i class="ico" data-i="lure"></i><span data-msg="fishing">Fishing</span></button><button class="tab" id="tabGuide"><i class="ico" data-i="book"></i><span data-msg="guide">Field guide</span></button><button class="tab" id="tabTank"><i class="ico" data-i="fish"></i><span data-msg="aquarium">Aquarium</span></button></nav>
+ <nav class="tabs" aria-label="Game"><button class="tab active" id="tabFish"><i class="ico" data-i="lure"></i><span data-msg="fishing">Fishing</span></button><button class="tab" id="tabHunt"><span aria-hidden="true">🐾</span><span data-msg="hunting">Hunting</span></button><button class="tab" id="tabGuide"><i class="ico" data-i="book"></i><span data-msg="guide">Field guide</span></button><button class="tab" id="tabTank"><i class="ico" data-i="fish"></i><span data-msg="aquarium">Aquarium</span></button></nav>
  <div class="tools"><button id="sound" class="tool" aria-label="Turn sound on" title="Turn sound on"><i class="ico" data-i="mute"></i></button><button id="lang" class="tool lang" aria-label="Cambiar a español">ES</button><button id="help" class="tool help" title="How to play" aria-label="How to play">?</button></div>
 </div></header>
 <main>
@@ -67,5 +67,5 @@
 </main>
 <dialog id="modal" aria-labelledby="modalTitle"><div class="dialog-body"><button id="closeModal" class="close" aria-label="Close">×</button><div id="dialogContent"></div></div></dialog>
 <div class="sr" aria-live="polite" id="announce"></div>
-<script src="waters.js" defer></script><script src="dive.js" defer></script><script src="lantern.js" defer></script><script src="postcard.js" defer></script><script src="aquarium.js" defer></script><script src="fishkeeper.js" defer></script><script src="rod.js" defer></script><script src="voyage.js" defer></script><script src="helm.js" defer></script><script src="legends.js" defer></script><script src="angler-log.js" defer></script><script src="bluewater.js" defer></script><script src="reef-studio.js" defer></script><script src="game.js" defer></script>
+<script src="waters.js" defer></script><script src="dive.js" defer></script><script src="lantern.js" defer></script><script src="postcard.js" defer></script><script src="aquarium.js" defer></script><script src="fishkeeper.js" defer></script><script src="rod.js" defer></script><script src="voyage.js" defer></script><script src="helm.js" defer></script><script src="legends.js" defer></script><script src="angler-log.js" defer></script><script src="bluewater.js" defer></script><script src="reef-studio.js" defer></script><script src="trail-hunt.js" defer></script><script src="game.js" defer></script>
 </body></html>

@@ -2,7 +2,19 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), {
+    name: "starfall-arcade-entry",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((request, _response, next) => {
+        const url = new URL(request.url || "/", "http://localhost");
+        if (url.pathname === "/games/starfall-anglers/" || url.pathname === "/games/starfall-anglers") {
+          request.url = "/games/starfall-anglers/index.html" + url.search;
+        }
+        next();
+      });
+    },
+  }],
   define: ['feat/learning-lab-robot-rescue', 'feat/becca-unicorn-play'].includes(process.env.WORKERS_CI_BRANCH ?? '') ? {
     'import.meta.env.VITE_LEARNING_LAB_PREVIEW': JSON.stringify('true'),
     'import.meta.env.VITE_LEARNING_LAB_VERSION_BUILD': JSON.stringify('true'),
