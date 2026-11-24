@@ -3,7 +3,7 @@ const CatchPostcard = (() => {
  async function loadArt(file){
   const img=new Image();img.src="assets/"+file+".png";await img.decode();return img;
  }
- async function make({fish,place,weight,rarity,language}){
+ async function make({fish,place,weight,rarity,language,crew}){
   const [landscape,animal,bobber]=await Promise.all([loadArt(place.id),loadArt(fish.id),loadArt("brand")]);
   if(document.fonts)await document.fonts.load("40px Pineglass");
   const canvas=document.createElement("canvas");canvas.width=960;canvas.height=640;
@@ -19,7 +19,7 @@ const CatchPostcard = (() => {
   c.font="49px Pineglass, monospace";c.fillText(fish.name[language],48,496,620);
   c.fillStyle="#45605a";c.font="bold 27px system-ui";c.fillText(rarity+"  ·  "+weight,49,543,620);
   c.strokeStyle="#b7ae8c";c.lineWidth=2;c.beginPath();c.moveTo(49,572);c.lineTo(909,572);c.stroke();
-  c.font="19px system-ui";c.fillText(language?"Capturado y devuelto al agua":"Caught and released",49,607);
+  c.font="19px system-ui";c.fillText(crew?crew.join(" + "):(language?"Captura en el Mundo de Nico":"Caught in Nico’s World"),49,607,570);
   c.save();c.translate(792,470);c.rotate(-.06);c.fillStyle="#decea4";c.fillRect(-113,-71,226,142);c.strokeStyle="#896f42";c.setLineDash([6,5]);c.strokeRect(-106,-64,212,128);const scale=Math.min(204/animal.naturalWidth,122/animal.naturalHeight),aw=animal.naturalWidth*scale,ah=animal.naturalHeight*scale;
   c.drawImage(animal,-aw/2,-ah/2,aw,ah);c.restore();
   return canvas.toDataURL("image/png");

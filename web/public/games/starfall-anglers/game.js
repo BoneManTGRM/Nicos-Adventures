@@ -205,6 +205,7 @@
  function renderState(){
   const [title,desc,button,ic]=stateText(),signature=[save.lang,phase,title,button,held,latched,diving].join("|");
   if(signature!==lastUi){
+   bwControls();if(phase!=="fight")$("speciesCue").hidden=true;
    $("openHelm").disabled=cupPlaying||!["ready","escape","released"].includes(phase);
    lastUi=signature;renderSea();showText("statusTitle",tr(title));showText("statusText",tr(desc));showText("actionText",tr(button));iconSet($("statusIcon"),ic);
    iconSet(action.querySelector(".ico"),phase==="fight"?"fish":phase==="bite"?"bobber":"lure");
@@ -274,6 +275,7 @@
  function dismiss(){if(isOpen())dialog.close();}
  dialog.addEventListener("close",()=>{
   content.querySelector(".catch-film video")?.pause();
+  if(modalKind==="net"&&catchInfo){setPhase("released");}
   if(modalKind==="catch"){suppressClick=false;hot=coastalRing({x:.19+Math.random()*.52,y:.62+Math.random()*.20});setPhase("released");}
   if(["cupResult","cup"].includes(modalKind)&&!cupPlaying&&["catch","escape"].includes(phase))resetReady();
   modalFrame=null;dialog.classList.remove("gallery-dialog","tank-expanded");modalKind="";$("tabTank").classList.remove("active");$("tabGuide").classList.remove("active");$("tabFish").classList.add("active");lastFrame=0;
@@ -381,7 +383,7 @@
   content.append(ol,el("p","",tr("skillHelp")),el("p","",tr("swipeTip")),el("p","",tr("underHelp")),el("p","",tr("seaHelp")),el("p","",tr("keys")));const l=el("label","assist"),check=el("input");check.type="checkbox";check.checked=save.calm;check.onchange=()=>{save.calm=check.checked;persist();};
   l.append(check,el("strong","",tr("calm")));content.append(l,el("p","",tr("calmHint")),actButton(tr("go"),dismiss));
  }
- function moveSpot(i){seaPass=null;castSea=null;fight=null;runningFish=null;replayLegend=false;save.place=i;persist();clearHold();target={x:.49,y:.75};hot=coastalRing({x:.38+.17*Math.random(),y:.61+.2*Math.random()});setPhase("ready");renderAll();if(isOpen())dismiss();scene.scrollIntoView({block:"nearest",behavior:reduced?"instant":"smooth"});beep([330,440],.095);}
+ function moveSpot(i){upgrades.active=null;seaPass=null;castSea=null;fight=null;runningFish=null;replayLegend=false;save.place=i;persist();clearHold();target={x:.49,y:.75};hot=coastalRing({x:.38+.17*Math.random(),y:.61+.2*Math.random()});setPhase("ready");renderAll();if(isOpen())dismiss();scene.scrollIntoView({block:"nearest",behavior:reduced?"instant":"smooth"});beep([330,440],.095);}
  function selectSpot(i){
   if(cupPlaying){showCup();return;}
   if(i===save.place){if(phase==="ready")action.focus({preventScroll:true});return;}
@@ -398,7 +400,7 @@
   setPhase("ready");
  }
  function startCast(power=null,troll=false){
-  castPower=livePower();
+  castPower=livePower();netResult=null;scanSpent=false;
   castSea=here().salt&&!cupPlaying?Waters.seaRig(save.seaDepth,Waters.seaTide(save.records),troll,currentGround()):null;
   Voyage.applyRig(castSea,save.voyage,here());
   seaPass=troll&&castSea?{origin:{...target},direction:target.x<.50?1:-1}:null;
@@ -409,11 +411,13 @@
   clearHold();castAccuracy=seaPass ? .09 : Math.hypot((target.x-hot.x)*1.25,target.y-hot.y);
   castLure=equippedLure();legendOn=!cupPlaying&&!seaPass&&onRing()&&((replayLegend&&save.voyage.legends[currentLegend().id])||(surveyed().count===3&&(replayLegend||!save.records[currentLegend().id])));replayLegend=false;
   runningFish=cupPlaying?Waters.cupFish(save.place,challenge):legendOn?currentLegend():Waters.choose(save.place,save.records,placement.sweet?castAccuracy*.55:castAccuracy,Math.min(1,Math.max(0,(.94-target.y)/.38)),Math.random,castLure,castSea,castPower);
+  if(!cupPlaying&&!legendOn)runningFish=Bluewater.visitCandidate(runningFish,save.place,upgrades,lureWorked);
+  lureWorked=false;
   if(legendOn||placement.sweet||castSkills.ring)toast(tr(legendOn?"tracked":placement.sweet?"sweet":"perfect"));
   else if(power!==null)toast(tr(placement.drift>0?"shortCast":"longCast"));
   biteAfter=cupPlaying?challenge.wait:(1.85+Math.random()*1.9+(castAccuracy>.18?.35:0))*getLure(castLure).bite*(castSea?.wait||1)*(seaPass?1.18:1)*(castPower.bite||1);setPhase("flight");beep([392,523],.075);
  }
- function strike(){if(phase!=="bite")return;castSkills.quick=phaseTime<=1.0;clearHold();fight={progress:castSkills.quick?.14:.08,tension:.16,age:0,tier:runningFish.tier,legend:!cupPlaying&&runningFish.tier===3?runningFish.id:null,pattern:(runningFish.tier+runningFish.place)%4,speed:getLure(castLure).speed*(castPower.reel||1),pull:getLure(castLure).pull*(castPower.pull||1)};renderedFight="";setPhase("fight");if(castSkills.quick)toast(tr("quickHook"));beep([440,660,740],.055);vibrate(25);if(!cupPlaying&&runningFish.tier===3&&!save.voyage.legends[runningFish.id])showSighting(true);}
+ function strike(){if(phase!=="bite")return;castSkills.quick=phaseTime<=1.0;clearHold();fight={progress:castSkills.quick?.14:.08,tension:.16,age:0,tier:runningFish.tier,legend:!cupPlaying&&runningFish.tier===3?runningFish.id:null,pattern:(runningFish.tier+runningFish.place)%4,speed:getLure(castLure).speed*(castPower.reel||1),pull:getLure(castLure).pull*(castPower.pull||1)};renderedFight="";setPhase("fight");if(!cupPlaying&&save.charm)charmEffect(({greatwhite:"🦷",eclipseangler:"☾",crown:"♛",phoenix:"🔥",narwhal:"❄"})[save.charm]||"✦");if(castSkills.quick)toast(tr("quickHook"));beep([440,660,740],.055);vibrate(25);if(!cupPlaying&&runningFish.tier===3&&!save.voyage.legends[runningFish.id])showSighting(true);}
  function gotAway(why){loss=why;clearHold();const result=cupTurnResult(false);setPhase("escape");beep([330,220],.12);
   if(result){persist();renderAll();showTurnResult(result);}
  }
@@ -425,7 +429,7 @@
   const cupResult=cupTurnResult(true);
   const personal=AnglerLog.updateRecord(save.records,f,kg);persist();clearHold();setPhase("catch");renderAll();
   catchInfo={f,kg,personal,newFish:!old&&!save.photos[f.id],clue:surveyed().count>clueBefore,record:old&&kg>old.best,unlock:places.find(p=>p.unlock>before&&p.unlock<=before+1)};
-  if(cupResult)showTurnResult(cupResult);else showCatch();beep(f.tier===3?[392,494,587,740,784,988]:[392,494,587,784],.095);vibrate([20,35,35]);
+  if(cupResult)showTurnResult(cupResult);else if(upgrades.crew.length===2)netGame();else showCatch();beep(f.tier===3?[392,494,587,740,784,988]:[392,494,587,784],.095);vibrate([20,35,35]);
  }
  function showCatch(){
   const {f,kg,newFish,record,unlock}=catchInfo;openModal("catch");const box=el("div","catch"+(f.tier===3?" legendary-catch":""));
@@ -433,6 +437,7 @@
   if(catchInfo.clue)box.append(el("p","reward",tr("clueEarn")+" · "+surveyed().count+"/3"));
   if(catchInfo.personal.first)box.append(el("p","reward",pick(["First personal best","Primer récord personal"])+" · "+weight(kg)));
   if(record)box.append(el("p","reward",pick(["New personal best","Nuevo récord personal"])+" · "+weight(catchInfo.personal.previous)+" → "+weight(kg)));
+  recordReward(box,f,kg);
   if(f.tier===3)box.append(giftCard(f,catchInfo.personal.first));
   if(unlock)box.append(el("p","reward",(save.lang?"¡Nuevo sitio · ":"New fishing spot · ")+pick(unlock.name)+"!"));
   if(newFish&&discoveries().length===fish.length)box.append(el("p","reward",tr("allGuide")));
@@ -514,6 +519,7 @@
   if(cupPlaying||!["ready","released","escape"].includes(phase))return;
   if(!here().salt)moveSpot(lastWater.salt);
   openModal("helm");heading(content,tr("captain"),pick(here().name));
+  content.append(actButton(bwText("Captain’s chart","Carta del capitán"),()=>sail(false),"secondary"));
   modalFrame=Helm.open({root:content,save,place:here(),el,button:actButton,pick,sprite,persist,say,reduced,initialBoat,
    onAnchor:mark=>{
     const a=save.voyage.anchors[here().id];
@@ -559,6 +565,7 @@
  function showTank(){
   openModal("tank");heading(content,tr("aquarium"));
   modalFrame=FishKeeper.open({root:content,save,pick,tr,el,button:actButton,persist,say,beep,sprite,found:discoveries(),
+   studio:(model,label,edit,meal)=>{openModal("tankStudio");heading(content,edit?bwText("Design your tank","Diseña tu acuario"):bwText("Dive into tank","Bucear en el acuario"),tr(Waters.tankNames[save.tank]));modalFrame=ReefStudio.open({root:content,model,save,el,button:actButton,pick,persist,sprite,label,meal,back:showTank},edit);},
    goDiving:()=>{if(!diving)toggleCam();dismiss();},moving:tankMoving,lit:tankLit,
    setMoving:value=>{tankMoving=value;},setLit:value=>{tankLit=value;}});
  }
@@ -671,7 +678,7 @@
    if(panel.childElementCount){panel.hidden=!panel.hidden;btn.setAttribute("aria-expanded",String(!panel.hidden));return;}
    btn.disabled=true;panel.replaceChildren();
    try{
-    const data=await CatchPostcard.make({fish:f,place:places[f.place],weight:weight(kg),rarity:rank(f.tier),language:save.lang});
+    const data=await CatchPostcard.make({fish:f,place:places[f.place],weight:weight(kg),rarity:rank(f.tier),language:save.lang,crew:catchInfo?.f.id===f.id&&catchInfo.kg===kg?netResult:null});
     const image=el("img","postcard-image");image.src=data;image.alt=pick(f.name)+" · "+weight(kg);
     const link=el("a","card-download",tr("downloadCard"));link.href=data;link.download="Starfall-"+f.id+"-"+kg.toFixed(2)+"kg.png";
     panel.append(image,link,el("p","",tr("cardTip")));panel.hidden=false;btn.setAttribute("aria-expanded","true");
@@ -764,11 +771,12 @@
   else if(phase==="wait"&&phaseTime>=biteAfter){setPhase("bite");beep([780,990],.08);vibrate([18,40,18]);}
   else if(phase==="bite"&&!(cupPlaying?save.cup.gentle:save.calm)&&phaseTime>=5.5+(castPower.hook||0))gotAway("escMiss");
   else if(phase==="fight"){
+   if(!cupPlaying)signatureTick();
    const outcome=Waters.tensionStep(fight,held,dt,cupPlaying?save.cup.gentle:save.calm);
    if(outcome==="surge"&&!fight.warned){fight.warned=true;beep([392,294,220],.08);vibrate([30,35,30]);}
    if(outcome!=="surge")fight.warned=false;
    if(outcome==="landed")landed();else if(outcome==="escaped"){
-    if(AnglerLog.rescue(fight,castPower)){clearHold();toast(pick(["Breaker Tooth saved your line!","¡El Diente Rompeolas salvó tu sedal!"]));}
+    if(AnglerLog.rescue(fight,castPower)){charmEffect("🦷");clearHold();toast(pick(["Breaker Tooth saved your line!","¡El Diente Rompeolas salvó tu sedal!"]));}
     else gotAway("escLine");
    }
   }
@@ -881,9 +889,85 @@
   if(!lastFrame)lastFrame=now;
   if(!document.hidden&&!isOpen()&&now-lastPaint>=30){
    const dt=Math.min(.65,(now-lastFrame)/1000);lastFrame=now;lastPaint=now;
-   const steps=Math.max(1,Math.ceil(dt/.045));for(let i=0;i<steps&&!isOpen();i++)tick(dt/steps);draw();
+   const steps=Math.max(1,Math.ceil(dt/.045));for(let i=0;i<steps&&!isOpen();i++)tick(dt/steps);draw();drawExtras();
   }else if(document.hidden||isOpen())lastFrame=now;
   requestAnimationFrame(frame);
  }
+ const bwText=(en,es)=>pick([en,es]);
+ const upgrades=save.adventures=Bluewater.clean(raw?.adventures);
+ let lureWorked=false,workedAt=-100,scanUntil=-1,scanSpent=false,flare=null,netResult=null;
+ function homePort(){openModal("boathouse");heading(content,bwText("Boathouse","Casa del pescador"));
+  const nav=el("div","bw-actions");
+  nav.append(actButton(bwText("Captain’s chart","Carta del capitán"),()=>sail(false)),actButton(bwText("The Lights Beneath Cabo","Las luces bajo Cabo"),()=>sail(true)),actButton(bwText("Family crew","Tripulación familiar"),crewSetup),actButton(bwText("Trophy wall","Muro de trofeos"),trophyWall));content.append(nav);
+ }
+ function sail(story){openModal("chart");heading(content,story?bwText("The Lights Beneath Cabo","Las luces bajo Cabo"):bwText("Captain’s chart","Carta del capitán"));
+  modalFrame=Bluewater.openChart({root:content,save,data:upgrades,el,btn:actButton,pick,persist,sprite,anchor:i=>{
+   const site=Bluewater.sites[i];moveSpot(site.port);upgrades.active=i;persist();renderAll();toast(pick(site.name));
+  }},story);
+ }
+ function crewSetup(){openModal("crew");heading(content,bwText("Family crew","Tripulación familiar"));
+  content.append(el("p","",bwText("The angler fights the fish. The spotter calls its run and scoops it at the boat.","Una persona pesca. La otra avisa cuando el pez gira y lo recoge con la red.")));
+  const names=[bwText("Angler","Pescador"),bwText("Spotter","Vigía")].map((name,i)=>{const l=el("label","bw-label",name),field=el("input");field.maxLength=18;field.value=upgrades.crew[i]||"";field.placeholder=name;l.append(field);content.append(l);return field;});
+  content.append(actButton(bwText("Start crew","Formar equipo"),()=>{upgrades.crew=names.map((n,i)=>n.value.trim()||n.placeholder);persist();dismiss();renderAll();}),actButton(bwText("Fish solo","Pescar a solas"),()=>{upgrades.crew=[];persist();dismiss();renderAll();},"secondary"));
+ }
+ function netGame(){
+  openModal("net");const crew=upgrades.crew;
+  heading(content,bwText("Pass the net to ","Pasa la red a ")+crew[1]);content.append(el("p","",bwText("Scoop when the float is in the gold zone.","Recoge cuando el flotador entre en la zona dorada.")));
+  const meter=el("div","bw-net"),float=el("i"),msg=el("p","bw-note");meter.append(float);content.append(meter,msg);
+  let at=0;modalFrame=now=>{at=.5+.46*Math.sin(now/(save.calm?850:570));float.style.left=at*100+"%";};
+  content.append(actButton(bwText("Scoop!","¡Recoger!"),()=>{if(at<.32||at>.68){msg.textContent=bwText("Just missed. Try the next pass!","¡Casi! Intenta en la siguiente pasada.");return;}
+   netResult=crew.slice();showCatch();
+  }),actButton(bwText("Finish without net bonus","Terminar sin bono de red"),showCatch,"secondary"));
+ }
+ function trophyEntry(f,r){
+  const row=el("article","bw-plaque"),im=el("img");im.src="assets/"+f.id+".png";im.alt="";row.append(im,el("strong","",pick(f.name)+" · "+weight(r.kg)),el("small","",[pick(places[f.place].name),pick(getLure(r.lure).name),new Date(r.at).toLocaleDateString(save.lang?"es-MX":"en-US"),...(r.crew||[])].join(" · ")));return row;
+ }
+ function trophyWall(){openModal("trophies");heading(content,bwText("Trophy wall","Muro de trofeos"));const rows=Object.entries(upgrades.plaques).filter(([id])=>fish.some(f=>f.id===id));
+  if(!rows.length)content.append(el("p","",bwText("Hang a plaque from a personal-best catch to start your wall.","Cuelga una placa desde una captura récord para empezar tu colección.")));
+  for(const [id,r] of rows.sort((a,b)=>b[1].at-a[1].at))content.append(trophyEntry(fish.find(f=>f.id===id),r));
+ }
+ function recordReward(box,f,kg){
+  if(netResult)box.append(el("p","reward",netResult.join(" + ")+" · "+bwText("Crew catch","Captura en equipo")));
+  if(!catchInfo.personal.improved)return;
+  if(catchInfo.personal.previous){const comparison=el("div","bw-compare");for(const n of [catchInfo.personal.previous,kg]){const fig=el("figure"),im=el("img");im.src="assets/"+f.id+".png";im.alt="";im.style.width=Math.cbrt(n/kg)*95+"%";fig.append(im,el("figcaption","",weight(n)));comparison.append(fig);}box.append(comparison);}
+  const hang=actButton(bwText("Hang record plaque","Colgar placa del récord"),()=>{upgrades.plaques[f.id]={kg,at:save.records[f.id].bestAt||Date.now(),lure:castLure,crew:netResult||[]};persist();hang.replaceWith(trophyEntry(f,upgrades.plaques[f.id]));},"secondary");box.append(hang);
+ }
+ function bwControls(){
+  $("boathouse").textContent=bwText("Boathouse","Casa del pescador");$("boathouse").disabled=cupPlaying||!["ready","escape","released"].includes(phase);
+  $("lureWork").textContent=pick(Bluewater.styles[upgrades.gear])+" · "+bwText("work lure","mover señuelo");
+  $("lureWork").disabled=cupPlaying||!["ready","wait","released","escape"].includes(phase);
+  $("lureMode").disabled=$("lureWork").disabled;$("lureMode").textContent=bwText("Change retrieve","Cambiar movimiento");
+  $("lanternScan").hidden=save.charm!=="eclipseangler"||cupPlaying;$("lanternScan").disabled=scanSpent;
+  $("lanternScan").textContent=bwText("Light the Eclipse Lantern","Encender la Linterna del Eclipse");
+  const mark=Bluewater.sites[upgrades.active];if(!cupPlaying&&mark&&mark.port===save.place){$("locationName").textContent=pick(mark.name);scene.classList.toggle("bw-night",upgrades.active===2);}
+ }
+ function charmEffect(symbol){flare={symbol,until:t+2};}
+ function workLure(){if($("lureWork").disabled)return;lureWorked=true;workedAt=t;
+  if(phase==="wait"&&!legendOn&&!seaPass){runningFish=Bluewater.visitCandidate(runningFish,save.place,upgrades,true);biteAfter=Math.min(biteAfter,phaseTime+1.3);}
+  toast(pick(Bluewater.styles[upgrades.gear]));}
+ function signatureTick(){
+  const cue=Bluewater.manoeuvres[Bluewater.signature(runningFish)],round=Math.floor(fight.age/7),position=fight.age%7;
+  if(position>=1&&position<3.8&&fight.bwRound!==round){fight.bwRound=round;fight.bwDone=false;
+   $("speciesCue").hidden=false;$("speciesHint").textContent=(upgrades.crew.length?upgrades.crew[1]+" · ":"")+pick(cue.cue);$("speciesAction").textContent=cue.icon+" "+pick(cue.action);say(pick(cue.cue));}
+  if(position>=3.8&&!fight.bwDone&&fight.bwRound===round){fight.bwDone=true;fight.tension=Math.min(.92,fight.tension+(save.calm?.015:.07));$("speciesCue").hidden=true;}
+ }
+ function drawExtras(){
+  const {w,h}=viewport;if(!w)return;
+  if(t-workedAt<2.8&&!cupPlaying){
+   const q=t-workedAt,wx=(target.x+Math.sin(q*6)*.025)*w,wy=(diving?Dive.depthY(target.y):target.y)*h+(upgrades.gear===2?q*5:Math.sin(q*8)*4);
+   ctx.fillStyle="#ffce70";ctx.fillRect(wx-4,wy-2,9,4);if(diving){const f=runningFish||Waters.pools[save.place].find(f=>Bluewater.technique(f)===upgrades.gear);if(f)Dive.swim(ctx,sprite(f.id),wx-w*(.18-.045*q),wy+5,w*.12,false,0,t);}
+  }
+  if(phase==="fight"&&!cupPlaying&&!$("speciesCue").hidden&&runningFish){
+   const mode=Bluewater.signature(runningFish),u=Math.max(0,Math.min(1,(fight.age%7-1)/2.8));
+   const px=mode===2?.5+.19*Math.cos(u*6.28):.46+.18*u,py=mode===0?.66-.33*Math.sin(Math.PI*u):mode===1?.51+.27*u:.64+.09*Math.sin(u*6.28);
+   ctx.save();ctx.globalAlpha=.86;Dive.swim(ctx,sprite(runningFish.id),w*px,h*py,w*.16,mode===2&&u<.5,mode===0?-.6*Math.cos(Math.PI*u):mode===1?.45:0,t);ctx.restore();
+  }
+  if(scanUntil>t){const pool=Waters.pools[save.place];for(let i=0;i<4;i++){const f=pool[(i*2)%pool.length];ctx.save();ctx.globalAlpha=.65;ctx.shadowColor="#95ffed";ctx.shadowBlur=10;Dive.swim(ctx,sprite(f.id),w*(.17+.22*i+.025*Math.sin(t)),h*(.60+.06*(i%3)),w*.12,false,0,t);ctx.restore();}}
+  if(flare&&flare.until>t){ctx.save();ctx.font="bold "+Math.round(w*.075)+"px serif";ctx.fillStyle="#fff2a5";ctx.shadowBlur=15;ctx.shadowColor="#ffd376";ctx.textAlign="center";ctx.fillText(flare.symbol,w*.5,h*.42);ctx.restore();}
+ }
+ $("boathouse").onclick=homePort;$("lureMode").onclick=()=>{upgrades.gear=(upgrades.gear+1)%3;persist();bwControls();};$("lureWork").onclick=workLure;
+ $("lanternScan").onclick=()=>{if(scanSpent||save.charm!=="eclipseangler")return;scanSpent=true;scanUntil=t+5;charmEffect("☾");bwControls();};
+ $("speciesAction").onclick=()=>{if(phase!=="fight"||fight.bwDone||$("speciesCue").hidden)return;fight.bwDone=true;const move=Bluewater.signature(runningFish);if(move===2)clearHold();fight.tension=Math.max(.05,fight.tension-[.14,.10,.28][move]);fight.progress=Math.min(.99,fight.progress+[.10,.14,.065][move]);$("speciesCue").hidden=true;toast(bwText("Clean counter!","¡Buena maniobra!"));};
+
  renderAll();fit();new ResizeObserver(fit).observe(scene);requestAnimationFrame(frame);
 })();
