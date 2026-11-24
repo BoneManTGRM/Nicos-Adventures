@@ -35,6 +35,3 @@
  .starfall-entry { grid-template-columns: 1fr; }
  .starfall-entry__coast { height: 134px; min-height: 0; }
 }
-.starfall-entry__activities {display:flex;flex-wrap:wrap;gap:.55rem}
-.starfall-entry__copy .starfall-entry__hunt {background:#29493e;color:#f6e9c5;border:1px solid #859c7a}
-.starfall-entry__copy .starfall-entry__hunt:is(:hover,:focus-visible) {background:#375c4e}

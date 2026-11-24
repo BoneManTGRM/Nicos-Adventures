@@ -19,19 +19,19 @@
   raw=JSON.parse(localStorage.getItem(key));
  }catch{}
  const save=Waters.clean(raw);
- save.trails=TrailHunt.clean(raw?.trails);
- save.expedition=StarExpedition.clean(raw?.expedition);
+ // Older profiles can keep their retired collections when fishing saves progress.
+ if(raw?.trails!==undefined)save.trails=raw.trails;
+ if(raw?.expedition!==undefined)save.expedition=raw.expedition;
  if(save.lang===null)save.lang=(worldLanguage||navigator.language).toLowerCase().startsWith("es")?1:0;
  const pick=a=>a[save.lang], tr=id=>pick(strings[id]), here=()=>places[save.place], total=()=>Object.values(save.records).reduce((a,r)=>a+r.n,0);
  const strings={
- hunting:["Hunting","Cacería"],
  recordBook:["Record Book","Libro de récords"],sharkBook:["Shark guide","Guía de tiburones"],legendGifts:["Legend charms","Amuletos legendarios"],legendGift:["Legend gift","Regalo legendario"],noCharm:["Charm removed","Amuleto retirado"],
  backArcade:["← Back to arcade","← Volver a la sala"],arcade:["GAME ARCADE","SALA DE JUEGOS"],fishing:["Fishing","Pescar"],guide:["Field guide","Guía de peces"],caught:["caught","capturas"],species:["species","especies"],nowFishing:["NOW FISHING","PESCANDO EN"],aim:["Tap the water to aim","Toca el agua para apuntar"],spots:["Fishing spots","Sitios de pesca"],landed:["Reeled in","Avance"],tension:["Line tension","Tensión del hilo"],statusReady:["Ready to cast","Listo para lanzar"],descReady:["Aim for the golden ripples to find rarer fish.","Apunta a las ondas doradas para encontrar peces raros."],cast:["Cast line","Lanzar"],flying:["Casting…","Lanzando…"],descFlying:["Your float is on its way.","El flotador ya va en camino."],waiting:["Watch the bobber","Mira el flotador"],descWaiting:["Wait until it dips under. Then set the hook!","Espera a que se hunda. ¡Entonces engancha!"],waitBtn:["Waiting…","Esperando…"],nibble:["A little nibble…","Un mordisquito…"],bite:["Fish on!","¡Ya picó!"],descBite:["Swipe up on the water or tap Set hook!","Desliza hacia arriba en el agua o toca ¡Enganchar!"],hook:["Set hook!","¡Enganchar!"],reel:["Hold to reel","Mantén para recoger"],release:["Ease off!","¡Afloja!"],fightTitle:["Bring it in","Acércalo"],fightHint:["Hold to reel. Let go when the line gets tight.","Mantén para recoger. Suelta si se tensa el hilo."],run:["It’s pulling!","¡Está jalando!"],runHint:["Ease off the reel to loosen the line.","Suelta el botón para aflojar el hilo."],escaped:["It got away","Se escapó"],escMiss:["The fish let go. Another cast, another chance.","El pez se soltó. Puedes intentarlo otra vez."],escLine:["The line snapped. Ease off sooner next time.","Se rompió el hilo. Suelta un poco antes la próxima vez."],catchTitle:["Catch landed!","¡Lo atrapaste!"],catchHint:["Your catch is in the field guide.","Tu captura está en la guía de peces."],reeling:["Tap to pause","Toca para pausar"],returning:["Swimming home","Vuelve al agua"],returned:["Your field guide keeps the discovery.","Tu guía conserva el descubrimiento."],again:["Cast again","Volver a lanzar"],here:["Fishing here","Estás aquí"],visit:["Travel here","Viajar aquí"],opened:["open","abiertos"],help:["How to play","Cómo jugar"],close:["Close","Cerrar"],soundOn:["Turn sound on","Activar sonido"],soundOff:["Mute sound","Silenciar"],swapAim:["Aim at the golden ring","Apuntar al anillo dorado"],common:["Common","Común"],uncommon:["Uncommon","Poco común"],rare:["Rare","Raro"],legend:["Legendary","Legendario"],newSpecies:["New discovery","Nueva especie"],repeat:["Catch landed","Pez atrapado"],best:["Personal best","Récord personal"],releaseFish:["Release fish","Soltar pez"],found:["discovered","descubiertas"],unknown:["Undiscovered","Por descubrir"],mystery:["Mystery fish","Pez misterioso"],backGuide:["Back to guide","Volver a la guía"],journalIntro:["Select a fish to see its field notes.","Elige un pez para ver sus notas de campo."],guideDone:["You’ve discovered every species in all ten waters!","¡Descubriste todas las especies de los diez sitios!"],calm:["Gentle fishing","Pesca tranquila"],calmHint:["Bites wait for you and your line stays strong.","El pez espera y el hilo resiste los jalones."],help1:["Aim and cast","Apunta y lanza"],how1:["Tap the lake to choose a spot. The golden rings mark feeding fish.","Toca el lago para elegir un lugar. Los anillos dorados marcan dónde comen los peces."],help2:["Watch for the bite","Espera a que pique"],how2:["A nibble makes the float wiggle. When it plunges and “Fish on!” appears, set the hook.","Si mordisquea, el flotador tiembla. Cuando se hunda y veas «¡Ya picó!», engancha."],help3:["Play the fish","Sigue al pez"],how3:["Hold the reel to bring the fish closer. Release to lower tension. A quick tap also switches reeling on or off.","Mantén el botón para acercar el pez. Suéltalo para aflojar el hilo. Un toque corto también activa o pausa el carrete."],keys:["Keyboard: aim with the arrow keys. Space casts, hooks, and reels.","Con teclado: apunta con las flechas. La barra espaciadora lanza, engancha y recoge."],go:["Let’s fish","A pescar"],locked:["Unexplored water","Agua por explorar"],travel:["Travel","Viajar"],keep:["Keep fishing","Seguir pescando"],leaveCast:["Leave this cast?","¿Dejar este lance?"],moveHint:["Your current fish will swim away.","El pez de este lance se irá nadando."],chooseSpot:["Choose a fishing spot","Elige un sitio"],progress:["Guide progress","Progreso de la guía"],allGuide:["Field guide complete!","¡Guía completa!"],notSaved:["Progress is only available in this session.","El progreso solo estará disponible en esta sesión."],current:["Current spot","Sitio actual"]
  };
  Object.assign(strings,{
   trackAgain:["Track this legend again","Volver a rastrear la leyenda"],legendaryDive:["Legendary dive!","¡Se sumerge la leyenda!"],surgeHint:["Give it slack. Reel again after the dive.","Afloja el hilo. Recoge de nuevo cuando termine de sumergirse."],giveSlack:["Give slack","Aflojar"],photoSingular:["photo","foto"],
   album:["Photo album","Álbum de fotos"],noPhotos:["Open Dive cam and tap a swimming fish to take your first photo.","Abre la cámara submarina y toca un pez para tomar tu primera foto."],focusing:["Focusing…","Enfocando…"],underReady:["Photograph a swimmer or cast beside the golden sparks.","Fotografía un pez o lanza junto a los destellos dorados."],
-  aquarium:["Aquarium","Acuario"],tackleBox:["Tackle box","Caja de pesca"],expedition:["Legend hunt","Busca la leyenda"],diveCam:["Dive cam","Cámara submarina"],surface:["Surface","Superficie"],shutter:["Take photo","Tomar foto"],beneath:["UNDERWATER","BAJO EL AGUA"],diveAim:["Tap a fish to photograph it","Toca un pez para fotografiarlo"],
+  aquarium:["Aquarium","Acuario"],tackleBox:["Tackle box","Caja de pesca"],expedition:["Legendary fishing","Pesca legendaria"],diveCam:["Dive cam","Cámara submarina"],surface:["Surface","Superficie"],shutter:["Take photo","Tomar foto"],beneath:["UNDERWATER","BAJO EL AGUA"],diveAim:["Tap a fish to photograph it","Toca un pez para fotografiarlo"],
   perfect:["On the ring!","¡En el anillo!"],tracked:["Legend on the line!","¡Picó la leyenda!"],photo:["Photo logged","Foto guardada"],photographed:["Photographed","Fotografiado"],firstCast:["Watch your lure","Observa tu señuelo"],underWait:["Watch the fish approach. Set the hook when it takes the lure.","Mira cómo se acerca. Engancha cuando muerda el señuelo."],underBite:["It took the lure. Set the hook now!","Mordió el señuelo. ¡Engancha ahora!"],
   clues:["clues","pistas"],nextCast:["Choose a lure for your next cast.","Elige un señuelo para tu siguiente lance."],equipped:["Equipped","En uso"],completed:["Expedition complete","Expedición completa"],huntIntro:["Follow the three clues to find this water’s legendary fish.","Sigue las tres pistas para encontrar al pez legendario de este lugar."],
   huntTitle:["Legend trail","Tras la leyenda"],clue1:["Catch three different species here","Atrapa tres especies distintas aquí"],clue2:["Land a fish from a golden ring","Atrapa un pez lanzando al anillo dorado"],clue3:["Catch a fish with","Atrapa un pez con"],legendReady:["The trail is open! Cast into the golden ring to meet the legend.","¡Ya tienes las pistas! Lanza al anillo dorado para encontrar a la leyenda."],markRing:["Aim at the ring","Apuntar al anillo"],clueEarn:["New legend clue","Nueva pista"],aquariumIntro:["Each of your six aquariums holds 24 fish.","Cada uno de tus seis acuarios tiene espacio para 24 peces."],tankEmpty:["Catch or photograph a fish to add its likeness here.","Atrapa o fotografía un pez para exhibir una copia animada aquí."],tankAdd:["Display in aquarium","Exhibir en el acuario"],tankRemove:["Remove from aquarium","Quitar del acuario"],tankFull:["Aquarium full · change display","Acuario lleno · cambiar exhibición"],tankSaved:["On display","En exhibición"],available:["Your discoveries","Tus descubrimientos"],setTank:["Aquarium habitat","Hábitat del acuario"],fresh:["Riverbed","Río"],reefHab:["Coral reef","Arrecife"],ice:["Ice cavern","Cueva de hielo"],photoOnly:["Camera discovery","Hallazgo con cámara"],startDiving:["Explore with dive cam","Explorar con la cámara"],photos:["photos","fotos"],reelWindow:["Reel now","Recoge ahora"],fishRun:["Fish is running","El pez se aleja"],speciesClue:["Species logged","Especies registradas"],gearHint:["Lure for this water","Señuelo de este sitio"],underHelp:["Switch to Dive cam to watch fish approach your lure. Before casting, tap a swimmer to photograph it. Your aquarium can display fish you’ve photographed or caught.","Usa la cámara submarina para ver cómo se acercan al señuelo. Antes de lanzar, toca un pez para tomarle una foto. Puedes exhibir en tu acuario los peces que fotografíes o atrapes."]
@@ -270,17 +270,14 @@
  }
  function openModal(kind){
   if(!isOpen()){returnedFocus=document.activeElement;dialog.showModal();}
-  clearHold();modalFrame=null;dialog.classList.remove("tank-expanded");dialog.classList.toggle("gallery-dialog",["tank","helm","wildlife","legend","hunting"].includes(kind));modalKind=kind;content.replaceChildren();dialog.scrollTop=0;
+  clearHold();modalFrame=null;dialog.classList.remove("tank-expanded");dialog.classList.toggle("gallery-dialog",["tank","helm","wildlife","legend"].includes(kind));modalKind=kind;content.replaceChildren();dialog.scrollTop=0;
   $("tabGuide").classList.toggle("active",["guide","entry","album"].includes(kind));
-  $("tabHunt").classList.toggle("active",kind==="hunting");
-  $("tabTank").classList.toggle("active",kind==="tank");$("tabFish").classList.toggle("active",!["guide","entry","album","tank","hunting"].includes(kind));
+  $("tabTank").classList.toggle("active",kind==="tank");$("tabFish").classList.toggle("active",!["guide","entry","album","tank"].includes(kind));
   $("closeModal").focus({preventScroll:true});
  }
  function dismiss(){if(isOpen())dialog.close();}
  dialog.addEventListener("close",()=>{
   content.querySelector(".catch-film video")?.pause();
-  $("tabHunt").classList.remove("active");
-  if(isTrailLink())history.replaceState(history.state,"",location.pathname+location.search);
   if(modalKind==="net"&&catchInfo){setPhase("released");}
   if(modalKind==="catch"){suppressClick=false;hot=coastalRing({x:.19+Math.random()*.52,y:.62+Math.random()*.20});setPhase("released");}
   if(["cupResult","cup"].includes(modalKind)&&!cupPlaying&&["catch","escape"].includes(phase))resetReady();
@@ -756,19 +753,12 @@
   const y=diving?Dive.surfaceY(screenY):screenY;if(y<.55)return;target={x:Math.max(.07,Math.min(.93,(e.clientX-r.left)/r.width)),y:Math.min(.92,y)};beep([560],.04);});
  $("aimPad").onclick=()=>{target={...hot};say(tr("aim")+" ✓");};
  $("recordOpen").onclick=()=>openBook(false);$("sharkOpen").onclick=()=>openBook(true);$("giftOpen").onclick=showGifts;
- function isTrailLink(){return ["#hunting","#expedition"].includes(location.hash);}
- function openHunting(expedition=false){
-  if(isOpen()&&modalKind!=="hunting")return;
-  openModal("hunting");
-  history.replaceState(history.state,"",expedition?"#expedition":"#hunting");
-  const common={root:content,pick,el,button:actButton,persist,beep,reduced,
-   changeLanguage:()=>{save.lang=1-save.lang;persist();renderAll();}};
-  modalFrame=expedition
-   ?StarExpedition.open({...common,data:save.expedition,steady:reduced||(save.trails.steady??save.calm),onLodge:()=>openHunting()})
-   :TrailHunt.open({...common,data:save.trails,calm:save.calm,onExpedition:()=>openHunting(true)});
+ function openFishingFromOldLink(){
+  if(!["#hunting","#expedition"].includes(location.hash))return;
+  history.replaceState(history.state,"",location.pathname+location.search);
+  if(isOpen())dismiss();
  }
- $("tabHunt").onclick=()=>openHunting();
- window.addEventListener("hashchange",()=>{if(isTrailLink())openHunting(location.hash==="#expedition");else if(modalKind==="hunting")dismiss();});
+ window.addEventListener("hashchange",openFishingFromOldLink);
  $("tabGuide").onclick=$("guideStat").onclick=openGuide;$("tabFish").onclick=()=>{dismiss();action.focus({preventScroll:true});};
  $("help").onclick=showHelp;$("lang").onclick=()=>{save.lang=1-save.lang;persist();renderAll();};
  $("sound").onclick=()=>{save.sound=!save.sound;persist();renderAll();if(save.sound)beep([392,523],.08);};
@@ -1006,5 +996,5 @@
 
  if(navigator.serviceWorker&&location.pathname.startsWith("/games/starfall-anglers/"))navigator.serviceWorker.register("/sw.js").catch(()=>{});
  renderAll();fit();new ResizeObserver(fit).observe(scene);requestAnimationFrame(frame);
- if(isTrailLink())openHunting(location.hash==="#expedition");
+ openFishingFromOldLink();
 })();
