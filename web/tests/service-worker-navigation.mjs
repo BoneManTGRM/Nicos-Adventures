@@ -5,19 +5,19 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
 const origin = 'https://nicos-world.com';
-function worker(cached, fishing) {
+function worker(cached, fishing, clip) {
   const handlers = new Map(); let networkCalls = 0;
   const context = vm.createContext({
     URL, Response, Headers,
     self: { location: { origin }, addEventListener: (name, handler) => handlers.set(name, handler), skipWaiting() {}, clients: { claim() {} } },
-    caches: { match: async key => key === '/index.html' ? cached : key === '/games/starfall-anglers/' ? fishing : undefined },
+    caches: { match: async key => key === '/index.html' ? cached : key === '/games/starfall-anglers/' ? fishing : key === '/games/starfall-anglers/clips/crown.mp4' ? clip?.clone() : undefined },
     fetch: async () => { networkCalls++; throw new TypeError('Offline'); },
   });
   vm.runInContext(source, context);
   return {
-    navigate(path = '/', mode = 'navigate') {
+    navigate(path = '/', mode = 'navigate', headers = new Headers()) {
       let answer;
-      handlers.get('fetch')({ request: { method: 'GET', url: origin + path, mode }, respondWith: value => { answer = value; } });
+      handlers.get('fetch')({ request: { method: 'GET', url: origin + path, mode, headers }, respondWith: value => { answer = value; } });
       return answer;
     }, calls: () => networkCalls,
   };
@@ -61,4 +61,19 @@ test('offline fishing deep links load the game, and returning to the arcade load
     assert.equal(await sw.navigate(path), game);
   }
   assert.equal(await sw.navigate('/?play=arcade'), app);
+});
+
+test('saved fishing clips support the byte requests used by phone video players', async () => {
+  const clip = new Response('0123456789', {headers: {'Content-Type':'video/mp4'}});
+  const sw = worker(undefined, undefined, clip);
+  const read = range => sw.navigate('/games/starfall-anglers/clips/crown.mp4','cors',new Headers(range ? {Range:range} : {}));
+  for (const [range,content,expected] of [['bytes=0-1','01','bytes 0-1/10'],['bytes=7-','789','bytes 7-9/10'],['bytes=-3','789','bytes 7-9/10'],['bytes=8-22','89','bytes 8-9/10']]) {
+    const response=await read(range);
+    assert.equal(response.status,206);
+    assert.equal(response.headers.get('content-range'),expected);
+    assert.equal(await response.text(),content);
+  }
+  assert.equal((await read('bytes=10-')).status,416);
+  assert.equal(await (await read(null)).text(),'0123456789');
+  assert.equal(sw.calls(),0);
 });

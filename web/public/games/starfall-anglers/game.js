@@ -263,6 +263,7 @@
  }
  function dismiss(){if(isOpen())dialog.close();}
  dialog.addEventListener("close",()=>{
+  content.querySelector(".catch-film video")?.pause();
   if(modalKind==="catch"){suppressClick=false;hot=coastalRing({x:.19+Math.random()*.52,y:.62+Math.random()*.20});setPhase("released");}
   if(["cupResult","cup"].includes(modalKind)&&!cupPlaying&&["catch","escape"].includes(phase))resetReady();
   modalFrame=null;dialog.classList.remove("gallery-dialog","tank-expanded");modalKind="";$("tabTank").classList.remove("active");$("tabGuide").classList.remove("active");$("tabFish").classList.add("active");lastFrame=0;
@@ -271,6 +272,43 @@
  $("closeModal").onclick=dismiss;
  dialog.addEventListener("click",e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dismiss();}});
  function heading(parent,title,kicker){if(kicker)parent.append(el("div","kicker",kicker));const h=el("h2","",title);h.id="modalTitle";parent.append(h);}
+ // A landed legend earns its species film. The field guide uses the existing
+ // catch record, so earlier catches and repeated plays need no extra save data.
+ function catchFilm(f, onLanding=false){
+  const group=el("figure","catch-film");
+  const video=el("video");
+  const title=pick(["Legendary catch clip","Video de la captura legendaria"]);
+  video.setAttribute("aria-label",title+" · "+pick(f.name));
+  video.width=512;
+  video.height=288;
+  video.muted=true;
+  video.defaultMuted=true;
+  video.playsInline=true;
+  video.autoplay=onLanding&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  video.preload=video.autoplay?"auto":"none";
+  video.poster="clips/"+f.id+".webp";
+  video.src="clips/"+f.id+".mp4";
+  const bar=el("figcaption","film-bar");
+  const label=el("span","film-label",title);
+  const play=actButton("",()=>{
+   if(!video.paused&&!video.ended){video.pause();return;}
+   if(video.ended)video.currentTime=0;
+   video.play().catch(()=>{if(!video.error)sync();});
+  },"film-play");
+  function sync(){
+   const words=video.ended?["Replay clip","Repetir video"]:video.paused?["Play clip","Ver video"]:["Pause clip","Pausar video"];
+   play.textContent=pick(words);
+  }
+  for(const event of ["play","pause","ended"])video.addEventListener(event,sync);
+  video.addEventListener("error",()=>{
+   label.textContent=pick(["Catch clip unavailable","Video de la captura no disponible"]);
+   play.hidden=true;
+  });
+  sync();
+  bar.append(label,play);
+  group.append(video,bar);
+  return group;
+ }
  function portrait(f,masked){const frame=el("div","portrait"+(masked?" mystery":"")),img=el("img");img.alt="";img.src="assets/"+f.id+".png";frame.append(img);return frame;}
  function chips(values){const row=el("div","chips");for(const value of values)row.append(el("span","chip",value));return row;}
  function openGuide(){
@@ -287,7 +325,7 @@
  }
  function showEntry(f){
   openModal("entry");const row=el("div","catch"),r=save.records[f.id],seen=r||save.photos[f.id];heading(row,seen?pick(f.name):tr("mystery"),pick(places[f.place].name));
-  row.append(portrait(f,!seen),chips(r?[rank(f.tier),r.n+" "+(save.lang&&r.n===1?"captura":tr("caught")),weight(r.best)]:seen?[rank(f.tier),tr("photographed")]:[rank(f.tier)]),el("p","",seen?pick(f.note):pick(hintTier[f.tier])));if(places[f.place].salt)row.append(chips([tr("saltRoute"),tr(layerKeys[Waters.layerOf(f.id)])]));if(save.album[f.id]){const image=el("img","journal-photo");image.src=save.album[f.id];image.alt=pick(f.name)+" · "+pick(places[f.place].name);row.append(image);}
+  row.append(r&&f.tier===3?catchFilm(f):portrait(f,!seen),chips(r?[rank(f.tier),r.n+" "+(save.lang&&r.n===1?"captura":tr("caught")),weight(r.best)]:seen?[rank(f.tier),tr("photographed")]:[rank(f.tier)]),el("p","",seen?pick(f.note):pick(hintTier[f.tier])));if(places[f.place].salt)row.append(chips([tr("saltRoute"),tr(layerKeys[Waters.layerOf(f.id)])]));if(save.album[f.id]){const image=el("img","journal-photo");image.src=save.album[f.id];image.alt=pick(f.name)+" · "+pick(places[f.place].name);row.append(image);}
   if(seen)row.append(displayButton(f));if(r)row.append(postcardButton(f,r.best));row.append(actButton(tr("backGuide"),openGuide));content.append(row);
  }
  function showHelp(){
@@ -343,7 +381,7 @@
  }
  function showCatch(){
   const {f,kg,newFish,record,unlock}=catchInfo;openModal("catch");const box=el("div","catch"+(f.tier===3?" legendary-catch":""));
-  heading(box,pick(f.name),f.tier===3?tr("legend")+" · "+pick(here().name):tr(newFish?"newSpecies":"repeat"));box.append(portrait(f,false),chips([rank(f.tier),weight(kg),pick(here().name),...(castSea?[tr("saltRoute"),tr(layerKeys[castSea.depth])]:[])]),el("p","",pick(f.note)));
+  heading(box,pick(f.name),f.tier===3?tr("legend")+" · "+pick(here().name):tr(newFish?"newSpecies":"repeat"));box.append(f.tier===3?catchFilm(f,true):portrait(f,false),chips([rank(f.tier),weight(kg),pick(here().name),...(castSea?[tr("saltRoute"),tr(layerKeys[castSea.depth])]:[])]),el("p","",pick(f.note)));
   if(catchInfo.clue)box.append(el("p","reward",tr("clueEarn")+" · "+surveyed().count+"/3"));
   if(record)box.append(el("p","reward",tr("best")+"!"));
   if(unlock)box.append(el("p","reward",(save.lang?"¡Nuevo sitio · ":"New fishing spot · ")+pick(unlock.name)+"!"));
@@ -531,7 +569,7 @@
  function showTurnResult(result){
   const match=save.cup,turn=result.turn;
   openModal("cupResult");heading(content,teamName(result.team)+" · "+Lantern.points(turn)+" "+tr("points"),tr("cupTitle")+" · "+roundLabel(result.round));
-  if(turn.landed){const f=catchInfo.f;content.append(portrait(f,false),el("p","cup-up",pick(f.name)+" · "+weight(catchInfo.kg)));}
+  if(turn.landed){const f=catchInfo.f;content.append(f.tier===3?catchFilm(f,true):portrait(f,false),el("p","cup-up",pick(f.name)+" · "+weight(catchInfo.kg)));}
   else content.append(el("p","cup-up",tr(loss)));
   const list=el("ul","score-detail");
   for(const [key,score] of [["basePoints",turn.landed?100:0],["aimPoints",turn.ring?25:0],["powerCast",turn.power?20:0],["quickHook",turn.quick?15:0],["counterPoints",turn.counters*10]]){

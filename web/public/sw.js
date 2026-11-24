@@ -1,5 +1,5 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v30";
+const CACHE = "nicos-world-static-v31";
 const FISHING_DOCUMENT = "/games/starfall-anglers/";
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
@@ -65,9 +65,36 @@ async function offlineDocument(path = "/index.html") {
   return new Response(await cached.arrayBuffer(), { status: cached.status, statusText: cached.statusText, headers });
 }
 
+// Safari uses byte ranges even for short inline videos. Build a range from
+// the complete precached movie, never replacing it with a partial response.
+async function fishingClip(request, path) {
+  const cached = await caches.match(path);
+  if (!cached || cached.status !== 200) return fetch(request);
+  const range = request.headers.get("Range");
+  if (!range) return cached;
+  const match = /^bytes=(\d*)-(\d*)$/i.exec(range);
+  if (!match || (!match[1] && !match[2])) return cached;
+  const body = await cached.arrayBuffer();
+  const size = body.byteLength;
+  const start = match[1] ? Number(match[1]) : Math.max(0, size - Number(match[2]));
+  const end = match[1] && match[2] ? Math.min(size - 1, Number(match[2])) : size - 1;
+  if (start > end || start >= size) {
+    return new Response(null, {status: 416, headers: {"Content-Range": `bytes */${size}`, "Accept-Ranges": "bytes"}});
+  }
+  return new Response(body.slice(start, end + 1), {status: 206, headers: {
+    "Content-Type": "video/mp4", "Accept-Ranges": "bytes",
+    "Content-Range": `bytes ${start}-${end}/${size}`, "Content-Length": String(end - start + 1),
+  }});
+}
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
+
+  if (url.origin === self.location.origin && url.pathname.startsWith(FISHING_DOCUMENT+"clips/") && url.pathname.endsWith(".mp4")) {
+    event.respondWith(fishingClip(event.request, url.pathname));
+    return;
+  }
 
   if (url.origin === self.location.origin && url.pathname.endsWith("/assets/nico/nico-fullbody.b64")) {
     event.respondWith(
