@@ -1,6 +1,6 @@
 "use strict";
 const FishKeeper=(()=>{
- function open({root,save,pick,tr,el,button,persist,say,beep,sprite,found,goDiving,moving,lit,setMoving,setLit}){
+ function open({root,save,pick,tr,el,button,persist,say,beep,sprite,found,goDiving,moving,lit,setMoving,setLit,studio}){
   const fromId=id=>Waters.fish.find(f=>f.id===id);
   const names=Waters.tankNames;
   let guests=!save.display.length,model,selected=null,following=false,lastRelease=null,last=0,dirty=true;
@@ -25,6 +25,7 @@ const FishKeeper=(()=>{
    expanded=!expanded;root.closest("dialog").classList.toggle("tank-expanded",expanded);
    updateViewButton();stage.scrollIntoView({block:"nearest"});dirty=true;
   },"theme expand-view");audience.append(expandButton);
+  audience.append(button(textLine("Dive into tank","Bucear en el acuario"),()=>studio(model,label,false,mealTaken),"theme"),button(textLine("Design your tank","Diseña tu acuario"),()=>studio(model,label,true,mealTaken),"theme"));
   function updateViewButton(){
    expandButton.textContent=expanded?textLine("Standard view","Vista normal"):textLine("Expand view","Ampliar vista");
    expandButton.setAttribute("aria-pressed",String(expanded));
@@ -71,12 +72,22 @@ const FishKeeper=(()=>{
    const reaction=trait===1&&meals>=3?textLine("Recognizes your hand and swims out.","Reconoce tu mano y sale de su refugio."):pick(Aquarium.traits[trait].note);
    announce(label(key)+" · "+reaction);dirty=true;
   }
+  let bellKey=null,bellTime=0;
+  const bell=button(textLine("Ring feeding bell","Tocar campana"),()=>{
+   const s=model.swimmers.find(s=>s.key===selected);if(!s)return;
+   const now=performance.now(),trust=save.care[selected]?.meals||0;
+   if(s.trait===1&&trust<3&&(bellKey!==selected||now-bellTime>4000)){bellKey=selected;bellTime=now;announce(textLine("A shy peek. Ring once more.","Se asoma con timidez. Toca otra vez."));return;}
+   s.trick=s.f.id==="archerfish"?"jet":s.trait===2?"loop":"come";s.trickTime=3;
+   Aquarium.greet(model,selected,.49,.36,trust,!moving);
+   announce(s.trick==="jet"?textLine("A jet of water strikes the bell!","¡Un chorro de agua toca la campana!"):label(selected)+" · "+pick(Aquarium.traits[s.trait].note));dirty=true;
+  },"keeper-action");actions.append(bell);
   function describeAction(b,word,key){b.setAttribute("aria-label",tr(word)+" · "+label(key));}
   function paintMeals(){
    if(!selected)return;
    const meals=save.care[selected]?.meals||0;
    const trait=Aquarium.traits[Aquarium.personality(selected)];
    personalityNote.textContent=pick(trait.name)+" · "+(meals>=3?textLine("Recognizes your hand.","Reconoce tu mano."):textLine("Getting to know you ("+meals+"/3 hand-fed treats).","Está conociéndote ("+meals+"/3 bocados de tu mano)."));
+   if(meals>=1)personalityNote.textContent+=" "+(Waters.speciesId(selected)==="archerfish"?textLine("Try the feeding bell to see its water jet.","Toca la campana para ver su chorro de agua."):pick(trait.note));
    snacks.textContent=meals+" "+tr(meals===1?"meal":"meals");
    feedButton.disabled=model.food.some(p=>p.forKey===selected);
   }
@@ -201,7 +212,7 @@ const FishKeeper=(()=>{
    dirty=true;
   }
   function setup(){
-   stockPage=0;model=Aquarium.create(Waters.fishInTank(save),save.tank,fromId,{visitors:guests,away:save.residentAway});model.lit=lit;
+   stockPage=0;model=Aquarium.create(Waters.fishInTank(save),save.tank,fromId,{visitors:guests,away:save.residentAway});model.lit=lit;model.decor=save.adventures.design[save.tank]||[];
    ownButton.setAttribute("aria-pressed",String(!guests));guestButton.setAttribute("aria-pressed",String(guests));
    for(const s of model.swimmers)sprite(s.f.id);
    stage.style.backgroundImage='url("assets/exhibit-'+save.tank+'.webp")';habitat.textContent=tr(names[save.tank]);

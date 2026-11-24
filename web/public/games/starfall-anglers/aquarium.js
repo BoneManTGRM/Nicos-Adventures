@@ -91,6 +91,12 @@ const Aquarium = (() => {
     gx=.20+.30*(s.index%3)+.13*Math.sin(clock);
     gy=.13+.75*(Math.floor(s.index/3)+.5)/rows+.045*Math.sin(clock*.81+s.phase);
    }
+   if(tank.decor?.length&&!s.greeting&&!tank.lead&&(Math.cos(clock*.34)>.35)){
+    const pref=/eel|cat|shark/.test(s.f.id)?0:/ray|skate/.test(s.f.id)?3:s.trait===1?2:1;
+    const home=tank.decor.find(o=>o.type===pref)||tank.decor[s.index%tank.decor.length];
+    gx=home.x+.055*Math.sin(clock);gy=home.y-.04+.03*Math.cos(clock);
+   }
+   if(s.trickTime>0)s.trickTime=Math.max(0,s.trickTime-dt);
    if(s.greeting){
     s.greeting.age+=dt;
     if(s.greeting.age<5){const at=greetingTarget(s);gx=at.x;gy=at.y;}else s.greeting=null;
@@ -160,8 +166,10 @@ const Aquarium = (() => {
    if(i%3){ctx.fillStyle=tank.lit?"#d1fff178":"#baffbcb3";ctx.fillRect(x,y,r,r);}
    else{ctx.strokeStyle="#c7fff380";ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.stroke();}
   }
+  if(tank.decor?.length)ReefStudio.paint(ctx,w,h,tank.decor);
   for(const s of tank.swimmers.slice().sort((a,b)=>a.depth-b.depth)){
    const x=s.x*w,y=s.y*h,len=drawSize(tank,s)*w,img=sprite(s.f.id);
+   if(s.trickTime>0&&s.trick==="jet"){ctx.fillStyle="#c2fbff";for(let j=1;j<11;j++){const u=j/11;ctx.fillRect(x+(w*.5-x)*u,y+(h*.24-y)*u-Math.sin(u*Math.PI)*h*.1,3,3);}}
    if(!img.naturalWidth)continue;
    const angle=clamp(s.dy*Math.sign(s.face)*1.65,-.19,.19);
    ctx.save();ctx.translate(x,y);ctx.scale(.52+.48*Math.abs(s.face),1);

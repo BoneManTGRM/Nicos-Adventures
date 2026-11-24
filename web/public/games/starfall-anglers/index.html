@@ -24,6 +24,7 @@
   <button type="button" id="recordOpen" data-msg="recordBook">Record Book</button>
   <button type="button" id="sharkOpen" data-msg="sharkBook">Shark guide</button>
   <button type="button" id="giftOpen" data-msg="legendGifts">Legend charms</button>
+  <button id="boathouse">Boathouse</button>
   <small id="activeCharm" hidden></small>
  </div>
  <section id="game" aria-label="Fishing">
@@ -44,6 +45,8 @@
     <div id="fightHud" class="fight" hidden><div><span data-msg="landed">Reeled in</span><strong id="progressText"></strong></div><div class="track"><b id="progressBar"></b></div><div><span data-msg="tension">Line tension</span><strong id="tensionText"></strong></div><div class="track tensionTrack"><b id="tensionBar"></b></div></div>
    </div>
    <div class="controls"><div class="brief"><div class="status-icon"><i class="ico" id="statusIcon" data-i="bobber"></i></div><div><h3 id="statusTitle"></h3><p id="statusText"></p></div></div><div class="cast-buttons"><button id="powerCast" class="power-button" data-msg="powerCast">Power cast</button><button class="cast" id="action"><i class="ico" data-i="lure"></i><span id="actionText"></span></button></div></div>
+   <div class="bw-toolbar"><button id="lureMode"></button><button id="lureWork"></button><button id="lanternScan" hidden></button></div>
+   <div class="bw-toolbar" id="speciesCue" hidden><strong id="speciesHint"></strong><button id="speciesAction"></button></div>
    <div id="counterDock" class="counter-dock" hidden><strong id="counterCue"></strong><div><button id="steerLeft" data-msg="rodLeft">Rod left</button><button id="steerRight" data-msg="rodRight">Rod right</button></div></div>
    <section id="seaConsole" class="sea-console" hidden aria-labelledby="seaRigTitle">
     <div class="sea-rig-title"><h3 id="seaRigTitle" data-msg="saltRig">Saltwater rig</h3><span id="tideState"></span></div>
@@ -64,5 +67,5 @@
 </main>
 <dialog id="modal" aria-labelledby="modalTitle"><div class="dialog-body"><button id="closeModal" class="close" aria-label="Close">×</button><div id="dialogContent"></div></div></dialog>
 <div class="sr" aria-live="polite" id="announce"></div>
-<script src="waters.js" defer></script><script src="dive.js" defer></script><script src="lantern.js" defer></script><script src="postcard.js" defer></script><script src="aquarium.js" defer></script><script src="fishkeeper.js" defer></script><script src="rod.js" defer></script><script src="voyage.js" defer></script><script src="helm.js" defer></script><script src="legends.js" defer></script><script src="angler-log.js" defer></script><script src="game.js" defer></script>
+<script src="waters.js" defer></script><script src="dive.js" defer></script><script src="lantern.js" defer></script><script src="postcard.js" defer></script><script src="aquarium.js" defer></script><script src="fishkeeper.js" defer></script><script src="rod.js" defer></script><script src="voyage.js" defer></script><script src="helm.js" defer></script><script src="legends.js" defer></script><script src="angler-log.js" defer></script><script src="bluewater.js" defer></script><script src="reef-studio.js" defer></script><script src="game.js" defer></script>
 </body></html>
