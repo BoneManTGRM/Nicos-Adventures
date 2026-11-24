@@ -1,8 +1,8 @@
 "use strict";
 const Bluewater=(()=>{
  const sites=[
-  {name:["Gull Cove","Caleta Gaviota"],port:7,sign:["Follow the diving gulls","Sigue las gaviotas"],fish:["yellowfin","thunderblue","rainbowrunner"],x:.25,y:.32,icon:"🕊️"},
-  {name:["The Sunken Bell","La Campana Hundida"],port:6,sign:["Sound the wreck","Sondea el naufragio"],fish:["snook","lookdown","snapper"],x:.74,y:.62,icon:"⚓"},
+  {name:["Gull Cove","Caleta Gaviota"],port:7,sign:["Follow the diving gulls","Sigue las gaviotas"],fish:["yellowfin","thunderblue","rainbowrunner","stripedbonito"],x:.25,y:.32,icon:"🕊️"},
+  {name:["The Sunken Bell","La Campana Hundida"],port:6,sign:["Sound the wreck","Sondea el naufragio"],fish:["snook","lookdown","snapper","spottedrose"],x:.74,y:.62,icon:"⚓"},
   {name:["The Lights Beneath Cabo","Las luces bajo Cabo"],port:8,sign:["Follow the glowing baitfish","Sigue los peces luminosos"],fish:["greatwhite","mantastar","coronet"],x:.61,y:.28,icon:"✦"}
  ];
  const styles=[["Pop","Salpicar"],["Twitch","Sacudir"],["Sink","Hundir"]];

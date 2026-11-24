@@ -9,8 +9,8 @@ const {waters, voyage, dive, lantern, legends, log} = runInNewContext(modules +
   "\n;({waters:Waters,voyage:Voyage,dive:Dive,lantern:Lantern,legends:Legends,log:AnglerLog})");
 
 describe("Starfall Anglers collection", () => {
-  it("makes all 105 species catchable and keeps their original water and valid artwork", () => {
-    expect(new Set(waters.fish.map(f => f.id)).size).toBe(105);
+  it("makes all 129 species catchable and keeps their original water and valid artwork", () => {
+    expect(new Set(waters.fish.map(f => f.id)).size).toBe(129);
     for (const [place, pool] of waters.pools.entries()) {
       const records = {};
       for (let n=0; n<pool.length+8; n++) {
@@ -62,14 +62,45 @@ describe("Starfall Anglers collection", () => {
       expect(existsSync(new URL("assets/exhibit-"+tank+".webp",root))).toBe(true);
     }
   });
-  it("preserves paired tournament draws for matches started before this release", () => {
-    const saved=lantern.create(8,"float",true,1234);saved.roster=2;
-    const restored=lantern.restore(saved,waters);
-    for(let i=0;i<6;i++){
-      const old=lantern.round(restored,i);
-      const options=waters.pools[8].slice(0,6).filter(f=>f.tier===old.tier);
-      expect(waters.cupFish(8,old).id).toBe(options[Math.floor(old.variant*options.length)].id);
+  it("can keep each new catch, feed it individually, and retain its record after release", () => {
+    const additions=waters.fish.slice(105);
+    expect(additions).toHaveLength(24);
+    expect(additions.filter(f=>waters.places[f.place].salt)).toHaveLength(12);
+    expect(new Set(additions.map(f=>f.place)).size).toBe(10);
+    for(const f of additions){
+      expect([...f.name,...f.note].every(label=>label.trim().length>0)).toBe(true);
+      const save=waters.clean({records:{brook:{n:2,best:1.4}}});
+      log.updateRecord(save.records,f,f.min,100);
+      log.updateRecord(save.records,f,f.max,200);
+      const tank=waters.places[f.place].salt?"reef":"fresh";
+      const [first,second]=waters.specimens(f.id,save.records,save.photos);
+      expect(waters.setExhibited(save,first,false,true,tank)).toBe(true);
+      expect(waters.setExhibited(save,second,false,true,tank)).toBe(true);
+      save.care[second]={meals:1,name:"Pepita"};
+      expect(waters.setExhibited(save,first,false,false,tank)).toBe(true);
+      const restored=waters.clean(save);
+      expect(waters.fishInTank(restored,tank)).toEqual([second]);
+      expect(restored.care[second]).toMatchObject({meals:1,name:"Pepita"});
+      expect(restored.records[f.id]).toEqual({n:2,best:f.max,bestAt:200});
+      expect(restored.records.brook).toMatchObject({n:2,best:1.4});
     }
-    expect(lantern.create(8,"float",true,1234).roster).toBe(4);
+  });
+  it("preserves paired tournament draws on each saved roster and uses the full roster for new matches", () => {
+    const newMatch=lantern.create(8,"float",true,1234);
+    expect(newMatch.roster).toBe(5);
+    for(const [roster,size] of [[2,6],[3,95],[4,105],[5,129]]){
+      const match=lantern.restore({...newMatch,roster},waters);
+      expect(match.roster).toBe(roster);
+      for(let place=0; place<waters.places.length; place++){
+        const pool=roster===2 ? waters.pools[place].slice(0,size) : waters.fish.slice(0,size).filter(f=>f.place===place);
+        for(let tier=0; tier<3; tier++){
+          const options=pool.filter(f=>f.tier===tier);
+          for(const [index,f] of options.entries()){
+            const variant=(index+.5)/options.length;
+            expect(waters.cupFish(place,{roster:match.roster,tier,variant}).id).toBe(f.id);
+          }
+        }
+      }
+    }
   });
 });
