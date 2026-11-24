@@ -1,0 +1,66 @@
+/* The lodge, trail and encounter share one stage so the target stays in sight. */
+dialog:has(.trail-hunt) {width:min(820px,calc(100% - 20px));max-width:calc(100% - 20px);max-height:94dvh;background:#142523;border-color:#77927b}
+dialog:has(.trail-hunt) .dialog-body {padding:16px}
+dialog:has(.trail-hunt) .close {top:15px;right:16px;width:40px;height:40px}
+.trail-head,.trail-areas,.trail-actions {display:flex;align-items:center;gap:8px}
+.trail-head {padding-right:48px;min-height:40px;justify-content:space-between;margin-bottom:12px}
+.trail-head h2 {margin:0;color:#f8e6b7;font:clamp(25px,5vw,37px)/1.08 var(--pixel)}
+.trail-lang,.trail-region,.trail-sub,.trail-main {border-radius:6px;border:1px solid #607f72;min-height:42px;padding:5px 12px}
+.trail-lang,.trail-sub,.trail-region {background:#223c35;color:#e8f2df;font:700 15px/1.2 var(--sans)}
+.trail-areas {margin-bottom:8px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.trail-areas:empty {display:none}
+.trail-region[aria-pressed="true"] {background:#355441;color:#ffe6a6;border-color:#d5b773;box-shadow:inset 0 -2px #d5b773}
+.trail-stage {position:relative;isolation:isolate;overflow:hidden;width:100%;aspect-ratio:2.18;background:#345349 center 58%/cover no-repeat;border:2px solid #758372;border-radius:8px;box-shadow:inset 0 0 18px #14202033}
+.trail-stage::before {content:"";position:absolute;inset:0;background:linear-gradient(180deg,#10232042,transparent 45%,#13231911)}
+.trail-caption {position:absolute;left:3.5%;top:8%;z-index:1;border-radius:4px;padding:5px 9px 8px;background:#112223d9;color:#fff1c6;max-width:78%}
+.trail-caption span,.trail-badge {font:700 13px/1.3 var(--sans);color:#ffe5a3}
+.trail-hunt .trail-caption h3 {margin:2px 0 0;font:clamp(24px,4vw,37px)/1.05 var(--pixel);color:#fff0cb}
+.trail-badge {position:absolute;right:2%;top:5%;padding:4px 9px;background:#142824dd;border:1px solid #8b986f;border-radius:5px}
+.trail-sprite {display:inline-block;width:100%;aspect-ratio:4/3;background-image:url("assets/trail-animals.webp");background-repeat:no-repeat;background-size:300% 300%;image-rendering:pixelated}
+.trail-subject {position:absolute;left:50%;bottom:9%;width:clamp(82px,24%,170px);line-height:0;transform:translate(-50%,var(--hop,0px)) scaleX(var(--face,1));pointer-events:none;filter:drop-shadow(0 3px 1px #13231977)}
+.trail-subject.trail-preview {left:66%;width:clamp(112px,30%,198px);bottom:9%}
+.trail-panel {margin-top:10px}
+.trail-targets {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.trail-target {display:flex;align-items:center;gap:4px;padding:5px 6px;background:#213832;color:#e9eddb;border:1px solid #52695e;border-radius:6px;text-align:left;min-width:0}
+.trail-target[aria-pressed="true"] {background:#344b38;border-color:#e5c989}
+.trail-target .trail-sprite {width:clamp(34px,5.5vw,66px);flex:none}
+.trail-target-copy {display:grid;gap:2px;min-width:0}
+.trail-target-copy strong {font:700 15px/1.1 var(--sans);color:#fff1ca}
+.trail-target-copy small {color:#c4d8c6;font:13px/1.2 var(--sans)}
+.trail-actions {flex-wrap:wrap;margin:12px 0 5px}
+.trail-main {background:#ffd581;color:#203129;border-color:#ffe1a5;border-bottom:3px solid #ba8c49;font:bold 21px/1.1 var(--pixel);min-height:46px;padding:6px 18px}
+.trail-main:disabled {background:#405144;color:#c3cdbd;border-color:#637568}
+.trail-easy {display:flex;align-items:center;gap:5px;color:#d4e4d5;font:15px var(--sans);min-height:44px;cursor:pointer}
+.trail-easy input {width:17px;height:17px;accent-color:#a7d8ae}
+.trail-journal {margin-top:10px;padding:8px 0 0;border-top:1px solid #445e51}
+.trail-journal summary {cursor:pointer;color:#f0deaf;font:21px var(--pixel);padding:6px 0}
+.trail-records {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.trail-record {display:grid;grid-template-columns:42px 1fr;align-items:center;gap:0 5px;border:1px solid #425a4e;border-radius:4px;padding:5px}
+.trail-record .trail-sprite {grid-row:span 2}.trail-record strong {font:700 14px var(--sans)}.trail-record span:last-child {font:13px var(--sans);color:#bdd5c3}
+.trail-hunt .trail-message,.trail-hunt .trail-cue,.trail-hunt .trail-sequence {font:16px/1.4 var(--sans);color:#e6efda;margin:6px 0}
+.trail-hunt .trail-message {color:#ffe3a5}.trail-hunt .trail-message:empty {display:none}
+.trail-hunt .trail-panel h3 {font:25px/1.1 var(--pixel);color:#ffebba;margin:5px 0}
+.trail-mark {position:absolute;left:21%;top:54%;transform:translate(-50%,-50%);width:clamp(56px,12%,84px);height:clamp(54px,8vw,70px);display:grid;place-content:center;background:#173b36e8;border:2px solid #aadcaa;border-radius:18px 18px 10px 10px;color:#e3f2d0;line-height:1.1;box-shadow:0 4px #172521b3}
+.trail-mark:nth-last-child(2) {left:50%;top:74%}.trail-mark:last-child {left:79%;top:54%}
+.trail-mark b {font-size:23px}.trail-mark span {font:700 13px var(--sans)}
+.trail-mark.glow {background:#ffe397;border-color:#fff9dc;color:#3c392b;box-shadow:0 0 0 4px #ffdf8b7a,0 0 26px #f8d579}
+.trail-prompt {position:absolute;left:3%;top:6%;background:#132725de;color:#fff0bd;padding:5px 8px;border-radius:5px;font:clamp(17px,3.2vw,25px)/1.2 var(--pixel)}
+.trail-ring {position:absolute;left:50%;bottom:7%;width:27%;height:20%;transform:translateX(-50%);border:3px dashed #ffe09a;border-radius:50%;box-shadow:0 0 0 2px #55482d73,inset 0 0 10px #f9d34677}
+.trail-ring.in-range {background:#ffd35e55;border-style:solid;box-shadow:0 0 18px #ffe092}
+.trail-hunt[data-phase="chase"] .trail-stage {cursor:pointer}
+.trail-netted::after {content:"✦";position:absolute;left:50%;bottom:9%;transform:translateX(-50%);display:grid;place-items:center;width:24%;aspect-ratio:1/1;border:3px solid #fff1b3;border-radius:50%;color:#fff6c2;font:32px var(--pixel);background:repeating-linear-gradient(45deg,transparent 0 10px,#ffdc7590 11px 13px),repeating-linear-gradient(-45deg,transparent 0 10px,#ffdc7580 11px 13px);box-shadow:0 0 20px #f1cb6b}
+@media(max-width:640px){
+ .trail-stage {aspect-ratio:1.7}
+ .trail-target {flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:5px 2px}.trail-target .trail-sprite {width:48px}
+ .trail-records {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .trail-region {font-size:14px;padding:4px}
+ .trail-areas,.trail-targets {gap:4px}
+ .trail-hunt .trail-badge {font-size:12px}
+}
+@media(max-width:390px){
+ .top .tab {gap:3px;padding-inline:2px;font-size:12px}.top .tab .ico {width:13px;height:13px}
+ dialog:has(.trail-hunt) .dialog-body {padding:12px}
+ .trail-head h2 {font-size:25px}.trail-head {padding-right:46px}
+ .trail-main {font-size:19px}.trail-actions {gap:6px}
+ .trail-hunt[data-phase="track"] .trail-badge,.trail-hunt[data-phase="watch"] .trail-badge {display:none}
+}
