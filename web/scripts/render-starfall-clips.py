@@ -1,4 +1,4 @@
-"""Render the ten silent Starfall catch cinematics from the original game art.
+"""Render the silent Starfall catch cinematics from the original game art.
 Run with Python, Pillow and FFmpeg. The website serves the finished files.
 """
 
@@ -24,6 +24,16 @@ STORIES = [
     ("marlin", "bank", "bank", 103, 222, "bill", "#c6ebff"),
     ("mantastar", "cabo", "cabo", 79, 223, "wings", "#ffdf91"),
     ("veil", "seamount", "seamount", 49, 244, "ribbon", "#ecaaff"),
+    ("moonpaddle", "pineglass", "fresh", 59, 218, "stars", "#ddedff"),
+    ("obsidiangiant", "ember", "reef", 81, 238, "flare", "#ff9260"),
+    ("prismeel", "moon", "ice", 88, 206, "ribbon", "#d3a4ff"),
+    ("sunlion", "reef", "reef", 40, 125, "comb", "#ffda82"),
+    ("jadesaw", "ruins", "fresh", 54, 220, "lance", "#8fe8aa"),
+    ("auroraskate", "aurora", "ice", 61, 165, "wings", "#94ffcf"),
+    ("beaconsail", "faro", "reef", 99, 185, "bill", "#fff39c"),
+    ("thunderblue", "bank", "bank", 104, 225, "flare", "#ffe48a"),
+    ("greatwhite", "cabo", "cabo", 111, 251, "breach", "#deffff"),
+    ("eclipseangler", "seamount", "seamount", 40, 167, "fins", "#ffd97b"),
 ]
 SIN, COS, PI = math.sin, math.cos, math.pi
 
@@ -193,6 +203,9 @@ def render(story):
             y = water - 15 - height * arc
             tilt = 34 * COS(PI * u) if motion != "bill" else 34 * COS(PI * (3.64 * u + 0.06))
             size = close_width * (0.64 + 0.16 * arc)
+            if motion == "breach":
+                tilt = 46 * COS(PI * u)
+                y -= 8 * SIN(PI * u) ** 4
             if motion == "frills":
                 y += 6 * SIN(3 * PI * u)
             if motion == "lance":

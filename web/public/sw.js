@@ -1,5 +1,5 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v31";
+const CACHE = "nicos-world-static-v32";
 const FISHING_DOCUMENT = "/games/starfall-anglers/";
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";

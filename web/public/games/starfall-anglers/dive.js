@@ -4,15 +4,17 @@ const Dive = (() => {
  const surfaceY=y=>Math.min(.92,Math.max(.55,.55+(y-.18)/1.72));
  function school(place,time,conditions){
   const pool=Waters.pools[place];
-  return [0,4,1,5,2].map((index,lane)=>{
-   const f=pool[index],u=time*[.25,.20,.18,.16,.14][lane]+lane*2.20+place*.8;
-   let y=.29+lane*.105+Math.cos(1.31*u)*.05;
+  // Alternate established and new swimmers down the water column.
+  const lineup=[pool[0],pool[4],pool[1],pool[5],pool[2],...pool.slice(6)].filter(f=>f.tier!==3);
+  return lineup.map((f,lane)=>{
+   const u=time*(.25-.015*lane)+lane*2.20+place*.8;
+   let y=.22+lane*.58/(lineup.length-1)+Math.cos(1.31*u)*.04;
    if(conditions){
     const original=Waters.layerOf(f.id),effective=Voyage.layer(f,original,conditions);
     if(effective<original||(conditions.time===2&&f.id==="lanternjaw"))y=.23+.10*Math.sin(u*.67)**2;
    }
    return {f,x:.5+Math.sin(u)*(.35-.012*lane),y,
-    flip:Math.cos(u)<0,size:[.085,.112,.135,.105,.157][lane],angle:.044*Math.cos(u*1.5)};
+    flip:Math.cos(u)<0,size:Math.min(.21,.10+.018*Math.log2(1+f.max)),angle:.044*Math.cos(u*1.5)};
   });
  }
  function swim(ctx,img,x,y,len,flip,angle,time,opacity=1){

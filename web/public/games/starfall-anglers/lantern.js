@@ -3,13 +3,13 @@ const Lantern = (() => {
  const rounds=3;
  const maxTurns=rounds*2;
  function create(lake,lure,gentle,seed){
-  return {lake,lure,gentle,seed,roster:2,turns:[]};
+  return {lake,lure,gentle,seed,roster:3,turns:[]};
  }
  function restore(raw,world){
   if(!raw||!Number.isInteger(raw.lake)||!world.places[raw.lake]||!world.tackle.some(r=>r.id===raw.lure)||
      !Number.isSafeInteger(raw.seed)||raw.seed<0||raw.seed>0xffffffff||!Array.isArray(raw.turns)||raw.turns.length>maxTurns)return null;
   const match=create(raw.lake,raw.lure,raw.gentle===true,raw.seed);
-  match.roster=raw.roster===2?2:1;
+  match.roster=raw.roster===3?3:raw.roster===2?2:1;
   for(const turn of raw.turns){
    if(!turn||typeof turn.landed!=="boolean"||typeof turn.ring!=="boolean"||typeof turn.power!=="boolean"||
       typeof turn.quick!=="boolean"||!Number.isInteger(turn.counters)||turn.counters<0||turn.counters>2)return null;
@@ -21,7 +21,7 @@ const Lantern = (() => {
   const number=Math.floor(index/2);
   let state=(match.seed+Math.imul(number+1,2654435761))>>>0;
   function random(){state=(Math.imul(1664525,state)+1013904223)>>>0;return state/4294967296;}
-  return {number:number+1,team:index%2,tier:number,hot:{x:.24+random()*.43,y:.63+random()*.17},size:.28+random()*.58,wait:2.0+random()*1.1,variant:match.roster===2?random():0};
+  return {number:number+1,team:index%2,tier:number,hot:{x:.24+random()*.43,y:.63+random()*.17},size:.28+random()*.58,wait:2.0+random()*1.1,roster:match.roster,variant:match.roster>=2?random():0};
  }
  function points(turn){
   return (turn.landed?100:0)+(turn.ring?25:0)+(turn.power?20:0)+(turn.quick?15:0)+10*turn.counters;

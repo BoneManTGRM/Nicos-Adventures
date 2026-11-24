@@ -18,8 +18,10 @@ const Voyage=(()=>{
   const epoch=Number.isSafeInteger(raw?.epoch)&&raw.epoch>0&&raw.epoch<=now?raw.epoch:now;
   const base=Number.isInteger(raw?.base)&&raw.base>=0&&raw.base<12?raw.base:0;
   const sky=["auto","clear","rain"].includes(raw?.sky)?raw.sky:"auto";
-  const anchors={},album={},legends={};
+  const anchors={},album={},legends={},hunts={};
   for(const p of world.places){
+   const selected=raw?.hunts?.[p.id];
+   if(world.pools[world.places.indexOf(p)].some(f=>f.tier===3&&f.id===selected))hunts[p.id]=selected;
    if(p.salt&&validPoint(raw?.anchors?.[p.id])){
     const a=raw.anchors[p.id];anchors[p.id]={x:a.x,y:a.y,angle:Number.isFinite(a.angle)?a.angle:0};
    }
@@ -30,7 +32,7 @@ const Voyage=(()=>{
     album[animal.id]={port:shot.port,time:shot.time,photo:shot.photo};
   }
   for(const f of world.fish)if(f.tier===3&&raw?.legends?.[f.id]===true)legends[f.id]=true;
-  return {epoch,base,sky,anchors,album,legends};
+  return {epoch,base,sky,anchors,album,legends,hunts};
  }
  function conditions(v,id,now=Date.now()){
   const step=v.base+Math.max(0,Math.floor((now-v.epoch)/period));
