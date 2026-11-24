@@ -62,6 +62,7 @@
   flood:["Incoming tide","Marea entrante"],slack:["Slack tide","Marea en calma"],ebb:["Outgoing tide","Marea saliente"],
   saltReady:["Cast toward a feeding ring, or trail your lure behind the boat.","Lanza hacia un anillo dorado o arrastra el señuelo detrás de la lancha."],
   seaHelp:["At sea, pick a lure depth to target different fish. Match the active layer for faster bites. The game tide changes every two ocean catches. Cast at a golden ring to hunt a legend. Trolling improves your odds of finding roaming fish such as sierra and wahoo.","En el mar, elige la profundidad del señuelo para buscar distintos peces. Pican más rápido en la capa activa. La marea del juego cambia cada dos capturas marinas. Lanza al anillo para buscar una leyenda. Al trolear tienes más posibilidades de encontrar peces que recorren el mar, como la sierra y el peto."],
+  mangroveLagoon:["Mangrove Lagoon","Laguna del Manglar"],lanternTrench:["Lantern Trench","Fosa de los Faroles"],
   bluePass:["Bluewater Pass","Paso de Altamar"],seaSpots:["Ocean fishing spots","Sitios de pesca en el mar"],inlandSpots:["Freshwater spots","Sitios de agua dulce"]
  });
  Object.assign(strings,{

@@ -10,12 +10,12 @@ const Waters = (() => {
   {id:"faro",salt:true,name:["Bahía del Faro","Bahía del Faro"],weather:["Pacific sunrise","Amanecer del Pacífico"],icon:"sun",unlock:0},
   {id:"bank",salt:true,name:["Marlin Bank","Banco del Marlín"],weather:["Offshore swell","Oleaje de altamar"],icon:"wave",unlock:0},
   {id:"cabo",salt:true,name:["Cabo Arch","Arco de Cabo"],weather:["Last light","Última luz"],icon:"sun",unlock:0,grounds:[
-   {name:["Arch shallows","Bajío del Arco"],ring:{x:.33,y:.80},fish:["sergeant","hawk","goat","moorishidol","cortezwrasse"]},
+   {name:["Arch shallows","Bajío del Arco"],ring:{x:.33,y:.80},fish:["sergeant","hawk","goat","moorishidol","cortezwrasse","porcupinefish"]},
    {name:["Outer ledge","Cornisa exterior"],ring:{x:.71,y:.65},fish:["coronet","mantastar","balloon","greatwhite"]}
   ]},
   {id:"seamount",salt:true,name:["Midnight Seamount","Monte de Medianoche"],weather:["Glowing plankton","Plancton luminoso"],icon:"moon",unlock:0,grounds:[
    {name:["Summit ridge","Cresta submarina"],ring:{x:.36,y:.70},fish:["saury","hatchet","fang","viperfish"]},
-   {name:["Blue drop-off","Talud azul"],ring:{x:.73,y:.78},fish:["lanternjaw","lancet","veil","footballfish","ninjashark","eclipseangler"]}
+   {name:["Blue drop-off","Talud azul"],ring:{x:.73,y:.78},fish:["lanternjaw","lancet","veil","footballfish","ninjashark","eclipseangler","tripodfish"]}
   ]}
  ];
  const catalog=[
@@ -120,12 +120,27 @@ const Waters = (() => {
   ["eclipseangler",9,3,"Eclipse Anglerfish","Rape del Eclipse",1.4,9,"A ring of gold hangs ahead of it like a tiny sun in eclipse.","Un anillo de oro cuelga frente a su hocico como un diminuto sol eclipsado."]
  ];
  for(const [id,place,tier,en,es,min,max,noteEn,noteEs] of shoal)fish.push({id,place,tier,name:[en,es],min,max,note:[noteEn,noteEs]});
+ // Preserve the original species order for Lantern Cup matches already in progress.
+ const previousPools=places.map((_,index)=>fish.filter(f=>f.place===index));
+ const newcomers=[
+  ["longnosegar",0,2,"Longnose Gar","Pejelagarto de hocico largo",1,19,"Its narrow snout is the first thing to break the lake’s reflection.","Su hocico largo es lo primero que rompe el reflejo del lago."],
+  ["cherrybarb",1,0,"Cherry Barb","Barbo cereza",0.01,0.04,"A red school scatters like sparks above the warm gravel.","Un cardumen rojo se dispersa como chispas sobre la grava tibia."],
+  ["elephantnose",2,2,"Elephantnose Fish","Pez nariz de elefante",0.08,0.32,"Look for a curved chin sweeping between the grotto stones.","Busca su barbilla curva mientras explora las piedras de la gruta."],
+  ["regalblue",3,1,"Regal Blue Tang","Pez cirujano azul",0.12,0.65,"Its yellow tail flickers between blue shadows in the reef.","Su cola amarilla brilla entre las sombras azules del arrecife."],
+  ["archerfish",4,1,"Banded Archerfish","Pez arquero rayado",0.12,0.85,"Follow the ripples beneath a low branch to find this striped swimmer.","Sigue las ondas debajo de una rama baja para encontrar al nadador rayado."],
+  ["lumpsucker",5,1,"Atlantic Lumpsucker","Lumpo del Atlántico",0.65,5.2,"A round silhouette rises from a rock like a pebble that learned to swim.","Su silueta redonda se levanta como una piedra que aprendió a nadar."],
+  ["snook",6,2,"Pacific Snook","Róbalo del Pacífico",1.2,15,"A dark stripe runs along its silver side all the way to its tail.","Una línea oscura recorre su costado plateado hasta la cola."],
+  ["rainbowrunner",7,1,"Rainbow Runner","Salmón arcoíris del mar",0.8,9,"Two blue stripes streak through the wake behind the boat.","Dos franjas azules cruzan la estela detrás del barco."],
+  ["porcupinefish",8,1,"Longspine Porcupinefish","Pez erizo de espinas largas",0.4,2.6,"Watch its little fins steer a spotted body around the arch.","Sus aletitas guían su cuerpo moteado entre las rocas del arco."],
+  ["tripodfish",9,2,"Tripod Fish","Pez trípode",0.16,0.85,"Three trailing fin rays draw thin lines across the dark seafloor.","Tres radios de sus aletas dibujan líneas finas sobre el fondo oscuro."]
+ ];
+ for(const [id,place,tier,en,es,min,max,noteEn,noteEs] of newcomers)fish.push({id,place,tier,name:[en,es],min,max,note:[noteEn,noteEs]});
  const pools=places.map((_,index)=>fish.filter(f=>f.place===index));
  const legends=place=>pools[place].filter(f=>f.tier===3);
  const legend=(place,id)=>legends(place).find(f=>f.id===id)||legends(place)[0];
  const sharks=fish.filter(f=>["blacktipreef","greenlandshark","hammerhead","shortfinmako","greatwhite","ninjashark"].includes(f.id));
  function cupFish(place,challenge){
-  const pool=challenge.roster===3?pools[place]:pools[place].slice(0,6);
+  const pool=challenge.roster===4?pools[place]:challenge.roster===3?previousPools[place]:previousPools[place].slice(0,6);
   const options=pool.filter(f=>f.tier===challenge.tier);return options[Math.floor((challenge.variant||0)*options.length)];
  }
  const tankLimit=24;
@@ -133,10 +148,12 @@ const Waters = (() => {
   fresh:["pumpkinseed","brook","reedpike","sunny","moss"],
   reef:["butterfly","spottedbox","parrot","clown","sail"],
   ice:["puffin","frost","ribbon","wolffish","halibut"],
-  bank:["dorado","flyer","sierra","moonopah","marlin"]
+  bank:["dorado","flyer","sierra","moonopah","marlin"],
+  mangrove:["archerfish","snook","longnosegar","cherrybarb","elephantnose"],
+  trench:["tripodfish","footballfish","viperfish","ninjashark","hatchet"]
  };
  const tankIds=Object.keys(residentRoster);
- const tankNames={fresh:"waterwheel",reef:"shipwreck",ice:"crystal",bank:"bluePass"};
+ const tankNames={fresh:"waterwheel",reef:"shipwreck",ice:"crystal",bank:"bluePass",mangrove:"mangroveLagoon",trench:"lanternTrench"};
  const aquariumLimit=tankLimit*tankIds.length;
  const residentKeys=Object.entries(residentRoster).flatMap(([habitat,ids])=>ids.map(id=>habitat+":"+id));
  const speciesId=key=>key.split(":").pop().split("~")[0];
@@ -188,9 +205,9 @@ const Waters = (() => {
  const habitats=["fresh","reef","ice","reef","fresh","ice","reef","bank","cabo","seamount"];
  // Swimming layers and the tide are rules of the game, shared by the rig, camera, and guide.
  const marineLayers=[
-  ["clown","dragon","frost","sierra","needle","flyer","dorado","sergeant","mantastar","saury","lanternjaw","lookdown","oceansunfish","blacktipreef","beaconsail","thunderblue"],
-  ["parrot","sail","butterfly","narwhal","rooster","goldrooster","marlin","skipjack","wahoo","coronet","hawk","hatchet","lancet","gramma","emperorangel","arcticchar","eagleray","yellowfin","moorishidol","cortezwrasse","shortfinmako","hammerhead","greatwhite","auroraskate"],
-  ["spottedbox","wolffish","halibut","puffin","ribbon","snapper","pompano","moonopah","goat","balloon","veil","fang","atlanticcod","viperfish","footballfish","greenlandshark","ninjashark","sunlion","eclipseangler"]
+  ["clown","dragon","frost","sierra","needle","flyer","dorado","sergeant","mantastar","saury","lanternjaw","lookdown","oceansunfish","blacktipreef","beaconsail","thunderblue","rainbowrunner"],
+  ["parrot","sail","butterfly","narwhal","rooster","goldrooster","marlin","skipjack","wahoo","coronet","hawk","hatchet","lancet","gramma","emperorangel","arcticchar","eagleray","yellowfin","moorishidol","cortezwrasse","shortfinmako","hammerhead","greatwhite","auroraskate","snook","regalblue"],
+  ["spottedbox","wolffish","halibut","puffin","ribbon","snapper","pompano","moonopah","goat","balloon","veil","fang","atlanticcod","viperfish","footballfish","greenlandshark","ninjashark","sunlion","eclipseangler","lumpsucker","porcupinefish","tripodfish"]
  ];
  const layerOf=id=>marineLayers.findIndex(group=>group.includes(id));
  function seaTide(records){

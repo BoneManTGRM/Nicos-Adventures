@@ -9,8 +9,8 @@ const {waters, voyage, dive, lantern, legends, log} = runInNewContext(modules +
   "\n;({waters:Waters,voyage:Voyage,dive:Dive,lantern:Lantern,legends:Legends,log:AnglerLog})");
 
 describe("Starfall Anglers collection", () => {
-  it("makes all 95 species catchable and keeps their original water and valid artwork", () => {
-    expect(new Set(waters.fish.map(f => f.id)).size).toBe(95);
+  it("makes all 105 species catchable and keeps their original water and valid artwork", () => {
+    expect(new Set(waters.fish.map(f => f.id)).size).toBe(105);
     for (const [place, pool] of waters.pools.entries()) {
       const records = {};
       for (let n=0; n<pool.length+8; n++) {
@@ -52,6 +52,16 @@ describe("Starfall Anglers collection", () => {
     expect(waters.clean({records:r}).records[f.id]).toEqual({n:5,best:802,bestAt:200});
     expect(r.crown).toBeUndefined();
   });
+  it("adds 48 aquarium spaces while keeping older exhibits and personal fish", () => {
+    expect(waters.aquariumLimit).toBe(144);
+    const save=waters.clean({records:{brook:{n:1,best:1.4}},display:["brook"],fishHomes:{brook:"ice"}});
+    expect(waters.fishInTank(save,"ice")).toEqual(["brook"]);
+    for(const tank of ["mangrove","trench"]){
+      expect(waters.moveFish(save,"brook",tank)).toBe(true);
+      expect(waters.fishInTank(waters.clean(save),tank)).toEqual(["brook"]);
+      expect(existsSync(new URL("assets/exhibit-"+tank+".webp",root))).toBe(true);
+    }
+  });
   it("preserves paired tournament draws for matches started before this release", () => {
     const saved=lantern.create(8,"float",true,1234);saved.roster=2;
     const restored=lantern.restore(saved,waters);
@@ -60,6 +70,6 @@ describe("Starfall Anglers collection", () => {
       const options=waters.pools[8].slice(0,6).filter(f=>f.tier===old.tier);
       expect(waters.cupFish(8,old).id).toBe(options[Math.floor(old.variant*options.length)].id);
     }
-    expect(lantern.create(8,"float",true,1234).roster).toBe(3);
+    expect(lantern.create(8,"float",true,1234).roster).toBe(4);
   });
 });

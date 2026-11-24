@@ -3,13 +3,13 @@ const Lantern = (() => {
  const rounds=3;
  const maxTurns=rounds*2;
  function create(lake,lure,gentle,seed){
-  return {lake,lure,gentle,seed,roster:3,turns:[]};
+  return {lake,lure,gentle,seed,roster:4,turns:[]};
  }
  function restore(raw,world){
   if(!raw||!Number.isInteger(raw.lake)||!world.places[raw.lake]||!world.tackle.some(r=>r.id===raw.lure)||
      !Number.isSafeInteger(raw.seed)||raw.seed<0||raw.seed>0xffffffff||!Array.isArray(raw.turns)||raw.turns.length>maxTurns)return null;
   const match=create(raw.lake,raw.lure,raw.gentle===true,raw.seed);
-  match.roster=raw.roster===3?3:raw.roster===2?2:1;
+  match.roster=raw.roster===4?4:raw.roster===3?3:raw.roster===2?2:1;
   for(const turn of raw.turns){
    if(!turn||typeof turn.landed!=="boolean"||typeof turn.ring!=="boolean"||typeof turn.power!=="boolean"||
       typeof turn.quick!=="boolean"||!Number.isInteger(turn.counters)||turn.counters<0||turn.counters>2)return null;
