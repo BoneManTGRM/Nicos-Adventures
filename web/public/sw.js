@@ -1,5 +1,5 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v32";
+const CACHE = "nicos-world-static-v33";
 const FISHING_DOCUMENT = "/games/starfall-anglers/";
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
@@ -138,8 +138,12 @@ self.addEventListener("fetch", (event) => {
       .then(async (response) => {
         if (response.ok && response.type === "basic") {
           const copy = response.clone();
-          const cache = await caches.open(CACHE);
-          await cache.put(event.request, copy);
+          // A full or unavailable Cache Storage must not discard a successful
+          // network response (particularly styles, scripts and artwork on iOS).
+          try {
+            const cache = await caches.open(CACHE);
+            await cache.put(event.request, copy);
+          } catch { /* Serve the response even when offline storage is unavailable. */ }
         }
         return response;
       })
