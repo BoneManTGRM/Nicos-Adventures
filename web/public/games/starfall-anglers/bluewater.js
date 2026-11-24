@@ -50,8 +50,11 @@ const Bluewater=(()=>{
    if(!stage)buttons.append(btn(index===2?text("Leave at sunset","Zarpar al atardecer"):text("Cast off","Zarpar"),()=>{stage=1;refresh();}));
    if(stage===1||stage===2)buttons.append(btn(stage===1?pick(site.sign):text("Approach signal","Acercarse a la señal"),()=>{dest={...cue()};}));
    if(stage===3)buttons.append(btn(index===2?text("Photograph the glowing school","Fotografiar el cardumen"):text("Mark this spot","Marcar este sitio"),()=>{
-    if(index===2)data.nightPhoto=map.toDataURL("image/jpeg",.62);
-    data.marks[index]=true;persist();stage=4;refresh();
+    data.marks[index]=true;
+    const photoSaved=index===2&&Voyage.storePhoto(data,"nightPhoto",map.toDataURL("image/jpeg",.62),persist);
+    const markSaved=photoSaved||persist();stage=4;refresh();
+    if(!markSaved)status.textContent=text("This spot is marked for this session. Check device storage.","Sitio marcado para esta sesión. Revisa el almacenamiento.");
+    else if(index===2&&!photoSaved)status.textContent=text("Fishing spot saved. There wasn’t enough space for the photo.","Sitio de pesca guardado. No hubo espacio para la foto.");
    }));
    if(data.marks[index])buttons.append(btn(text("Fish here","Pescar aquí"),()=>anchor(index)));
    if(index===2&&data.nightPhoto){const photo=el("img","bw-photo");photo.src=data.nightPhoto;photo.alt=text("Cabo night expedition photograph","Foto nocturna de la expedición");buttons.append(photo);}

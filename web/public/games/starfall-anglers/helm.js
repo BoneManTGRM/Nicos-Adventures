@@ -53,9 +53,9 @@ const Helm=(()=>{
    if(!watch||shotTaken)return;
    const conditions=Voyage.conditions(v,port);
    if(!paintCamera(conditions))return;
-   v.album[watch.id]=Voyage.photo(port,conditions,canvas);
-   const stored=persist();shotTaken=true;shutter.disabled=true;
-   message(stored===false?txt("Photo kept for this session. Your device storage is full.","Foto disponible durante esta sesión. Tu dispositivo está lleno."):
+   const stored=Voyage.storePhoto(v.album,watch.id,Voyage.photo(port,conditions,canvas),persist);
+   shotTaken=stored;shutter.disabled=stored;
+   message(!stored?txt("Couldn’t save this photo. Check device storage and try again.","No se pudo guardar la foto. Revisa el almacenamiento e inténtalo otra vez."):
     txt("Photo in your wildlife journal · ","Foto en tu cuaderno de fauna · ")+pick(watch.name));
    say(live.textContent);
   },"primary");

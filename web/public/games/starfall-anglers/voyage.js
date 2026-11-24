@@ -87,5 +87,13 @@ const Voyage=(()=>{
   small.getContext("2d").drawImage(canvas,0,0,320,180);
   return {port,time:c.time,photo:small.toDataURL("image/jpeg",.72)};
  }
- return {start,times,weather,wildlife,clean,conditions,waitFor,marks,nearest,steer,anchorRing,applyRig,layer,backdrop,photo};
+ // Keep the last durable picture when a larger replacement exceeds device storage.
+ function storePhoto(album,key,picture,persist){
+  const existing=Object.prototype.hasOwnProperty.call(album,key),previous=album[key];
+  album[key]=picture;
+  if(persist())return true;
+  if(existing)album[key]=previous;else delete album[key];
+  return false;
+ }
+ return {storePhoto,start,times,weather,wildlife,clean,conditions,waitFor,marks,nearest,steer,anchorRing,applyRig,layer,backdrop,photo};
 })();
