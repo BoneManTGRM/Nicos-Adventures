@@ -28,3 +28,26 @@ it("matches active retrieves to fish and gives the shark, marlin and eel differe
     expect(expansion.technique(result)).toBe(gear);
   }
 });
+
+const voyage=runInNewContext(readFileSync(new URL("../public/games/starfall-anglers/voyage.js",import.meta.url),"utf8")+"\n;Voyage");
+
+it("discards an oversized new photo so later progress can be saved",()=>{
+  const state={album:{},meals:0};
+  let durable;
+  const persist=()=>{
+    if("river" in state.album)return false;
+    durable=JSON.stringify(state);return true;
+  };
+  expect(voyage.storePhoto(state.album,"river","oversized",persist)).toBe(false);
+  state.meals++;
+  expect(persist()).toBe(true);
+  expect(JSON.parse(durable)).toEqual({album:{},meals:1});
+});
+
+it("preserves a previous photo on failure and accepts a later replacement",()=>{
+  const album={pelican:"first"};
+  expect(voyage.storePhoto(album,"pelican","too large",()=>false)).toBe(false);
+  expect(album.pelican).toBe("first");
+  expect(voyage.storePhoto(album,"pelican","second",()=>true)).toBe(true);
+  expect(album.pelican).toBe("second");
+});

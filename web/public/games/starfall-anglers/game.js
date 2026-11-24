@@ -31,7 +31,7 @@
   aquarium:["Aquarium","Acuario"],tackleBox:["Tackle box","Caja de pesca"],expedition:["Legend hunt","Busca la leyenda"],diveCam:["Dive cam","Cámara submarina"],surface:["Surface","Superficie"],shutter:["Take photo","Tomar foto"],beneath:["UNDERWATER","BAJO EL AGUA"],diveAim:["Tap a fish to photograph it","Toca un pez para fotografiarlo"],
   perfect:["On the ring!","¡En el anillo!"],tracked:["Legend on the line!","¡Picó la leyenda!"],photo:["Photo logged","Foto guardada"],photographed:["Photographed","Fotografiado"],firstCast:["Watch your lure","Observa tu señuelo"],underWait:["Watch the fish approach. Set the hook when it takes the lure.","Mira cómo se acerca. Engancha cuando muerda el señuelo."],underBite:["It took the lure. Set the hook now!","Mordió el señuelo. ¡Engancha ahora!"],
   clues:["clues","pistas"],nextCast:["Choose a lure for your next cast.","Elige un señuelo para tu siguiente lance."],equipped:["Equipped","En uso"],completed:["Expedition complete","Expedición completa"],huntIntro:["Follow the three clues to find this water’s legendary fish.","Sigue las tres pistas para encontrar al pez legendario de este lugar."],
-  huntTitle:["Legend trail","Tras la leyenda"],clue1:["Catch three different species here","Atrapa tres especies distintas aquí"],clue2:["Land a fish from a golden ring","Atrapa un pez lanzando al anillo dorado"],clue3:["Catch a fish with","Atrapa un pez con"],legendReady:["The trail is open! Cast into the golden ring to meet the legend.","¡Ya tienes las pistas! Lanza al anillo dorado para encontrar a la leyenda."],markRing:["Aim at the ring","Apuntar al anillo"],clueEarn:["New legend clue","Nueva pista"],aquariumIntro:["Each of your four aquariums holds 24 fish.","Cada uno de tus cuatro acuarios tiene espacio para 24 peces."],tankEmpty:["Catch or photograph a fish to add its likeness here.","Atrapa o fotografía un pez para exhibir una copia animada aquí."],tankAdd:["Display in aquarium","Exhibir en el acuario"],tankRemove:["Remove from aquarium","Quitar del acuario"],tankFull:["Aquarium full · change display","Acuario lleno · cambiar exhibición"],tankSaved:["On display","En exhibición"],available:["Your discoveries","Tus descubrimientos"],setTank:["Aquarium habitat","Hábitat del acuario"],fresh:["Riverbed","Río"],reefHab:["Coral reef","Arrecife"],ice:["Ice cavern","Cueva de hielo"],photoOnly:["Camera discovery","Hallazgo con cámara"],startDiving:["Explore with dive cam","Explorar con la cámara"],photos:["photos","fotos"],reelWindow:["Reel now","Recoge ahora"],fishRun:["Fish is running","El pez se aleja"],speciesClue:["Species logged","Especies registradas"],gearHint:["Lure for this water","Señuelo de este sitio"],underHelp:["Switch to Dive cam to watch fish approach your lure. Before casting, tap a swimmer to photograph it. Your aquarium can display fish you’ve photographed or caught.","Usa la cámara submarina para ver cómo se acercan al señuelo. Antes de lanzar, toca un pez para tomarle una foto. Puedes exhibir en tu acuario los peces que fotografíes o atrapes."]
+  huntTitle:["Legend trail","Tras la leyenda"],clue1:["Catch three different species here","Atrapa tres especies distintas aquí"],clue2:["Land a fish from a golden ring","Atrapa un pez lanzando al anillo dorado"],clue3:["Catch a fish with","Atrapa un pez con"],legendReady:["The trail is open! Cast into the golden ring to meet the legend.","¡Ya tienes las pistas! Lanza al anillo dorado para encontrar a la leyenda."],markRing:["Aim at the ring","Apuntar al anillo"],clueEarn:["New legend clue","Nueva pista"],aquariumIntro:["Each of your six aquariums holds 24 fish.","Cada uno de tus seis acuarios tiene espacio para 24 peces."],tankEmpty:["Catch or photograph a fish to add its likeness here.","Atrapa o fotografía un pez para exhibir una copia animada aquí."],tankAdd:["Display in aquarium","Exhibir en el acuario"],tankRemove:["Remove from aquarium","Quitar del acuario"],tankFull:["Aquarium full · change display","Acuario lleno · cambiar exhibición"],tankSaved:["On display","En exhibición"],available:["Your discoveries","Tus descubrimientos"],setTank:["Aquarium habitat","Hábitat del acuario"],fresh:["Riverbed","Río"],reefHab:["Coral reef","Arrecife"],ice:["Ice cavern","Cueva de hielo"],photoOnly:["Camera discovery","Hallazgo con cámara"],startDiving:["Explore with dive cam","Explorar con la cámara"],photos:["photos","fotos"],reelWindow:["Reel now","Recoge ahora"],fishRun:["Fish is running","El pez se aleja"],speciesClue:["Species logged","Especies registradas"],gearHint:["Lure for this water","Señuelo de este sitio"],underHelp:["Switch to Dive cam to watch fish approach your lure. Before casting, tap a swimmer to photograph it. Your aquarium can display fish you’ve photographed or caught.","Usa la cámara submarina para ver cómo se acercan al señuelo. Antes de lanzar, toca un pez para tomarle una foto. Puedes exhibir en tu acuario los peces que fotografíes o atrapes."]
  });
  Object.assign(strings,{
   cupTitle:["Lantern Cup","Copa Farol"],cupMode:["2 players · 1 phone","2 jugadores · 1 teléfono"],otter:["Otter","Nutria"],heron:["Heron","Garza"],round:["Round","Ronda"],points:["pts","pts"],cupTie:["A tie! Share the cup.","¡Empate! Compartan la copa."],cupWins:["wins the cup!","gana la copa"],rematch:["Play a rematch","Jugar la revancha"],startCup:["Start the cup","Empezar la copa"],resumeCup:["Resume cup","Continuar copa"],pauseCup:["Pause cup","Pausar la copa"],pauseHint:["Completed turns are saved. You can replay an unfinished cast.","Se guardan los turnos terminados. Puedes repetir un lance pendiente."],sharedGentle:["Gentle fishing for both players","Pesca tranquila para ambos"],results:["See final scores","Ver resultados"],scorecard:["Final scores","Resultados"],playTurn:["Take the rod","Tomar la caña"],backLake:["Back to fishing","Volver a pescar"],backCast:["Continue this cast","Seguir con este lance"],passPhone:["Pass the phone to","Pásale el teléfono a"],
@@ -472,8 +472,13 @@
  function takePhoto(s){
   if(!diving||!["ready","escape"].includes(phase))return;
   const photo=captureFrame(s);if(!photo){toast(tr("focusing"));return;}
-  target={x:s.x,y:Dive.surfaceY(s.y)};save.photos[s.f.id]=true;save.album[s.f.id]=photo;persist();renderAll();
-  toast(tr("photo")+" · "+pick(s.f.name));beep([660,990],.045);
+  target={x:s.x,y:Dive.surfaceY(s.y)};
+  const marked=save.photos[s.f.id];save.photos[s.f.id]=true;
+  if(!Voyage.storePhoto(save.album,s.f.id,photo,persist)){
+   if(!marked)delete save.photos[s.f.id];
+   toast(pick(["Couldn’t save this photo. Check device storage.","No se pudo guardar la foto. Revisa el almacenamiento."]));return;
+  }
+  renderAll();toast(tr("photo")+" · "+pick(s.f.name));beep([660,990],.045);
   if(!reduced){scene.classList.remove("snap");void scene.offsetWidth;scene.classList.add("snap");}
  }
  function toggleCam(){diving=!diving;toastTime=0;$("castGrade").hidden=true;renderAll();draw();beep(diving?[520,330]:[330,520],.06);}
@@ -565,7 +570,18 @@
  function showTank(){
   openModal("tank");heading(content,tr("aquarium"));
   modalFrame=FishKeeper.open({root:content,save,pick,tr,el,button:actButton,persist,say,beep,sprite,found:discoveries(),
-   studio:(model,label,edit,meal)=>{openModal("tankStudio");heading(content,edit?bwText("Design your tank","Diseña tu acuario"):bwText("Dive into tank","Bucear en el acuario"),tr(Waters.tankNames[save.tank]));modalFrame=ReefStudio.open({root:content,model,save,el,button:actButton,pick,persist,sprite,label,meal,back:showTank},edit);},
+   studio:(model,label,edit,meal)=>{
+    const keeperFrame=modalFrame,keeper=document.createDocumentFragment(),scroll=dialog.scrollTop;
+    const expanded=dialog.classList.contains("tank-expanded"),focus=document.activeElement;
+    keeper.append(...Array.from(content.childNodes));
+    openModal("tankStudio");
+    heading(content,edit?bwText("Design your tank","Diseña tu acuario"):bwText("Dive into tank","Bucear en el acuario"),tr(Waters.tankNames[save.tank]));
+    const back=()=>{
+     openModal("tank");content.append(keeper);modalFrame=keeperFrame;
+     dialog.classList.toggle("tank-expanded",expanded);focus?.focus({preventScroll:true});dialog.scrollTop=scroll;
+    };
+    modalFrame=ReefStudio.open({root:content,model,save,el,button:actButton,pick,persist,sprite,label,meal,moving:tankMoving,back},edit);
+   },
    goDiving:()=>{if(!diving)toggleCam();dismiss();},moving:tankMoving,lit:tankLit,
    setMoving:value=>{tankMoving=value;},setLit:value=>{tankLit=value;}});
  }
@@ -969,5 +985,6 @@
  $("lanternScan").onclick=()=>{if(scanSpent||save.charm!=="eclipseangler")return;scanSpent=true;scanUntil=t+5;charmEffect("☾");bwControls();};
  $("speciesAction").onclick=()=>{if(phase!=="fight"||fight.bwDone||$("speciesCue").hidden)return;fight.bwDone=true;const move=Bluewater.signature(runningFish);if(move===2)clearHold();fight.tension=Math.max(.05,fight.tension-[.14,.10,.28][move]);fight.progress=Math.min(.99,fight.progress+[.10,.14,.065][move]);$("speciesCue").hidden=true;toast(bwText("Clean counter!","¡Buena maniobra!"));};
 
+ if(navigator.serviceWorker&&location.pathname.startsWith("/games/starfall-anglers/"))navigator.serviceWorker.register("/sw.js").catch(()=>{});
  renderAll();fit();new ResizeObserver(fit).observe(scene);requestAnimationFrame(frame);
 })();
