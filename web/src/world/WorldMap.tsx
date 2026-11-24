@@ -9,6 +9,7 @@ import { tr, ui } from "../i18n/core";
 import { WORLD_SECTIONS } from "./catalogs";
 import { NicoVideoCard } from "./NicoVideoCard";
 import { nextAdventure } from "./journey";
+import { StarfallEntry } from "./StarfallEntry";
 import { StarBridgeMap } from "./StarBridgeMap";
 
 const BrokenStarBridge = lazy(() => import("./BrokenStarBridge").then((module) => ({
@@ -63,6 +64,7 @@ export function WorldMap({
           <button type="button" data-testid="world-explore" onClick={()=>{const target=document.getElementById('world-atlas-title');target?.scrollIntoView({block:'start',behavior:'auto'});target?.focus({preventScroll:true});}}><span aria-hidden="true">🧭</span><strong>{language==='es-MX'?'Explorar el mundo':'Explore the world'}</strong><small>{language==='es-MX'?'Elige un lugar del mapa':'Choose a place on the map'}</small></button>
         </div>
       </section>
+      <StarfallEntry es={language === "es-MX"} />
       <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Despertando el Mundo de Nico…" : "Waking up Nico's World…"}</div>}>
         <LivingWorldAtlas language={language} dinosaurValleyAvailable={dinosaurValleyAvailable} open={open} />
       </Suspense>
