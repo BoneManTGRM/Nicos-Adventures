@@ -20,6 +20,7 @@
  }catch{}
  const save=Waters.clean(raw);
  save.trails=TrailHunt.clean(raw?.trails);
+ save.expedition=StarExpedition.clean(raw?.expedition);
  if(save.lang===null)save.lang=(worldLanguage||navigator.language).toLowerCase().startsWith("es")?1:0;
  const pick=a=>a[save.lang], tr=id=>pick(strings[id]), here=()=>places[save.place], total=()=>Object.values(save.records).reduce((a,r)=>a+r.n,0);
  const strings={
@@ -279,7 +280,7 @@
  dialog.addEventListener("close",()=>{
   content.querySelector(".catch-film video")?.pause();
   $("tabHunt").classList.remove("active");
-  if(location.hash==="#hunting")history.replaceState(history.state,"",location.pathname+location.search);
+  if(isTrailLink())history.replaceState(history.state,"",location.pathname+location.search);
   if(modalKind==="net"&&catchInfo){setPhase("released");}
   if(modalKind==="catch"){suppressClick=false;hot=coastalRing({x:.19+Math.random()*.52,y:.62+Math.random()*.20});setPhase("released");}
   if(["cupResult","cup"].includes(modalKind)&&!cupPlaying&&["catch","escape"].includes(phase))resetReady();
@@ -755,15 +756,19 @@
   const y=diving?Dive.surfaceY(screenY):screenY;if(y<.55)return;target={x:Math.max(.07,Math.min(.93,(e.clientX-r.left)/r.width)),y:Math.min(.92,y)};beep([560],.04);});
  $("aimPad").onclick=()=>{target={...hot};say(tr("aim")+" ✓");};
  $("recordOpen").onclick=()=>openBook(false);$("sharkOpen").onclick=()=>openBook(true);$("giftOpen").onclick=showGifts;
- function openHunting(){
-  if(isOpen())return;
+ function isTrailLink(){return ["#hunting","#expedition"].includes(location.hash);}
+ function openHunting(expedition=false){
+  if(isOpen()&&modalKind!=="hunting")return;
   openModal("hunting");
-  history.replaceState(history.state,"","#hunting");
-  modalFrame=TrailHunt.open({root:content,data:save.trails,pick,el,button:actButton,persist,beep,reduced,calm:save.calm,
-   changeLanguage:()=>{save.lang=1-save.lang;persist();renderAll();}});
+  history.replaceState(history.state,"",expedition?"#expedition":"#hunting");
+  const common={root:content,pick,el,button:actButton,persist,beep,reduced,
+   changeLanguage:()=>{save.lang=1-save.lang;persist();renderAll();}};
+  modalFrame=expedition
+   ?StarExpedition.open({...common,data:save.expedition,steady:reduced||(save.trails.steady??save.calm),onLodge:()=>openHunting()})
+   :TrailHunt.open({...common,data:save.trails,calm:save.calm,onExpedition:()=>openHunting(true)});
  }
- $("tabHunt").onclick=openHunting;
- window.addEventListener("hashchange",()=>{if(location.hash==="#hunting")openHunting();else if(modalKind==="hunting")dismiss();});
+ $("tabHunt").onclick=()=>openHunting();
+ window.addEventListener("hashchange",()=>{if(isTrailLink())openHunting(location.hash==="#expedition");else if(modalKind==="hunting")dismiss();});
  $("tabGuide").onclick=$("guideStat").onclick=openGuide;$("tabFish").onclick=()=>{dismiss();action.focus({preventScroll:true});};
  $("help").onclick=showHelp;$("lang").onclick=()=>{save.lang=1-save.lang;persist();renderAll();};
  $("sound").onclick=()=>{save.sound=!save.sound;persist();renderAll();if(save.sound)beep([392,523],.08);};
@@ -1001,5 +1006,5 @@
 
  if(navigator.serviceWorker&&location.pathname.startsWith("/games/starfall-anglers/"))navigator.serviceWorker.register("/sw.js").catch(()=>{});
  renderAll();fit();new ResizeObserver(fit).observe(scene);requestAnimationFrame(frame);
- if(location.hash==="#hunting")openHunting();
+ if(isTrailLink())openHunting(location.hash==="#expedition");
 })();

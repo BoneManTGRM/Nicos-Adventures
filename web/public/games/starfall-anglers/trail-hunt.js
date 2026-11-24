@@ -38,7 +38,7 @@ const TrailHunt=(()=>{
   records[id]={count:Math.min(1000000,(old?.count||0)+1),best:Math.max(score,old?.best||0)};
   return !old||score>old.best;
  }
- function open({root,data,pick,el,button,persist,beep,reduced,calm,changeLanguage}){
+ function open({root,data,pick,el,button,persist,beep,reduced,calm,changeLanguage,onExpedition}){
   const tr=(en,es)=>pick([en,es]);
   const name=i=>pick(animals[i].slice(1));
   let region=trails.findIndex(trail=>trail.id===data.region);
@@ -150,7 +150,7 @@ const TrailHunt=(()=>{
    const scoutButton=button(tr("Scout with binoculars","Explorar con binoculares"),()=>{runDay=null;startHunt(true);},"trail-sub");
    scoutButton.disabled=start.disabled;
    actions.append(start,scoutButton,label);
-   panel.append(choices,el("p","trail-behavior",pick(TrailField.behavior[target])),actions,rallyEntry(),journal(),extras());
+   panel.append(choices,el("p","trail-behavior",pick(TrailField.behavior[target])),actions,button(tr("Starlight Expedition","Expedición estelar"),onExpedition,"exp-lodge-entry"),rallyEntry(),journal(),extras());
    if(start.disabled)note("Tag both other animals in this habitat to unlock its legend.","Marca a los otros dos animales de este hábitat para desbloquear su leyenda.");
   }
   function choicesFocus(i){world.querySelector('[data-target="'+animals[i][0]+'"]')?.focus({preventScroll:true});}
