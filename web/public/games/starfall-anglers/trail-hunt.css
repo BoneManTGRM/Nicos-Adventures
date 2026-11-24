@@ -32,11 +32,11 @@ dialog:has(.trail-hunt) .close {top:15px;right:16px;width:40px;height:40px}
 .trail-main:disabled {background:#405144;color:#c3cdbd;border-color:#637568}
 .trail-easy {display:flex;align-items:center;gap:5px;color:#d4e4d5;font:15px var(--sans);min-height:44px;cursor:pointer}
 .trail-easy input {width:17px;height:17px;accent-color:#a7d8ae}
-.trail-journal {margin-top:10px;padding:8px 0 0;border-top:1px solid #445e51}
-.trail-journal summary {cursor:pointer;color:#f0deaf;font:21px var(--pixel);padding:6px 0}
+.trail-journal,.trail-gifts {margin-top:10px;padding:8px 0 0;border-top:1px solid #445e51}
+.trail-journal summary,.trail-gifts summary {cursor:pointer;color:#f0deaf;font:21px var(--pixel);padding:6px 0}
 .trail-records {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .trail-record {display:grid;grid-template-columns:42px 1fr;align-items:center;gap:0 5px;border:1px solid #425a4e;border-radius:4px;padding:5px}
-.trail-record .trail-sprite {grid-row:span 2}.trail-record strong {font:700 14px var(--sans)}.trail-record span:last-child {font:13px var(--sans);color:#bdd5c3}
+.trail-record .trail-sprite {grid-row:span 2}.trail-record strong {font:700 14px var(--sans)}.trail-record strong + span {font:13px var(--sans);color:#bdd5c3}
 .trail-hunt .trail-message,.trail-hunt .trail-cue,.trail-hunt .trail-sequence {font:16px/1.4 var(--sans);color:#e6efda;margin:6px 0}
 .trail-hunt .trail-message {color:#ffe3a5}.trail-hunt .trail-message:empty {display:none}
 .trail-hunt .trail-panel h3 {font:25px/1.1 var(--pixel);color:#ffebba;margin:5px 0}
@@ -63,4 +63,63 @@ dialog:has(.trail-hunt) .close {top:15px;right:16px;width:40px;height:40px}
  .trail-head h2 {font-size:25px}.trail-head {padding-right:46px}
  .trail-main {font-size:19px}.trail-actions {gap:6px}
  .trail-hunt[data-phase="track"] .trail-badge,.trail-hunt[data-phase="watch"] .trail-badge {display:none}
+}
+.trail-hunt .trail-behavior {color:#cadbc9;font:15px/1.4 var(--sans);margin:8px 1px 0}
+.trail-rally {display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(110deg,#263d34,#1a2d29);border:1px solid #506c5c;border-radius:7px;padding:9px 12px;margin-top:12px}
+.trail-rally strong,.trail-rally small {display:block}
+.trail-rally strong {font:22px var(--pixel);color:#f7e3a8}
+.trail-rally small {color:#d1dfca;font:14px/1.38 var(--sans)}
+.trail-hunt .trail-rally-score {color:#f9df93;font:20px var(--pixel)}
+.trail-hunt .trail-stage {--net-x:50%}
+.trail-runner {transform:translate(-50%,var(--hop,0px)) scaleX(var(--face,1)) rotate(var(--tilt,0deg)) scaleX(var(--stretch,1));transform-origin:50% 92%}
+.trail-runner[data-species="moonstag"] {filter:drop-shadow(0 0 7px #c7d8ff)}
+.trail-runner[data-species="lynx"] {filter:drop-shadow(0 0 5px #91e8d4)}
+.trail-runner[data-species="sunjaguar"] {filter:drop-shadow(0 0 6px #ffca76)}
+.trail-ring {pointer-events:none}
+.trail-ring.sunweave {border-color:#fff2a7;background:repeating-linear-gradient(60deg,transparent 0 10px,#ffc35b2b 11px 13px)}
+.trail-netted::after {left:var(--net-x)}
+.trail-casts {position:absolute;left:2%;top:5%;padding:4px 9px;background:#142824df;border:1px solid #8b986f;border-radius:5px;font:700 13px/1.3 var(--sans);color:#ffe5a3}
+.trail-hunt[data-phase="chase"] .trail-stage,.trail-hunt[data-phase="scout"] .trail-stage {touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.trail-frozen {box-shadow:inset 0 0 32px 10px #7fd4d5b8}
+.trail-miss {position:absolute;bottom:8%;width:18%;height:14%;border:2px solid #ffbf73;border-radius:50%;transform:translateX(-50%);pointer-events:none;animation:trail-ripple 550ms ease-out forwards}
+@keyframes trail-ripple {from{opacity:1;transform:translateX(-50%) scale(.25)}to{opacity:0;transform:translateX(-50%) scale(1.4)}}
+.trail-hunt[data-phase="scout"] .trail-stage {cursor:grab}
+.trail-hunt[data-phase="scout"] .trail-stage:active {cursor:grabbing}
+.trail-panorama {position:absolute;inset:0 auto 0 0;height:100%;background-image:inherit;background-size:cover;background-position:center 63%;pointer-events:none}
+.trail-distant {position:absolute;bottom:17%;width:clamp(65px,13%,142px);line-height:0;transform:translateX(-50%);filter:drop-shadow(0 2px 1px #18282088)}
+.trail-distant:nth-child(2){bottom:12%}
+.trail-lens {position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 37% 70% at 50% 53%,transparent 46%,#101e1d30 75%,#111b1be0 98%);box-shadow:inset 0 0 24px 5px #10262282}
+.trail-lens::after {content:"";position:absolute;left:50%;bottom:18%;width:clamp(68px,21%,160px);height:37%;border:2px solid #fff0b9;border-radius:8px;transform:translateX(-50%);box-shadow:0 0 0 1px #32483f9e;clip-path:polygon(0 0,24% 0,24% 4%,76% 4%,76% 0,100% 0,100% 27%,98% 27%,98% 73%,100% 73%,100% 100%,76% 100%,76% 96%,24% 96%,24% 100%,0 100%,0 73%,2% 73%,2% 27%,0 27%)}
+.trail-pan-slider {display:block;width:100%;accent-color:#f4ca79;min-height:36px;cursor:ew-resize;margin:3px 0}
+.trail-gift-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.trail-gift-card {display:flex;align-items:flex-start;gap:9px;background:#21352f;border:1px solid #5c7060;border-radius:7px;padding:9px;margin:5px 0}
+.trail-gift-art {display:inline-block;width:58px;aspect-ratio:1;flex:none;background:url("assets/trail-gifts.webp") no-repeat;background-size:300% 100%;image-rendering:pixelated}
+.trail-gift-card strong {font:21px/1.05 var(--pixel);color:#f7dfa4}.trail-hunt .trail-gift-card p,.trail-gift-card small {font:14px/1.35 var(--sans);color:#d2dfd2;margin:4px 0}
+.trail-gift-card small {display:block;color:#b8c7b8}
+.trail-gift-card .trail-sub,.trail-record .trail-sub {min-height:38px;margin-top:3px}
+.trail-gift-card .trail-sub[aria-pressed="true"] {background:#355940;color:#ffedaf;border-color:#c2ad70}
+.trail-gift-grid .trail-gift-card {display:block}.trail-gift-grid .trail-gift-art {float:left;width:44px;margin:0 4px 1px 0}
+.trail-record .trail-sub {grid-column:1/-1;font-size:14px}
+.trail-postcard {background-position:63% center;animation:trail-card-in .8s ease-out both}
+@keyframes trail-card-in {from{filter:brightness(1.4) saturate(1.25)}to{filter:brightness(1) saturate(1)}}
+.trail-hunt .trail-postcard .trail-caption {max-width:50%;top:auto;bottom:7%;background:#0c2222cb}
+.trail-postcard .trail-badge {background:#1e2c2ed9}
+.trail-hunt[data-phase="album"] .trail-stage::after,.trail-hunt[data-phase="reward"] .trail-postcard::after {content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px #f6d083a0}
+@media(max-width:600px){
+ .trail-gift-grid {grid-template-columns:1fr}.trail-gift-grid .trail-gift-card {display:flex;margin:0}.trail-gift-grid .trail-gift-art {width:50px}
+ .trail-casts {font-size:12px}
+ .trail-actions {row-gap:5px}.trail-main {font-size:19px}
+ .trail-rally {padding:7px 8px}.trail-rally strong {font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){
+ .trail-hunt .trail-stage,.trail-hunt .trail-miss {animation:none}.trail-miss {opacity:.2}
+}
+
+.trail-lens-readout {position:absolute;bottom:4%;left:50%;transform:translateX(-50%);white-space:nowrap;padding:3px 10px;border:1px solid #b8ba94;border-radius:4px;background:#102922e8;color:#fff1c5;font:700 14px/1.3 var(--sans);pointer-events:none}
+@media (prefers-reduced-motion:no-preference) {
+ .trail-hunt:is([data-phase="chase"],[data-phase="lodge"]) .trail-stage::before {pointer-events:none;background-image:var(--trail-atmosphere);animation:trail-air 9s ease-in-out alternate infinite}
+ .trail-stage[data-region="forest"] {--trail-atmosphere:radial-gradient(circle at 16% 37%,#ffe98dcc 0 1px,transparent 3px),radial-gradient(circle at 35% 69%,#e4fca9 0 1px,transparent 2px),radial-gradient(circle at 76% 47%,#fff6ac 0 1px,transparent 3px),radial-gradient(circle at 93% 33%,#fff1c3c0 0 1px,transparent 3px)}
+ .trail-stage[data-region="alpine"] {--trail-atmosphere:radial-gradient(ellipse at 20% 32%,#e8fbffbf 0 1px,transparent 3px),radial-gradient(circle at 44% 21%,#f0f9fada 0 1px,transparent 2px),radial-gradient(ellipse at 65% 63%,#e9fbffbd 0 1px,transparent 2px),radial-gradient(circle at 88% 52%,#f1fdff 0 1px,transparent 2px)}
+ .trail-stage[data-region="canyon"] {--trail-atmosphere:radial-gradient(ellipse at 22% 74%,#ffc891ac 0 1px,transparent 3px),radial-gradient(circle at 48% 68%,#ffe0afc4 0 1px,transparent 2px),radial-gradient(ellipse at 84% 57%,#ffd6a6a0 0 2px,transparent 4px)}
+ @keyframes trail-air {0%{transform:translate(-2%,2%);opacity:.35}60%{opacity:1}100%{transform:translate(3%,-3%);opacity:.7}}
 }
