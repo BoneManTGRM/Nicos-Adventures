@@ -10,7 +10,8 @@ test("the world map opens a styled and playable fishing game if external code re
   await fishing.click();
   await expect(page).toHaveURL(/\/games\/starfall-anglers\/$/);
   await expect(page.locator("#spotPicker option").first()).toBeAttached();
-  await expect(page.locator(".top-inner")).toHaveCSS("display", "flex");
+  const narrow = await page.evaluate(() => window.matchMedia("(max-width: 560px)").matches);
+  await expect(page.locator(".top-inner")).toHaveCSS("display", narrow ? "grid" : "flex");
   await page.locator("#sharkOpen").click();
   await expect(page.getByRole("dialog").getByRole("article")).toHaveCount(6);
 });
