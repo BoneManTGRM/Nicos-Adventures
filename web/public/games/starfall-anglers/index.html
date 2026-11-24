@@ -13,12 +13,18 @@
 </div></header>
 <main>
  <section class="section-head"><div class="game-title"><h1>Starfall Anglers</h1><span class="sparkles" aria-hidden="true"><b>✦</b><em>✦</em></span></div>
- <div class="stats"><div class="stat"><i class="ico" data-i="fish"></i><strong id="statTotal">0</strong><span data-msg="caught">caught</span></div><i class="divider"></i><button class="stat journalStat" id="guideStat"><i class="ico" data-i="book"></i><strong id="statSpecies">0/60</strong><span data-msg="species">species</span></button></div></section>
+ <div class="stats"><div class="stat"><i class="ico" data-i="fish"></i><strong id="statTotal">0</strong><span data-msg="caught">caught</span></div><i class="divider"></i><button class="stat journalStat" id="guideStat"><i class="ico" data-i="book"></i><strong id="statSpecies">0/95</strong><span data-msg="species">species</span></button></div></section>
  <div class="water-route"><div class="route-buttons" id="waterTypes" role="group" aria-label="Water type">
   <button class="route-button inland" id="freshRoute" aria-pressed="true" data-msg="freshRoute">Freshwater</button>
   <button class="route-button marine" id="saltRoute" aria-pressed="false" data-msg="oceanFishing">Ocean fishing</button>
  </div><label class="route-port"><span data-msg="destination">Destination</span><select id="spotPicker"></select></label></div>
  <div class="captain-strip" id="captainStrip"><img src="assets/panga.png" alt=""><div><strong data-msg="captain">Captain Nico’s boat</strong><span id="portReport"></span></div><button type="button" id="openHelm" data-msg="takeHelm">Take the helm</button></div>
+ <div class="angler-books">
+  <button type="button" id="recordOpen" data-msg="recordBook">Record Book</button>
+  <button type="button" id="sharkOpen" data-msg="sharkBook">Shark guide</button>
+  <button type="button" id="giftOpen" data-msg="legendGifts">Legend charms</button>
+  <small id="activeCharm" hidden></small>
+ </div>
  <section id="game" aria-label="Fishing">
   <div class="frame">
    <div id="scene" class="scene pineglass">
@@ -57,5 +63,5 @@
 </main>
 <dialog id="modal" aria-labelledby="modalTitle"><div class="dialog-body"><button id="closeModal" class="close" aria-label="Close">×</button><div id="dialogContent"></div></div></dialog>
 <div class="sr" aria-live="polite" id="announce"></div>
-<script src="waters.js" defer></script><script src="dive.js" defer></script><script src="lantern.js" defer></script><script src="postcard.js" defer></script><script src="aquarium.js" defer></script><script src="fishkeeper.js" defer></script><script src="rod.js" defer></script><script src="voyage.js" defer></script><script src="helm.js" defer></script><script src="legends.js" defer></script><script src="game.js" defer></script>
+<script src="waters.js" defer></script><script src="dive.js" defer></script><script src="lantern.js" defer></script><script src="postcard.js" defer></script><script src="aquarium.js" defer></script><script src="fishkeeper.js" defer></script><script src="rod.js" defer></script><script src="voyage.js" defer></script><script src="helm.js" defer></script><script src="legends.js" defer></script><script src="angler-log.js" defer></script><script src="game.js" defer></script>
 </body></html>

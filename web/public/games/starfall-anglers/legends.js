@@ -2,6 +2,16 @@
 const Legends=(()=>{
  const W=680,H=340,TAU=Math.PI*2;
  const stories={
+  moonpaddle:{"water":"fresh","color":"#cce7ff","motif":"crown","swim":[0.081,0.07,0.67,0.06],"signs":[["Find the silver paddle under the dock","Busca la espátula plateada bajo el muelle"],["Follow the moon marks along its back","Sigue las lunas de su lomo"],["Spot its bill catching the sunrise","Mira el reflejo del amanecer en su hocico"]]},
+  obsidiangiant:{"water":"reef","color":"#ff9c73","motif":"phoenix","swim":[0.073,0.15,0.8,0.12],"signs":[["Find one ember-red scale","Busca una escama color brasa"],["Follow the arapaima up for air","Sigue al arapaima mientras sube a respirar"],["Spot its tail sweeping below the cliffs","Encuentra su cola al pasar bajo los riscos"]]},
+  prismeel:{"water":"ice","color":"#d5b1ff","motif":"veil","swim":[0.093,0.085,1.65,0.22],"signs":[["Find a violet ribbon in the dark","Busca una cinta violeta en la oscuridad"],["Follow the bend in its rainbow fin","Sigue la curva de la aleta arcoíris"],["Find the pale face beyond the ribbon","Encuentra la cara pálida al final de la cinta"]]},
+  sunlion:{"water":"reef","color":"#ffdd82","motif":"goldrooster","swim":[0.045,0.065,0.74,0.12],"signs":[["Spot the first golden spine","Busca la primera espina dorada"],["Follow the opening fan","Sigue el abanico al abrirse"],["Find its striped face between the rays","Encuentra su cara rayada entre los radios"]]},
+  jadesaw:{"water":"fresh","color":"#b0f2bb","motif":"narwhal","swim":[0.092,0.06,1.05,0.11],"signs":[["Find a saw-shaped shadow","Busca una sombra en forma de sierra"],["Follow the green saw past the roots","Sigue la sierra verde entre las raíces"],["Spot the paired fins turning upstream","Encuentra las dos aletas que giran río arriba"]]},
+  auroraskate:{"water":"ice","color":"#97ffdf","motif":"mantastar","swim":[0.1,0.105,0.75,0.18],"signs":[["Find a green glow below the ice","Busca el resplandor verde bajo el hielo"],["Follow the light across its wings","Sigue la luz a través de sus alas"],["Spot the skate banking into the fjord","Encuentra la raya al girar hacia el fiordo"]]},
+  beaconsail:{"water":"reef","color":"#ffe6aa","motif":"goldrooster","swim":[0.12,0.13,1.45,0.16],"signs":[["Find a sail in the lighthouse beam","Busca una vela en el haz del faro"],["Follow its red and cream stripes","Sigue las franjas rojas y crema"],["Spot the bill emerging from the spray","Encuentra el pico entre la espuma"]]},
+  thunderblue:{"water":"bank","color":"#ffdc75","motif":"marlin","swim":[0.12,0.09,1.95,0.12],"signs":[["Find the golden zigzag","Busca el zigzag dorado"],["Follow the streak across the bank","Sigue el destello por el banco"],["Spot its crescent tail in the wake","Encuentra la cola de media luna en la estela"]]},
+  greatwhite:{"water":"cabo","color":"#c5f0f3","motif":"marlin","swim":[0.13,0.145,1.16,0.21],"signs":[["Find the gray dorsal fin","Busca la aleta dorsal gris"],["Follow the shark along the outer ledge","Sigue al tiburón por la cornisa exterior"],["Spot the white belly as it breaches","Encuentra el vientre blanco al saltar"]]},
+  eclipseangler:{"water":"seamount","color":"#ffd286","motif":"star","swim":[0.041,0.065,0.48,0.065],"signs":[["Find the little ring of gold","Busca el pequeño anillo de oro"],["Follow its lure through the dark","Sigue su señuelo en la oscuridad"],["Spot the purple fins behind the eclipse","Encuentra las aletas moradas detrás del eclipse"]]},
   crown:{water:"fresh",color:"#ffe18c",signs:[
    ["Find the first golden fin.","Busca la primera aleta dorada."],["Follow the koi as it turns.","Sigue al koi cuando dé la vuelta."],["Touch the crown of three fins.","Toca la corona de tres aletas."]]},
   phoenix:{water:"reef",color:"#ffa376",signs:[
@@ -26,6 +36,12 @@ const Legends=(()=>{
  function position(id,step,time){
   const lane=[.26,.64,.49][step],wave=Math.sin(time*.8+step),sway=Math.cos(time*.72+step);
   let x=lane+.065*wave,y=.5+.09*sway,scale=1,flip=false,tilt=.045*sway;
+  const swim=stories[id]?.swim;
+  if(swim){
+   const [reach,lift,pace,bank]=swim,beat=time*pace+step;
+   return {x:lane+reach*Math.sin(beat),y:.53+lift*Math.cos(beat*1.2)-step*.04,scale:.78+step*.14,
+    flip:Math.cos(beat)<0,tilt:bank*Math.sin(beat*1.2)};
+  }
   switch(id){
    case "crown":x+=.025*Math.sin(time*2.2);y=.63-step*.08+.055*sway;flip=step===1;break;
    case "phoenix":x=lane+.09*wave;y=.70-step*.13+.04*Math.sin(time*1.8);tilt=-.15+wave*.07;break;
@@ -54,7 +70,7 @@ const Legends=(()=>{
  }
  function mark(ctx,id,step,time,color){
   ctx.save();ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=2.2;ctx.lineCap="round";
-  switch(id){
+  switch(stories[id]?.motif||id){
    case "crown":
     for(let i=0;i<step+1;i++){ctx.beginPath();ctx.moveTo(i*14-13,0);ctx.lineTo(i*14-9,-14-i%2*7);ctx.lineTo(i*14+1,-1);ctx.fill();}break;
    case "phoenix":

@@ -153,3 +153,27 @@ dialog{background:#1a2c30;color:var(--text);border:2px solid #587069;border-radi
 .film-label { font: 15px var(--pixel); }
 .film-play { flex-shrink: 0; min-height: 44px; padding: 3px 8px; border: 0; background: transparent; color: #fff0c9; font: bold 15px var(--sans); text-decoration: underline; cursor: pointer; }
 .film-play:focus-visible { outline: 2px solid #ffd68a; outline-offset: -3px; }
+.angler-books { display:flex; flex-wrap:wrap; gap:6px; margin:7px 0 13px; }
+.angler-books button,.log-go { border:1px solid #61796f; border-radius:7px; padding:5px 11px; min-height:44px; background:#20393c; color:#f7e7c6; font:600 15px var(--sans); cursor:pointer; }
+.angler-books button:first-child { border-color:#a48754; }
+.angler-books button:hover,.log-go:hover { background:#325453; }
+.hunt-selector { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:12px 0; color:var(--cream); }
+.hunt-selector select,.log-search { padding:8px; min-height:44px; min-width:0; border-radius:6px; border:1px solid #758d7d; background:#132a2d; color:#fcf0d0; font:inherit; }
+.hunt-gift,.legend-gift { border-left:3px solid #d9ad63; padding:8px 12px; margin:12px 0; background:#283e39; }
+.legend-gift { text-align:left; border-radius:5px; }
+.legend-gift small,.legend-gift strong,.log-copy strong,.log-copy small { display:block; }
+.legend-gift strong { font:24px var(--pixel); color:#ffe2a3; }
+.legend-gift small,.log-copy small,.log-status { color:#c4d8cd; }
+.legend-gift p { margin:5px 0 9px; }
+.log-search { width:100%; margin-top:12px; }
+.log-filters { display:flex; gap:8px; margin:8px 0; }
+.log-filters [aria-pressed=true] { border-color:#eebc76; color:#ffe5a9; }
+.log-list { display:grid; gap:5px; }
+.log-status { margin:8px 0; font-size:14px; }
+.log-row { display:grid; grid-template-columns:56px minmax(0,1fr) auto; align-items:center; gap:8px; padding:8px; background:#223a3b; border:1px solid #405958; border-radius:6px; }
+.log-fish { width:54px; height:40px; object-fit:contain; image-rendering:pixelated; }
+.log-weight { color:#f9d89b; text-align:right; font-weight:700; }
+.log-go { grid-column:2 / 4; justify-self:start; margin-top:0; }
+@media(max-width:450px){.angler-books button{padding:4px 8px;font-size:14px}.angler-books{gap:4px}.log-row{grid-template-columns:44px minmax(0,1fr) auto;gap:5px}.log-fish{width:42px}.log-weight,.log-copy small{font-size:13px}}
+
+#activeCharm{align-self:center;color:#ffe0a3;padding:4px 7px;font-size:14px}

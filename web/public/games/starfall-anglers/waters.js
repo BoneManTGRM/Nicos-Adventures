@@ -10,12 +10,12 @@ const Waters = (() => {
   {id:"faro",salt:true,name:["Bahía del Faro","Bahía del Faro"],weather:["Pacific sunrise","Amanecer del Pacífico"],icon:"sun",unlock:0},
   {id:"bank",salt:true,name:["Marlin Bank","Banco del Marlín"],weather:["Offshore swell","Oleaje de altamar"],icon:"wave",unlock:0},
   {id:"cabo",salt:true,name:["Cabo Arch","Arco de Cabo"],weather:["Last light","Última luz"],icon:"sun",unlock:0,grounds:[
-   {name:["Arch shallows","Bajío del Arco"],ring:{x:.33,y:.80},fish:["sergeant","hawk","goat"]},
-   {name:["Outer ledge","Cornisa exterior"],ring:{x:.71,y:.65},fish:["coronet","mantastar","balloon"]}
+   {name:["Arch shallows","Bajío del Arco"],ring:{x:.33,y:.80},fish:["sergeant","hawk","goat","moorishidol","cortezwrasse"]},
+   {name:["Outer ledge","Cornisa exterior"],ring:{x:.71,y:.65},fish:["coronet","mantastar","balloon","greatwhite"]}
   ]},
   {id:"seamount",salt:true,name:["Midnight Seamount","Monte de Medianoche"],weather:["Glowing plankton","Plancton luminoso"],icon:"moon",unlock:0,grounds:[
-   {name:["Summit ridge","Cresta submarina"],ring:{x:.36,y:.70},fish:["saury","hatchet","fang"]},
-   {name:["Blue drop-off","Talud azul"],ring:{x:.73,y:.78},fish:["lanternjaw","lancet","veil"]}
+   {name:["Summit ridge","Cresta submarina"],ring:{x:.36,y:.70},fish:["saury","hatchet","fang","viperfish"]},
+   {name:["Blue drop-off","Talud azul"],ring:{x:.73,y:.78},fish:["lanternjaw","lancet","veil","footballfish","ninjashark","eclipseangler"]}
   ]}
  ];
  const catalog=[
@@ -82,13 +82,51 @@ const Waters = (() => {
   ["lancet",9,2,"Midnight Lancetfish","Pez Lanceta Nocturno",2.4,14.2,"A long dorsal sail unfolds against the blue slope. Watch for the silver flash beneath it.","Una larga aleta se despliega frente al talud azul. Busca el destello plateado debajo de ella."],
   ["veil",9,3,"Violet Veil Oarfish","Pez Remo de Velo Violeta",9.8,74.0,"Nico first spotted its scarlet crest. The violet ribbon that followed seemed to go on forever.","Nico vio primero su cresta escarlata. El listón violeta que venía detrás parecía no terminar nunca."],
   ["saury",9,0,"Pacific Saury","Paparda del Pacífico",.08,.29,"Thin silver dashes flicker just below the stars. Each dash is a saury keeping pace with the school.","Justo bajo las estrellas parpadean rayitas plateadas. Cada una es una paparda que sigue a su cardumen."],
-  ["fang",9,1,"Dusky Fangtooth","Pez Colmillo Sombrío",.08,.39,"First you see two white points, then a little brown face. The whole visitor is smaller than its shadow.","Primero ves dos puntitos blancos y luego una carita café. El visitante entero es más pequeño que su sombra."]
+  ["fang",9,1,"Dusky Fangtooth","Pez Colmillo Sombrío",.08,.39,"First you see two white points, then a little brown face. The whole visitor is smaller than its shadow.","Primero ves dos puntitos blancos y luego una carita café. El visitante entero es más pequeño que su sombra."],
+  ["yellowperch",0,0,"Yellow Perch","Perca amarilla",0.12,1.8,"Count the olive bars between its yellow back and orange fins.","Cuenta las barras verde oliva entre el lomo amarillo y las aletas naranjas."],
+  ["grasspickerel",0,1,"Grass Pickerel","Lucio de los juncos",0.2,1.9,"Watch the reeds for a long, still snout before the quick dash.","Busca un hocico largo e inmóvil entre los juncos antes de que salga disparado."],
+  ["mahseer",1,2,"Golden Mahseer","Mahseer dorado",2.2,26,"Its large gold scales flash one row at a time as it rolls.","Al girar, sus escamas doradas brillan una hilera a la vez."],
+  ["gudgeon",1,1,"Peacock Gudgeon","Gobio pavo real",0.01,0.04,"The dark spot beside its tail looks like a second eye.","La mancha oscura junto a su cola parece un segundo ojo."],
+  ["cavetetra",2,0,"Blind Cave Tetra","Sardina ciega de cueva",0.02,0.09,"A pale pink shape slips between the dark rocks.","Una silueta rosa pálido se desliza entre las rocas oscuras."],
+  ["glasscat",2,1,"Glass Catfish","Bagre de cristal",0.02,0.08,"Find its whiskers, then follow the thin spine inside its glassy body.","Busca sus bigotes y sigue la espina que se ve a través de su cuerpo."],
+  ["gramma",3,1,"Royal Gramma","Grama real",0.02,0.09,"Violet at the nose and lemon yellow at the tail, it darts into coral cracks.","Violeta en la cabeza y amarillo limón en la cola, se esconde en las grietas del coral."],
+  ["emperorangel",3,2,"Emperor Angelfish","Pez ángel emperador",0.35,2.8,"Curved yellow lines sweep across its blue sides.","Las líneas amarillas se curvan sobre sus costados azules."],
+  ["cardinaltetra",4,0,"Cardinal Tetra","Tetra cardenal",0.01,0.03,"Red and electric blue race side by side along its flank.","Dos franjas, roja y azul eléctrico, recorren su costado."],
+  ["zebrapleco",4,2,"Zebra Pleco","Pleco cebra",0.03,0.14,"Its stripes break up its outline against the sunlit stones.","Sus rayas disfrazan su silueta entre las piedras iluminadas."],
+  ["arcticchar",5,1,"Arctic Char","Salvelino ártico",0.7,13,"Look for pale spots above a bright copper belly.","Busca los puntos pálidos sobre su vientre cobrizo."],
+  ["atlanticcod",5,1,"Atlantic Cod","Bacalao del Atlántico",1.1,38,"A little chin barbel leads the way along the bottom.","Una barbilla bajo el mentón le marca el camino por el fondo."],
+  ["lookdown",6,0,"Mexican Lookdown","Jorobado mexicano",0.16,1.4,"Its silver, paper-thin side flashes like a mirror near the jetty.","Su costado plateado, delgado como papel, brilla junto al muelle."],
+  ["eagleray",6,2,"Spotted Eagle Ray","Raya águila moteada",4,89,"White spots scatter over wings that glide past the lighthouse.","Alas cubiertas de puntos blancos planean frente al faro."],
+  ["yellowfin",7,2,"Yellowfin Tuna","Atún aleta amarilla",8,145,"A row of little yellow fins flickers behind its tall golden sickles.","Una fila de aletitas amarillas brilla detrás de sus grandes aletas curvas."],
+  ["oceansunfish",7,2,"Ocean Sunfish","Pez luna",28,850,"Its tall fin draws a slow line across the surface before the round silver body appears.","Su alta aleta dibuja una línea en la superficie antes de que aparezca su cuerpo redondo y plateado."],
+  ["moorishidol",8,1,"Moorish Idol","Ídolo moro",0.1,0.65,"Follow its long white streamer through the arch shallows.","Sigue su larga cinta blanca por el bajío del arco."],
+  ["cortezwrasse",8,0,"Cortez Rainbow Wrasse","Señorita arcoíris de Cortés",0.07,0.48,"Turquoise and pink stripes flash when it turns around a rock.","Sus rayas turquesas y rosas destellan al rodear una roca."],
+  ["viperfish",9,1,"Pacific Viperfish","Pez víbora del Pacífico",0.04,0.18,"A trail of blue dots slides through the dark just behind its long fangs.","Tras sus largos colmillos se mueve un rastro de puntos azules en la oscuridad."],
+  ["footballfish",9,2,"Pacific Footballfish","Pez balón del Pacífico",0.42,5.5,"Look past the little lure to see the round fish waiting behind it.","Mira detrás del señuelo diminuto para descubrir el pez redondo."],
+  ["blacktipreef",3,2,"Blacktip Reef Shark","Tiburón de arrecife de puntas negras",8,38,"A black-tipped fin cuts a small V in the clear reef water.","Una aleta de punta negra dibuja una V en el agua clara del arrecife."],
+  ["greenlandshark",5,2,"Greenland Shark","Tiburón de Groenlandia",160,980,"A broad shadow moves slowly through the deepest part of the fjord.","Una sombra ancha avanza despacio por la parte más profunda del fiordo."],
+  ["hammerhead",6,2,"Scalloped Hammerhead","Tiburón martillo común",11,185,"Its wide head sweeps a gentle arc as it passes the lighthouse.","Su cabeza ancha traza un arco suave al pasar frente al faro."],
+  ["shortfinmako",7,2,"Shortfin Mako","Marrajo dientuso",18,312,"Its pointed blue nose parts the offshore swell.","Su hocico puntiagudo y azul corta el oleaje de mar abierto."],
+  ["greatwhite",8,3,"Great White Shark","Gran tiburón blanco",185,1250,"Beyond Cabo Arch, a gray dorsal fin turns and a white belly breaks the surface.","Más allá del Arco de Cabo, gira una aleta gris y un vientre blanco rompe la superficie."],
+  ["ninjashark",9,2,"Ninja Lanternshark","Tiburón linterna ninja",0.36,1.35,"Tiny blue lights give away a little shark as dark as the water around it.","Unas lucecitas azules delatan a este pequeño tiburón tan oscuro como el agua."],
+  ["moonpaddle",0,3,"Moonmirror Paddlefish","Pez espátula Espejo de Luna",11,62,"A silver paddle catches the sunrise, followed by a back patterned with little moons.","Una espátula plateada refleja el amanecer; detrás, brillan pequeñas lunas."],
+  ["obsidiangiant",1,3,"Obsidian Arapaima","Arapaima de Obsidiana",35,204,"When it surfaces, each red-edged scale looks like a cooling ember.","Cuando sube a respirar, sus escamas de borde rojo parecen brasas."],
+  ["prismeel",2,3,"Prism Ghost Eel","Anguila Fantasma de Prisma",1.8,12,"A rainbow ribbon bends around the moon reflected in the cave pool.","Una cinta arcoíris rodea el reflejo de la luna en la poza."],
+  ["sunlion",3,3,"Sundial Lionfish","Pez León Reloj de Sol",0.6,3.2,"Its golden spines open one by one like a tiny sunrise.","Sus espinas doradas se abren una a una como un pequeño amanecer."],
+  ["jadesaw",4,3,"Jade Sawfish","Pez Sierra de Jade",12,106,"Its long green saw leaves a tooth-shaped shadow on the riverbed.","Su larga sierra verde dibuja una sombra dentada sobre el lecho del río."],
+  ["auroraskate",5,3,"Northern Lights Skate","Raya Aurora Boreal",4,32,"Green light rolls from wing to wing beneath the ice.","Una luz verde pasa de ala a ala bajo el hielo."],
+  ["beaconsail",6,3,"Lighthouse Sailfish","Pez Vela del Faro",17,85,"A striped sail catches the lighthouse beam and glows over the bay.","Su vela rayada atrapa el haz del faro y brilla sobre la bahía."],
+  ["thunderblue",7,3,"Thunderfin Bluefin","Atún Aleta de Trueno",52,410,"A gold zigzag across its side flickers each time it changes course.","El zigzag dorado de su costado relampaguea cada vez que cambia de rumbo."],
+  ["eclipseangler",9,3,"Eclipse Anglerfish","Rape del Eclipse",1.4,9,"A ring of gold hangs ahead of it like a tiny sun in eclipse.","Un anillo de oro cuelga frente a su hocico como un diminuto sol eclipsado."]
  ];
  for(const [id,place,tier,en,es,min,max,noteEn,noteEs] of shoal)fish.push({id,place,tier,name:[en,es],min,max,note:[noteEn,noteEs]});
  const pools=places.map((_,index)=>fish.filter(f=>f.place===index));
- const legend=place=>pools[place].find(f=>f.tier===3);
+ const legends=place=>pools[place].filter(f=>f.tier===3);
+ const legend=(place,id)=>legends(place).find(f=>f.id===id)||legends(place)[0];
+ const sharks=fish.filter(f=>["blacktipreef","greenlandshark","hammerhead","shortfinmako","greatwhite","ninjashark"].includes(f.id));
  function cupFish(place,challenge){
-  const options=pools[place].filter(f=>f.tier===challenge.tier);return options[Math.floor((challenge.variant||0)*options.length)];
+  const pool=challenge.roster===3?pools[place]:pools[place].slice(0,6);
+  const options=pool.filter(f=>f.tier===challenge.tier);return options[Math.floor((challenge.variant||0)*options.length)];
  }
  const tankLimit=24;
  const residentRoster={
@@ -150,16 +188,16 @@ const Waters = (() => {
  const habitats=["fresh","reef","ice","reef","fresh","ice","reef","bank","cabo","seamount"];
  // Swimming layers and the tide are rules of the game, shared by the rig, camera, and guide.
  const marineLayers=[
-  ["clown","dragon","frost","sierra","needle","flyer","dorado","sergeant","mantastar","saury","lanternjaw"],
-  ["parrot","sail","butterfly","narwhal","rooster","goldrooster","marlin","skipjack","wahoo","coronet","hawk","hatchet","lancet"],
-  ["spottedbox","wolffish","halibut","puffin","ribbon","snapper","pompano","moonopah","goat","balloon","veil","fang"]
+  ["clown","dragon","frost","sierra","needle","flyer","dorado","sergeant","mantastar","saury","lanternjaw","lookdown","oceansunfish","blacktipreef","beaconsail","thunderblue"],
+  ["parrot","sail","butterfly","narwhal","rooster","goldrooster","marlin","skipjack","wahoo","coronet","hawk","hatchet","lancet","gramma","emperorangel","arcticchar","eagleray","yellowfin","moorishidol","cortezwrasse","shortfinmako","hammerhead","greatwhite","auroraskate"],
+  ["spottedbox","wolffish","halibut","puffin","ribbon","snapper","pompano","moonopah","goat","balloon","veil","fang","atlanticcod","viperfish","footballfish","greenlandshark","ninjashark","sunlion","eclipseangler"]
  ];
  const layerOf=id=>marineLayers.findIndex(group=>group.includes(id));
  function seaTide(records){
   const catches=fish.reduce((n,f)=>n+(places[f.place].salt?(records[f.id]?.n||0):0),0);
   return [0,1,2,1][Math.floor(catches/2)%4];
  }
- const roaming=new Set(["sierra","rooster","goldrooster","sail","dorado","wahoo","marlin","skipjack","narwhal","frost","mantastar","saury","lancet"]);
+ const roaming=new Set(["sierra","rooster","goldrooster","sail","dorado","wahoo","marlin","skipjack","narwhal","frost","mantastar","saury","lancet","yellowfin","shortfinmako","hammerhead","greatwhite","beaconsail","thunderblue"]);
  function seaRig(depth,tide,trolling=false,ground=null){
   const matched=depth===tide;
   return {depth,tide,matched,trolling,ground,wait:matched ? .74 : 1.05};
@@ -186,7 +224,7 @@ const Waters = (() => {
   const records={};
   for(const f of fish){
    const r=raw?.records?.[f.id];
-   if(r&&Number.isSafeInteger(r.n)&&r.n>0&&Number.isFinite(r.best)&&r.best>=f.min-0.006&&r.best<=f.max+0.006)records[f.id]={n:Math.min(r.n,10000000),best:r.best};
+   if(r&&Number.isSafeInteger(r.n)&&r.n>0&&Number.isFinite(r.best)&&r.best>=f.min-0.006&&r.best<=f.max+0.006)records[f.id]={n:Math.min(r.n,10000000),best:r.best,...(Number.isSafeInteger(r.bestAt)&&r.bestAt>0&&r.bestAt<=8640000000000000?{bestAt:r.bestAt}:{})};
   }
   const total=Object.values(records).reduce((n,r)=>n+r.n,0);
   const surveys={};
@@ -222,9 +260,10 @@ const Waters = (() => {
    const index=raw?.grounds?.[place.id];
    if(Number.isInteger(index)&&place.grounds?.[index])grounds[place.id]=index;
   }
-  return {records,photos,album,surveys,grounds,display,fishHomes,residentAway,care,lure,seaDepth,tank,place:Number.isInteger(raw?.place)&&places[raw.place]?.unlock<=total?raw.place:0,lang:raw?.lang==="es"?1:raw?.lang==="en"?0:null,calm:raw?.calm===true,sound:raw?.sound===true};
+  const charm=fish.some(f=>f.tier===3&&f.id===raw?.charm&&records[f.id])?raw.charm:null;
+  return {records,charm,photos,album,surveys,grounds,display,fishHomes,residentAway,care,lure,seaDepth,tank,place:Number.isInteger(raw?.place)&&places[raw.place]?.unlock<=total?raw.place:0,lang:raw?.lang==="es"?1:raw?.lang==="en"?0:null,calm:raw?.calm===true,sound:raw?.sound===true};
  }
- function choose(place,records,accuracy,depth,rng=Math.random,lure="float",sea=null){
+ function choose(place,records,accuracy,depth,rng=Math.random,lure="float",sea=null,power={}){
   const pool=pools[place];
   const seen=pool.map(f=>records[f.id]?.n||0);
   const bonus=Math.max(0,1-accuracy/.2);
@@ -232,7 +271,7 @@ const Waters = (() => {
   const rig=tackle.find(v=>v.id===lure)||tackle[0];
   const tierWeight=[35+19*(1-depth),28,12+depth*18,3+bonus*16+depth*6];
   const counts=pool.reduce((n,f)=>(n[f.tier]++,n),[0,0,0,0]);
-  const weights=pool.map((f,i)=>seaWeight(f.id,places[place].salt?sea:null)*tierWeight[f.tier]*rig.odds[f.tier]/counts[f.tier]*(seen[i]===0?2.2:1/(1+Math.min(seen[i],8)*.35)));
+  const weights=pool.map((f,i)=>(seen[i]===0?power.discovery||1:1)*(f.tier>=2?power.rare||1:1)*seaWeight(f.id,places[place].salt?sea:null)*tierWeight[f.tier]*rig.odds[f.tier]/counts[f.tier]*(seen[i]===0?2.2:1/(1+Math.min(seen[i],8)*.35)));
   if(seen.every(n=>n===0)&&place===0)return pool[rng()<.72?0:1];
   // After seven catches, prioritize any species still missing from this water.
   const missing=seen.findIndex(n=>n===0);
@@ -242,6 +281,9 @@ const Waters = (() => {
  }
  // Timing of the two dives, and the rhythm of the runs between them.
  const legendFights={
+  moonpaddle:[.32,.69,1.13],obsidiangiant:[.26,.63,1.57],prismeel:[.40,.72,2.22],sunlion:[.36,.74,1.84],
+  jadesaw:[.30,.71,1.23],auroraskate:[.42,.78,1.04],beaconsail:[.22,.61,2.12],thunderblue:[.27,.67,2.36],
+  greatwhite:[.31,.73,1.94],eclipseangler:[.44,.80,.89],
   crown:[.36,.72,1.16],phoenix:[.24,.73,2.19],star:[.42,.76,.87],dragon:[.31,.64,1.82],
   axolotl:[.38,.66,1.48],narwhal:[.26,.77,1.12],goldrooster:[.30,.71,2.43],marlin:[.21,.67,2.66],
   mantastar:[.46,.74,.79],veil:[.27,.80,1.37]
@@ -271,5 +313,5 @@ const Waters = (() => {
   s.tension=Math.max(.06,Math.min(calm?.87:1,s.tension));
   return s.progress>=1?"landed":s.tension>=1?"escaped":run?"run":"steady";
  }
- return{places,fish,pools,legend,cupFish,seaTide,seaRig,seaWeight,layerOf,trail,tankLimit,tankIds,tankNames,aquariumLimit,fishInTank,hasRoom,nextTank,moveFish,residentRoster,speciesId,specimens,setExhibited,tackle,rigs,habitats,clues,clean,choose,tensionStep};
+ return{places,fish,pools,legend,legends,sharks,cupFish,seaTide,seaRig,seaWeight,layerOf,trail,tankLimit,tankIds,tankNames,aquariumLimit,fishInTank,hasRoom,nextTank,moveFish,residentRoster,speciesId,specimens,setExhibited,tackle,rigs,habitats,clues,clean,choose,tensionStep};
 })();
