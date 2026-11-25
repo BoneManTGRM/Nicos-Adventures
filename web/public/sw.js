@@ -1,6 +1,7 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v41";
+const CACHE = "nicos-world-static-v42";
 const FISHING_DOCUMENT = "/games/starfall-anglers/";
+const GAME_DOCUMENTS = [FISHING_DOCUMENT, "/games/timberline-hunt/"];
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
@@ -110,8 +111,9 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (event.request.mode === "navigate") {
-    const fishingNavigation = url.origin === self.location.origin
-      && [FISHING_DOCUMENT, FISHING_DOCUMENT.slice(0, -1), FISHING_DOCUMENT + "index.html"].includes(url.pathname);
+    const gameDocument = url.origin === self.location.origin && GAME_DOCUMENTS.find(
+      path => [path, path.slice(0, -1), path + "index.html"].includes(url.pathname)
+    );
     event.respondWith(
       fetch(event.request, { cache: "no-store" })
         .then(async (response) => {
@@ -126,7 +128,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => offlineDocument(fishingNavigation ? FISHING_DOCUMENT : "/index.html"))
+        .catch(() => offlineDocument(gameDocument || "/index.html"))
     );
     return;
   }

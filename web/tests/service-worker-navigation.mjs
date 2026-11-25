@@ -5,12 +5,12 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
 const origin = 'https://nicos-world.com';
-function worker(cached, fishing, clip) {
+function worker(cached, fishing, clip, timberline) {
   const handlers = new Map(); let networkCalls = 0;
   const context = vm.createContext({
     URL, Response, Headers,
     self: { location: { origin }, addEventListener: (name, handler) => handlers.set(name, handler), skipWaiting() {}, clients: { claim() {} } },
-    caches: { match: async key => key === '/index.html' ? cached : key === '/games/starfall-anglers/' ? fishing : key === '/games/starfall-anglers/clips/crown.mp4' ? clip?.clone() : undefined },
+    caches: { match: async key => key === '/index.html' ? cached : key === '/games/starfall-anglers/' ? fishing : key === '/games/timberline-hunt/' ? timberline : key === '/games/starfall-anglers/clips/crown.mp4' ? clip?.clone() : undefined },
     fetch: async () => { networkCalls++; throw new TypeError('Offline'); },
   });
   vm.runInContext(source, context);
@@ -61,6 +61,14 @@ test('offline fishing deep links load the game, and returning to the arcade load
     assert.equal(await sw.navigate(path), game);
   }
   assert.equal(await sw.navigate('/?play=arcade'), app);
+});
+
+test('offline hunting links with all supported URL forms open Timberline Hunt', async () => {
+  const game = new Response('<title>Timberline Hunt</title>', {headers: {'content-type':'text/html'}});
+  const sw = worker(shell({redirected:false}), undefined, undefined, game);
+  for (const path of ['/games/timberline-hunt', '/games/timberline-hunt/?from=arcade', '/games/timberline-hunt/index.html']) {
+    assert.equal(await sw.navigate(path), game);
+  }
 });
 
 test('saved fishing clips support the byte requests used by phone video players', async () => {

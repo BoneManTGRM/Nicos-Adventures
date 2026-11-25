@@ -37,9 +37,16 @@ const fishingRoot = "games/starfall-anglers";
 const fishingFiles = readdirSync(path.join(dist, fishingRoot), { recursive: true, withFileTypes: true })
   .filter(entry => entry.isFile() && entry.name !== "index.html")
   .map(entry => "/" + path.relative(dist, path.join(entry.parentPath, entry.name)).split(path.sep).join("/"));
+// Cache the hunting shell and built-in wildlife. Additional landscape and
+// animation sheets enter the runtime cache as the player explores.
+const hunt = "/games/timberline-hunt/";
+const huntHtml = readFileSync(path.join(dist, hunt, "index.html"), "utf8");
+const huntAssets = [...huntHtml.matchAll(/<(?:script|link)\b[^>]+?(?:src|href)="([^"]+)"/g)]
+  .map(([, url]) => hunt + url);
+huntAssets.push(hunt, hunt + "assets/trails/north.webp");
 const manifest = {
   version: 1,
-  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles])].sort(),
+  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles, ...huntAssets])].sort(),
 };
 writeFileSync(path.join(dist, "offline-assets.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 console.log(`Generated offline-assets.json with ${manifest.assets.length} Golden Adventure assets.`);

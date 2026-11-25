@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head>
+<base href="/games/timberline-hunt/">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#151e1a">
+<title>Timberline Hunt</title><meta name="description" content="A wilderness hunting arcade. Hunt elephants, lions, bears, and more across worldwide pixel-art reserves, and collect record trophies and legendary gifts.">
+<link rel="preload" href="assets/timber.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="assets/range/savanna.webp" as="image">
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="expedition.css"><script defer src="world-profile.js"></script><script defer src="assets/north-art.js"></script><script defer src="assets/safari-art.js"></script><script defer src="assets/giants-art.js"></script><script defer src="assets/highland-art.js"></script><script defer src="assets/stride.js"></script><script defer src="assets/wildlife.js?v=20"></script><link rel="stylesheet" href="pursuit.css"><script defer src="pursuit-rules.js"></script><script defer src="range-rules.js"></script><script defer src="rules.js"></script><script defer src="album.js"></script><script defer src="trails.js"></script><link rel="stylesheet" href="room.css"><script defer src="room.js"></script><script defer src="lodge.js"></script><script defer src="pursuit-ui.js"></script><link rel="stylesheet" href="range.css"><script defer src="range-prints.js"></script><script defer src="assets/fall-volume.js?v=20"></script><script defer src="assets/landing.js?v=20"></script><script defer src="trophy-reaction.js?v=20"></script><script defer src="field-encounter.js"></script><script defer src="crossing-rush.js?v=20"></script><script defer src="trophy-trail.js"></script><script defer src="range-ui.js"></script><script defer src="game.js?v=20"></script>
+</head><body>
+<svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+<symbol id="i-crest" viewBox="0 0 40 46"><path fill="#c28146" d="M16 1h8v2h5v2h5v2h4v24h-2v5h-4v3h-5v3h-5v3h-4v-3h-5v-3H8v-3H4v-5H2V7h4V5h5V3h5z"/><path fill="#263b2b" d="M16 4h8v2h6v2h5v22h-2v5h-5v3h-6v3h-4v-3h-6v-3H7v-5H5V9h6V7h5z"/><path fill="#e6be72" d="M19 9h2v3h2v3h2v2h-3v1h3v3h3v2h-5v1h3v3h4v2h-8v6h-4v-6h-8v-2h4v-3h3v-1h-5v-2h3v-3h3v-1h-3v-2h2v-3h2z"/></symbol>
+<symbol id="i-cross" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 1v6m0 10v6M1 12h6m10 0h6"/><path d="M12 11v2"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M6 3h14v17H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm-2 14h16M8 3v14m3-9h6m-6 3h4"/></symbol>
+<symbol id="i-volume" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3zM16 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+<symbol id="i-muted" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3zM16 9l6 6m0-6-6 6"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><path d="M1 17h22M4 20h16m-14-6a6 6 0 1 1 12 0M12 1v3M3 6l2 2m16-2-2 2M1 12h3m16 0h3"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M9 2h6m-3 3V2m0 6v5l3 2"/></symbol>
+<symbol id="i-cup" viewBox="0 0 24 24"><path d="M7 3h10v6a5 5 0 0 1-10 0zM7 5H3v2a5 5 0 0 0 5 5m9-7h4v2a5 5 0 0 1-5 5m-4 2v5m-5 2h10m-8-2h6"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M6 3h3v2h3v2h3v2h3v2h3v2h-3v2h-3v2h-3v2H9v2H6z"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5v14m10-14v14" stroke-width="4"/></symbol>
+<symbol id="i-reload" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1 8M4 4v6h6"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6" stroke-width="3"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 5m0 2v1"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0z"/><circle cx="12" cy="10" r="2"/></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="m2 5 6-2 8 3 6-2v15l-6 2-8-3-6 2zM8 3v15m8-12v15"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M2 7h5l2-3h6l2 3h5v13H2z"/><circle cx="12" cy="13" r="4"/></symbol>
+<symbol id="i-room" viewBox="0 0 24 24"><path d="m2 10 10-8 10 8M4 9v12h16V9M9 21v-6h6v6M9 7l3 3 3-3"/></symbol></defs></svg>
+<a class="arcade-return" href="/?play=arcade" id="arcade-return">‹ Back to Nico’s World Arcade</a>
+<header><div class="header-wrap">
+<a class="brand" href="#hunt" aria-label="Timberline Hunt home" id="brand"><svg class="crest" aria-hidden="true"><use href="#i-crest"/></svg><span><b>Timberline</b><small>Hunting arcade</small></span></a>
+<nav aria-label="Game menu"><button class="nav-btn" id="range-nav"><svg><use href="#i-map"/></svg><span>Open range</span></button><button class="nav-btn" id="pursuit-nav"><svg><use href="#i-pin"/></svg><span>Pursuits</span></button><button class="nav-btn" id="exp-nav" aria-current="page"><svg><use href="#i-map"/></svg><span>Expeditions</span></button><button class="nav-btn" id="hunt-nav"><svg><use href="#i-cross"/></svg><span>Quick hunt</span></button><button class="nav-btn" id="room-nav" aria-label="Trophy room"><svg><use href="#i-room"/></svg><span>Trophy room</span></button><button class="nav-btn" id="journal-nav" aria-label="Trophy lodge"><svg><use href="#i-cup"/></svg><span>Trophy lodge</span></button></nav>
+<button id="sound" class="icon-btn" aria-label="Mute sound" aria-pressed="true" title="Mute sound"><svg><use href="#i-volume"/></svg></button>
+</div></header>
+<main id="hunt">
+<section hidden id="range-screen" aria-label="Open range"></section><section hidden id="pursuit-screen" aria-label="Wild pursuits"></section>
+<section id="trail-home" aria-label="Expedition camp">
+<div id="trail-hero" class="trail-hero">
+  <div class="hero-shade"></div><div class="trail-headline"><div class="eyeline"><i></i><span id="trail-region"></span></div><h1 id="trail-name"></h1><p id="trail-copy"></p><button class="primary" id="trail-begin"><svg><use href="#i-map"/></svg><span>Open expedition</span></button></div>
+  <div class="trail-patch" id="hero-patch"></div><div class="hero-foot"><span id="trail-overview"></span><span id="trail-best"></span></div>
+</div>
+<div class="row-head trail-row"><h2>Expedition trails</h2><div class="pq-game-modes"><button class="text-btn" id="trail-pursuits">Wild pursuits</button><button class="text-btn" id="open-quick"><svg><use href="#i-cross"/></svg>Quick hunt</button></div></div>
+<div class="route-cards" id="trail-cards" role="group" aria-label="Choose an expedition"></div>
+</section>
+<section hidden class="scene" id="scene" aria-label="Hunting reserve">
+<div id="landscape" class="landscape"></div>
+<canvas id="world" aria-label="Hunting field. Tap an animal to shoot in Hunt mode or tag it in Camera mode. Use arrow keys to aim and Space to shoot." tabindex="-1"></canvas>
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<div id="lobby" class="lobby">
+<div class="condition"><svg><use href="#i-sun"/></svg><span id="condition"></span></div>
+<div class="hero"><div class="eyeline"><i></i><span id="reserve-region">Africa</span></div><h1 id="region-title"></h1><p id="species-line"></p>
+<button id="start" class="primary"><svg><use href="#i-play"/></svg>Start hunt</button><button id="track-picker" class="track-picker" aria-label="Choose a species to track"><svg><use href="#i-cross"/></svg><span id="track-label">Track species</span></button></div>
+<div class="scene-meta"><span><svg><use href="#i-clock"/></svg>60 sec hunt</span><i></i><span><svg><use href="#i-cup"/></svg>Best <b id="best">0</b></span></div>
+</div>
+<div id="hud" class="hud" hidden><div class="hud-top"><div class="meters"><div class="meter"><small>Score</small><strong id="score">0</strong></div><div class="meter"><small>Time</small><strong id="time">1:00</strong></div><div class="meter multiplier" id="multiplier" hidden><small>Streak</small><strong id="factor"></strong></div></div><button class="dark-btn square" id="pause" aria-label="Pause hunt"><svg><use href="#i-pause"/></svg></button></div>
+<div id="aim-hint" class="aim-hint">Tap an animal to shoot</div>
+<div id="trophy-toast" class="trophy-toast" hidden aria-hidden="true"></div><div class="hud-bottom"><div class="challenge"><small>Trail bonus</small><span id="contract"></span></div></div></div>
+<div id="legend-reveal" class="legend-reveal" hidden aria-hidden="true"></div><div id="camera-frame" hidden aria-hidden="true"><i></i><i></i><i></i><i></i></div><div id="flash"></div><div id="announcer" class="sr-only" aria-live="polite"></div>
+</section>
+<section id="field-deck" hidden aria-label="Field controls"><div class="mode-switch" role="group" aria-label="Field mode"><button id="shoot-mode" aria-pressed="true"><svg><use href="#i-cross"/></svg>Hunt</button><button id="photo-mode" aria-pressed="false"><svg><use href="#i-camera"/></svg>Camera</button></div><div class="field-tools"><button class="dark-btn scout" id="scout" aria-label="Scout animals"><svg><use href="#i-cross"/></svg><span id="scout-label">Scout ×2</span></button><button class="dark-btn reload" id="reload" aria-label="Reload"><span id="ammo" class="ammo"></span><span id="reload-label">Reload</span><svg><use href="#i-reload"/></svg></button></div></section>
+<section hidden class="grounds" id="grounds" aria-labelledby="grounds-title">
+<div class="row-head"><h2 id="grounds-title">Hunting grounds</h2><button class="text-btn" id="help"><svg><use href="#i-help"/></svg>How to play</button></div>
+<button class="text-btn mobile-camp" id="grounds-camp"><svg><use href="#i-map"/></svg>Expedition camp</button><button class="text-btn mobile-camp" id="grounds-pursuits">Wild pursuits</button><div class="ground-filters" role="group" aria-label="Reserve filters"></div><div class="cards" role="group" aria-label="Choose a hunting ground"></div>
+</section>
+</main>
+<dialog id="dialog"><div class="dialog-box"><button class="close-btn icon-btn" id="close-dialog" aria-label="Close"><svg><use href="#i-close"/></svg></button><div id="dialog-content"></div></div></dialog>
+</body></html>

@@ -9,6 +9,7 @@ import { tr, ui } from "../i18n/core";
 import { WORLD_SECTIONS } from "./catalogs";
 import { NicoVideoCard } from "./NicoVideoCard";
 import { nextAdventure } from "./journey";
+import { TimberlineEntry } from "./TimberlineEntry";
 import { StarfallEntry } from "./StarfallEntry";
 import { StarBridgeMap } from "./StarBridgeMap";
 
@@ -65,6 +66,7 @@ export function WorldMap({
         </div>
       </section>
       <StarfallEntry es={language === "es-MX"} />
+      <TimberlineEntry es={language === "es-MX"} />
       <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Despertando el Mundo de Nico…" : "Waking up Nico's World…"}</div>}>
         <LivingWorldAtlas language={language} dinosaurValleyAvailable={dinosaurValleyAvailable} open={open} />
       </Suspense>
