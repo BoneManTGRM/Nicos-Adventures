@@ -3,13 +3,14 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react(), {
-    name: "starfall-arcade-entry",
+    name: "standalone-arcade-entries",
     apply: "serve",
     configureServer(server) {
       server.middlewares.use((request, _response, next) => {
         const url = new URL(request.url || "/", "http://localhost");
-        if (url.pathname === "/games/starfall-anglers/" || url.pathname === "/games/starfall-anglers") {
-          request.url = "/games/starfall-anglers/index.html" + url.search;
+        const game = url.pathname.replace(/\/$/, "");
+        if (game === "/games/starfall-anglers" || game === "/games/timberline-hunt") {
+          request.url = game + "/index.html" + url.search;
         }
         next();
       });
