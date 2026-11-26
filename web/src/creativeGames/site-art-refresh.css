@@ -10,3 +10,4 @@
 .cg-kingdom .cg-kingdom-stage{box-shadow:0 10px 30px #83689924}
 @media(prefers-reduced-motion:reduce){.cg-unicorn-card img{transform:none}}
 .cg-entry .mg-arcade-cover{width:100%;object-fit:cover;object-position:50% 58%;border-bottom:2px solid #cf985b;margin-bottom:15px}
+.cg-unicorn-card .bk-card-scenery{position:absolute;inset:0;background-size:cover;background-position:center 47%}

@@ -5,6 +5,7 @@ test.use({serviceWorkers:'block'});
 async function enterArcade(page:Page,info:TestInfo){
  const games=normalizeGames(null);games.kingdom.petals=88;games.garage.bolts=42;
  await page.goto('/');await expect(page.getByTestId('continue-world')).toBeVisible();
+ await page.waitForFunction(key=>localStorage.getItem(key)!==null,key);
  await page.evaluate(({key,games,language})=>{const s=JSON.parse(localStorage.getItem(key)!);const p=s.profiles.find((p:{id:string})=>p.id===s.activeProfileId);p.selectedSection='game-arcade';p.language=language;p.creativeGames=games;p.nico.speechEnabled=false;localStorage.setItem(key,JSON.stringify(s));},{key,games,language:info.project.metadata.language});
  await page.reload();await expect(page.getByTestId('open-rainbow-kingdom')).toBeVisible();
 }
@@ -53,4 +54,20 @@ test('failed artwork loading has an explicit retry and does not lose saved progr
  await page.unroute(pattern);await page.locator('.cg-art-loading button').click();
  await expect(page.getByTestId('kingdom-ride')).toBeVisible();await expect(page.getByTestId('kingdom-petals')).toHaveText('88');
  await page.locator('.cg-topbar button').click();await page.getByTestId('open-monster-garage').click();await expect(page.getByTestId('garage-bolts')).toHaveText('42');
+});
+
+test('the public kingdom link starts a playable trail and remembers a bellflower across visits', async({page})=>{
+ await page.goto('/?play=rainbow-kingdom');
+ await page.getByTestId('kingdom-ride').click();
+ const stage=page.getByTestId('kingdom-stage');
+ await page.keyboard.down('ArrowRight');
+ await expect.poll(async()=>Number(await stage.getAttribute('data-world-x'))).toBeGreaterThan(130);
+ await page.keyboard.up('ArrowRight');
+ await page.getByTestId('kingdom-sing').click();
+ await expect(page.locator('.cg-kingdom-hud')).toContainText('1/3');
+ await page.reload();
+ await expect(page.locator('[data-song="0"]')).toContainText('1/3');
+ await expect(page.locator('[data-song="0"]')).toBeDisabled();
+ await expect(page.locator('[data-friend]')).toHaveCount(9);
+ await expect(page.getByTestId('kingdom-petals')).toHaveText('0');
 });

@@ -77,6 +77,24 @@ function sprite(pose: UnicornPose, color: number): CanvasImageSource | null {
 // A fixed shared scale prevents the character changing size between poses.
 export const UNICORN_FRAME = { sourceSize: 820, feetY: 760, centerX: 410, drawSize: 156 } as const;
 const sourceFacing: Record<UnicornPose, number> = { prance: -1, float: 1, turn: 1, rest: -1 };
+// Use the original painted pose as a puppet. The hooves reach and gather
+// beneath a steadier body. Cache each small frame for subsequent strides.
+const strides=new Map<string,HTMLCanvasElement>();
+function strideFrame(source:CanvasImageSource,t:number,color:number) {
+ if(typeof document==='undefined')return source;
+ const phase=Math.floor(t*12)%10,key=color+':'+phase,cached=strides.get(key);
+ if(cached)return cached;
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
+ const ctx=canvas.getContext('2d');if(!ctx)return source;
+ const image=source as HTMLImageElement|HTMLCanvasElement,sz=image.width;
+ const wave=Math.sin(phase*2*Math.PI/10);
+ for(let y=0;y<256;y+=2){
+  const leg=Math.max(0,(y/256-.61)/.39),mane=Math.max(0,.40-y/256);
+  const reach=wave*leg*22,shift=wave*(leg*2+mane*3);
+  ctx.drawImage(image,0,y*sz/256,sz,2*sz/256,shift-reach/2,y,256+reach,2);
+ }
+ strides.set(key,canvas);return canvas;
+}
 export function drawUnicornSprite(
   c: CanvasRenderingContext2D, x: number, y: number, t=0, color=0,
   direction=1, pose: UnicornPose='turn', reduced=false,
@@ -84,10 +102,11 @@ export function drawUnicornSprite(
   const image=sprite(pose,color);
   if (!image) return false;
   const size=UNICORN_FRAME.drawSize, scale=size/UNICORN_FRAME.sourceSize;
-  const bounce=pose==='prance'&&!reduced ? Math.sin(t*9)*1.5 : 0;
+  const running=pose==='prance'&&!reduced;
+  const bounce=running?-Math.abs(Math.sin(t*7.54))*3:0;
   c.save(); c.translate(x,y+bounce); c.scale((direction<0?-1:1)*sourceFacing[pose],1);
   c.imageSmoothingEnabled=true; c.imageSmoothingQuality='high';
-  c.drawImage(image,-UNICORN_FRAME.centerX*scale,-UNICORN_FRAME.feetY*scale,size,size);
+  c.drawImage(running?strideFrame(image,t,color):image,-UNICORN_FRAME.centerX*scale,-UNICORN_FRAME.feetY*scale,size,size);
   c.restore();
   return true;
 }
