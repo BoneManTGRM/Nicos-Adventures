@@ -92,9 +92,18 @@
     Array.from(get('maskPick').children).forEach((b,i)=>{b.setAttribute('aria-pressed',String(masks[i]===selected));b.setAttribute('aria-label',masks[i].name);});
   }
   function maskPicker(){for(const m of masks){const b=document.createElement('button'),img=document.createElement('img');b.className='maskChoice';img.src=m.img;img.alt='';b.append(img,document.createTextNode(m.short));b.onclick=()=>selectMask(m.id);get('maskPick').append(b);}}
+  function cardPortrait(canvas,id){
+    const context=canvas.getContext('2d');context.clearRect(0,0,canvas.width,canvas.height);
+    window.drawLuchador(context,{id,x:75,y:282,scale:2.32,pose:'idle',face:1,time:1});
+  }
+  window.addEventListener('volcan-art-ready',event=>{
+    const card=document.querySelector('canvas[data-rival="'+event.detail+'"]');
+    if(card)cardPortrait(card,event.detail);
+    if(active&&paused)draw();
+  });
   function drawCards(){
     const root=get('lineup');root.replaceChildren();
-    rivals.forEach((name,i)=>{const card=document.createElement('button');card.className='rivalCard';card.style.setProperty('--color',hues[i]);card.style.setProperty('--wash',wash[i]);const c=document.createElement('canvas');c.width=145;c.height=145;const d=document.createElement('div'),s=document.createElement('strong'),p=document.createElement('small');const pairing=format==='team'?name+' + '+nameOf(rivalPartners[i]):name;s.textContent=pairing;p.textContent=places[i];d.append(s,p);const rec=records[recordKey(i)];if(rec?.stars){const best=document.createElement('em');best.textContent='★'.repeat(rec.stars)+' · '+rec.points;d.append(best);}card.append(c,d);card.onclick=()=>{tour=false;launch(i);};card.setAttribute('aria-label',t('exhibition')+' · '+pairing+', '+places[i]);root.append(card);window.drawLuchador(c.getContext('2d'),{id:rivalIds[i],x:76,y:314,scale:2.65,pose:'idle',face:1,time:i});});
+    rivals.forEach((name,i)=>{const card=document.createElement('button');card.className='rivalCard';card.style.setProperty('--color',hues[i]);card.style.setProperty('--wash',wash[i]);const c=document.createElement('canvas');c.width=145;c.height=145;const d=document.createElement('div'),s=document.createElement('strong'),p=document.createElement('small');const pairing=format==='team'?name+' + '+nameOf(rivalPartners[i]):name;s.textContent=pairing;p.textContent=places[i];d.append(s,p);const rec=records[recordKey(i)];if(rec?.stars){const best=document.createElement('em');best.textContent='★'.repeat(rec.stars)+' · '+rec.points;d.append(best);}card.append(c,d);card.onclick=()=>{tour=false;launch(i);};card.setAttribute('aria-label',t('exhibition')+' · '+pairing+', '+places[i]);root.append(card);c.dataset.rival=rivalIds[i];cardPortrait(c,rivalIds[i]);});
   }
   function labels(){
     document.documentElement.lang=lang==='es'?'es-MX':'en';get('lang').textContent=lang==='en'?'ES':'EN';get('lang').setAttribute('aria-label',lang==='en'?'Cambiar a español':'Switch to English');get('sound').textContent=t('sound')+' '+t(sound?'on':'off');get('sound').setAttribute('aria-pressed',String(sound));get('sound').setAttribute('aria-label',get('sound').textContent);
@@ -145,6 +154,8 @@
   }
   function launch(round){
     audio.unlock();audio.scene('intro',round);cancelAnimationFrame(raf);const Engine=format==='team'?LuchaTeamBout:LuchaBout;bout=new Engine(round,onEvent,Math.random,{hero:selected.id,partner:partner.id,level});
+    cameraZoom=1;cameraX=400;cameraTime=0;
+    window.prepareLuchadores([bout.hero.id,bout.rival.id,...(bout.partner?[bout.partner.id,bout.opponentPartner.id]:[])]);
     document.body.classList.toggle('team-mode',format==='team');get('teamHud').hidden=format!=='team';
     active=true;paused=false;won=false;particles=[];ghosts=[];ghostTime=0;shake=0;clearInputs();buffer=0;previous=0;uiStamp='';tipKey='';tipUntil=0;get('home').hidden=true;get('match').hidden=false;get('battleOverlay').hidden=true;get('announce').textContent='';document.body.classList.add('ingame');get('yourName').textContent=selected.name;get('rival').textContent=rivals[round];get('venue').textContent=places[round];labels();window.scrollTo(0,0);setHUD();draw();raf=requestAnimationFrame(frame);
   }
@@ -204,9 +215,36 @@
     const scale=fighter.id===3||fighter.id===7?1.49:fighter.id===4?1.26:1.36;
     window.drawLuchador(ctx,{id:fighter.id,x,y,face,scale:pose==='apron'?scale*.82:scale,pose,phase,time,teamRole});
   }
+  let cameraZoom=1,cameraX=400,cameraTime=0;
+  let backingScale=1;
+  function resizeRing(){
+    const cssWidth=ring.getBoundingClientRect().width;
+    if(!cssWidth)return;
+    backingScale=Math.max(1,Math.min(2,Math.ceil(cssWidth*(window.devicePixelRatio||1)/80)/10));
+    const width=Math.round(800*backingScale),height=Math.round(440*backingScale);
+    if(ring.width!==width||ring.height!==height){ring.width=width;ring.height=height;}
+  }
+  if(window.ResizeObserver)new ResizeObserver(()=>{resizeRing();if(active)draw();}).observe(ring);
+  else window.addEventListener('resize',()=>{resizeRing();if(active)draw();});
+  function frameRing(h,r){
+    const dt=Math.max(0,Math.min(.09,bout.time-cameraTime));cameraTime=bout.time;
+    const spacing=Math.abs(h.x-r.x);
+    const tight=bout.mode==='fight'||bout.mode==='pin'||bout.mode==='end';
+    const desired=tight?Math.min(1.30,800/(spacing+255)):1;
+    const zoomGoal=Math.max(1,desired);
+    const ease=1-Math.exp(-dt*(bout.exchange?9:4));
+    cameraZoom+=(zoomGoal-cameraZoom)*ease;
+    const half=400/cameraZoom;
+    const center=Math.max(half,Math.min(800-half,(h.x+r.x)/2));
+    cameraX+=(center-cameraX)*ease;
+    cameraX=Math.max(half,Math.min(800-half,cameraX));
+    if(reduced)return;
+    ctx.translate(400,288);ctx.scale(cameraZoom,cameraZoom);ctx.translate(-cameraX,-288);
+  }
   function draw(){
     const h=bout.hero,r=bout.rival, time=bout.time,aspect={time,round:bout.round,motion:!reduced};
-    ctx.save();if(shake>.2)ctx.translate(Math.sin(time*97)*shake,Math.cos(time*103)*shake*.55);
+    ctx.save();ctx.setTransform(backingScale,0,0,backingScale,0,0);ctx.save();frameRing(h,r);
+    if(shake>.2)ctx.translate(Math.sin(time*97)*shake,Math.cos(time*103)*shake*.55);
     window.drawArena(ctx,aspect);
     const midpoint=(h.x+r.x)/2,refX=bout.pin?Math.max(90,Math.min(710,bout.pin.def.x-76)):400+Math.sin(time*.61)*50+(midpoint-400)*.18;
     window.drawReferee(ctx,{x:refX,y:bout.pin?333:283,count:bout.pin?.count||0,time,pinning:!!bout.pin,motion:!reduced});
@@ -214,7 +252,12 @@
     if(bout.partner){
       for(const [side,bench,x,face] of [['hero',bout.partner,76,1],['rival',bout.opponentPartner,724,-1]]){
         window.drawTagEffects(ctx,{kind:'corner',x:side==='hero'?65:735,y:295,time,side,reduced});
-        if(bout.exchange?.side!==side)drawTeamActor({fighter:bench,x,y:303,face,pose:'apron',phase:(time*.52)%1},time);
+        if(bout.exchange?.side!==side){
+          // A corner leaves the close shot before its wrestler is clipped at the edge.
+          const edge=400/cameraZoom-Math.abs(x-cameraX);
+          ctx.save();ctx.globalAlpha*=reduced?1:Math.max(0,Math.min(1,(edge-8)/32));
+          drawTeamActor({fighter:bench,x,y:303,face,pose:'apron',phase:(time*.52)%1},time);ctx.restore();
+        }
       }
     }
     for(const g of ghosts){ctx.save();ctx.globalAlpha=g.life*.6;window.drawLuchador(ctx,g);ctx.restore();}
@@ -234,6 +277,7 @@
     window.drawForeRopes(ctx,aspect);
     if(bout.wind){const text=t({strike:'warnStrike',throw:'warnThrow',dive:'warnDive',charge:'rush'}[bout.wind.kind]);ctx.save();ctx.font='bold 16px system-ui';const w=ctx.measureText(text).width+20,x=Math.max(w/2,Math.min(800-w/2,r.x));ctx.fillStyle='#702e2b';ctx.fillRect(x-w/2,164,w,25);ctx.fillStyle='#ffe9a5';ctx.textAlign='center';ctx.fillText(text,x,182);ctx.restore();}
     for(const p of particles){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.life*5);ctx.globalAlpha=Math.min(1,p.life*5);ctx.fillStyle=p.col;ctx.fillRect(-3,-1.7,7,3.5);ctx.restore();}
+    ctx.restore();
     if(bout.mode==='intro'){ctx.save();ctx.fillStyle='#17262acd';ctx.fillRect(0,164,800,76);ctx.textAlign='center';ctx.fillStyle='#ffd173';ctx.font='900 17px system-ui';ctx.fillText(tour?t('bout').toUpperCase()+' '+(bout.round+1)+' / 5':t('exhibition').toUpperCase(),400,190);ctx.fillStyle='#fff1c5';ctx.font='italic bold 31px Georgia';if(bout.partner){ctx.font='bold 23px Georgia';ctx.fillText(selected.short+' + '+partner.short+'  vs.  '+nameOf(r.id)+' + '+nameOf(bout.opponentPartner.id),400,222,755);}
       else ctx.fillText(selected.name+'  vs.  '+rivals[bout.round],400,222);ctx.restore();}
     ctx.restore();
@@ -257,5 +301,6 @@
       if(tour&&bout.round===4)window.drawVictoryBelt(c,{x:120,y:62,scale:.56,time:0,reduced:true});
     }else window.drawVictoryBelt(c,{x:120,y:38,scale:1.22,time:0,reduced:true});
   }
+  window.prepareLuchadores([selected.id,1,partner.id,2]);
   maskPicker();labels();
 })();
