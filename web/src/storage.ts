@@ -419,7 +419,16 @@ function normalizeLumaPet(candidate: unknown): LumaPet | undefined {
   const name = pet.name.trim().slice(0, 18);
   if (!name || (pet.color !== "coral" && pet.color !== "mint" && pet.color !== "violet")) return undefined;
   const timestamp = (value: unknown) => Math.floor(clampNumber(value, 0, Number.MAX_SAFE_INTEGER, 0));
+  const trail = asRecord(pet.journey);
+  const wins = Array.isArray(trail?.wins)
+    ? Array.from({length: 4}, (_, index) => Math.floor(clampNumber((trail.wins as unknown[])[index], 0, 9999, 0)))
+    : [0, 0, 0, 0];
+  const owned = Math.floor(clampNumber(trail?.owned, 0, 31, 1)) | 1;
+  const wear = Math.floor(clampNumber(trail?.wear, 0, 4, 0));
+  const home = Math.floor(clampNumber(trail?.home, 0, 4, 0));
   return {
+    ...(trail ? { journey: { wins, owned, wishes: Math.floor(clampNumber(trail.wishes, 0, 999999, 0)), wear: owned & (1 << wear) ? wear : 0,
+      home: home && wins[home - 1] > 0 ? home : 0, pearls: Math.floor(clampNumber(trail.pearls, 0, 99999, 0)) } } : {}),
     version: 1, name, color: pet.color, born: timestamp(pet.born), updated: timestamp(pet.updated),
     bond: timestamp(pet.bond), sleeping: pet.sleeping === true,
     belly: clampNumber(pet.belly, 0, 100, 58), joy: clampNumber(pet.joy, 0, 100, 60),
