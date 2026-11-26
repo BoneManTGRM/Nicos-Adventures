@@ -66,6 +66,7 @@ export function stepAirRaid(s,dt,onHit){
       }
     } else if(p.clock<=0&&Math.abs(a.x-p.x)<330){
       p.tell=s.defense?.76:.52;p.tx=a.x;p.ty=a.y+48;
+      s.events.push({kind:'warning',type:'plane',x:p.x,y:p.y});
     }
   }
   for(let i=bolts.length-1;i>=0;i--){
