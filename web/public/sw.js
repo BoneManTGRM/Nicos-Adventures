@@ -1,5 +1,5 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v44";
+const CACHE = "nicos-world-static-v45";
 const FISHING_DOCUMENT = "/games/starfall-anglers/";
 const GAME_DOCUMENTS = [FISHING_DOCUMENT, "/games/timberline-hunt/", "/games/luma-lagoon/"];
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";

@@ -81,3 +81,33 @@ test('the turbo, pedals and road fit both portrait and short landscape screens',
  await check();await page.setViewportSize({width:844,height:390});await page.waitForTimeout(200);await check();
  await info.attach('truck-landscape-controls',{body:await page.screenshot(),contentType:'image/png'});
 });
+
+test('the illustrated test stand reacts to controls and keeps the painted build',async({page},info)=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await enter(page,info);
+ const stand=page.locator('.mg-stand-controls');
+ const truck=page.locator('canvas.cg-garage-art');
+ const pixels=()=>truck.evaluate(el=>(el as HTMLCanvasElement).toDataURL());
+ const loaded=(name:string)=>page.waitForFunction(name=>performance.getEntriesByType('resource').some(r=>r.name.includes('/garage-'+name+'-')||r.name.includes('/garage-'+name+'.webp')),name);
+ await loaded('bodies-0');
+ const before=(await current(page)).garage;
+ await stand.getByRole('button',{name:spanish(info)?'Acelerar':'Rev engine'}).click();
+ await expect(stand.locator('button').nth(0)).toHaveClass(/is-running/);
+ await stand.getByRole('button',{name:spanish(info)?'Probar resortes':'Test springs'}).click();
+ await expect(stand.locator('button').nth(1)).toHaveClass(/is-running/);
+ const dark=await pixels();
+ const light=stand.getByRole('button',{name:spanish(info)?'Faros':'Headlights'});
+ await light.click();
+ await expect(light).toHaveAttribute('aria-pressed','true');
+ await expect.poll(pixels).not.toBe(dark);
+ await light.click();
+ expect((await current(page)).garage).toEqual(before);
+ await page.locator('.cg-swatch').nth(2).click();
+ await loaded('bodies-2');
+ await expect(page.locator('.cg-swatch').nth(2)).toHaveAttribute('aria-pressed','true');
+ await expect.poll(pixels).not.toBe(dark);
+ await page.reload();
+ await page.getByTestId('open-monster-garage').click();
+ expect((await current(page)).garage.build.paint).toBe(2);
+ await expect(page.locator('.cg-swatch').nth(2)).toHaveAttribute('aria-pressed','true');
+});
