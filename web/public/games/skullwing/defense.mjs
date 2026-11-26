@@ -38,7 +38,7 @@ function incoming(s){
   s.events.push({kind:'warning',type,x:ox,y:oy});
   return true;
 }
-function hurt(s,p){
+export function hurt(s,p){
   const d=s.defense;
   if(d.hurt>0)return;
   d.hp=Math.max(0,d.hp-1);d.hurt=1.05;

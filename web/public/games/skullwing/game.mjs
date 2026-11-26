@@ -73,6 +73,7 @@ function effect(e){
   if(e.kind==='swing')tone(e.hit?160:250,e.hit?43:100,.115,.039,'triangle');
   if(e.kind==='stomp'){tone(110,29,.31,.10,'sine');tone(154,41,.14,.04,'triangle');}
   if(e.kind==='land')tone(82,42,.12,.028,'sine');
+  if(e.kind==='aircraftShot')tone(480,170,.14,.026,'triangle');
   if(e.kind==='warning')tone(480,690,.14,.023,'triangle');
   if(e.kind==='bolt')tone(710,220,.19,.026,'sine');
   if(e.kind==='droneHit')tone(390,92,.27,.041,'triangle');
@@ -155,7 +156,7 @@ function setHint(){
   else if(helpStage===0)hint(t(touch?'Hold Smash near a car to send it into a tower.':'Move with ← → or A / D. Hold X to punch cars and towers.',touch?'Mantén Golpe junto a un auto para lanzarlo contra una torre.':'Muévete con ← → o A / D. Mantén X para golpear.'),8);
   else if(helpStage===1)hint(t(touch?'Tap Flap twice to fly. Hold it to glide.':'Tap Space twice to fly. Hold it to glide.',touch?'Toca Volar dos veces. Mantenlo para planear.':'Pulsa Espacio dos veces. Mantenlo para planear.'),6);
   else if(helpStage===2)hint(t(touch?'Tap Smash in midair to dive.':'Press X in midair to dive.',touch?'Toca Golpe en el aire para caer con fuerza.':'Pulsa X en el aire para caer con fuerza.'),5);
-  else hint(t(touch?'Roar shakes every nearby building.':'Press C to roar through nearby buildings.',touch?'Ruge para sacudir los edificios cercanos.':'Pulsa C para sacudir los edificios cercanos.'),6);
+  else hint(t(touch?'Jump, then Roar to knock planes out of the sky.':'Jump and press C to blast planes out of the sky.',touch?'Salta y ruge para derribar los aviones.':'Salta y pulsa C para derribar los aviones.'),6);
 }
 function callout(text,seconds=.9){el('callout').textContent=text;callUntil=city.time+seconds;}
 function begin(index){
@@ -172,7 +173,7 @@ function hud(){
   el('score').textContent=city.score.toLocaleString(es?'es-MX':'en-US');
   el('clearCount').textContent=city.cleared+' / '+city.buildings.length;
   el('clearCount').setAttribute('aria-label',t('Buildings down','Edificios derribados')+' '+el('clearCount').textContent);
-  const wrecks=city.wrecks.car+city.wrecks.police+city.wrecks.tank;
+  const wrecks=city.wrecks.car+city.wrecks.police+city.wrecks.tank+city.wrecks.plane;
   el('wreckCount').hidden=!wrecks;
   el('wreckCount').textContent=t('Wrecks ','Destrozos ')+wrecks;
   el('health').hidden=!city.defense;
@@ -200,6 +201,7 @@ function receive(e){
   if(e.kind==='ricochet')callout(t('CRASH BONUS +55','¡CHOQUE! +55'),.7);
   if(e.kind==='vehicleExplosion'){
     if(e.chain)callout(t('CHAIN BLAST','EXPLOSIÓN EN CADENA')+' ×'+(e.chain+1));
+    else if(e.type==='plane')callout(t('PLANE DOWN! +165','¡AVIÓN DERRIBADO! +165'),1.25);
     else if(e.type==='tank')callout(t('TANK WRECKED!','¡TANQUE DESTROZADO!'));
   }
   if(e.kind==='flap'&&!hadFlight){hadFlight=true;helpStage=2;setHint();}
@@ -236,7 +238,7 @@ function showDialog(which){
   const tally=city.wrecks;
   el('dialogText').textContent=lost?
     t('Jump when a warning locks on, or roar to knock the drone out of the sky.','Cuando aparezca la mira, salta o ruge para derribar el dron.'):done?
-    [t('Cars','Autos')+' '+tally.car,t('Police cruisers','Patrullas')+' '+tally.police,t('Tanks','Tanques')+' '+tally.tank].join(' · '):
+    [t('Cars','Autos')+' '+tally.car,t('Police cruisers','Patrullas')+' '+tally.police,t('Tanks','Tanques')+' '+tally.tank,t('Planes','Aviones')+' '+tally.plane].join(' · '):
     t(touch?'Tap Flap twice to climb. Hold to glide. Smash in the air to dive.':'Arrows or A/D to move. Space to flap or glide, X to smash or dive, C to roar.',
       touch?'Toca Volar dos veces para subir. Mantén para planear. Golpea en el aire para caer.':'Flechas o A/D para moverte. Espacio para volar o planear, X para golpear o caer, C para rugir.');
   el('results').hidden=!done&&!lost;
