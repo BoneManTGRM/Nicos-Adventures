@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#161629">
+<meta name="description" content="Hatch a pixel axolotl, catch fireflies, and grow together in Nico's World.">
+<title>Luma Lagoon · Nico's World</title><link rel="stylesheet" href="./lagoon.css"><script type="module" src="./game.mjs"></script>
+</head><body><main>
+<nav><a href="/" id="world">‹ &nbsp; Nico’s World</a><div><button id="audio" aria-pressed="false">♪ <span>Sound off</span></button><button id="lang" lang="es-MX">Español</button></div></nav>
+<header><h1 id="title">Luma Lagoon</h1><p id="tagline">Your little axolotl by moonlight.</p></header>
+<section class="habitat" id="habitat" aria-label="Lagoon"><div class="night"></div>
+<div class="sky-dust" aria-hidden="true"></div>
+<div class="scene-top"><span class="chip" id="phase">Mystery egg</span><span class="chip" id="gameScore" hidden></span></div>
+<div id="petPosition"><div class="ripple"></div><div id="petFloat"><canvas id="creature" width="100" height="82" role="img" aria-label="A speckled axolotl egg"></canvas></div><span id="effect" aria-hidden="true"></span></div>
+<button id="bug" hidden aria-label="Catch the firefly"><i></i></button>
+<p class="speech" id="say" aria-live="polite">Who’s inside?</p></section>
+<div id="saveWarning" role="alert" hidden></div>
+<section class="nursery panel" id="nursery"><div><h2 id="chooseTitle">Hatch a friend</h2><p id="chooseHint">Pick an egg and give your axolotl a name.</p><div id="eggs" role="group" aria-label="Egg color"></div></div><form id="hatchForm"><label for="petName" id="nameLabel">Pet name</label><div class="nameRow"><input id="petName" maxlength="18" value="Luma" autocomplete="off"><button class="primary" id="hatch">Hatch egg</button></div></form></section>
+<div id="home" hidden><div class="careGrid"><section class="panel"><h2 id="careTitle">Care for Luma</h2><div class="actions" id="actions"></div><button id="quitPlay" class="smallButton" hidden>Finish later</button></section><section class="panel"><div class="panelHead"><h2 id="needsTitle">Pet needs</h2></div><div id="meters"></div></section></div><section class="growth panel"><div class="panelHead"><h2 id="bondTitle">Growing together</h2><span id="bondCount"></span></div><div class="bondBar"><i id="bondFill"></i></div><p id="bondHint"></p></section></div>
+</main></body></html>

@@ -44,9 +44,13 @@ const huntHtml = readFileSync(path.join(dist, hunt, "index.html"), "utf8");
 const huntAssets = [...huntHtml.matchAll(/<(?:script|link)\b[^>]+?(?:src|href)="([^"]+)"/g)]
   .map(([, url]) => hunt + url);
 huntAssets.push(hunt, hunt + "assets/trails/north.webp");
+const lagoon = "/games/luma-lagoon/";
+const lagoonFiles = readdirSync(path.join(dist, lagoon), { withFileTypes: true })
+  .filter(entry => entry.isFile() && entry.name !== "index.html")
+  .map(entry => lagoon + entry.name);
 const manifest = {
   version: 1,
-  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles, ...huntAssets])].sort(),
+  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles, ...huntAssets, lagoon, ...lagoonFiles])].sort(),
 };
 writeFileSync(path.join(dist, "offline-assets.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 console.log(`Generated offline-assets.json with ${manifest.assets.length} Golden Adventure assets.`);
