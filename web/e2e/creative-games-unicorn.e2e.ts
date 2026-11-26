@@ -5,6 +5,7 @@ test.use({serviceWorkers:'block'});
 async function enterArcade(page:Page,info:TestInfo){
  const games=normalizeGames(null);games.kingdom.petals=88;games.garage.bolts=42;
  await page.goto('/');await expect(page.getByTestId('continue-world')).toBeVisible();
+ await page.waitForFunction(key=>localStorage.getItem(key)!==null,key);
  await page.evaluate(({key,games,language})=>{const s=JSON.parse(localStorage.getItem(key)!);const p=s.profiles.find((p:{id:string})=>p.id===s.activeProfileId);p.selectedSection='game-arcade';p.language=language;p.creativeGames=games;p.nico.speechEnabled=false;localStorage.setItem(key,JSON.stringify(s));},{key,games,language:info.project.metadata.language});
  await page.reload();await expect(page.getByTestId('open-rainbow-kingdom')).toBeVisible();
 }
