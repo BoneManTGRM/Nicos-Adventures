@@ -25,7 +25,7 @@
   function ellipse(c,x,y,rx,ry,color) {
     c.fillStyle=color; c.beginPath(); c.ellipse(x,y,rx,ry,0,0,Math.PI*2); c.fill();
   }
-  function makePose(p,t,u,id) {
+  function makePose(p,t,u,id,partner) {
     const beat=Math.sin(t*7), step=Math.sin(t*10), pulse=Math.sin(Math.PI*u), extend=Math.pow(Math.max(0,Math.sin(Math.PI*u)),.46);
     let body=[0,-39,0], head=0;
     // Elbows and hands are offsets from the shoulder, knees and ankles from world origin.
@@ -61,6 +61,73 @@
         body=[2*coil,-37+11*coil,.20+.33*coil+.67*fly];head=-.30*fly;
         back=[-11-4*tuck,11-17*fly,-15-8*tuck,4-25*fly];front=[12+6*fly,12-23*fly,20+12*fly,2-26*fly];
         legs=[[-17-8*tuck,-18-8*tuck,-22-9*fly,-2-24*fly],[19+5*tuck,-18-7*tuck,21-13*fly,-2-9*fly]];
+        break;
+      }
+      case 'tagOut': {
+        // An accelerating stride becomes a planted front leg as the palm meets the partner.
+        const reach=clamp((u-.25)/.44,0,1), run=Math.sin(2*Math.PI*(u*1.9+.09));
+        const swinging=run*(1-.76*reach);
+        body=[2+4*reach,-38-3*Math.abs(swinging),.17+.17*reach];
+        head=-.16-.10*reach;
+        back=[-14-6*swinging,9,-20-6*swinging,-2+5*swinging];
+        front=[13+7*reach-3*swinging,9-16*reach,20+15*reach-3*swinging,-2-16*reach];
+        legs=[[-15-9*swinging,-20-6*Math.max(0,swinging),-16-15*swinging-8*reach,-2-7*Math.max(0,swinging)],
+          [15+9*swinging,-22-6*Math.max(0,-swinging),15+15*swinging+5*reach,-2-7*Math.max(0,-swinging)]];
+        break;
+      }
+      case 'tagIn': {
+        const meet=1-clamp((u-.25)/.30,0,1);
+        const load=Math.sin(Math.PI*clamp((u-.17)/.44,0,1));
+        const vault=Math.sin(Math.PI*clamp((u-.36)/.64,0,1));
+        body=[3*meet+4*vault,-37+9*load-5*vault,.22*meet+.32*load+.51*vault];
+        head=-.16*meet-.28*vault;
+        back=[-14-2*vault,13+2*load-5*vault,-17-8*vault,21+3*load-18*vault];
+        front=[13+7*meet-4*vault,9-14*meet-8*vault,19+13*meet+4*vault,-3-13*meet-18*vault];
+        legs=[[-15-5*vault,-20+6*load-5*vault,-20-8*vault,-2-17*vault],
+          [15+6*vault,-18+4*load-17*vault,20-12*vault,-2-18*vault]];
+        break;
+      }
+      case 'apron': {
+        const call=(1+Math.sin(t*3.15+id*.38))*.5;
+        body=[0,-38+beat*.4,.075+.03*call];head=-.10-.06*call;
+        back=[-9,14,-16,20];front=[15+3*call,9-11*call,23-6*call,-1-20*call];
+        legs=[[-13,-22,-18,-2],[16,-20,19,-2]];
+        break;
+      }
+      case 'doubleTeam': {
+        const lift=Math.sin(Math.PI*clamp((u-.07)/.91,0,1));
+        const drive=Math.sin(Math.PI*clamp((u-.18)/.80,0,1));
+        if(partner){
+          // Dropkick: torso falls back as the two soles shoot towards the same target.
+          body=[-5*drive,-33-5*lift,-.17-.91*drive];head=.18+.31*drive;
+          back=[-13,10,-23-4*drive,15];front=[13,5,23+5*drive,-5];
+          legs=[[-9+20*drive,-20-9*lift,-17+56*drive,-2-32*drive],
+            [13+10*drive,-20-10*lift,19+31*drive,-2-22*drive]];
+        } else {
+          // Flying lariat: leading forearm cuts across while the trailing knee folds.
+          body=[2+5*drive,-38-4*lift,.27+.60*drive];head=-.08-.40*drive;
+          back=[-12-7*drive,9,-17-8*drive,9+5*drive];
+          front=[14+6*drive,8-15*drive,22+14*drive,-4-20*drive];
+          legs=[[-16-7*drive,-20-6*lift,-21-13*drive,-2-19*drive],
+            [16,-22-2*lift,20-19*drive,-2-8*drive]];
+        }
+        break;
+      }
+      case 'celebrate': {
+        const wave=Math.sin(t*4.1+id*.22);
+        // When drawn facing each other the matching inside hands hold the high-five.
+        body=[1,-40-Math.max(0,beat)*.9,partner?.06:-.04];head=-.14+.018*wave;
+        front=[13,-9,23,-20+wave];
+        back=partner?[-16,-9,-22,-24-wave*3]:[-15,8,-10,-8-wave*2];
+        legs=[[-14,-22,-21,-2],[15,-21,21,-2]];
+        break;
+      }
+      case 'entrance': {
+        const wave=Math.sin(t*5), stride=Math.sin(t*8);
+        body=[0,-40-Math.abs(stride)*1.4,.04];head=-.10;
+        back=[-14,8,-18,4-stride*3];front=[13,-5,15+wave*3,-22+wave*1.8];
+        legs=[[-15-stride*5,-22,-16-stride*10,-2-2*Math.max(0,stride)],
+          [14+stride*5,-21,15+stride*10,-2-2*Math.max(0,-stride)]];
         break;
       }
       case 'counter': {
@@ -193,7 +260,13 @@
       line(c,'M-3.8 -6 Q0 -4 3.8 -6 M-3.8 -3 Q0 -1 3.8 -3',s.trim,1);c.restore();
     });
     const a=Math.atan2(wy-ey,wx-ex);
-    if(open) {
+    if(open==='palm'){
+      // Fingers seen face-on. The upright palm makes a tag readable even at portrait scale.
+      c.save();c.translate(wx,wy);c.rotate(-.16);
+      path(c,'M-3 3 Q-4 .2 -5 -2 L-6 -4 Q-6.4 -5.4 -5.1 -5.2 L-2.6 -3.5 -3 -8 Q-3 -9.8 -1.7 -9.2 L-.8 -6.1 -.9 -10 Q-.6 -11.2 .4 -10.2 L1.3 -6.3 1.7 -9 Q2.2 -10 3.1 -8.8 L3.1 -5.5 3.8 -7.2 Q4.6 -8 5.2 -6.6 L4.6 -.8 Q4.3 1.8 2 3.2 L-.3 4Z',near?s.skin:s.shade,ink,1.1);
+      line(c,'M-1 -2 Q.6 -3.4 2.8 -2.9 M-1.7 -.6 Q-.2 .2 .5 2.1',s.sun,.8);
+      c.restore();
+    } else if(open) {
       c.save();c.translate(wx,wy);c.rotate(a);
       path(c,'M-3 -3 L1 -4 5 -7 Q6 -7 6 -5 L4 -2 9 -4 Q11 -4 10 -2 L6 0 10 -.5 Q12 0 11 1 L6 3 3 4 -2 4 -4 1Z',near?s.skin:s.shade,ink,1.35);
       line(c,'M0 -1 Q2 -2 4 -2 M4 1 L8 -1',s.sun,1);c.restore();
@@ -259,12 +332,19 @@
     path(c,'M-2 -1.9 L4 -2 5 1.6 2 4 -2 2Z',s.accent,ink,.8);
     line(c,'M-12 4.5 L-7 6 M5 6 L10 3',s.light,1.45);
   }
-  function mask(c,s,time=0,phase=0) {
+  function mask(c,s,time=0,phase=0,flutter=false) {
     const b=s.base,h=s.light,d=s.dark,g=s.trim,cream=s.accent;
     // Neck, knots, and seams sit behind the fitted leather shell.
     path(c,'M-7 5 L7 5 8 14 Q4 18 -4 15 L-8 12Z',s.skin,ink,1.4);
     path(c,'M-7 7 L7 8 7 12 Q2 14 -4 12Z',s.shade);
     path(c,'M-11 -3 Q-17 -4 -18 0 Q-14 -1 -13 2 L-19 6 -22 6 Q-17 11 -11 5Z',d,ink,1.4);
+    if(flutter) {
+      c.save();c.translate(-11,-1);c.rotate(-.18+.15*Math.sin(time*6));
+      path(c,'M1 -1 Q-4 -4 -10 -1 Q-16 2 -21 -.4 L-17 3 -20 4.5 Q-13 6 -8 2 Q-4 -.5 .6 2Z',g,ink,1.1);
+      c.rotate(.23*Math.sin(time*6-.8));
+      path(c,'M0 -.5 Q-3 2 -7 5 Q-11 8 -14 7 L-12 9.5 -15 11 Q-8 10 -5 6.5 Q-2 2 1 2Z',b,ink,.95);
+      c.restore();
+    }
     if(s.face===1){
       path(c,'M-11 -8 L-16 -23 -4 -17 6 -18 13 -25 13 -10Z',b,ink,1.9);
       path(c,'M-13 -20 L-8 -16 -11 -11Z M10 -17 L12 -21 12 -14Z',g);
@@ -346,6 +426,8 @@
     line(c,'M3.6 6.7 L8.7 6.2',crease,.7);
     line(c,'M-10.4 -11.8 Q-12.5 -6 -10 -1 M-8.7 1.6 L-7.1 4.4',h,.8);
     line(c,'M-.5 9.2 Q4 11.5 7.3 10.7',g,.85);
+    // Small broken highlights catch the arena light along the edge of the leather.
+    line(c,'M-12.2 -10.7 Q-12 -14.7 -9.5 -16.9 M10.5 .7 Q12.6 -.4 13.4 -.4',cream,.83);
     if(s.face===7){
       c.save();c.translate(4,-2);c.rotate(Math.sin(time*4+phase)*.035);
       path(c,'M-2 -2 Q1 -3 4 -1 Q8 5 8 12 Q8 15 11 14 L12 12 Q15 13 14 16 Q12 21 7 19 Q3 18 2 12 L1 6 -2 2Z',b,ink,1.25);
@@ -363,13 +445,16 @@
     const {x=0,y=0,scale=1,face=1,id=0,pose='idle',phase=0,time=0}=options;
     const s=roster[id]||roster[0], c=ctx, u=clamp(phase||0,0,1), t=Number.isFinite(time)?time:0;
     const pace=s.face===4?1.12:s.face===7?.76:s.face===5?.87:1;
-    const state=makePose(pose,t*pace,u,s.face), [bx,by,rot]=state.body;
+    const partner=options.teamRole===undefined ? s.face%2===1 : options.teamRole===1||options.teamRole==='partner';
+    const state=makePose(pose,t*pace,u,s.face,partner), [bx,by,rot]=state.body;
     c.save(); c.translate(x,y);c.scale((face<0?-1:1)*scale,scale);c.lineJoin='round';c.lineCap='round';
     if(pose==='down'){c.translate(0,-14+Math.sin(t*3)*.25);c.rotate(-Math.PI*.49);c.scale(.9,.92);c.translate(0,53);}
     if(s.face===4)c.scale(.96,.95);
     if(s.face===7)c.scale(1.04,1.045);
     if(pose==='dive'){c.translate(0,-10);c.rotate(.31+.22*Math.sin(Math.PI*u));c.translate(0,2);}
     if(pose==='spring'){const launch=clamp((u-.30)/.66,0,1);c.translate(0,-6*launch);c.rotate(.36*launch);}
+    if(pose==='tagIn'){const vault=Math.sin(Math.PI*clamp((u-.36)/.64,0,1));c.translate(0,-14*vault);c.rotate(.15*vault);}
+    if(pose==='doubleTeam'){const lift=Math.sin(Math.PI*clamp((u-.07)/.91,0,1));c.translate(0,-13*lift);c.rotate((partner?-.08:.18)*lift);}
     if(pose==='combo'&&u>.51&&u<.92){
       c.save();c.translate(4,-59);c.rotate(-.35);
       line(c,'M26 -6 Q44 -14 40 -26',s.trim,1.3);
@@ -386,14 +471,16 @@
     }
     const reaching=pose==='throw'||pose==='pin'||pose==='counter';
     const wings=pose==='spring'||pose==='dive';
-    arm(c,s,-15,-30,state.back,false,reaching||wings);
+    arm(c,s,-15,-30,state.back,false,reaching||wings||pose==='apron'||pose==='tagIn'||pose==='doubleTeam');
     torso(c,s);
     // Close arm appears in front of the torso. Raised fists can cross the face.
     if(s.face===3)insignia(c,s,-1,-15,.68);
-    const frontArm=()=>arm(c,s,14,-29,state.front,true,reaching||(pose==='win'&&[2,4,6].includes(s.face)));
+    const palm=pose==='celebrate'||pose==='entrance'||pose==='tagOut'&&u>.31||pose==='tagIn'&&u<.48;
+    const hand=palm?'palm':reaching||pose==='apron'||(pose==='win'&&[2,4,6].includes(s.face));
+    const frontArm=()=>arm(c,s,14,-29,state.front,true,hand);
     const armInFront=pose==='guard'||pose==='counter'||pose==='pin'||(pose==='throw'&&u>.33&&u<.8);
     if(!armInFront)frontArm();
-    c.save();c.translate(2.7,-49);c.rotate(state.head);mask(c,s,t*pace,u);c.restore();
+    c.save();c.translate(2.7,-49);c.rotate(state.head);mask(c,s,t*pace,u,pose==='win'||pose==='celebrate'||pose==='entrance'||pose==='tagIn');c.restore();
     if(armInFront)frontArm();
     c.restore();
   }
