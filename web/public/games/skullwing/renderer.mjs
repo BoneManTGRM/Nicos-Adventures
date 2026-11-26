@@ -1,3 +1,4 @@
+import {drawDefense} from './defense-art.mjs';
 import {drawStructure} from './demolition-art.mjs';
 import {drawVehicle} from './vehicle-art.mjs';
 import {SmashFX} from './smash-fx.mjs';
@@ -37,6 +38,9 @@ export class Renderer {
     if(e.kind==='hit')this.shake=Math.max(this.shake,1.35);
     else if(e.kind==='collapse')this.shake=Math.max(this.shake,3.2);
     else if(e.kind==='floorImpact')this.shake=Math.max(this.shake,1.7);
+    else if(e.kind==='droneHit')this.burst(e.x,e.y,10,'spark');
+    else if(e.kind==='knockout')this.burst(e.x,e.y+4,14,'dust');
+    else if(e.kind==='hurt')this.shake=Math.max(this.shake,2.6);
     else if(e.kind==='vehicleExplosion')this.shake=Math.max(this.shake,e.type==='tank'?3.7:2.1);
     else if(e.kind==='stomp'||e.kind==='land'||e.kind==='leap'){
       this.burst(e.x,e.y+3,e.kind==='stomp'?22:7,'dust');
@@ -73,6 +77,7 @@ export class Renderer {
     for(const car of s.cars){
       if(car.x>=camera-55&&car.x<=camera+W+55)drawVehicle(c,car,t,this.reduced);
     }
+    if(s.defense)drawDefense(c,s,this.reduced,'back');
     const shadeHeight=a.support?.h||0;
     c.fillStyle='rgba(15,13,28,.37)';c.beginPath();c.ellipse(a.x,-shadeHeight+2,Math.max(11,40-(a.y-shadeHeight)*.09),5,0,0,Math.PI*2);c.fill();
     const foot=Math.floor(a.stride*1.14);
@@ -88,6 +93,10 @@ export class Renderer {
     c.save();c.translate(a.x,-a.y);
     this.turnFace+=(a.face-this.turnFace)*(1-Math.exp(-17*dt));
     c.scale(.54+.46*Math.abs(this.turnFace)+a.land*.045,1-a.land*.07);
+    if(s.outcome==='defeat'){
+      const knee=Math.min(1,(s.downTime||0)*1.65);
+      c.rotate(a.face*knee*(this.reduced?.13:.52));c.scale(1,1-knee*.26);
+    }
     drawRex(c,{time:t,walk:a.walk,facing:Math.sign(this.turnFace)||a.face,air:a.flight,slam:a.dive?1:a.land,swipe:a.swipe,roar:a.roar,charge:s.charge,reduced:this.reduced,glide:a.glide,flap:a.flap,stride:a.stride,hand:a.hand,slide:a.slide});
     c.restore();
     this.smashFX.draw(c,dt,v);
@@ -117,6 +126,7 @@ export class Renderer {
       else{c.beginPath();c.moveTo(-p.size,0);c.lineTo(1,-p.size*.7);c.lineTo(p.size*.76,1);c.lineTo(0,p.size*.55);c.closePath();c.fill();}
       c.restore();
     }this.parts=this.parts.filter(p=>p.life>0);
+    if(s.defense)drawDefense(c,s,this.reduced,'front');
     c.restore();c.restore();
   }
 }

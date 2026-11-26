@@ -1,6 +1,8 @@
 // Each moving panel carries a piece of the actual district facade and its impact scars.
 import {drawBuilding} from './city-art.mjs';
 
+import {expansionPalettes} from './city-palettes.mjs';
+
 const structures = new WeakMap();
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const duration = 1.55;
@@ -9,7 +11,8 @@ const rate = steps / duration;
 const materials = [
   {dark:'#192b3e',room:'#415061',lit:'#c99a76',cut:'#ba9e91',steel:'#758d99',edge:'#e6c5a4'},
   {dark:'#382e3b',room:'#675457',lit:'#d59a64',cut:'#c68d70',steel:'#908b81',edge:'#edc79b'},
-  {dark:'#1b3246',room:'#47596a',lit:'#c1aa83',cut:'#a2aeb6',steel:'#839ba7',edge:'#d8dfd7'}
+  {dark:'#1b3246',room:'#47596a',lit:'#c1aa83',cut:'#a2aeb6',steel:'#839ba7',edge:'#d8dfd7'},
+  ...expansionPalettes.map(p=>({dark:p.outline,room:p.faces[1][1],lit:p.faces[0][0],cut:p.trim,steel:p.glass[2],edge:p.light}))
 ];
 
 function random(seed) {
