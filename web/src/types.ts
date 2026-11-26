@@ -199,6 +199,7 @@ export type MovieProject = {
 };
 
 export type LumaPet = {
+  journey?: { wins: number[]; wishes: number; pearls: number; owned: number; wear: number; home: number };
   version: 1;
   name: string;
   color: "coral" | "mint" | "violet";

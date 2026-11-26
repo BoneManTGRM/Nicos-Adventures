@@ -57,3 +57,46 @@ describe('Luma Lagoon', () => {
     expect(normalized.profiles[0].lumaLagoon).toBeUndefined();
   });
 });
+
+import {canVisit, completeTrip, discoveries, dress, grantWish, journey, moveHome, solvedCircuit, traceCircuit} from '../public/games/luma-lagoon/expeditions.mjs';
+
+describe('Luma Lagoon expeditions', () => {
+  it('starts an existing guardian at home with their original identity and bond', () => {
+    const old = {...testPet(), bond: 34};
+    const next = completeTrip(old, 0, hour);
+    expect(next).toMatchObject({born: old.born, name: old.name, color:'violet', bond:37});
+    expect(journey(old)).toEqual({wins:[0,0,0,0],pearls:0,wishes:0,home:0,wear:0,owned:1});
+    expect(journey(next)).toMatchObject({wins:[1,0,0,0],pearls:4});
+    expect(completeTrip(old, 2, hour)).toBeNull();
+    expect(completeTrip(care(old,'nap',hour).pet,0,hour)).toBeNull();
+  });
+  it('unlocks all four habitats and twelve treasures, charges once for each accessory, and preserves them through the world backup', () => {
+    let pet=testPet();
+    expect(dress(pet, 1)).toBeNull();
+    expect(moveHome(pet, 2)).toBeNull();
+    for(const route of [0,1,2,3,0,1,2,3,0,1,2,3,0]) {
+      expect(canVisit(journey(pet),route)).toBe(true);
+      pet=completeTrip(pet,route,hour);
+    }
+    expect(discoveries(journey(pet))).toBe(12);
+    pet=dress(pet,4);
+    expect(journey(pet).pearls).toBe(40);
+    expect(dress(pet,4)).toEqual(pet);
+    pet=moveHome(pet,4);
+    const profile = {...createProfile('Nico'),lumaLagoon:pet};
+    expect(importProfile(exportProfile(profile)).lumaLagoon).toEqual(pet);
+  });
+  it('rewards the requested interaction once and retains the next wish on return', () => {
+    const pet=testPet();
+    expect(grantWish(pet,'trip')).toBeNull();
+    const next=grantWish(pet,'love');
+    expect(grantWish(next,'love')).toBeNull();
+    expect(journey(next)).toMatchObject({pearls:2,wishes:1});
+    const storage=memory();openLagoon(storage).write(grantWish(next,'feed'));
+    expect(journey(openLagoon(storage).read())).toMatchObject({pearls:4,wishes:2});
+  });
+  it('traces the continuous path from the moon to the final star and stops at a broken link', () => {
+    expect(traceCircuit(solvedCircuit)).toEqual({lit:[0,3,4,1,2,5],complete:true});
+    expect(traceCircuit([0,...solvedCircuit.slice(1)])).toEqual({lit:[],complete:false});
+  });
+});
