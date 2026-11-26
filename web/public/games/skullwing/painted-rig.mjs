@@ -2,11 +2,12 @@
 // Far-side pieces have the same geometry with a baked indigo shadow.
 const sheet = typeof Image === 'function' ? new Image() : null;
 if (sheet) sheet.src = new URL('./skullwing-painted.webp', import.meta.url).href;
+const hindlegs = typeof Image === 'function' ? new Image() : null;
+if (hindlegs) hindlegs.src = new URL('./skullwing-hindlegs.webp', import.meta.url).href;
 export function ready() { return !!(sheet?.complete && sheet.naturalWidth); }
 
 const parts = {
   torso:[1,1,280,272], head:[285,1,243,246], voice:[535,1,244,251],
-  leg:[787,1,155,211], farLeg:[797,280,155,211],
   wing:[1,280,490,249], farWing:[1,532,490,249],
   upper:[501,280,146,210], farUpper:[501,532,146,210],
   fore:[655,280,134,220], farFore:[655,532,134,220],
@@ -52,8 +53,6 @@ const sourceRays=[
 ].map(p=>[wristUV[0]+4*(p[0]-wristUV[0]),wristUV[1]+4*(p[1]-wristUV[1])]);
 
 export function wing(ctx,far,spread,flap) {
-  ctx.save();ctx.translate(far?2:-10,far?-90:-82);
-  if(far){ctx.scale(-.9,1.07);ctx.rotate(.06);}
   const w=-19-19*spread, h=-35-13*spread+flap*10;
   const tipX=-51-39*spread,tipY=-10-15*spread+flap*18;
   const f2X=-49-26*spread,f2Y=13-4*spread+flap*11;
@@ -67,17 +66,39 @@ export function wing(ctx,far,spread,flap) {
     const j=(i+1)%rays.length;
     triangle(ctx,rect,wristUV,sourceRays[i],sourceRays[j],center,rays[i],rays[j]);
   }
+}
+
+// Source anchors are painted joint centers in pixels, relative to each part.
+const thighPart = {x:4, w:160, h:224, top:[76,44], bottom:[105,196], widthScale:.19};
+const shinPart = {x:172, w:117, h:223, top:[72,29], bottom:[70,198], widthScale:.149};
+
+function drawLegBone(ctx, part, atlasY, ax, ay, bx, by) {
+  const sourceX = part.bottom[0] - part.top[0], sourceY = part.bottom[1] - part.top[1];
+  const targetX = bx - ax, targetY = by - ay;
+  // Scale along the painted bone independently of its thickness.
+  ctx.save();
+  ctx.translate(ax, ay);
+  ctx.rotate(Math.atan2(targetY, targetX) - Math.PI / 2);
+  ctx.scale(part.widthScale, Math.hypot(targetX, targetY) / Math.hypot(sourceX, sourceY));
+  ctx.rotate(Math.PI / 2 - Math.atan2(sourceY, sourceX));
+  ctx.translate(-part.top[0], -part.top[1]);
+  ctx.drawImage(hindlegs, part.x, atlasY, part.w, part.h, 0, 0, part.w, part.h);
   ctx.restore();
 }
 
-export function hindLeg(ctx,x,hipY,footX,footY,near) {
-  const kneeX=x-6+(footX-x)*.5,kneeY=hipY*.48;
-  const rect=near?parts.leg:parts.farLeg;
-  const top=row(x,hipY-12,0,32,.48),knee=row(kneeX,kneeY,0,33,.34);
-  const ankle=row(footX-4,footY-9,0,31,.34),sole=row(footX+3,footY+.35,0,29,.48);
-  band(ctx,rect,0,.40,...top,...knee);
-  band(ctx,rect,.40,.76,...knee,...ankle);
-  band(ctx,rect,.76,1,...ankle,...sole);
+export function hindLeg(ctx, hipX, hipY, kneeX, kneeY, ankleX, ankleY, footAngle, near) {
+  if (!hindlegs?.complete || !hindlegs.naturalWidth) return false;
+  const atlasY = near ? 4 : 236;
+  // Register the ankle at (39,33) and the load-bearing sole at y=85.
+  ctx.save();
+  ctx.translate(ankleX, ankleY);
+  ctx.rotate(footAngle);
+  ctx.scale(.141, 7 / 52);
+  ctx.drawImage(hindlegs, 297, atlasY, 184, 88, -39, -33, 184, 88);
+  ctx.restore();
+  drawLegBone(ctx, shinPart, atlasY, kneeX, kneeY, ankleX, ankleY);
+  drawLegBone(ctx, thighPart, atlasY, hipX, hipY, kneeX, kneeY);
+  return true;
 }
 export function body(ctx) { stamp(ctx,parts.torso,-40,-101,70,70); }
 

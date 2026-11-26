@@ -40,10 +40,16 @@ function oval(ctx, x, y, rx, ry, fill, angle = 0) {
 // Wing joints interpolate between a folded and a spread silhouette. Each finger
 // terminates at a scallop so the membrane remains attached through the downstroke.
 function wing(ctx, far, spread, flap, voice) {
-  if(painted.ready()) return painted.wing(ctx, far, spread, flap, voice);
   ctx.save();
   ctx.translate(far?2:-10,far?-90:-82);
   if(far) {ctx.scale(-.9,1.07);ctx.rotate(.06);}
+  // Unfold from the existing shoulder so the roots stay tucked under the fur.
+  ctx.scale(1.14 + .05 * spread, 1);
+  if (painted.ready()) {
+    painted.wing(ctx, far, spread, flap);
+    ctx.restore();
+    return;
+  }
   const w=-19-19*spread, h=-35-13*spread+flap*10;
   const tipX=-51-39*spread, tipY=-10-15*spread+flap*18;
   const f2X=-49-26*spread, f2Y=13-4*spread+flap*11;
@@ -81,11 +87,28 @@ function wing(ctx, far, spread, flap, voice) {
 }
 
 function hindLeg(ctx, x, hipY, footX, footY, near) {
-  if(painted.ready()) return painted.hindLeg(ctx, x, hipY, footX, footY, near);
-  const kneeX=x-6+(footX-x)*.5, kneeY=hipY*.48;
+  // The sole follows the existing stride. Let the heel lift on toe-off and
+  // make the toes level again before the foot contacts the street.
+  const lift = Math.min(1, Math.max(0, (-footY - 1) / 9));
+  const footAngle = lift * Math.max(-.16, Math.min(.21, (x - footX) * .014));
+  const cosine = Math.cos(footAngle), sine = Math.sin(footAngle);
+  const ankleX = footX - 6 * cosine + 7 * sine;
+  const ankleY = footY - 6 * sine - 7 * cosine;
+
+  // Solve hip → knee → ankle on the forward side of the hip–ankle line.
+  // A planted gorilla foot has its heel near the ground, behind the knee.
+  const dx = ankleX - x, dy = ankleY - hipY;
+  const reach = Math.hypot(dx, dy);
+  const stretch = Math.max(1, reach / 48);
+  const thigh = 25 * stretch, shin = 24 * stretch;
+  const along = (thigh * thigh - shin * shin + reach * reach) / (2 * reach);
+  const bend = Math.sqrt(Math.max(0, thigh * thigh - along * along));
+  const kneeX = x + (along * dx + bend * dy) / reach;
+  const kneeY = hipY + (along * dy - bend * dx) / reach;
+  if (painted.hindLeg(ctx, x, hipY, kneeX, kneeY, ankleX, ankleY, footAngle, near)) return;
   ctx.beginPath();ctx.moveTo(x-10,hipY-8);ctx.quadraticCurveTo(x+4,hipY-14,x+10,hipY-1);
   ctx.quadraticCurveTo(x+10,hipY+9,kneeX+7,kneeY);
-  ctx.lineTo(footX+3,footY-8);ctx.lineTo(footX-8,footY-5);
+  ctx.lineTo(ankleX+5,ankleY);ctx.lineTo(ankleX-4,ankleY+1);
   ctx.lineTo(kneeX-7,kneeY+6);ctx.quadraticCurveTo(kneeX-12,kneeY+1,kneeX-10,kneeY-4);
   ctx.quadraticCurveTo(x-15,hipY+4,x-10,hipY-8);
   paint(ctx,near?wash(ctx,x-9,hipY,x+5,footY,['#3863ae','#284b89','#202b59']):'#27375f');
@@ -93,7 +116,7 @@ function hindLeg(ctx, x, hipY, footX, footY, near) {
   ctx.quadraticCurveTo(x+3,hipY+4,kneeX,kneeY-3);ctx.lineTo(kneeX-6,kneeY+1);
   ctx.lineTo(kneeX-3,kneeY-7);ctx.lineTo(kneeX-7,kneeY-4);ctx.closePath();
   paint(ctx,near?'#4179c9':'#374a74',null);
-  ctx.save();ctx.translate(footX,footY);
+  ctx.save();ctx.translate(footX,footY);ctx.rotate(footAngle);
   shape(ctx,'M -8 -8 Q -3 -13 2 -9 L 4 -5 L 10 -6 L 14 -5 L 17 -2 Q 16 0 11 0 L 4 0 L -4 0 L -10 -1 Z',near?'#464f79':'#343b5d',INK,1.65);
   shape(ctx,'M 2 -5 Q 5 -8 8 -5 M 7 -5 Q 10 -7 13 -4 M -6 -6 L -3 -8',null,near?'#8497ad':'#617088',1);
   shape(ctx,'M 8 -4 L 11 -4 L 13 -2 L 10 -2 Z M 13 -4 L 16 -3 L 17 -2 L 14 -2 Z',near?'#a9bac2':'#8799a8');
@@ -221,8 +244,9 @@ export function drawRex(ctx, {time=0,walk=0,facing=1,air=0,slam=0,swipe=0,roar=0
   wing(ctx,true,spread,wingMotion*.82,voice);
   wing(ctx,false,spread,wingMotion,voice);
   ctx.restore();
-  hindLeg(ctx,-24,-47+bob,-34-step*13*gait-air*7-brace*6,-1-Math.max(0,lift)*8*gait-air*14,false);
-  hindLeg(ctx,-20,-44+bob,-19+step*13*gait+air*4+brace*4,-Math.max(0,-lift)*10*gait-air*9,true);
+  // Both hips sit under the rump, behind the knuckle-walking shoulders.
+  hindLeg(ctx,-32,-47+bob,-34-step*13*gait-air*7-brace*6,-1-Math.max(0,lift)*8*gait-air*14,false);
+  hindLeg(ctx,-28,-44+bob,-19+step*13*gait+air*4+brace*4,-Math.max(0,-lift)*10*gait-air*9,true);
   const reach=voice*(.7+.3*Math.cos(time*22));
   arm(ctx,11,-79+bob,31+step*3*gait+reach*4+backHook*12,-51+bob-air*3-reach*10-backHook*15,
     37+step*15*gait+air*7-reach*14+backHook*36+brace*7,-8-Math.max(0,-lift)*11*gait-air*15-reach*50-backHook*57,false);
