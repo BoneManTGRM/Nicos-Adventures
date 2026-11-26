@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#14252a"><title>Máscaras del Volcán · Nico's World Arcade</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><a class="brand" href="https://nicos-world.com/" aria-label="Nico’s World"><i aria-hidden="true">✹</i><span>NICO’S WORLD <b>ARCADE</b></span></a><div class="settings"><button id="lang" aria-label="Cambiar a español">ES</button><button id="sound" aria-label="Turn sound off">Sound on</button></div></header>
+<main>
+<section id="home"><div class="poster">
+<div class="paper"><div class="eyebrow"><span></span> LUCHA LIBRE MEXICANA</div>
+<h1><span>MÁSCARAS</span><span class="small">DEL</span> <span class="hot">VOLCÁN</span></h1>
+<p id="tag">Choose a mask and wrestle for the Volcán championship.</p>
+<fieldset class="corner"><legend id="chooseMask">Choose your mask</legend><div id="maskPick"></div></fieldset>
+<div class="levelRow"><label for="level" id="levelLabel">Difficulty</label><select id="level"><option value="family">Family</option><option value="arcade">Arcade</option><option value="legend">Legend</option></select></div>
+<div class="launch"><button class="primary" id="start">Start tour</button><button class="secondary" id="continueTour" hidden>Continue tour</button><button class="secondary" id="help">How to play</button></div></div>
+<div class="hero"><img id="posterArt" src="rayo.webp" alt="Rayo de Jade raises his fist in a jade and gold lightning mask."/><span class="signature" id="signature">Rayo de Jade</span></div></div>
+<div class="bill"><div class="billhead"><h2 id="cardtitle">Tonight’s fight card</h2><span id="career"></span></div><p class="explain" id="explain">Choose a rival for a single exhibition match.</p><div class="lineup" id="lineup"></div></div>
+</section>
+<section id="match" hidden><div class="matchbar"><div><b id="venue"></b><span id="stage"></span></div><button id="pause">Pause</button></div>
+<div class="meterrow"><div><div class="name"><small id="you">YOU</small><strong id="yourName">Rayo de Jade</strong></div><div class="hp"><i id="php"></i></div></div><div class="versus">VS</div><div class="enemy"><div class="name"><strong id="rival"></strong><small>CPU</small></div><div class="hp"><i id="ehp"></i></div></div></div>
+<div class="screen"><canvas id="ring" width="800" height="440" role="img" aria-label="Lucha libre wrestling ring"></canvas><div class="announcer" id="announce" aria-live="polite"></div><div id="battleOverlay" hidden><div class="placard"><canvas id="trophy" width="240" height="76" role="img" aria-label="Volcán championship belt" hidden></canvas><small id="overline"></small><h2 id="oTitle"></h2><p id="oText"></p><p id="scoreline"></p><button id="oAction" class="primary"></button><button id="oQuit" class="textbutton">Fight card</button></div></div></div>
+<div class="ringside"><b id="points"></b><span id="comboInfo"></span></div><div class="status"><div class="energy"><b id="chargeLabel">VUELO</b><span><i id="charge"></i></span></div><strong id="tip" aria-live="polite"></strong></div>
+<div class="pad"><div class="padgroup move"><button data-key="left" aria-label="Move left"><b>◀</b><small>←</small></button><button data-key="right" aria-label="Move right"><b>▶</b><small>→</small></button></div><div class="padgroup actions"><button data-key="guard"><b>Guard</b><small>Z</small></button><button data-key="strike"><b>Chop</b><small>X</small></button><button data-key="throw"><b>Throw</b><small>C</small></button><button data-key="dive"><b>Vuelo</b><small>V</small></button></div></div>
+</section>
+</main>
+<dialog id="rules"><div class="rulein"><div class="eyebrow">LUCHA LIBRE</div><h2 id="helpTitle">How to wrestle</h2><div id="ruleList"></div><button id="closeHelp" class="primary">Got it</button></div></dialog>
+<script src="fighters.js"></script><script src="arena.js"></script><script src="stadium-audio.js"></script><script src="bout.js"></script><script src="game.js"></script>
+</body></html>

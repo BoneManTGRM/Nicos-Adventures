@@ -53,9 +53,13 @@ const skullwing = "/games/skullwing/";
 const skullwingFiles = readdirSync(path.join(dist, skullwing), { withFileTypes: true })
   .filter(entry => entry.isFile() && entry.name !== "index.html")
   .map(entry => skullwing + entry.name);
+const mascaras = "/games/mascaras-del-volcan/";
+const mascarasFiles = readdirSync(path.join(dist, mascaras), { withFileTypes: true })
+  .filter(entry => entry.isFile() && entry.name !== "index.html")
+  .map(entry => mascaras + entry.name);
 const manifest = {
   version: 1,
-  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles, ...huntAssets, lagoon, ...lagoonFiles, skullwing, ...skullwingFiles])].sort(),
+  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles, ...huntAssets, lagoon, ...lagoonFiles, skullwing, ...skullwingFiles, mascaras, ...mascarasFiles])].sort(),
 };
 writeFileSync(path.join(dist, "offline-assets.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 console.log(`Generated offline-assets.json with ${manifest.assets.length} Golden Adventure assets.`);

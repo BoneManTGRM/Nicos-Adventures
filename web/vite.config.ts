@@ -9,7 +9,7 @@ export default defineConfig({
       server.middlewares.use((request, _response, next) => {
         const url = new URL(request.url || "/", "http://localhost");
         const game = url.pathname.replace(/\/$/, "");
-        if (game === "/games/starfall-anglers" || game === "/games/timberline-hunt" || game === "/games/luma-lagoon" || game === "/games/skullwing") {
+        if (game === "/games/starfall-anglers" || game === "/games/timberline-hunt" || game === "/games/luma-lagoon" || game === "/games/skullwing" || game === "/games/mascaras-del-volcan") {
           request.url = game + "/index.html" + url.search;
         }
         next();
