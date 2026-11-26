@@ -13,10 +13,11 @@ test("Skullwing accepts touch and keyboard attacks and returns to city selection
     prototype.drawImage = new Proxy(original, {
       apply(target, ctx: CanvasRenderingContext2D, args) {
         const image = args[0];
-        if (ctx.canvas.id === "world" && image instanceof HTMLImageElement &&
-            image.currentSrc.endsWith("/skullwing-painted.webp") && image.naturalWidth > 0) {
-          ctx.canvas.dataset.paintedCharacterSeen = "yes";
-          prototype.drawImage = original;
+        if (ctx.canvas.id === "world" && image instanceof HTMLImageElement && image.naturalWidth) {
+          const flags = ctx.canvas.dataset;
+          if (image.currentSrc.endsWith("/skullwing-painted.webp")) flags.paintedCharacterSeen = "yes";
+          if (image.currentSrc.endsWith("/skullwing-hindlegs.webp")) flags.paintedLegsSeen = "yes";
+          if (flags.paintedCharacterSeen && flags.paintedLegsSeen) prototype.drawImage = original;
         }
         return Reflect.apply(target, ctx, args);
       },
@@ -26,6 +27,7 @@ test("Skullwing accepts touch and keyboard attacks and returns to city selection
   const start = page.getByRole("button", { name: spanish ? "Aplasta la ciudad" : "Smash the city" });
   await start.click();
   await expect(page.locator("#world")).toHaveAttribute("data-painted-character-seen", "yes");
+  await expect(page.locator("#world")).toHaveAttribute("data-painted-legs-seen", "yes");
   const roar = page.locator('[data-action="roar"]');
   if (touch) {
     await page.locator('[data-action="jump"]').tap();
