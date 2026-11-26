@@ -5,9 +5,27 @@ test("Skullwing accepts touch and keyboard attacks and returns to city selection
   const touch = info.project.use.hasTouch === true;
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
+  // Exercise the normal game path. The original illustration can also play
+  // every move if the painted sheet fails to load.
+  await page.addInitScript(() => {
+    const prototype = CanvasRenderingContext2D.prototype;
+    const original = prototype.drawImage;
+    prototype.drawImage = new Proxy(original, {
+      apply(target, ctx: CanvasRenderingContext2D, args) {
+        const image = args[0];
+        if (ctx.canvas.id === "world" && image instanceof HTMLImageElement &&
+            image.currentSrc.endsWith("/skullwing-painted.webp") && image.naturalWidth > 0) {
+          ctx.canvas.dataset.paintedCharacterSeen = "yes";
+          prototype.drawImage = original;
+        }
+        return Reflect.apply(target, ctx, args);
+      },
+    });
+  });
   await page.goto("/games/skullwing/?lang=" + (spanish ? "es-MX" : "en"));
   const start = page.getByRole("button", { name: spanish ? "Aplasta la ciudad" : "Smash the city" });
   await start.click();
+  await expect(page.locator("#world")).toHaveAttribute("data-painted-character-seen", "yes");
   const roar = page.locator('[data-action="roar"]');
   if (touch) {
     await page.locator('[data-action="jump"]').tap();

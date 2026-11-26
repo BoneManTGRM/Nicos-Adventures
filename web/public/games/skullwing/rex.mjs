@@ -1,3 +1,5 @@
+import * as painted from './painted-rig.mjs';
+
 // Skullwing is painted in local space, with the street at y = 0 and his nose facing right.
 const INK = '#111932';
 const pathCache = new Map();
@@ -38,6 +40,7 @@ function oval(ctx, x, y, rx, ry, fill, angle = 0) {
 // Wing joints interpolate between a folded and a spread silhouette. Each finger
 // terminates at a scallop so the membrane remains attached through the downstroke.
 function wing(ctx, far, spread, flap, voice) {
+  if(painted.ready()) return painted.wing(ctx, far, spread, flap, voice);
   ctx.save();
   ctx.translate(far?2:-10,far?-90:-82);
   if(far) {ctx.scale(-.9,1.07);ctx.rotate(.06);}
@@ -78,6 +81,7 @@ function wing(ctx, far, spread, flap, voice) {
 }
 
 function hindLeg(ctx, x, hipY, footX, footY, near) {
+  if(painted.ready()) return painted.hindLeg(ctx, x, hipY, footX, footY, near);
   const kneeX=x-6+(footX-x)*.5, kneeY=hipY*.48;
   ctx.beginPath();ctx.moveTo(x-10,hipY-8);ctx.quadraticCurveTo(x+4,hipY-14,x+10,hipY-1);
   ctx.quadraticCurveTo(x+10,hipY+9,kneeX+7,kneeY);
@@ -97,6 +101,7 @@ function hindLeg(ctx, x, hipY, footX, footY, near) {
 }
 
 function body(ctx) {
+  if(painted.ready()) return painted.body(ctx);
   shape(ctx,'M -37 -44 L -40 -49 L -38 -50 L -40 -55 L -36 -61 L -36 -70 L -30 -71 Q -28 -85 -19 -90 L -18 -96 L -13 -94 L -10 -99 L -6 -97 L -2 -102 L 3 -99 L 8 -100 Q 23 -95 26 -81 Q 31 -73 27 -65 Q 23 -56 15 -50 L 9 -42 L 2 -42 L -5 -34 L -7 -38 L -16 -32 L -17 -36 L -23 -33 L -28 -37 L -32 -36 L -32 -40 Z',
     wash(ctx,-14,-97,1,-38,['#467dd3','#2c53a3','#20376d']),INK,2.25);
   shape(ctx,'M -36 -63 L -28 -71 L -28 -78 L -19 -84 L -25 -72 L -22 -74 L -25 -64 L -31 -60 L -29 -66 Z','#3f78c7');
@@ -115,6 +120,7 @@ function body(ctx) {
 // These two interlocking muscle shapes follow the shoulder, elbow and wrist
 // independently, keeping the whole hand free for a knuckle walk or a long hook.
 function arm(ctx, shoulderX, shoulderY, elbowX, elbowY, handX, handY, near) {
+  if(painted.ready()) return painted.arm(ctx, shoulderX, shoulderY, elbowX, elbowY, handX, handY, near);
   ctx.save();ctx.translate(shoulderX,shoulderY);
   const dx=elbowX-shoulderX,dy=elbowY-shoulderY,upper=Math.max(1,Math.hypot(dx,dy));
   ctx.rotate(-Math.atan2(dx,dy));ctx.scale(near?1:.83,upper/28);
@@ -149,6 +155,7 @@ function arm(ctx, shoulderX, shoulderY, elbowX, elbowY, handX, handY, near) {
 }
 
 function skull(ctx, roar, blink, energy) {
+  if(painted.ready()) return painted.skull(ctx, roar, blink, energy);
   // Broad temporal arches, the dark nasal cavity and the two blunt canines form
   // a readable skull mask even at the smallest phone zoom.
   shape(ctx,'M -22 -13 L -21 -21 L -18 -19 L -16 -28 L -12 -26 L -9 -31 L -6 -29 L -1 -32 L 3 -28 L 7 -29 L 10 -26 L 15 -24 L 17 -19 L 20 -18 L 19 -10 L 24 -5 L 20 -3 L 23 2 L 17 5 L 18 10 L 11 9 L 8 14 L 4 12 L -1 15 L -2 10 L -10 13 L -9 9 L -18 10 L -16 4 L -22 4 L -20 -1 L -25 0 L -22 -7 L -25 -6 Z',
@@ -209,6 +216,7 @@ export function drawRex(ctx, {time=0,walk=0,facing=1,air=0,slam=0,swipe=0,roar=0
   const bob=(Math.sin(time*2.6)*.9-Math.abs(lift)*2.5*gait+crush*4+brace*3)*(reduced ? .45 : 1);
   const lean=step*.035*gait+strike*.105+crush*.05-air*.06-brace*.14;
   ctx.save();ctx.scale(facing<0?-1:1,1);ctx.lineCap='round';ctx.lineJoin='round';
+  if(painted.ready()) ctx.imageSmoothingQuality='medium';
   ctx.save();ctx.translate(0,bob);ctx.translate(-6,-45);ctx.rotate(lean);ctx.translate(6,45);
   wing(ctx,true,spread,wingMotion*.82,voice);
   wing(ctx,false,spread,wingMotion,voice);
