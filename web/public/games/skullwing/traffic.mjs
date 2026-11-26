@@ -1,15 +1,10 @@
+import {cities} from './cities.mjs';
 // World y is height above the street. Each vehicle keeps its own short stretch of road.
 const specs = {
   car:   {hp:1, speed:23, width:44, blast:59, points:65},
   police:{hp:1, speed:32, width:46, blast:66, points:110},
   tank:  {hp:3, speed:10, width:62, blast:86, points:220}
 };
-const lineups = [
-  ['car','police','tank','car','car','police','car','tank'],
-  ['car','tank','police','car','tank','car','police','car'],
-  ['car','police','tank','car','police','car','tank','car']
-];
-
 export function makeTraffic(buildings,district,end) {
   const fleet=[];
   function add(type,x,parked=false) {
@@ -21,7 +16,7 @@ export function makeTraffic(buildings,district,end) {
   }
   buildings.forEach((b,i)=>{
     const left=b.x-b.w/2;
-    add(lineups[district][i%8],i===0?121:left+12,i===0||i%4===2);
+    add(cities[district].traffic[i%cities[district].traffic.length],i===0?121:left+12,i===0||i%4===2);
     if(i%4===1 || i%4===3)add('car',left+b.w*.79,true);
   });
   return fleet;

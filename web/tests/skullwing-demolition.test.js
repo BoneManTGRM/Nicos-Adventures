@@ -1,4 +1,5 @@
 import {describe,expect,it} from 'vitest';
+import {cities} from '../public/games/skullwing/cities.mjs';
 import {newCity,press,step} from '../public/games/skullwing/simulation.mjs';
 
 const idle={right:false,left:false,jump:false,attack:false};
@@ -47,18 +48,48 @@ describe('Skullwing street destruction',()=>{
     city.actor.y=0;press(city,'roar');advance(city,.62);
     expect(tank.hp).toBe(1);expect(events(city,'vehicleHit')).toHaveLength(1);
   });
-  it.each([0,1,2])('can clear district %i with ordinary movement and held Smash',district=>{
-    const city=newCity(district);
+  it.each(cities.flatMap((_,i)=>['easy','hard'].map(mode=>[i,mode])))('can clear district %i on %s with ordinary movement and held Smash',(district,mode)=>{
+    const city=newCity(district,mode);
     expect(new Set(city.cars.map(v=>v.type))).toEqual(new Set(['car','police','tank']));
     for(let i=0;i<120*60&&!city.done;i++){
       const next=city.buildings.find(b=>b.hp>0),delta=next?next.x-city.actor.x:0;
       step(city,{...idle,right:delta>50,left:delta< -50,attack:true},1/120);
     }
+    expect(city.outcome).toBe('clear');
     expect(city.done).toBe(true);
     expect(city.buildings.every(b=>b.ruin)).toBe(true);
     expect(events(city,'clear')).toHaveLength(1);
     const wrecks=city.cars.filter(v=>v.state==='wreck');
     expect(events(city,'vehicleExplosion')).toHaveLength(wrecks.length);
     expect(city.wrecks.tank).toBeGreaterThan(0);
+  });
+});
+
+describe('Skullwing difficulty',()=>{
+  it.each(cities.map((_,i)=>i))('lets idle players rest on Easy and knocks them out on Hard in city %i',district=>{
+    const easy=newCity(district),hard=newCity(district,'hard');
+    advance(easy,22);advance(hard,22);
+    expect(easy.defense).toBeNull();expect(easy.done).toBe(false);
+    expect(hard.done).toBe(true);expect(hard.outcome).toBe('defeat');
+    expect(hard.defense.hp).toBe(0);expect(events(hard,'hurt')).toHaveLength(5);
+    expect(events(hard,'warning').length).toBeGreaterThanOrEqual(5);
+    expect(events(hard,'defeat')).toHaveLength(1);expect(events(hard,'clear')).toHaveLength(0);
+  });
+  it('locks the marked position and allows a player to walk clear or interrupt a drone',()=>{
+    const moving=newCity(3,'hard');advance(moving,2.5);
+    expect(moving.defense.attacks[0].phase).toBe('warning');
+    const target=moving.defense.attacks[0].tx;advance(moving,.75,{...idle,right:true});
+    expect(moving.defense.attacks[0].tx).toBe(target);
+    advance(moving,1.5);expect(moving.defense.hp).toBe(5);
+    const roaring=newCity(1,'hard');advance(roaring,2.5);press(roaring,'roar');advance(roaring,.7);
+    expect(events(roaring,'droneHit')).toHaveLength(1);expect(roaring.defense.attacks).toHaveLength(0);
+  });
+  it.each(['tank','police'])('lets a street %s attack, and smashing it cancels its warning',type=>{
+    const city=newCity(0,'hard'),v=city.cars.find(v=>v.type===type);
+    v.x=city.actor.x+70;v.vx=0;v.patrolMin=v.x-5;v.patrolMax=v.x+5;
+    city.cars=[v];city.defense.turn=1;city.defense.next=.01;
+    advance(city,.1);expect(city.defense.attacks[0].type).toBe(type);
+    for(let i=0;i<3;i++){press(city,'attack');advance(city,.35);}
+    expect(events(city,'bolt')).toHaveLength(0);expect(city.defense.hp).toBe(5);
   });
 });

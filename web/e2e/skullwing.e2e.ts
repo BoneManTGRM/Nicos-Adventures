@@ -71,3 +71,43 @@ test("the first smash launches traffic into a building and counts the wrecks", a
   await expect(page.locator("#score")).not.toHaveText("0");
   expect(errors).toEqual([]);
 });
+
+test("all cities are selectable and Hard can defeat and restart Skullwing", async ({ page }, info) => {
+  const spanish = info.project.metadata.language === "es-MX";
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.addInitScript(() => {
+    const draw = CanvasRenderingContext2D.prototype.drawImage;
+    CanvasRenderingContext2D.prototype.drawImage = new Proxy(draw, {
+      apply(target, ctx: CanvasRenderingContext2D, args) {
+        const image = args[0];
+        if (ctx.canvas.id === "world" && image instanceof HTMLImageElement && image.currentSrc.endsWith("/orbit.webp")) {
+          ctx.canvas.dataset.orbitPainted = "yes";
+          CanvasRenderingContext2D.prototype.drawImage = draw;
+        }
+        return Reflect.apply(target, ctx, args);
+      },
+    });
+  });
+  await page.goto("/games/skullwing/?lang=" + (spanish ? "es-MX" : "en"));
+  await expect(page.locator(".district-card")).toHaveCount(9);
+  await expect(page.locator("#easy")).toHaveAttribute("aria-pressed", "true");
+  await page.locator("#hard").click();
+  await page.getByRole("button", {name: spanish ? "Ciudad Orbital" : "Orbit City"}).click();
+  await page.locator("#launchCity").click();
+  await expect(page.locator("#districtName")).toHaveText(spanish ? "Ciudad Orbital" : "Orbit City");
+  await expect(page.locator("#clearCount")).toHaveText("0 / 19");
+  await expect(page.locator("#hpText")).toContainText("5 / 5");
+  await expect(page.locator("#world")).toHaveAttribute("data-orbit-painted", "yes");
+  await expect(page.locator("#hpText")).toContainText("4 / 5", {timeout: 11000});
+  await expect(page.locator("#dialogTitle")).toHaveText(spanish ? "¡Skullwing cayó!" : "Skullwing is down!", {timeout: 27000});
+  await page.getByRole("button", {name: spanish ? "Reintentar" : "Try again"}).click();
+  await expect(page.locator("#hpText")).toContainText("5 / 5");
+  await page.locator("#pause").click();
+  await page.getByRole("button", {name: spanish ? "Elegir ciudad" : "City select"}).click();
+  await page.locator("#easy").click();
+  await page.locator("#launchCity").click();
+  await expect(page.locator("#health")).toBeHidden();
+  await expect(page.locator("#districtName")).toHaveText(spanish ? "Ciudad Orbital" : "Orbit City");
+  expect(errors).toEqual([]);
+});

@@ -1,3 +1,7 @@
+import {cities} from './cities.mjs';
+import {expansionPalettes} from './city-palettes.mjs';
+import {drawCitySky} from './city-skies.mjs';
+import {drawLandmark} from './landmark-art.mjs';
 // Painted scenery uses repeating parallax plates. The moving details are drawn
 // separately so a whole city block never needs to be repainted onto a cache.
 const TAU = Math.PI * 2;
@@ -28,7 +32,7 @@ const palettes = [
     faces: [['#8199aa','#506979'],['#74909f','#435d78'],['#a89390','#725e6b'],['#7d9c9f','#4c727b'],['#aec0c1','#6e8895']],
     glass: ['#253c50','#426075','#86bec7','#ffe7a1'], trim: '#d7e5dd', sign: '#cd7686',
     signs: ['POLAR','NORTH','FJORD','HUSH','ICE','NOVA','RADAR','AURORA']
-  }
+  }, ...expansionPalettes
 ];
 const scenery = new Map();
 const facades = new Map();
@@ -251,9 +255,11 @@ function blimp(c,x,y,d,p) {
   c.restore();
 }
 
-export function drawBackdrop(c,{district=0,width,height,ground,camera=0,time=0,reduced=false}) {
+export function drawBackdrop(c,view) {
+  const {district=0,width,height,ground,camera=0,time=0,reduced=false}=view;
   const d=palettes[district]?district:0, p=palettes[d], t=reduced?0:time;
   c.save();
+  if(cities[d].painting){drawCitySky(c,view,cities[d],p);c.restore();return;}
   if(d===0 && harborPainting?.complete && harborPainting.naturalWidth) {
     const w=harborPainting.naturalWidth,h=harborPainting.naturalHeight;
     const scale=Math.max((width+52)/w,ground/h);
@@ -601,8 +607,9 @@ function makeFacade(b,d,damage) {
     for(let i=0;i<4;i++)line(c,[x+4,sy+5+i*2.4,x+fw*.48,sy+5+i*2.4],p.outline,.7);
     lightBox(c,x+fw*.52,sy-1,fw*.42,6,label,p,false);
   }
-  roof(c,d,k,seed,x,y,w,p,face,side);
+  if(!b.landmark)roof(c,d,k,seed,x,y,w,p,face,side);
   neighborhood(c,d,k,seed,x,y,w,p);
+  if(cities[d].landmark)drawLandmark(c,b,d,p,face,side);
   if(damage>0){
     for(let i=0;i<damage;i++){
       const xx=x+fw*(.16+.63*hash(seed,i+33)), yy=y+12+(h-35)*hash(seed,i+55);
@@ -618,7 +625,7 @@ function makeFacade(b,d,damage) {
 export function drawBuilding(c,b,{district=0,time=0,reduced=false}={}) {
   const d=palettes[district]?district:0;
   const damage=clamp(Math.floor((1-clamp(b.hp/Math.max(1,b.maxHp),0,1))*4),0,3);
-  const key=[d,b.kind,b.seed,b.w,b.h,damage].join('.');
+  const key=[d,b.kind,b.seed,b.w,b.h,damage,!!b.landmark].join('.');
   let sprite=facades.get(key);
   if(!sprite){
     sprite=makeFacade(b,d,damage);
@@ -626,7 +633,7 @@ export function drawBuilding(c,b,{district=0,time=0,reduced=false}={}) {
     facades.set(key,sprite);
   }
   c.drawImage(sprite.cv,sprite.x,sprite.y,sprite.w,sprite.h);
-  c.save();movingRooftops(c,b,d,palettes[d],time,reduced);c.restore();
+  if(!b.landmark){c.save();movingRooftops(c,b,d,palettes[d],time,reduced);c.restore();}
 }
 export function drawDistrictThumb(c,district,width,height) {
   const w=300,h=148,ground=145;

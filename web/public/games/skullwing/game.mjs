@@ -1,3 +1,4 @@
+import {cities} from './cities.mjs';
 import {newCity,step,press} from './simulation.mjs';
 import {Renderer} from './renderer.mjs';
 import {drawDistrictThumb} from './city-art.mjs';
@@ -8,8 +9,17 @@ function read(key,fallback){try{return JSON.parse(localStorage.getItem('skullwin
 function write(key,value){try{localStorage.setItem('skullwing.'+key,JSON.stringify(value));}catch{/* The current session remains playable. */}}
 let es=q.has('lang')?q.get('lang').startsWith('es'):read('spanish',false);
 const t=(en,mx)=>es?mx:en;
-const names=()=>es?['Puerto Neón','Meseta Solar','Bahía Polar']:['Neon Harbor','Sunspire Mesa','Frostline Bay'];
-let selected=0,mode='menu',dialog='',sound=read('sound',true),records=read('records',{});
+const names=()=>cities.map(c=>t(c.en,c.es));
+const savedMode=read('difficulty','easy');
+let difficulty=(['easy','hard'].includes(q.get('mode'))?q.get('mode'):savedMode)==='hard'?'hard':'easy';
+let selected=Math.max(0,cities.findIndex(c=>c.slug===q.get('city')));
+let mode='menu',dialog='',sound=read('sound',true),records=read('records',{});
+const recordKey=index=>difficulty==='hard'?'hard-'+index:String(index);
+function reflectSelection(){
+  const url=new URL(location.href);
+  url.searchParams.set('city',cities[selected].slug);url.searchParams.set('mode',difficulty);
+  history.replaceState(null,'',url);
+}
 if(!records||typeof records!=='object')records={};
 let audio=null,city=null,acc=0,last=0,raf=0,nextHud=0,previousFocus=null;
 let hintUntil=0,callUntil=0,hadFlight=false,helpStage=0,recordBefore=0;
@@ -63,10 +73,16 @@ function effect(e){
   if(e.kind==='swing')tone(e.hit?160:250,e.hit?43:100,.115,.039,'triangle');
   if(e.kind==='stomp'){tone(110,29,.31,.10,'sine');tone(154,41,.14,.04,'triangle');}
   if(e.kind==='land')tone(82,42,.12,.028,'sine');
+  if(e.kind==='warning')tone(480,690,.14,.023,'triangle');
+  if(e.kind==='bolt')tone(710,220,.19,.026,'sine');
+  if(e.kind==='droneHit')tone(390,92,.27,.041,'triangle');
+  if(e.kind==='hurt'){tone(185,62,.21,.069,'triangle');crunch(.13,1800,.06);}
+  if(e.kind==='knockout')[246.94,196,146.83].forEach((n,i)=>tone(n,n*.84,.32,.05,'triangle',i*.16));
   if(e.kind==='clear')[261.63,329.63,392,523.25].forEach((n,i)=>tone(n,n*1.01,.22,.045,'triangle',i*.095));
 }
 function cardArt(){
-  document.querySelectorAll('.district-card canvas').forEach((cv,i)=>{
+  document.querySelectorAll('.district-card canvas').forEach(cv=>{
+    const i=Number(cv.dataset.district);
     const box=cv.getBoundingClientRect();if(!box.width)return;
     const dpr=Math.min(1.5,devicePixelRatio||1);
     cv.width=Math.round(box.width*dpr);cv.height=Math.round(box.height*dpr);
@@ -78,15 +94,23 @@ function audibleLabel(){
   el('audio').setAttribute('aria-label',sound?t('Mute sound','Silenciar sonido'):t('Turn sound on','Activar sonido'));
 }
 function refreshCards(){
+  el('launchCity').textContent=t('Play ','Jugar en ')+names()[selected];
   [...el('cards').children].forEach((b,i)=>b.setAttribute('aria-pressed',String(i===selected)));
 }
 function makeCards(){
   el('cards').replaceChildren(...names().map((name,i)=>{
     const b=document.createElement('button');b.className='district-card';b.type='button';
-    const art=document.createElement('canvas');art.setAttribute('aria-hidden','true');
+    let art;
+    if(cities[i].painting){
+      art=document.createElement('img');art.alt='';art.loading='lazy';art.decoding='async';
+      art.src=new URL(cities[i].painting,import.meta.url).href;
+      art.style.objectPosition=(100*cities[i].focus)+'% center';
+    }else{
+      art=document.createElement('canvas');art.dataset.district=String(i);art.setAttribute('aria-hidden','true');
+    }
     const label=document.createElement('b');label.textContent=name;b.append(art,label);
-    if(Number(records[i])>0){const best=document.createElement('small');best.className='record';best.textContent=t('Best ','Récord ')+Number(records[i]).toLocaleString(es?'es-MX':'en-US');b.append(best);}
-    b.addEventListener('click',()=>{selected=i;refreshCards();tone(290+i*60,360+i*60,.09,.02,'sine');});
+    if(Number(records[recordKey(i)])>0){const best=document.createElement('small');best.className='record';best.textContent=t('Best ','Récord ')+Number(records[recordKey(i)]).toLocaleString(es?'es-MX':'en-US');b.append(best);}
+    b.addEventListener('click',()=>{selected=i;reflectSelection();el('launchCity').hidden=false;refreshCards();tone(290+i*60,360+i*60,.09,.02,'sine');});
     return b;
   }));refreshCards();requestAnimationFrame(cardArt);
 }
@@ -94,9 +118,9 @@ function localize(){
   document.documentElement.lang=es?'es-MX':'en';el('lang').textContent=es?'EN':'ES';
   el('lang').setAttribute('aria-label',es?'Switch to English':'Cambiar a español');
   const copy={
-    pitch:t('Take flight. Bring down the skyline.','Alza el vuelo. Derriba la ciudad.'),
+    easy:t('Easy','Fácil'),hard:t('Hard','Difícil'),
     startText:t('Smash the city','Aplasta la ciudad'),choose:t('Choose your city','Elige tu ciudad'),
-    districtCount:t('3 districts','3 distritos'),districtLabel:t('DISTRICT','DISTRITO'),
+    districtCount:cities.length+t(' cities',' ciudades'),districtLabel:t('DISTRICT','DISTRITO'),
     scoreLabel:t('SCORE','PUNTOS'),jumpName:t('Flap','Volar'),smashName:t('Smash','Golpe'),roarName:t('Roar','Rugir')
   };
   for(const [id,value] of Object.entries(copy))el(id).textContent=value;
@@ -104,9 +128,17 @@ function localize(){
   buttons.get('left')?.setAttribute('aria-label',t('Move left','Mover a la izquierda'));
   buttons.get('right')?.setAttribute('aria-label',t('Move right','Mover a la derecha'));
   el('world').setAttribute('aria-label',t('City destruction playfield','Ciudad para demoler'));
-  audibleLabel();makeCards();
+  el('modes').setAttribute('aria-label',t('Difficulty','Dificultad'));
+  updateDifficulty();audibleLabel();makeCards();
   if(city){el('districtName').textContent=names()[city.district];if(mode==='play'){setHint();hud();}}
   if(dialog)showDialog(dialog);
+}
+function updateDifficulty(){
+  const hard=difficulty==='hard';
+  el('easy').setAttribute('aria-pressed',String(!hard));
+  el('hard').setAttribute('aria-pressed',String(hard));
+  el('pitch').textContent=hard?t('Five hearts. Dodge the amber target.','Cinco corazones. Esquiva la mira ámbar.'):
+    t('Smash at your own pace.','Derriba la ciudad a tu ritmo.');
 }
 function setMode(value){
   mode=value;el('app').dataset.view=value;el('menu').hidden=value!=='menu';el('arena').hidden=value!=='play';
@@ -119,18 +151,19 @@ function clearInput(){keys.clear();pointers.clear();syncInput();}
 function hint(text,seconds){el('hint').textContent=text;hintUntil=(city?.time||0)+seconds;}
 function setHint(){
   const touch=matchMedia('(pointer: coarse)').matches;
-  if(helpStage===0)hint(t(touch?'Hold Smash near a car to send it into a tower.':'Move with ← → or A / D. Hold X to punch cars and towers.',touch?'Mantén Golpe junto a un auto para lanzarlo contra una torre.':'Muévete con ← → o A / D. Mantén X para golpear.'),8);
+  if(city.defense&&helpStage===0)hint(t('See the amber target? Move or jump to dodge.','¿Ves la mira ámbar? Muévete o salta para esquivar.'),7);
+  else if(helpStage===0)hint(t(touch?'Hold Smash near a car to send it into a tower.':'Move with ← → or A / D. Hold X to punch cars and towers.',touch?'Mantén Golpe junto a un auto para lanzarlo contra una torre.':'Muévete con ← → o A / D. Mantén X para golpear.'),8);
   else if(helpStage===1)hint(t(touch?'Tap Flap twice to fly. Hold it to glide.':'Tap Space twice to fly. Hold it to glide.',touch?'Toca Volar dos veces. Mantenlo para planear.':'Pulsa Espacio dos veces. Mantenlo para planear.'),6);
   else if(helpStage===2)hint(t(touch?'Tap Smash in midair to dive.':'Press X in midair to dive.',touch?'Toca Golpe en el aire para caer con fuerza.':'Pulsa X en el aire para caer con fuerza.'),5);
   else hint(t(touch?'Roar shakes every nearby building.':'Press C to roar through nearby buildings.',touch?'Ruge para sacudir los edificios cercanos.':'Pulsa C para sacudir los edificios cercanos.'),6);
 }
 function callout(text,seconds=.9){el('callout').textContent=text;callUntil=city.time+seconds;}
 function begin(index){
-  selected=index;city=newCity(index);recordBefore=Number(records[index])||0;audioStamp=blastStamp=floorStamp=-1;
+  selected=index;city=newCity(index,difficulty);reflectSelection();recordBefore=Number(records[recordKey(index)])||0;audioStamp=blastStamp=floorStamp=-1;
   clearInput();closeDialog(false);setMode('play');render.reset();render.resize();last=0;acc=0;nextHud=0;
   hadFlight=false;helpStage=0;el('callout').textContent='';el('districtName').textContent=names()[index];
-  el('minimap').replaceChildren(...city.buildings.map(b=>{const n=document.createElement('i');n.style.height=(3+b.h/20)+'px';return n;}));
-  el('pause').focus({preventScroll:true});setHint();hud();render.render(city,0);schedule();
+  el('minimap').replaceChildren(...city.buildings.map(b=>{const n=document.createElement('i');n.style.height=(3+b.h/20)+'px';if(b.landmark)n.dataset.landmark='true';return n;}));
+  window.scrollTo(0,0);el('pause').focus({preventScroll:true});setHint();hud();render.render(city,0);schedule();
 }
 function leave(){
   clearInput();closeDialog(false);city=null;setMode('menu');makeCards();el('start').focus({preventScroll:true});
@@ -142,6 +175,13 @@ function hud(){
   const wrecks=city.wrecks.car+city.wrecks.police+city.wrecks.tank;
   el('wreckCount').hidden=!wrecks;
   el('wreckCount').textContent=t('Wrecks ','Destrozos ')+wrecks;
+  el('health').hidden=!city.defense;
+  if(city.defense){
+    const {hp,maxHp}=city.defense;
+    el('hearts').textContent='♥'.repeat(hp)+'♡'.repeat(maxHp-hp);
+    const label=t('Health ','Salud ')+hp+' / '+maxHp;
+    if(el('hpText').textContent!==label)el('hpText').textContent=label;
+  }
   const near=city.buildings.reduce((best,b,i)=>!best||Math.abs(b.x-city.actor.x)<best.dist?{dist:Math.abs(b.x-city.actor.x),i}:best,null)?.i;
   const dots=el('minimap').children;
   city.buildings.forEach((b,i)=>{dots[i].className=b.hp<=0?'down':i===near?'near':'';});
@@ -153,7 +193,9 @@ function receive(e){
   render.event(e);effect(e);
   if(e.kind==='collapse'){
     if(helpStage===0){helpStage=1;setHint();}
-    if(e.combo>=2)callout(t('CHAIN REACTION','¡EN CADENA!')+' ×'+e.combo);
+    if(e.b.landmark){
+      const landmark=cities[city.district].landmark;callout(t(landmark.en,landmark.es)+' +250',1.2);
+    }else if(e.combo>=2)callout(t('CHAIN REACTION','¡EN CADENA!')+' ×'+e.combo);
   }
   if(e.kind==='ricochet')callout(t('CRASH BONUS +55','¡CHOQUE! +55'),.7);
   if(e.kind==='vehicleExplosion'){
@@ -162,8 +204,9 @@ function receive(e){
   }
   if(e.kind==='flap'&&!hadFlight){hadFlight=true;helpStage=2;setHint();}
   if(e.kind==='stomp'&&helpStage===2){helpStage=3;setHint();}
+  if(e.kind==='defeat')showDialog('defeat');
   if(e.kind==='clear'){
-    records[city.district]=Math.max(Number(records[city.district])||0,city.score);
+    const key=recordKey(city.district);records[key]=Math.max(Number(records[key])||0,city.score);
     write('records',records);showDialog('clear');
   }
 }
@@ -187,19 +230,22 @@ function showDialog(which){
   if(!dialog)previousFocus=document.activeElement;
   dialog=which;clearInput();el('arena').inert=true;document.querySelector('.bar').inert=true;el('veil').hidden=false;
   el('dialogDistrict').textContent=names()[city.district].toUpperCase();
-  const done=which==='clear';el('dialogTitle').textContent=done?t('City flattened!','¡Ciudad demolida!'):t('Paused','En pausa');
+  const done=which==='clear',lost=which==='defeat';
+  el('dialogTitle').textContent=lost?t('Skullwing is down!','¡Skullwing cayó!'):done?t('City flattened!','¡Ciudad demolida!'):t('Paused','En pausa');
   const touch=matchMedia('(pointer: coarse)').matches;
   const tally=city.wrecks;
-  el('dialogText').textContent=done?
+  el('dialogText').textContent=lost?
+    t('Jump when a warning locks on, or roar to knock the drone out of the sky.','Cuando aparezca la mira, salta o ruge para derribar el dron.'):done?
     [t('Cars','Autos')+' '+tally.car,t('Police cruisers','Patrullas')+' '+tally.police,t('Tanks','Tanques')+' '+tally.tank].join(' · '):
     t(touch?'Tap Flap twice to climb. Hold to glide. Smash in the air to dive.':'Arrows or A/D to move. Space to flap or glide, X to smash or dive, C to roar.',
       touch?'Toca Volar dos veces para subir. Mantén para planear. Golpea en el aire para caer.':'Flechas o A/D para moverte. Espacio para volar o planear, X para golpear o caer, C para rugir.');
-  el('results').hidden=!done;
+  el('results').hidden=!done&&!lost;
+  if(lost)el('results').textContent=city.cleared+' / '+city.buildings.length+' '+t('buildings down','edificios derribados')+' · '+city.score+' '+t('points','puntos');
   if(done){
     const pts=city.score.toLocaleString(es?'es-MX':'en-US');
     el('results').textContent=pts+' '+t('points','puntos')+' · '+(city.score>recordBefore?t('New best!','¡Nuevo récord!'):t('Best','Récord')+' '+recordBefore.toLocaleString());
   }
-  const options=done?[[t('Next city','Siguiente ciudad'),()=>begin((selected+1)%3)],[t('Play again','Repetir'),()=>begin(selected)]]:
+  const options=lost?[[t('Try again','Reintentar'),()=>begin(selected)]]:done?[[t('Next city','Siguiente ciudad'),()=>begin((selected+1)%cities.length)],[t('Play again','Repetir'),()=>begin(selected)]]:
     [[t('Resume','Continuar'),()=>{closeDialog();schedule();}]];
   options.push([t('City select','Elegir ciudad'),leave]);
   el('dialogActions').replaceChildren(...options.map(([label,fn])=>{const b=document.createElement('button');b.textContent=label;b.onclick=fn;return b;}));
@@ -238,7 +284,10 @@ window.addEventListener('resize',()=>{if(mode==='play')render.resize();else card
 new ResizeObserver(()=>{if(mode==='play')render.resize();}).observe(el('stage'));
 el('audio').onclick=()=>{sound=!sound;write('sound',sound);audibleLabel();if(sound){unlock();tone(320,430,.12,.035);}};
 el('lang').onclick=()=>{es=!es;write('spanish',es);const url=new URL(location.href);url.searchParams.set('lang',es?'es-MX':'en');history.replaceState(null,'',url);localize();};
-el('start').onclick=()=>{unlock();begin(selected);};
+for(const value of ['easy','hard'])el(value).onclick=()=>{
+  difficulty=value;write('difficulty',value);reflectSelection();updateDifficulty();makeCards();
+};
+el('launchCity').onclick=el('start').onclick=()=>{unlock();begin(selected);};
 el('pause').onclick=()=>showDialog('pause');
 el('controls').addEventListener('contextmenu',e=>e.preventDefault());
 localize();

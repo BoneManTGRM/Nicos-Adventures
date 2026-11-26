@@ -1,3 +1,5 @@
+import {cities} from './cities.mjs';
+import {makeDefense,stepDefense,disruptDrone} from './defense.mjs';
 import {makeTraffic,hitTraffic,stepTraffic} from './traffic.mjs';
 
 // Positions use world units. The monster's height above the street is positive.
@@ -9,22 +11,29 @@ const approach = (a, b, amount) => a + clamp(b - a, -amount, amount);
 function seeded(seed) {
   return () => { seed = (Math.imul(1664525, seed) + 1013904223) >>> 0; return seed / 4294967296; };
 }
-export function newCity(district) {
+export function newCity(district,difficulty='easy') {
+  const route=cities[district];
   const rand = seeded(5903 + district * 977);
   const buildings = [];
   let x = 134;
-  const count = [12, 14, 16][district];
-  for (let i = 0; i < count; i++) {
-    const w = Math.round(67 + rand() * 41);
-    const h = i === 0 ? 69 : Math.round(64 + rand() * (104 + district * 12));
+  for (let i=0;i<route.count;i++) {
+    const landmark=!!route.landmark&&i===1;
+    let w,h;
+    if(route.heights){
+      w=landmark?route.landmark.w:route.width+Math.round((rand()-.5)*23);
+      h=landmark?route.landmark.h:route.heights[i%route.heights.length]+Math.round((rand()-.5)*12);
+    }else{
+      w=Math.round(67+rand()*41);
+      h=i===0?69:Math.round(64+rand()*(104+district*12));
+    }
     const hp = h > 147 ? 4 : h > 88 ? 3 : 2;
-    buildings.push({x:x + w / 2, w,h,kind:(i + district * 2) % 5,seed:Math.floor(rand()*65535),
+    buildings.push({x:x + w / 2,w,h,landmark,kind:(i + district * 2) % 5,seed:Math.floor(rand()*65535),
       hp,maxHp:hp,impact:0,tilt:0,fall:0,fallDir:1,domino:false,ruin:false,impactStage:0,
       hitX:0,hitY:h/2,breakStyle:'punch',damageSites:[]});
-    x += w + 17 + rand() * 32;
+    x+=w+(route.gaps?route.gaps[i%route.gaps.length]+rand()*7:17+rand()*32);
   }
   const cars=makeTraffic(buildings,district,x+100);
-  return {district,buildings,cars,length:x+100,time:0,actor:{
+  return {district,difficulty,defense:difficulty==='hard'?makeDefense():null,outcome:null,buildings,cars,length:x+100,time:0,actor:{
     x:77,y:0,vx:0,vy:0,face:1,turn:0,walk:0,stride:0,idle:0,grounded:true,support:null,
     coyote:.09,jumpBuffer:0,jumpHeld:false,airFlaps:1,flight:0,glide:0,dive:false,
     swipe:0,hand:0,roar:0,land:0,flap:0,slide:0,attackWait:0
@@ -40,7 +49,7 @@ function hitBuilding(s,b,amount,direction,worldX,height,style) {
   if(b.hp===0){
     b.fall=.0001;b.fallDir=direction||1;s.cleared++;s.combo=s.chainClock>0?s.combo+1:1;
     s.maxCombo=Math.max(s.combo,s.maxCombo);s.chainClock=3.35;
-    s.score+=100*s.combo+b.maxHp*20;
+    s.score+=100*s.combo+b.maxHp*20+(b.landmark?250:0);
     emit(s,'collapse',{b,direction:b.fallDir,style,combo:s.combo});
     if(s.actor.support===b){s.actor.support=null;s.actor.grounded=false;}
     if(s.cleared===s.buildings.length) s.finishWait=2.18;
@@ -67,11 +76,12 @@ function swing(s) {
   const reach=a.x+a.face*52;
   const targets=s.buildings.filter(b=>b.hp>0 && Math.abs(b.x-reach)<b.w/2+42 && b.h+24>=a.y);
   for(const b of targets) hitBuilding(s,b,1,a.face,reach,a.y+49,'punch');
+  disruptDrone(s,reach,a.y+56,65);
   const carsHit=hitTraffic(s,reach,a.y+23,53,1,a.face);
   emit(s,'swing',{x:reach,y:a.y+58,face:a.face,hit:targets.length>0||carsHit>0});
 }
 export function press(s,action){
-  if(s.done || s.finishWait>0) return;
+  if(s.done || s.outcome || s.finishWait>0) return;
   const a=s.actor;
   if(action==='jump'){a.jumpHeld=true;jump(s);}
   if(action==='attack') swing(s);
@@ -93,6 +103,7 @@ function land(s,roof,impactSpeed){
       if(b===roof&&b.hp===0) brokeFloor=true;
     }
     hitTraffic(s,a.x,a.y+5,104,3,0);
+    disruptDrone(s,a.x,a.y+22,112);
     if(brokeFloor){a.grounded=false;a.support=null;a.vy=-145;}
   }
   if(a.jumpBuffer>0 && a.grounded){a.jumpBuffer=0;jump(s);}
@@ -100,6 +111,14 @@ function land(s,roof,impactSpeed){
 export function step(s,input,dt) {
   if(s.done)return;
   const a=s.actor; s.time+=dt;
+  if(s.outcome==='defeat'){
+    s.downTime=Math.min(1,s.downTime+dt);
+    const floor=a.support?.h||0;
+    if(a.y>floor){a.vy=Math.min(0,a.vy)-dt*780;a.y=Math.max(floor,a.y+a.vy*dt);}
+    s.defense.hurt=Math.max(0,s.defense.hurt-dt);
+    if(s.downTime>=1){s.done=true;emit(s,'defeat');}
+    return;
+  }
   for(const key of timedMotions) a[key]=Math.max(0,a[key]-dt*motionDecay[key]);
   a.attackWait=Math.max(0,a.attackWait-dt);a.jumpBuffer=Math.max(0,a.jumpBuffer-dt);
   s.chainClock=Math.max(0,s.chainClock-dt);if(!s.chainClock)s.combo=0;
@@ -141,7 +160,9 @@ export function step(s,input,dt) {
         wave.hit.add(b);hitBuilding(s,b,2,Math.sign(b.x-wave.x)||a.face,wave.x,wave.y,'roar');
       }
     }
-    hitTraffic(s,wave.x,wave.y,Math.min(220,wave.age*470),2,0,wave.vehicles);
+    const radius=Math.min(220,wave.age*470);
+    hitTraffic(s,wave.x,wave.y,radius,2,0,wave.vehicles);
+    disruptDrone(s,wave.x,wave.y,radius);
   }
   s.waves=s.waves.filter(w=>w.age<.62);
   for(let i=0;i<s.buildings.length;i++){
@@ -160,5 +181,6 @@ export function step(s,input,dt) {
     if(b.fall>=1){b.ruin=true;emit(s,'settle',{x:b.x,y:6,w:b.w});}
   }
   stepTraffic(s,dt,hitBuilding);
-  if(s.finishWait>0){s.finishWait-=dt;if(s.finishWait<=0){s.done=true;emit(s,'clear');}}
+  stepDefense(s,dt);
+  if(s.finishWait>0){s.finishWait-=dt;if(s.finishWait<=0){s.done=true;s.outcome='clear';emit(s,'clear');}}
 }
