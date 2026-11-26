@@ -1,0 +1,30 @@
+.cg-garage {
+  --cg-panel:#1e3039;--cg-line:#54676c;--cg-accent:#ffbd65;
+  background:radial-gradient(ellipse at 78% 0%,#35474a 0%,transparent 44%),#12222a;
+  border-color:#5b6d70;
+}
+.cg-garage .mg-title {margin:clamp(12px,2.5vw,24px) 0;align-items:center;gap:12px}
+.cg-garage .mg-title h2 {margin:0;color:#fff0d3;line-height:.99;font-family:"Arial Narrow","Trebuchet MS",system-ui,sans-serif;font-size:clamp(1.9rem,5vw,3.7rem);font-style:italic;letter-spacing:-.065em}
+.cg-garage .mg-title p {margin:7px 0 0;max-width:44ch;color:#ccd6d6}
+.cg-garage .cg-collection-count {padding:0}.cg-garage .cg-collection-count>strong {color:#ffce83}
+.cg-garage .cg-preview {background:#172a33;border:1px solid #62757b;box-shadow:0 8px 24px #07111755}
+.mg-bay {position:relative;background-color:#24343d;background-position:center 52%;background-size:cover;isolation:isolate}
+.mg-bay:before {content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(160deg,#0c15245c,transparent 48%),linear-gradient(0deg,#17191033,transparent 15%)}
+.cg-garage .cg-garage-art {position:relative;width:100%;height:clamp(255px,37vw,415px)}
+.cg-garage .cg-preview-caption {background:#12222ce6;padding:7px 11px;border:1px solid #b4c0bd75;border-left:3px solid #ffb858;border-radius:4px 9px 9px 4px;left:12px;top:12px}
+.cg-garage .cg-preview-caption strong {font-size:1rem;margin:1px 0 0}
+.cg-garage .cg-preview-caption span {color:#ffdb9d;font-size:.70rem;letter-spacing:.065em}
+.mg-stand-controls {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;background:#13232a;border-top:3px solid #d5a256;padding:9px 10px}
+.cg-garage .mg-stand-controls button {min-height:44px;line-height:1.12;font-size:.86rem;padding:7px 4px;border-radius:8px;background:#273a40;color:#f5f2e9;border-color:#58696b}
+.cg-garage .mg-stand-controls button.is-running,.cg-garage .mg-stand-controls button[aria-pressed=true]{background:#ffcf84;color:#202a2d;border-color:#ffe5b9}
+.cg-garage .cg-paint-row {align-items:center;border-top-color:#41545b;padding:10px 12px}
+.cg-garage .cg-paint-row .mg-pilot {display:inline-block;flex:none;width:36px;height:36px;background-size:500% 300%;background-repeat:no-repeat}
+.cg-garage .cg-build-panel {background:linear-gradient(135deg,#273940,#1d3039)}
+.cg-garage .cg-build-panel .mg-route {padding:10px 12px;background-size:cover;background-position:center 50%;border-radius:11px;border:1px solid #637775;display:grid;gap:3px;color:#ffedc5}
+.cg-garage .mg-route select {background-color:#152832e6;width:max-content;max-width:100%;color:white;min-height:40px}
+.cg-garage .cg-part-card,.cg-garage .cg-part-detail {background:linear-gradient(155deg,#374b50,#182c37 80%);border-color:#596d73}
+.cg-garage .cg-part-card canvas,.cg-garage .cg-part-detail>canvas {filter:drop-shadow(0 3px 3px #10212685)}
+.cg-garage .cg-part-card.is-selected {border-color:#f7c781;box-shadow:inset 0 0 0 1px #ffdb97,0 0 15px #f9a64620}
+.cg-garage .cg-part-card small {color:#ffda9a}
+.mg-sr {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:480px){.cg-garage .cg-garage-art{height:245px}.cg-garage .cg-paint-row label{margin-top:0;justify-content:start;gap:6px}.cg-garage .cg-paint-row label select{margin-left:auto}.cg-garage .mg-title p{font-size:.87rem;line-height:1.35}.cg-garage .cg-collection-count small{min-width:max-content}}

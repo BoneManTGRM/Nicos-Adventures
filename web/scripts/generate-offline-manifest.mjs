@@ -12,6 +12,7 @@ if (!existsSync(path.join(dist, "index.html")) || !existsSync(assets)) {
 const bundleUrls = readdirSync(assets, { withFileTypes: true })
   .filter((entry) => entry.isFile() && (
     /\.(?:js|css)$/.test(entry.name)
+    || /^garage-.*\.webp$/.test(entry.name)
     || /^nico-(?:explorer-atlas|professions(?:-[a-z]+)?-atlas|librarian)-.*\.webp$/.test(entry.name)
     || /^boltbot-premium-poses-atlas-.*\.webp$/.test(entry.name)
     || /^crew-[a-z-]+-v3-.*\.webp$/.test(entry.name)
