@@ -1,4 +1,5 @@
 import {drawDefense} from './defense-art.mjs';
+import {drawAirRaid} from './air-raids.mjs';
 import {drawStructure} from './demolition-art.mjs';
 import {drawVehicle} from './vehicle-art.mjs';
 import {SmashFX} from './smash-fx.mjs';
@@ -50,6 +51,7 @@ export class Renderer {
       }
     }else if(e.kind==='swing')this.rings.push({x:e.x,y:e.y,dir:e.face,age:0,max:.22,size:35,type:'swipe'});
     else if(e.kind==='flap')this.rings.push({x:e.x,y:e.y,age:0,max:.38,size:65,type:'wind'});
+    else if(e.kind==='aircraftHit'||e.kind==='aircraftBoltHit')this.burst(e.x,e.y,8,'spark',e.direction);
     else if(e.kind==='ricochet')this.burst(e.x,e.y,9,'spark');
     else if(e.kind==='roar')this.shake=Math.max(this.shake,3.5);
   }
@@ -78,6 +80,7 @@ export class Renderer {
       if(car.x>=camera-55&&car.x<=camera+W+55)drawVehicle(c,car,t,this.reduced);
     }
     if(s.defense)drawDefense(c,s,this.reduced,'back');
+    drawAirRaid(c,s.airRaid,camera,W,t,this.reduced);
     const shadeHeight=a.support?.h||0;
     c.fillStyle='rgba(15,13,28,.37)';c.beginPath();c.ellipse(a.x,-shadeHeight+2,Math.max(11,40-(a.y-shadeHeight)*.09),5,0,0,Math.PI*2);c.fill();
     const foot=Math.floor(a.stride*1.14);
