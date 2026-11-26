@@ -1,9 +1,10 @@
 import garageCover from '../assets/art/garage/garage-cover.webp';
+import cloudGarden from '../assets/art/kingdom/kingdom-cloud.webp';
 import unicornCard from '../assets/art/unicorn-prance-v2.webp';
 import './site-art-refresh.css';
 import type {Language} from '../types';
 import './creative-games.css';
 export type CreativeGame='garage'|'kingdom';
 function TruckArt(){return <img className="cg-entry__art mg-arcade-cover" src={garageCover} alt="" width="980" height="552" loading="lazy"/>;}
-function RainbowArt(){return <div className="cg-entry__art cg-unicorn-card" aria-hidden="true"><div className="cg-card-rainbow"/><img src={unicornCard} width="820" height="820" alt="" loading="lazy" decoding="async"/></div>;}
+function RainbowArt(){return <div className="cg-entry__art cg-unicorn-card" aria-hidden="true"><div className="bk-card-scenery" style={{backgroundImage:'url('+cloudGarden+')'}}/><img src={unicornCard} width="820" height="820" alt="" loading="lazy" decoding="async"/></div>;}
 export function CreativeEntries({language,open}:{language:Language;open:(game:CreativeGame)=>void}){const es=language==='es-MX';return <div className="cg-entries"><article className="cg-entry"><TruckArt/><div className="cg-entry__copy"><small>{es?'100 PIEZAS · RAMPAS · CHOQUES':'100 PARTS · RAMPS · CRASHES'}</small><h2>Nico’s Monster Garage</h2><p>{es?'Construye tu auto monstruoso, lánzate por las rampas y consigue piezas para tu próxima idea.':'Build your monster car, launch off ramps, and earn parts for your next idea.'}</p><button type="button" data-testid="open-monster-garage" onClick={()=>open('garage')}>{es?'Entrar al taller':'Enter the garage'} →</button></div></article><article className="cg-entry cg-entry--kingdom"><RainbowArt/><div className="cg-entry__copy"><small>{es?'CONSTRUYE · RECORRE · DESCUBRE':'BUILD · RIDE · DISCOVER'}</small><h2>Becca’s Rainbow Kingdom</h2><p>{es?'Crea un camino mágico, recórrelo con tu unicornio y rescata amigos para tu jardín.':'Create a magical course, ride it with your unicorn, and rescue friends for your garden.'}</p><button type="button" data-testid="open-rainbow-kingdom" onClick={()=>open('kingdom')}>{es?'Crear mi reino':'Create my kingdom'} →</button></div></article></div>;}

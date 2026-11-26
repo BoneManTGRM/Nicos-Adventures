@@ -1,0 +1,22 @@
+.cg-kingdom {--cg-ink:#fff5ec;--cg-accent:#ffe3a6;--cg-muted:#e3d9ec;--cg-panel:#38334c;--cg-line:#80718a;background:linear-gradient(155deg,#3a314f,#26233d 43%,#24223b);border-color:#80738e}
+.cg-kingdom .bk-banner{position:relative;isolation:isolate;overflow:hidden;min-height:185px;padding:clamp(20px,3.5vw,46px);border:1px solid #b395a4;border-radius:20px;background-size:cover;background-position:center 47%;margin:16px 0}
+.cg-kingdom .bk-banner>div{z-index:1;width:53%}.cg-kingdom .bk-banner h2{font-family:Georgia,'Times New Roman',serif;color:#fff0d6;letter-spacing:-.04em;font-size:clamp(1.85rem,4.2vw,3.85rem);line-height:1;margin:0}
+.cg-kingdom .bk-banner p{color:#fff4ee;font-size:clamp(.85rem,1.2vw,1rem);line-height:1.35;margin:9px 0 0;max-width:35ch}
+.cg-kingdom .cg-intro.bk-banner>canvas{display:block;position:absolute;bottom:0;right:2%;width:min(43%,390px);height:auto;filter:drop-shadow(0 4px 6px #20163765);margin:0}
+.cg-kingdom .cg-kingdom-stage{border:2px solid #b69ca9;border-radius:17px;background:#39304b;overflow:hidden}
+.cg-kingdom .cg-kingdom-toolbar{background:#302c43;border-color:#76687e}
+.cg-kingdom .cg-kingdom-hud{align-items:center;z-index:1;gap:5px}.cg-kingdom .cg-kingdom-hud span,.cg-kingdom .cg-kingdom-hud button{background:#27203eec;color:#fff1d8;border:1px solid #ab93a7;border-radius:12px;padding:6px 10px;font-weight:700}
+.cg-kingdom .cg-unicorn-controls{display:grid;grid-template-columns:minmax(44px,.74fr) minmax(64px,1.35fr) minmax(64px,1.2fr) minmax(44px,.74fr);gap:7px}
+.cg-kingdom .cg-unicorn-controls .bk-sing{min-height:44px;padding:6px;color:#fff0c3;background:#503d68;font-weight:800}
+.cg-kingdom .cg-unicorn-controls .bk-sing.bk-near{color:#38243e;background:#ffe5ac;border-color:#fff2ca;box-shadow:0 0 12px #ffe8a87a}
+.bk-route-progress{position:absolute;bottom:0;left:0;right:0;height:4px;background:#31283d83;pointer-events:none}.bk-route-progress i{display:block;height:100%;background:linear-gradient(90deg,#ffa2be,#ffe598,#a0f3d4)}
+.bk-feedback{margin:7px 0;font-weight:700;color:#ffe6b2}.bk-sound{margin:10px 0}.cg-kingdom .bk-sound button{font-size:.85rem}
+.cg-kingdom .cg-pad-grid button,.cg-kingdom .cg-magic-grid .cg-part-card{background:linear-gradient(145deg,#514060,#302d46);border:1px solid #796885}
+.cg-kingdom .cg-magic-grid .is-selected,.cg-kingdom .cg-pad-grid button[aria-pressed=true]{border:2px solid #ffdca2}
+.cg-magic-grid canvas{filter:drop-shadow(0 3px 4px #241d35a0)}
+.bk-journal{padding:clamp(12px,2vw,24px);border:1px solid #8a748b;border-radius:18px;background:#302b42}.bk-journal header,.bk-friend-info{display:flex;justify-content:space-between;align-items:center;gap:10px}.bk-journal h3{font:700 clamp(1.2rem,2.5vw,1.75rem) Georgia,serif;color:#ffe6c5;margin:12px 0}.bk-journal header h3{margin:0 0 10px}
+.bk-friends{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}.cg-kingdom .bk-friends button{padding:5px;background:#3a334c;border-color:#776681;min-height:48px}.bk-friends i{display:block;width:100%;max-width:90px;aspect-ratio:1;margin:auto;background-size:300% 300%;background-repeat:no-repeat;filter:saturate(.45);opacity:.70}.bk-friends .known i,.bk-friends [aria-pressed=true] i{filter:none;opacity:1}.cg-kingdom .bk-friends [aria-pressed=true]{border-color:#ffdba1;background:#58405d}.bk-friends span{display:block;font-size:.8rem}.bk-friend-info{min-height:58px;color:#fee7c8}.bk-friend-info button{font-size:.85rem}
+.bk-songs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.bk-songs button{display:grid;text-align:left;gap:4px}.cg-kingdom .bk-songs button:disabled{opacity:.85;color:#d6cbd8}.bk-songs span{font-size:.8rem;font-weight:500}
+@media(max-width:680px){.bk-friends{grid-template-columns:repeat(3,minmax(0,1fr))}.bk-friends i{width:60px}.bk-songs{grid-template-columns:1fr}.cg-kingdom .bk-banner{min-height:155px;padding:15px}.cg-kingdom .bk-banner>div{width:64%}.cg-kingdom .bk-banner>canvas{right:-5%;width:56%}.cg-kingdom .cg-unicorn-controls .cg-pedal{padding:7px}.cg-kingdom .cg-kingdom-hud span,.cg-kingdom .cg-kingdom-hud button{font-size:.8rem}}
+
+.bk-preview-label{position:absolute;top:10px;left:10px;color:#fff1d5;background:#292139e8;border:1px solid #bd9ead;border-radius:8px;padding:5px 9px;font-size:.8rem;font-weight:700;pointer-events:none}

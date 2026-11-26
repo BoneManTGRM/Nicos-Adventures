@@ -54,3 +54,19 @@ test('failed artwork loading has an explicit retry and does not lose saved progr
  await expect(page.getByTestId('kingdom-ride')).toBeVisible();await expect(page.getByTestId('kingdom-petals')).toHaveText('88');
  await page.locator('.cg-topbar button').click();await page.getByTestId('open-monster-garage').click();await expect(page.getByTestId('garage-bolts')).toHaveText('42');
 });
+
+test('the public kingdom link starts a playable trail and remembers a bellflower across visits', async({page})=>{
+ await page.goto('/?play=rainbow-kingdom');
+ await page.getByTestId('kingdom-ride').click();
+ const stage=page.getByTestId('kingdom-stage');
+ await page.keyboard.down('ArrowRight');
+ await expect.poll(async()=>Number(await stage.getAttribute('data-world-x'))).toBeGreaterThan(130);
+ await page.keyboard.up('ArrowRight');
+ await page.getByTestId('kingdom-sing').click();
+ await expect(page.locator('.cg-kingdom-hud')).toContainText('1/3');
+ await page.reload();
+ await expect(page.locator('[data-song="0"]')).toContainText('1/3');
+ await expect(page.locator('[data-song="0"]')).toBeDisabled();
+ await expect(page.locator('[data-friend]')).toHaveCount(9);
+ await expect(page.getByTestId('kingdom-petals')).toHaveText('0');
+});

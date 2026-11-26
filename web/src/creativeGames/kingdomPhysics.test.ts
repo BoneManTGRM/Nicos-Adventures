@@ -10,3 +10,18 @@ describe('Rainbow Kingdom playable construction',()=>{
  it('the finish gate requires all three discoveries',()=>{const r=makeRide();r.x=2010;stepRide(r,empty,0,idle);expect(r.completed).toBe(false);r.found=[0,1,2];stepRide(r,empty,0,idle);expect(r.completed).toBe(true);});
  it('authored moving platforms vary predictably with time',()=>{const layout=[...empty];layout[0]=5;layout[1]=6;expect(magicPlatforms(layout,0,1)).not.toEqual(magicPlatforms(layout,0,0));expect(magicPlatforms(layout,0,1)).toEqual(magicPlatforms(layout,0,1));});
 });
+
+it('grants one midair leap per landing',()=>{
+ const ride=makeRide();
+ stepRide(ride,STARTER_COURSE,0,{...idle,jump:true});expect(ride.vy).toBeLessThan(-390);
+ stepRide(ride,STARTER_COURSE,0,idle);ride.vy=70;
+ stepRide(ride,STARTER_COURSE,0,{...idle,jump:true});expect(ride.vy).toBeLessThan(-330);
+ stepRide(ride,STARTER_COURSE,0,idle);ride.vy=70;
+ stepRide(ride,STARTER_COURSE,0,{...idle,jump:true});expect(ride.vy).toBeGreaterThan(0);
+ ride.y=335;stepRide(ride,STARTER_COURSE,0,idle);expect(ride.airJump).toBe(true);
+});
+
+it('lets the dragon at the last crossing reach the unicorn from beneath the bridge',()=>{
+ const ride=makeRide();ride.x=1783;ride.y=172;ride.found=[0,1];
+ stepRide(ride,STARTER_COURSE,1,idle);expect(ride.found).toEqual([0,1,2]);
+});
