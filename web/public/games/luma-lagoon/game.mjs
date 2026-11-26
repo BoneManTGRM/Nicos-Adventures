@@ -56,6 +56,7 @@ function mood(p) {
   return p[low] > 46 ? 'calm' : ({belly:'hungry', joy:'bored', energy:'tired', clean:'dusty'})[low];
 }
 function setText(id, value) { if ($(id).textContent !== value) $(id).textContent = value; }
+const tricks={fetch:['Pearl fetch','Atrapar la perla'],loop:['Loop dive','Vuelta submarina'],bubbles:['Blow bubbles','Hacer burbujas']};
 function render() {
   const now = Date.now(), p = pet && advance(pet, now), s = p ? stage(p.bond) : 0;
   displaySleeping = Boolean(p?.sleeping);
@@ -88,6 +89,12 @@ function render() {
     const [x,y]=game.points[game.score]; $('bug').style.left=x+'%'; $('bug').style.top=y+'%';
   }
   if (p) {
+    const spanish=lang!=='en';
+    setText('waterTitle',spanish?'Juegos de agua':'Water play');
+    for(const button of document.querySelectorAll('[data-trick]')){
+      button.textContent=tricks[button.dataset.trick][Number(spanish)];button.disabled=displaySleeping||!!game||busy;
+    }
+    setText('waterHint',displaySleeping?(spanish?'Tu mascota está descansando.':'Your pet is resting.'):(spanish?'Lanza la perla o toca las burbujas para reventarlas.':'Toss the pearl, or tap the bubbles to pop them.'));
     setText('tagline',lang==='en'?'Tap the water to call '+p.name+'.':'Toca el agua para llamar a '+p.name+'.');
     const trail = journey(p);
     look = {wear:trail.wear, mastered:discoveries(trail)===12, tired:mood(p)==='tired'};
@@ -204,7 +211,7 @@ harbor=mountHarbor({current:()=>pet,language:()=>lang,update,tone,leaveFireflies
   if(game){game=null;say('cancelled');render();}
 }});
 companion=animateCompanion({stage,
-  state:()=>({pet,eggColor,sleeping:displaySleeping,playing:!!game,...look}),
+  state:()=>({pet,eggColor,sleeping:displaySleeping,playing:!!game,bug:game?.points[game.score],...look}),
   callPet:()=>{say('call',2);render();},
   petTap:async()=>{
     if(!pet||busy||game||displaySleeping)return;
@@ -214,5 +221,10 @@ companion=animateCompanion({stage,
     }else{say('wave');render();}
   }
 });
+for(const button of document.querySelectorAll('[data-trick]'))button.onclick=()=>{
+  if(!pet||displaySleeping||game)return;
+  companion.trick(button.dataset.trick);tone(550,.1);
+  $('habitat').scrollIntoView({block:'center',behavior:'instant'});
+};
 setInterval(()=>{if(!document.hidden)render();},1500);
 sync();
