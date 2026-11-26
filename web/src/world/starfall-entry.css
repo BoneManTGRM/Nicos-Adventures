@@ -49,3 +49,7 @@
 @media (max-width: 560px) {
  .skullwing-entry .starfall-entry__coast { height: auto; }
 }
+
+.mascaras-entry { background: #193a39; border-color: #bd9e63; }
+.mascaras-entry .starfall-entry__coast { object-position: center 35%; image-rendering: auto; }
+.mascaras-entry .starfall-entry__copy a { background: #ffca63; color: #173935; }
