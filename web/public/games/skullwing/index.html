@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111224">
-<meta name="description" content="Become Skullwing, a giant winged blue gorilla. Glide over rooftops, smash towers and shake three cities in Nico’s World.">
+<meta name="description" content="Become Skullwing, a giant winged blue gorilla. Glide over rooftops, smash traffic and tear down three cities in Nico’s World.">
 <title>Skullwing · Nico’s World</title>
 <link rel="stylesheet" href="./skullwing.css"><script type="module" src="./game.mjs"></script>
 </head>
@@ -24,7 +24,7 @@
  </div>
  <section id="arena" aria-label="Skullwing game" hidden>
   <header class="game-hud"><div><small id="districtLabel">DISTRICT</small><strong id="districtName"></strong></div><div class="score-wrap"><small id="scoreLabel">SCORE</small><strong id="score">0</strong></div><button id="pause" aria-label="Pause"><i class="pause-mark" aria-hidden="true"></i></button></header>
-  <div id="stage"><canvas id="world" aria-label="City destruction playfield"></canvas><div id="mapHud"><div id="minimap" aria-hidden="true"></div><span id="clearCount"></span></div><div id="combo" hidden></div><div id="callout" aria-live="polite"></div>
+  <div id="stage"><canvas id="world" aria-label="City destruction playfield"></canvas><div id="mapHud"><div id="minimap" aria-hidden="true"></div><span id="clearCount"></span><span id="wreckCount" hidden></span></div><div id="combo" hidden></div><div id="callout" aria-live="polite"></div>
   <div id="hint"></div></div>
   <div id="controls"><div class="pad move-pad"><button data-action="left" aria-label="Move left"><span class="chev left"></span></button><button data-action="right" aria-label="Move right"><span class="chev"></span></button></div>
    <div class="pad ability-pad"><button data-action="jump"><i class="symbol wing-icon" aria-hidden="true">⌁</i><span id="jumpName">Flap</span></button><button data-action="attack"><i class="symbol claw-icon" aria-hidden="true">Ⅲ</i><span id="smashName">Smash</span></button><button data-action="roar"><i class="symbol roar-icon" aria-hidden="true">◎</i><span id="roarName">Roar</span><b id="chargeBar"></b></button></div>

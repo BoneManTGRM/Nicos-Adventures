@@ -17,7 +17,7 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const render=new Renderer(el('world'),reduced.matches);
 reduced.addEventListener?.('change',e=>{render.reduced=e.matches;});
 const keys=new Map(),pointers=new Map(),buttons=new Map();
-let input={};let audioStamp=0;
+let input={};let audioStamp=0,blastStamp=0,floorStamp=0,noiseBuffer;
 function unlock(){
   if(!sound)return;
   try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;audio??=new A();
@@ -31,11 +31,35 @@ function tone(from,to,length,volume=.04,type='sine',offset=0){
   gain.gain.exponentialRampToValueAtTime(.0001,at+length);
   osc.connect(gain);gain.connect(audio.destination);osc.start(at);osc.stop(at+length+.01);
 }
+function crunch(length,cutoff,volume){
+  if(!sound||!audio||audio.state!=='running')return;
+  if(!noiseBuffer){
+    noiseBuffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*.55),audio.sampleRate);
+    const data=noiseBuffer.getChannelData(0);
+    for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+  }
+  const at=audio.currentTime,source=audio.createBufferSource();
+  const filter=audio.createBiquadFilter(),gain=audio.createGain();source.buffer=noiseBuffer;
+  filter.type='lowpass';filter.frequency.setValueAtTime(cutoff,at);
+  filter.frequency.exponentialRampToValueAtTime(180,at+length);
+  gain.gain.setValueAtTime(volume,at);gain.gain.exponentialRampToValueAtTime(.0001,at+length);
+  source.connect(filter);filter.connect(gain);gain.connect(audio.destination);
+  source.start(at);source.stop(at+length);
+}
 function effect(e){
   if(!sound)return;
   if(e.kind==='roar'){tone(182,36,.62,.09,'sawtooth');tone(260,72,.48,.04,'triangle',.045);}
   if(e.kind==='flap'||e.kind==='leap')tone(e.kind==='flap'?230:115,365,.16,.034,'triangle');
   if(e.kind==='collapse'&&city.time-audioStamp>.08){tone(118,32,.34,.074,'triangle');tone(195,55,.16,.032,'sawtooth',.06);audioStamp=city.time;}
+  if(e.kind==='vehicleHit'&&e.type==='tank')tone(510,172,.13,.034,'triangle');
+  if(e.kind==='vehicleExplosion'&&city.time-blastStamp>.07){
+    const tank=e.type==='tank';blastStamp=city.time;
+    crunch(tank?.47:.30,tank?2400:3700,.18);
+    tone(tank?105:150,33,tank?.48:.29,.095,'sine');
+  }
+  if(e.kind==='floorImpact'&&city.time-floorStamp>.095){
+    floorStamp=city.time;crunch(.24,1250,.11);tone(102,38,.19,.057,'triangle');
+  }
   if(e.kind==='swing')tone(e.hit?160:250,e.hit?43:100,.115,.039,'triangle');
   if(e.kind==='stomp'){tone(110,29,.31,.10,'sine');tone(154,41,.14,.04,'triangle');}
   if(e.kind==='land')tone(82,42,.12,.028,'sine');
@@ -95,14 +119,14 @@ function clearInput(){keys.clear();pointers.clear();syncInput();}
 function hint(text,seconds){el('hint').textContent=text;hintUntil=(city?.time||0)+seconds;}
 function setHint(){
   const touch=matchMedia('(pointer: coarse)').matches;
-  if(helpStage===0)hint(t(touch?'Move next to a tower. Hold Smash to punch.':'Move with ← → or A / D. Hold X to punch a tower.',touch?'Acércate a una torre. Mantén Golpe para pegar.':'Muévete con ← → o A / D. Mantén X para golpear.'),8);
+  if(helpStage===0)hint(t(touch?'Hold Smash near a car to send it into a tower.':'Move with ← → or A / D. Hold X to punch cars and towers.',touch?'Mantén Golpe junto a un auto para lanzarlo contra una torre.':'Muévete con ← → o A / D. Mantén X para golpear.'),8);
   else if(helpStage===1)hint(t(touch?'Tap Flap twice to fly. Hold it to glide.':'Tap Space twice to fly. Hold it to glide.',touch?'Toca Volar dos veces. Mantenlo para planear.':'Pulsa Espacio dos veces. Mantenlo para planear.'),6);
   else if(helpStage===2)hint(t(touch?'Tap Smash in midair to dive.':'Press X in midair to dive.',touch?'Toca Golpe en el aire para caer con fuerza.':'Pulsa X en el aire para caer con fuerza.'),5);
   else hint(t(touch?'Roar shakes every nearby building.':'Press C to roar through nearby buildings.',touch?'Ruge para sacudir los edificios cercanos.':'Pulsa C para sacudir los edificios cercanos.'),6);
 }
 function callout(text,seconds=.9){el('callout').textContent=text;callUntil=city.time+seconds;}
 function begin(index){
-  selected=index;city=newCity(index);recordBefore=Number(records[index])||0;audioStamp=-1;
+  selected=index;city=newCity(index);recordBefore=Number(records[index])||0;audioStamp=blastStamp=floorStamp=-1;
   clearInput();closeDialog(false);setMode('play');render.reset();render.resize();last=0;acc=0;nextHud=0;
   hadFlight=false;helpStage=0;el('callout').textContent='';el('districtName').textContent=names()[index];
   el('minimap').replaceChildren(...city.buildings.map(b=>{const n=document.createElement('i');n.style.height=(3+b.h/20)+'px';return n;}));
@@ -115,6 +139,9 @@ function hud(){
   el('score').textContent=city.score.toLocaleString(es?'es-MX':'en-US');
   el('clearCount').textContent=city.cleared+' / '+city.buildings.length;
   el('clearCount').setAttribute('aria-label',t('Buildings down','Edificios derribados')+' '+el('clearCount').textContent);
+  const wrecks=city.wrecks.car+city.wrecks.police+city.wrecks.tank;
+  el('wreckCount').hidden=!wrecks;
+  el('wreckCount').textContent=t('Wrecks ','Destrozos ')+wrecks;
   const near=city.buildings.reduce((best,b,i)=>!best||Math.abs(b.x-city.actor.x)<best.dist?{dist:Math.abs(b.x-city.actor.x),i}:best,null)?.i;
   const dots=el('minimap').children;
   city.buildings.forEach((b,i)=>{dots[i].className=b.hp<=0?'down':i===near?'near':'';});
@@ -128,7 +155,11 @@ function receive(e){
     if(helpStage===0){helpStage=1;setHint();}
     if(e.combo>=2)callout(t('CHAIN REACTION','¡EN CADENA!')+' ×'+e.combo);
   }
-  if(e.kind==='ricochet')callout(t('CAR RICOCHET!','¡AUTO DE REBOTE!'),.7);
+  if(e.kind==='ricochet')callout(t('CRASH BONUS +55','¡CHOQUE! +55'),.7);
+  if(e.kind==='vehicleExplosion'){
+    if(e.chain)callout(t('CHAIN BLAST','EXPLOSIÓN EN CADENA')+' ×'+(e.chain+1));
+    else if(e.type==='tank')callout(t('TANK WRECKED!','¡TANQUE DESTROZADO!'));
+  }
   if(e.kind==='flap'&&!hadFlight){hadFlight=true;helpStage=2;setHint();}
   if(e.kind==='stomp'&&helpStage===2){helpStage=3;setHint();}
   if(e.kind==='clear'){
@@ -158,7 +189,9 @@ function showDialog(which){
   el('dialogDistrict').textContent=names()[city.district].toUpperCase();
   const done=which==='clear';el('dialogTitle').textContent=done?t('City flattened!','¡Ciudad demolida!'):t('Paused','En pausa');
   const touch=matchMedia('(pointer: coarse)').matches;
-  el('dialogText').textContent=done?t('Every tower is down.','Todas las torres han caído.'):
+  const tally=city.wrecks;
+  el('dialogText').textContent=done?
+    [t('Cars','Autos')+' '+tally.car,t('Police cruisers','Patrullas')+' '+tally.police,t('Tanks','Tanques')+' '+tally.tank].join(' · '):
     t(touch?'Tap Flap twice to climb. Hold to glide. Smash in the air to dive.':'Arrows or A/D to move. Space to flap or glide, X to smash or dive, C to roar.',
       touch?'Toca Volar dos veces para subir. Mantén para planear. Golpea en el aire para caer.':'Flechas o A/D para moverte. Espacio para volar o planear, X para golpear o caer, C para rugir.');
   el('results').hidden=!done;

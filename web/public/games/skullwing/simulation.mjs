@@ -1,7 +1,10 @@
+import {makeTraffic,hitTraffic,stepTraffic} from './traffic.mjs';
+
 // Positions use world units. The monster's height above the street is positive.
 export const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const motionDecay = {swipe:2.8,roar:1.32,land:3.3,flap:2.45,turn:4.2,slide:3.2};
 const timedMotions = Object.keys(motionDecay);
+const floorImpacts = [.35,.57,.83];
 const approach = (a, b, amount) => a + clamp(b - a, -amount, amount);
 function seeded(seed) {
   return () => { seed = (Math.imul(1664525, seed) + 1013904223) >>> 0; return seed / 4294967296; };
@@ -16,40 +19,33 @@ export function newCity(district) {
     const h = i === 0 ? 69 : Math.round(64 + rand() * (104 + district * 12));
     const hp = h > 147 ? 4 : h > 88 ? 3 : 2;
     buildings.push({x:x + w / 2, w,h,kind:(i + district * 2) % 5,seed:Math.floor(rand()*65535),
-      hp,maxHp:hp,impact:0,tilt:0,fall:0,fallDir:1,domino:false,ruin:false});
+      hp,maxHp:hp,impact:0,tilt:0,fall:0,fallDir:1,domino:false,ruin:false,impactStage:0,
+      hitX:0,hitY:h/2,breakStyle:'punch',damageSites:[]});
     x += w + 17 + rand() * 32;
   }
-  const cars = buildings.filter((_,i)=>i%2===0).map((b,i)=>({
-    x:b.x-28,y:0,vx:(i%2?1:-1)*(14+i),vy:0,spin:0,angle:0,launched:false,color:i%4,rest:0,struck:new Set()
-  }));
+  const cars=makeTraffic(buildings,district,x+100);
   return {district,buildings,cars,length:x+100,time:0,actor:{
     x:77,y:0,vx:0,vy:0,face:1,turn:0,walk:0,stride:0,idle:0,grounded:true,support:null,
     coyote:.09,jumpBuffer:0,jumpHeld:false,airFlaps:1,flight:0,glide:0,dive:false,
     swipe:0,hand:0,roar:0,land:0,flap:0,slide:0,attackWait:0
-  },score:0,cleared:0,combo:0,maxCombo:0,chainClock:0,charge:1,waves:[],events:[],done:false,finishWait:0};
+  },wrecks:{car:0,police:0,tank:0},score:0,cleared:0,combo:0,maxCombo:0,chainClock:0,charge:1,waves:[],events:[],done:false,finishWait:0};
 }
-function emit(s,kind,props={}) {s.events.push({kind,...props});}
-function hitBuilding(s,b,amount,direction) {
+function emit(s,kind,props={}) {s.events.push({kind,district:s.district,...props});}
+function hitBuilding(s,b,amount,direction,worldX,height,style) {
   if(b.hp<=0) return false;
   b.hp=Math.max(0,b.hp-amount); b.impact=1; b.tilt=direction; s.charge=clamp(s.charge+.05,0,1);
-  emit(s,'hit',{b,direction});s.score+=20;
+  b.hitX=clamp(worldX-b.x,-b.w*.49,b.w*.49);b.hitY=clamp(height,4,b.h-2);
+  b.breakStyle=style;b.damageSites.push({x:b.hitX,y:b.hitY,side:Math.sign(b.hitX)||-direction});
+  emit(s,'hit',{b,x:b.x+b.hitX,y:b.hitY,direction,style});s.score+=20;
   if(b.hp===0){
     b.fall=.0001;b.fallDir=direction||1;s.cleared++;s.combo=s.chainClock>0?s.combo+1:1;
     s.maxCombo=Math.max(s.combo,s.maxCombo);s.chainClock=3.35;
     s.score+=100*s.combo+b.maxHp*20;
-    emit(s,'collapse',{b,direction:b.fallDir,combo:s.combo});
+    emit(s,'collapse',{b,direction:b.fallDir,style,combo:s.combo});
     if(s.actor.support===b){s.actor.support=null;s.actor.grounded=false;}
-    if(s.cleared===s.buildings.length) s.finishWait=1.25;
+    if(s.cleared===s.buildings.length) s.finishWait=2.18;
   }
   return true;
-}
-function flingCars(s,x,radius,direction,power) {
-  for(const car of s.cars) {
-    if(car.launched || Math.abs(car.x-x)>radius) continue;
-    car.launched=true;car.vx=(direction || Math.sign(car.x-x) || 1)*(100+power*60);
-    car.vy=175+power*55;car.spin=car.vx*.035;s.score+=45;
-    emit(s,'car',{x:car.x,y:16});
-  }
 }
 function jump(s) {
   const a=s.actor;
@@ -70,9 +66,9 @@ function swing(s) {
   a.swipe=1;a.hand=1-a.hand;a.attackWait=.34;
   const reach=a.x+a.face*52;
   const targets=s.buildings.filter(b=>b.hp>0 && Math.abs(b.x-reach)<b.w/2+42 && b.h+24>=a.y);
-  for(const b of targets) hitBuilding(s,b,1,a.face);
-  flingCars(s,reach,62,a.face,1);
-  emit(s,'swing',{x:reach,y:a.y+58,face:a.face,hit:targets.length>0});
+  for(const b of targets) hitBuilding(s,b,1,a.face,reach,a.y+49,'punch');
+  const carsHit=hitTraffic(s,reach,a.y+23,53,1,a.face);
+  emit(s,'swing',{x:reach,y:a.y+58,face:a.face,hit:targets.length>0||carsHit>0});
 }
 export function press(s,action){
   if(s.done || s.finishWait>0) return;
@@ -80,7 +76,7 @@ export function press(s,action){
   if(action==='jump'){a.jumpHeld=true;jump(s);}
   if(action==='attack') swing(s);
   if(action==='roar' && s.charge>=.999 && !a.dive){
-    s.charge=0;a.roar=1;s.waves.push({x:a.x,y:a.y+68,age:0,hit:new Set()});
+    s.charge=0;a.roar=1;s.waves.push({x:a.x,y:a.y+68,age:0,hit:new Set(),vehicles:new Set()});
     emit(s,'roar',{x:a.x,y:a.y+68});
   }
 }
@@ -93,10 +89,10 @@ function land(s,roof,impactSpeed){
     let brokeFloor=false;
     for(const b of s.buildings){
       if(Math.abs(b.x-a.x)>b.w/2+80 || b.h+40<a.y) continue;
-      hitBuilding(s,b,3,Math.sign(b.x-a.x)||a.face);
+      hitBuilding(s,b,3,Math.sign(b.x-a.x)||a.face,a.x,a.y+8,'stomp');
       if(b===roof&&b.hp===0) brokeFloor=true;
     }
-    flingCars(s,a.x,120,0,2);
+    hitTraffic(s,a.x,a.y+5,104,3,0);
     if(brokeFloor){a.grounded=false;a.support=null;a.vy=-145;}
   }
   if(a.jumpBuffer>0 && a.grounded){a.jumpBuffer=0;jump(s);}
@@ -142,40 +138,27 @@ export function step(s,input,dt) {
       if(wave.hit.has(b)||b.hp<=0)continue;
       const dx=Math.max(0,Math.abs(b.x-wave.x)-b.w/2),dy=Math.max(0,wave.y-b.h);
       if(Math.hypot(dx,dy)<Math.min(225,wave.age*470)){
-        wave.hit.add(b);hitBuilding(s,b,2,Math.sign(b.x-wave.x)||a.face);
+        wave.hit.add(b);hitBuilding(s,b,2,Math.sign(b.x-wave.x)||a.face,wave.x,wave.y,'roar');
       }
     }
-    flingCars(s,wave.x,Math.min(220,wave.age*470),0,1.5);
+    hitTraffic(s,wave.x,wave.y,Math.min(220,wave.age*470),2,0,wave.vehicles);
   }
   s.waves=s.waves.filter(w=>w.age<.62);
   for(let i=0;i<s.buildings.length;i++){
     const b=s.buildings[i];b.impact=Math.max(0,b.impact-dt*2.45);
     if(!b.fall||b.ruin)continue;
-    b.fall=Math.min(1,b.fall+dt*1.35);
+    b.fall=Math.min(1,b.fall+dt/1.55);
+    if(b.impactStage<floorImpacts.length && b.fall>=floorImpacts[b.impactStage]){
+      const k=b.impactStage++,x=b.x+b.fallDir*(k-1)*b.w*.25;
+      emit(s,'floorImpact',{x,y:1,width:b.w*(.46+k*.15),dir:b.fallDir,district:s.district});
+      if(k===1)hitTraffic(s,x,4,b.w*.58,3,0);
+    }
     if(!b.domino&&b.fall>.45){
       b.domino=true;const neighbor=s.buildings[i+b.fallDir];
-      if(neighbor&&Math.abs(neighbor.x-b.x)-(b.w+neighbor.w)/2<b.h*.33)hitBuilding(s,neighbor,1,b.fallDir);
+      if(neighbor&&Math.abs(neighbor.x-b.x)-(b.w+neighbor.w)/2<b.h*.33)hitBuilding(s,neighbor,1,b.fallDir,b.x,b.h*.47,'crash');
     }
     if(b.fall>=1){b.ruin=true;emit(s,'settle',{x:b.x,y:6,w:b.w});}
   }
-  for(const c of s.cars){
-    if(!c.launched){
-      c.x+=c.vx*dt;
-      if(c.x<12 || c.x>s.length-12)c.vx=c.x<12?Math.abs(c.vx):-Math.abs(c.vx);
-    }else if(c.rest<2){
-      const oldX=c.x;
-      c.vy-=500*dt;c.x+=c.vx*dt;c.y+=c.vy*dt;c.angle+=c.spin*dt;
-      if(c.y>10 && Math.abs(c.vx)>90){
-        for(const b of s.buildings){
-          if(b.hp<=0 || c.struck.has(b) || c.y>b.h+6) continue;
-          const side=b.x-Math.sign(c.vx)*b.w/2;
-          if((oldX-side)*(c.x-side)>0) continue;
-          c.struck.add(b);hitBuilding(s,b,1,Math.sign(c.vx));s.score+=55;
-          emit(s,'ricochet',{x:c.x,y:c.y});
-        }
-      }
-      if(c.y<0){c.y=0;c.vy=Math.abs(c.vy)*.3;c.vx*=.5;c.spin*=.5;if(c.vy<34){c.rest=2;c.angle=Math.round(c.angle/Math.PI)*Math.PI;}}
-    }
-  }
+  stepTraffic(s,dt,hitBuilding);
   if(s.finishWait>0){s.finishWait-=dt;if(s.finishWait<=0){s.done=true;emit(s,'clear');}}
 }

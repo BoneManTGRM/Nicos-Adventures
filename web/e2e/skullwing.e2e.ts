@@ -17,7 +17,8 @@ test("Skullwing accepts touch and keyboard attacks and returns to city selection
           const flags = ctx.canvas.dataset;
           if (image.currentSrc.endsWith("/skullwing-painted.webp")) flags.paintedCharacterSeen = "yes";
           if (image.currentSrc.endsWith("/skullwing-hindlegs.webp")) flags.paintedLegsSeen = "yes";
-          if (flags.paintedCharacterSeen && flags.paintedLegsSeen) prototype.drawImage = original;
+          if (image.currentSrc.endsWith("/vehicles.webp")) flags.paintedVehiclesSeen = "yes";
+          if (flags.paintedCharacterSeen && flags.paintedLegsSeen && flags.paintedVehiclesSeen) prototype.drawImage = original;
         }
         return Reflect.apply(target, ctx, args);
       },
@@ -28,6 +29,7 @@ test("Skullwing accepts touch and keyboard attacks and returns to city selection
   await start.click();
   await expect(page.locator("#world")).toHaveAttribute("data-painted-character-seen", "yes");
   await expect(page.locator("#world")).toHaveAttribute("data-painted-legs-seen", "yes");
+  await expect(page.locator("#world")).toHaveAttribute("data-painted-vehicles-seen", "yes");
   const roar = page.locator('[data-action="roar"]');
   if (touch) {
     await page.locator('[data-action="jump"]').tap();
@@ -51,5 +53,21 @@ test("Skullwing accepts touch and keyboard attacks and returns to city selection
   await start.click();
   await expect(page.locator("#districtName")).toHaveText(spanish ? "Bahía Polar" : "Frostline Bay");
   await expect(page.locator("#clearCount")).toHaveText("0 / 16");
+  expect(errors).toEqual([]);
+});
+
+test("the first smash launches traffic into a building and counts the wrecks", async ({ page }, info) => {
+  const spanish = info.project.metadata.language === "es-MX";
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto("/games/skullwing/?lang=" + (spanish ? "es-MX" : "en"));
+  await page.locator("#start").click();
+  await expect(page.locator("#wreckCount")).toBeHidden();
+  if (info.project.use.hasTouch) await page.locator('[data-action="attack"]').tap();
+  else await page.keyboard.press("x");
+  await expect(page.locator("#wreckCount")).toHaveText(spanish ? /Destrozos [1-9]/ : /Wrecks [1-9]/);
+  await expect(page.locator("#clearCount")).toHaveText("1 / 12");
+  await expect(page.locator("#world")).toBeVisible();
+  await expect(page.locator("#score")).not.toHaveText("0");
   expect(errors).toEqual([]);
 });
