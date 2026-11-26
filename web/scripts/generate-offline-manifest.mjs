@@ -49,9 +49,13 @@ const lagoon = "/games/luma-lagoon/";
 const lagoonFiles = readdirSync(path.join(dist, lagoon), { withFileTypes: true })
   .filter(entry => entry.isFile() && entry.name !== "index.html")
   .map(entry => lagoon + entry.name);
+const skullwing = "/games/skullwing/";
+const skullwingFiles = readdirSync(path.join(dist, skullwing), { withFileTypes: true })
+  .filter(entry => entry.isFile() && entry.name !== "index.html")
+  .map(entry => skullwing + entry.name);
 const manifest = {
   version: 1,
-  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles, ...huntAssets, lagoon, ...lagoonFiles])].sort(),
+  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles, ...huntAssets, lagoon, ...lagoonFiles, skullwing, ...skullwingFiles])].sort(),
 };
 writeFileSync(path.join(dist, "offline-assets.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 console.log(`Generated offline-assets.json with ${manifest.assets.length} Golden Adventure assets.`);
