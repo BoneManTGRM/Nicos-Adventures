@@ -9,6 +9,7 @@ import { tr, ui } from "../i18n/core";
 import { WORLD_SECTIONS } from "./catalogs";
 import { NicoVideoCard } from "./NicoVideoCard";
 import { nextAdventure } from "./journey";
+import { SkullwingEntry } from "./SkullwingEntry";
 import { LumaLagoonEntry } from "./LumaLagoonEntry";
 import { TimberlineEntry } from "./TimberlineEntry";
 import { StarfallEntry } from "./StarfallEntry";
@@ -66,6 +67,7 @@ export function WorldMap({
           <button type="button" data-testid="world-explore" onClick={()=>{const target=document.getElementById('world-atlas-title');target?.scrollIntoView({block:'start',behavior:'auto'});target?.focus({preventScroll:true});}}><span aria-hidden="true">🧭</span><strong>{language==='es-MX'?'Explorar el mundo':'Explore the world'}</strong><small>{language==='es-MX'?'Elige un lugar del mapa':'Choose a place on the map'}</small></button>
         </div>
       </section>
+      <SkullwingEntry es={language === "es-MX"} />
       <LumaLagoonEntry es={language === "es-MX"} />
       <StarfallEntry es={language === "es-MX"} />
       <TimberlineEntry es={language === "es-MX"} />

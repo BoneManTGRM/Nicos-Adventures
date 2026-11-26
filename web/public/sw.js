@@ -1,7 +1,7 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v47";
+const CACHE = "nicos-world-static-v48";
 const FISHING_DOCUMENT = "/games/starfall-anglers/";
-const GAME_DOCUMENTS = [FISHING_DOCUMENT, "/games/timberline-hunt/", "/games/luma-lagoon/"];
+const GAME_DOCUMENTS = [FISHING_DOCUMENT, "/games/timberline-hunt/", "/games/luma-lagoon/", "/games/skullwing/"];
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";
 const NICO_ART = "/assets/nico/nico-guide-art.b64";
 const APPROVED_NICO_ART = [
