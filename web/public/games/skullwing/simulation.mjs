@@ -1,3 +1,4 @@
+import {makeAirRaid,hitAircraft,stepAirRaid} from './air-raids.mjs';
 import {makeTraffic,hitTraffic,stepTraffic} from './traffic.mjs';
 
 // Positions use world units. The monster's height above the street is positive.
@@ -24,11 +25,11 @@ export function newCity(district) {
     x += w + 17 + rand() * 32;
   }
   const cars=makeTraffic(buildings,district,x+100);
-  return {district,buildings,cars,length:x+100,time:0,actor:{
+  return {district,buildings,cars,airRaid:makeAirRaid(buildings,district,x+100),length:x+100,time:0,actor:{
     x:77,y:0,vx:0,vy:0,face:1,turn:0,walk:0,stride:0,idle:0,grounded:true,support:null,
     coyote:.09,jumpBuffer:0,jumpHeld:false,airFlaps:1,flight:0,glide:0,dive:false,
     swipe:0,hand:0,roar:0,land:0,flap:0,slide:0,attackWait:0
-  },wrecks:{car:0,police:0,tank:0},score:0,cleared:0,combo:0,maxCombo:0,chainClock:0,charge:1,waves:[],events:[],done:false,finishWait:0};
+  },wrecks:{car:0,police:0,tank:0,plane:0},score:0,cleared:0,combo:0,maxCombo:0,chainClock:0,charge:1,waves:[],events:[],done:false,finishWait:0};
 }
 function emit(s,kind,props={}) {s.events.push({kind,district:s.district,...props});}
 function hitBuilding(s,b,amount,direction,worldX,height,style) {
@@ -76,7 +77,7 @@ export function press(s,action){
   if(action==='jump'){a.jumpHeld=true;jump(s);}
   if(action==='attack') swing(s);
   if(action==='roar' && s.charge>=.999 && !a.dive){
-    s.charge=0;a.roar=1;s.waves.push({x:a.x,y:a.y+68,age:0,hit:new Set(),vehicles:new Set()});
+    s.charge=0;a.roar=1;s.waves.push({x:a.x,y:a.y+68,age:0,hit:new Set(),vehicles:new Set(),airborne:!a.grounded});
     emit(s,'roar',{x:a.x,y:a.y+68});
   }
 }
@@ -142,6 +143,7 @@ export function step(s,input,dt) {
       }
     }
     hitTraffic(s,wave.x,wave.y,Math.min(220,wave.age*470),2,0,wave.vehicles);
+    hitAircraft(s,wave,Math.min(225,wave.age*470));
   }
   s.waves=s.waves.filter(w=>w.age<.62);
   for(let i=0;i<s.buildings.length;i++){
@@ -160,5 +162,9 @@ export function step(s,input,dt) {
     if(b.fall>=1){b.ruin=true;emit(s,'settle',{x:b.x,y:6,w:b.w});}
   }
   stepTraffic(s,dt,hitBuilding);
+  stepAirRaid(s,dt,(scene,bolt)=>{
+    const actor=scene.actor;
+    if(!actor.grounded&&!actor.dive)actor.vx=clamp(actor.vx+Math.sign(bolt.vx)*38,-255,255);
+  });
   if(s.finishWait>0){s.finishWait-=dt;if(s.finishWait<=0){s.done=true;emit(s,'clear');}}
 }
