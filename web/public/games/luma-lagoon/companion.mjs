@@ -144,7 +144,25 @@ export function animateCompanion({state,stage,petTap,callPet}) {
       scene.append(node);setTimeout(()=>node.remove(),1650);
     }
   }
+  let routine=null;
+  const pearl=document.createElement('i');pearl.className='fetchPearl';pearl.hidden=true;pearl.setAttribute('aria-hidden','true');scene.append(pearl);
+  function stopTrick(){
+    routine=null;pearl.hidden=true;delete scene.dataset.routine;
+    scene.querySelectorAll('.toyBubble').forEach(b=>b.remove());
+  }
+  function trick(kind){
+    stopTrick();held=0;
+    routine={kind,start:t,origin:x,depth:y,side:x>.5?.24:.76,next:0};scene.dataset.routine=kind;
+    wake();
+  }
+  function bubble(){
+    const b=document.createElement('button');b.type='button';b.className='toyBubble';b.setAttribute('aria-label',document.documentElement.lang.startsWith('es')?'Reventar burbuja':'Pop bubble');
+    b.style.left=limit(x+(Math.random()-.5)*.39,.10,.90)*100+'%';b.style.top=limit(y-.13,.35,.70)*100+'%';
+    b.onclick=e=>{e.stopPropagation();b.disabled=true;b.classList.add('popped');setTimeout(()=>b.remove(),220);};
+    scene.append(b);setTimeout(()=>b.remove(),3300);
+  }
   function act(kind){
+    stopTrick();
     expression=kind;held=t+(kind==='feed'?2.3:kind==='wash'?2:1.7);wait=4;
     goalX=x;goalY=y;
     if(kind==='hatch')hatchAt=t;
@@ -158,7 +176,7 @@ export function animateCompanion({state,stage,petTap,callPet}) {
   }
   function call(px,py){
     const s=state();if(!s.pet || s.sleeping || s.playing) return;
-    aim(px,py);held=0;wait=6;callPet();
+    stopTrick();aim(px,py);held=0;wait=6;callPet();
     const ring=document.createElement('span');ring.className='callRing';ring.setAttribute('aria-hidden','true');
     ring.style.left=px*100+'%';ring.style.top=py*100+'%';scene.append(ring);setTimeout(()=>ring.remove(),950);
     wake();
@@ -184,12 +202,39 @@ export function animateCompanion({state,stage,petTap,callPet}) {
     const dt=prev?Math.min(.05,(ts-prev)/1000):0;prev=ts;t+=dt;
     const quiet=motion.matches, active=s.pet && !s.sleeping && !s.playing;
     const heldNow=t<held, swim=active && !quiet && !heldNow;
-    if(swim && (wait-=dt)<=0){
-      aim(.5+(x>.5?-1:1)*(.18+Math.random()*.15),.57+Math.random()*.18);wait=5+Math.random()*5;
+    if(!active && routine)stopTrick();
+    let roll=0;
+    if(routine){
+      const q=routine,age=t-q.start;
+      if(q.kind==='fetch'){
+        const toss=Math.min(1,age/.78);
+        const margin=Math.min(.48,(petWidth*.46+3)/width);
+        const target=limit(q.side,margin,1-margin),origin=limit(q.origin,margin,1-margin);
+        const carried=age>1.5 && (q.caught||Math.abs(x-target)<.035);
+        if(carried)q.caught=true;
+        if(age>.4)aim(carried?origin:target,carried?q.depth:.65);
+        pearl.hidden=false;
+        const px=carried?limit(x,margin,1-margin)+facing*petWidth*.11/width:origin+(target-origin)*smooth(toss);
+        const py=carried?y-.08:q.depth+(.60-q.depth)*toss-(quiet?0:Math.sin(toss*Math.PI)*.21);
+        pearl.style.left=px*100+'%';pearl.style.top=py*100+'%';
+        if(age>2.6&&carried&&Math.abs(x-origin)<.035){effect('love',4);stopTrick();}
+      }else if(q.kind==='loop'){
+        const f=Math.min(1,age/3.4),angle=f*2*Math.PI;
+        aim(q.origin+(q.side-q.origin)*(1-Math.cos(angle))*.48,q.depth-Math.sin(angle)*.17);
+        roll=quiet?0:360*smooth(f);
+        if(f===1){stopTrick();effect('swim',5);}
+      }else{
+        if(age>=q.next&&q.next<3){bubble();q.next+=.6;}
+        if(age>5.8)stopTrick();
+      }
+      wait=1.2;
+    }else if(swim && (wait-=dt)<=0){
+      aim(x>.5?.16+Math.random()*.18:.67+Math.random()*.17,.48+Math.random()*.30);wait=2.2+Math.random()*2;
     }
-    if(!s.pet || s.playing){goalX=.5;goalY=.71;}
-    const difference=goalX-x, moving=swim && (Math.abs(difference)*width+Math.abs(goalY-y)*height)>7;
-    const ease=quiet?1:1-Math.exp(-dt*2.4);
+    if(!s.pet){goalX=.5;goalY=.71;}
+    if(s.playing&&s.bug)aim(s.bug[0]/100,s.bug[1]/100+.1);
+    const difference=goalX-x, moving=(swim||s.playing) && (Math.abs(difference)*width+Math.abs(goalY-y)*height)>7;
+    const ease=quiet?1:1-Math.exp(-dt*(routine?3.8:1.65));
     x+=difference*ease;y+=(goalY-y)*ease;
     if(moving && Math.abs(difference)*width>8)facing=difference<0?-1:1;
     turn+=(facing-turn)*(1-Math.exp(-dt*13));
@@ -198,7 +243,7 @@ export function animateCompanion({state,stage,petTap,callPet}) {
     const breath=quiet?0:Math.sin(t*(s.sleeping?1.8:2.3))*.016;
     position.style.transform='translate3d('+Math.round((foot-petWidth/2)*10)/10+'px,'+Math.round((y*height-petHeight*.77+bob)*10)/10+'px,0)';
     const tilt=quiet?0:(moving?Math.sin(t*4.3)*2.8:Math.sin(t*1.6)*1.4)+(heldNow&&expression==='love'?Math.sin((held-t)*8)*3.2:0);
-    rig.style.transform='rotate('+tilt+'deg) scale('+((quiet?facing:turn)*(1-breath*.6))+','+(1+breath)+')';
+    rig.style.transform='rotate('+(tilt+roll)+'deg) scale('+((quiet?facing:turn)*(1-breath*.6))+','+(1+breath)+')';
     const desired=!s.pet?0:s.sleeping?2:heldNow?({love:1,feed:4,wash:1,wake:5,play:1,hatch:1}[expression]??0):moving||s.playing?3:(s.tired?5:0);
     if(desired!==to){from=blend<.5?from:to;to=desired;blend=0;started=t;}
     blend=quiet?1:smooth(limit((t-started)/.19,0,1));
@@ -263,5 +308,5 @@ export function animateCompanion({state,stage,petTap,callPet}) {
   function wake(){if(!frameHandle && !document.hidden && !scene.hidden && seen)frameHandle=requestAnimationFrame(draw);}
   document.addEventListener('visibilitychange',()=>{prev=0;wake();});
   window.addEventListener('pageshow',wake);
-  return {wake,act};
+  return {wake,act,trick};
 }
