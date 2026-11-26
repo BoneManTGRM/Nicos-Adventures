@@ -1,13 +1,16 @@
-import {drawBackdrop,drawStreet,drawBuilding} from './city-art.mjs';
+import {drawStructure} from './demolition-art.mjs';
+import {drawVehicle} from './vehicle-art.mjs';
+import {SmashFX} from './smash-fx.mjs';
+import {drawBackdrop,drawStreet} from './city-art.mjs';
 import {drawRex} from './rex.mjs';
 import {clamp} from './simulation.mjs';
 
 export class Renderer {
   constructor(canvas,reduced) {
     this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});
-    this.reduced=reduced;this.reset();
+    this.reduced=reduced;this.smashFX=new SmashFX(reduced);this.reset();
   }
-  reset(){this.camera=0;this.lift=0;this.shake=0;this.parts=[];this.rings=[];this.frame=0;this.foot=0;this.turnFace=1;}
+  reset(){this.smashFX.clear();this.camera=0;this.lift=0;this.shake=0;this.parts=[];this.rings=[];this.frame=0;this.foot=0;this.turnFace=1;}
   resize(){
     const box=this.canvas.getBoundingClientRect();if(!box.width||!box.height)return;
     const ratio=Math.min(window.devicePixelRatio||1,1.75);
@@ -29,20 +32,21 @@ export class Renderer {
     if(this.parts.length>205)this.parts.splice(0,this.parts.length-205);
   }
   event(e) {
-    if(e.kind==='hit'){
-      this.burst(e.b.x-e.direction*e.b.w*.32,e.b.h*.54,12,'chips',e.direction);
-      this.burst(e.b.x,e.b.h*.63,7,'spark',e.direction);this.shake=Math.max(this.shake,1.5);
-    }else if(e.kind==='collapse'){
-      this.burst(e.b.x,e.b.h*.8,22,'chips',e.direction);this.burst(e.b.x,6,14,'dust');
-      this.shake=Math.max(this.shake,3.2);
-    }else if(e.kind==='stomp'||e.kind==='land'||e.kind==='leap'||e.kind==='settle'){
-      const heavy=e.kind==='stomp'||e.kind==='settle';
-      this.burst(e.x,e.y+3,heavy?22:7,'dust');
-      if(e.kind==='stomp'||e.kind==='settle')this.rings.push({x:e.x,y:e.y,age:0,max:.45,size:e.kind==='stomp'?120:58,type:'floor'});
-      if(heavy)this.shake=Math.max(this.shake,e.kind==='stomp'?5:2);
+    this.smashFX.reduced=this.reduced;
+    this.smashFX.event(e);
+    if(e.kind==='hit')this.shake=Math.max(this.shake,1.35);
+    else if(e.kind==='collapse')this.shake=Math.max(this.shake,3.2);
+    else if(e.kind==='floorImpact')this.shake=Math.max(this.shake,1.7);
+    else if(e.kind==='vehicleExplosion')this.shake=Math.max(this.shake,e.type==='tank'?3.7:2.1);
+    else if(e.kind==='stomp'||e.kind==='land'||e.kind==='leap'){
+      this.burst(e.x,e.y+3,e.kind==='stomp'?22:7,'dust');
+      if(e.kind==='stomp'){
+        this.rings.push({x:e.x,y:e.y,age:0,max:.45,size:120,type:'floor'});
+        this.shake=Math.max(this.shake,5);
+      }
     }else if(e.kind==='swing')this.rings.push({x:e.x,y:e.y,dir:e.face,age:0,max:.22,size:35,type:'swipe'});
     else if(e.kind==='flap')this.rings.push({x:e.x,y:e.y,age:0,max:.38,size:65,type:'wind'});
-    else if(e.kind==='car'||e.kind==='ricochet')this.burst(e.x,e.y,9,'spark');
+    else if(e.kind==='ricochet')this.burst(e.x,e.y,9,'spark');
     else if(e.kind==='roar')this.shake=Math.max(this.shake,3.5);
   }
   render(s,dt){
@@ -63,19 +67,12 @@ export class Renderer {
     drawBackdrop(c,v);drawStreet(c,v);
     c.save();c.translate(-camera,ground);
     for(const b of s.buildings){
-      if(b.x+b.w+80<camera || b.x-b.w-80>camera+W) continue;
-      c.save();c.translate(b.x,0);
-      if(b.ruin || b.fall>.48) this.rubble(c,b);
-      if(!b.ruin){
-        const fall=b.fall||0;
-        c.save();c.translate(b.fallDir*fall*fall*b.w*.24,8*fall);
-        c.rotate((b.impact*Math.sin((1-b.impact)*16)*.025*b.tilt + b.fallDir*fall*fall*.41)*(this.reduced?.45:1));
-        c.scale(1+.05*fall,Math.max(.02,1-fall*fall));
-        drawBuilding(c,b,{district:s.district,time:t,reduced:this.reduced});c.restore();
-      }
-      c.restore();
+      if(b.x+b.w+124<camera || b.x-b.w-124>camera+W) continue;
+      c.save();c.translate(b.x,0);drawStructure(c,b,v);c.restore();
     }
-    for(const car of s.cars)if(car.x>camera-35&&car.x<camera+W+35)this.car(c,car,t);
+    for(const car of s.cars){
+      if(car.x>=camera-55&&car.x<=camera+W+55)drawVehicle(c,car,t,this.reduced);
+    }
     const shadeHeight=a.support?.h||0;
     c.fillStyle='rgba(15,13,28,.37)';c.beginPath();c.ellipse(a.x,-shadeHeight+2,Math.max(11,40-(a.y-shadeHeight)*.09),5,0,0,Math.PI*2);c.fill();
     const foot=Math.floor(a.stride*1.14);
@@ -93,6 +90,7 @@ export class Renderer {
     c.scale(.54+.46*Math.abs(this.turnFace)+a.land*.045,1-a.land*.07);
     drawRex(c,{time:t,walk:a.walk,facing:Math.sign(this.turnFace)||a.face,air:a.flight,slam:a.dive?1:a.land,swipe:a.swipe,roar:a.roar,charge:s.charge,reduced:this.reduced,glide:a.glide,flap:a.flap,stride:a.stride,hand:a.hand,slide:a.slide});
     c.restore();
+    this.smashFX.draw(c,dt,v);
     for(const wave of s.waves){
       const r=Math.max(2,wave.age*470);
       c.save();c.globalAlpha=clamp(1-wave.age/.62,0,1);
@@ -120,23 +118,5 @@ export class Renderer {
       c.restore();
     }this.parts=this.parts.filter(p=>p.life>0);
     c.restore();c.restore();
-  }
-  rubble(c,b){
-    const colors=['#4a4259','#77657a','#9592a1','#54556c'];
-    for(let i=0;i<12;i++){
-      const n=((b.seed*(i+7)*17)%139)/139, x=-b.w*.53+i*b.w*.091;
-      c.fillStyle=colors[i%4];c.beginPath();c.moveTo(x-6,1);c.lineTo(x-3,-4-n*5);c.lineTo(x+4,-7-n*8);c.lineTo(x+12,0);c.fill();
-      if(i%4===0){c.fillStyle='#cdb88d';c.fillRect(x+2,-7-n*7,5,1.5);}
-    }
-  }
-  car(c,car,t){
-    const color=['#ffb344','#47e0d7','#de72b0','#a6adfe'][car.color];
-    c.save();c.translate(car.x,3-car.y);c.rotate(car.angle);if(car.vx<0)c.scale(-1,1);
-    const bounce=car.launched?0:Math.sin(t*10+car.color)*.5;
-    c.translate(0,bounce);c.fillStyle='#161a32';c.fillRect(-13,-7,27,7);
-    c.fillStyle=color;c.beginPath();c.moveTo(-14,-6);c.lineTo(-11,-10);c.lineTo(-6,-11);c.lineTo(-2,-16);c.lineTo(6,-16);c.lineTo(10,-11);c.lineTo(15,-9);c.lineTo(15,-5);c.fill();
-    c.fillStyle='#32475e';c.fillRect(-2,-14,7,4);c.fillStyle='#fff1a2';c.fillRect(12,-9,3,2);
-    for(const x of [-8,9]){c.fillStyle='#181a2b';c.beginPath();c.arc(x,-4,3.8,0,Math.PI*2);c.fill();c.fillStyle='#9bafbc';c.fillRect(x-1,-5,2,2);}
-    c.restore();
   }
 }
