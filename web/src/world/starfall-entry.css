@@ -43,5 +43,13 @@
 .luma-entry .starfall-entry__coast { object-position: center 58%; }
 
 .skullwing-entry { background: #202039; border-color: #665b8e; }
-.skullwing-entry .starfall-entry__coast { object-position: 65% 41%; image-rendering: auto; }
+.skullwing-entry .starfall-entry__coast { object-position: 65% top; image-rendering: auto; }
 .skullwing-entry .starfall-entry__copy a { background: #d8fa5a; color: #19201e; }
+
+@media (max-width: 560px) {
+ .skullwing-entry .starfall-entry__coast { height: auto; }
+}
+
+.mascaras-entry { background: #193a39; border-color: #bd9e63; }
+.mascaras-entry .starfall-entry__coast { object-position: center 35%; image-rendering: auto; }
+.mascaras-entry .starfall-entry__copy a { background: #ffca63; color: #173935; }

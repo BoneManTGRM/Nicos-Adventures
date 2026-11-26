@@ -39,3 +39,6 @@
 
 /games/skullwing/*
   Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/games/mascaras-del-volcan/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
