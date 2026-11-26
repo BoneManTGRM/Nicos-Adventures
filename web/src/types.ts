@@ -198,6 +198,20 @@ export type MovieProject = {
   lastMimeType?: string;
 };
 
+export type LumaPet = {
+  version: 1;
+  name: string;
+  color: "coral" | "mint" | "violet";
+  born: number;
+  updated: number;
+  bond: number;
+  sleeping: boolean;
+  belly: number;
+  joy: number;
+  energy: number;
+  clean: number;
+};
+
 export type LocalProfile = {
   schemaVersion: 4;
   id: string;
@@ -226,6 +240,7 @@ export type LocalProfile = {
   badges: string[];
   movieProjects: MovieProject[];
   adventures: GoldenAdventureProgress;
+  lumaLagoon?: LumaPet;
   learningLab?: import("./learning/engine").Progress;
   creativeGames?: import("./creativeGames/save").CreativeGamesSave;
   nico: NicoPreferences;

@@ -13,6 +13,7 @@ import type {
   DinosaurRecord,
   Language,
   LocalProfile,
+  LumaPet,
   LocalSaveStore,
   MonsterRecord,
   MovieCharacterKind,
@@ -412,6 +413,20 @@ function normalizeMovieProject(candidate: unknown): MovieProject | null {
   };
 }
 
+function normalizeLumaPet(candidate: unknown): LumaPet | undefined {
+  const pet = asRecord(candidate);
+  if (!pet || pet.version !== 1 || typeof pet.name !== "string") return undefined;
+  const name = pet.name.trim().slice(0, 18);
+  if (!name || (pet.color !== "coral" && pet.color !== "mint" && pet.color !== "violet")) return undefined;
+  const timestamp = (value: unknown) => Math.floor(clampNumber(value, 0, Number.MAX_SAFE_INTEGER, 0));
+  return {
+    version: 1, name, color: pet.color, born: timestamp(pet.born), updated: timestamp(pet.updated),
+    bond: timestamp(pet.bond), sleeping: pet.sleeping === true,
+    belly: clampNumber(pet.belly, 0, 100, 58), joy: clampNumber(pet.joy, 0, 100, 60),
+    energy: clampNumber(pet.energy, 0, 100, 72), clean: clampNumber(pet.clean, 0, 100, 72),
+  };
+}
+
 function normalizeProfile(candidate: unknown): LocalProfile | null {
   const value = asRecord(candidate);
   if (!value) return null;
@@ -522,6 +537,7 @@ function normalizeProfile(candidate: unknown): LocalProfile | null {
       key.length <= 80 && Number.isInteger(slot) && Number(slot) >= 0 && Number(slot) < 9).slice(0, 100).map(([key, slot]) => [key, Number(slot)])),
     movieProjects,
     adventures: normalizeGoldenAdventureProgress(value.adventures),
+    lumaLagoon: normalizeLumaPet(value.lumaLagoon),
     ...(value.learningLab ? { learningLab: normalizeProgress(value.learningLab) } : {}),
     ...(value.creativeGames ? { creativeGames: normalizeGames(value.creativeGames) } : {}),
     nico: normalizeNico(value.nico),

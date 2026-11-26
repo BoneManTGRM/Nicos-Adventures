@@ -33,3 +33,6 @@
 
 /games/timberline-hunt/*
   Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/games/luma-lagoon/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
