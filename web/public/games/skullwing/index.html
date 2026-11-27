@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111224">
-<meta name="description" content="Become Skullwing, a giant winged blue gorilla. Glide over rooftops, smash traffic and tear down nine cities in Nico’s World.">
+<meta name="description" content="Play as Skullwing or Nacho, a giant masked luchador. Leap onto buildings and wreck traffic across nine cities in Nico’s World.">
 <title>Skullwing · Nico’s World</title>
 <link rel="stylesheet" href="./skullwing.css"><script type="module" src="./game.mjs"></script>
 </head>
@@ -15,8 +15,9 @@
  </header>
  <div id="menu">
   <section class="cover">
-   <div class="cover-art"></div><div class="cover-ink"></div>
-   <div class="hero-copy"><h1 aria-label="Skullwing"><span>SKULL</span><strong>WING</strong></h1>
+   <div class="cover-art"></div><canvas id="nachoPoster" width="420" height="360" aria-hidden="true" hidden></canvas><div class="cover-ink"></div>
+   <div class="hero-copy"><h1 id="heroTitle" aria-label="Skullwing"><span id="heroFirst">SKULL</span><strong id="heroLast">WING</strong></h1>
+   <div id="fighters" class="fighters" role="group" aria-label="Choose your monster"><button id="skullwing" type="button" aria-pressed="true">Skullwing</button><button id="nacho" type="button" aria-pressed="false">Nacho</button></div>
    <div id="modes" class="modes" role="group" aria-label="Difficulty"><button id="easy" type="button" aria-pressed="true">Easy</button><button id="hard" type="button" aria-pressed="false">Hard</button></div>
    <p id="pitch">Smash at your own pace.</p>
    <button id="start" class="main-button"><i class="play-mark" aria-hidden="true"></i><span id="startText">Smash the city</span></button></div>
@@ -28,7 +29,7 @@
   <div id="stage"><canvas id="world" aria-label="City destruction playfield"></canvas><div id="mapHud"><div id="minimap" aria-hidden="true"></div><span id="clearCount"></span><span id="wreckCount" hidden></span></div><div id="health" role="status" aria-live="polite" hidden><span id="hearts" aria-hidden="true"></span><span id="hpText"></span></div><div id="combo" hidden></div><div id="callout" aria-live="polite"></div>
   <div id="hint"></div></div>
   <div id="controls"><div class="pad move-pad"><button data-action="left" aria-label="Move left"><span class="chev left"></span></button><button data-action="right" aria-label="Move right"><span class="chev"></span></button></div>
-   <div class="pad ability-pad"><button data-action="jump"><i class="symbol wing-icon" aria-hidden="true">⌁</i><span id="jumpName">Flap</span></button><button data-action="attack"><i class="symbol claw-icon" aria-hidden="true">Ⅲ</i><span id="smashName">Smash</span></button><button data-action="grab" aria-keyshortcuts="E"><i class="symbol grab-icon" aria-hidden="true"></i><span id="grabName">Grab</span></button><button data-action="roar"><i class="symbol roar-icon" aria-hidden="true">◎</i><span id="roarName">Roar</span><b id="chargeBar"></b></button></div>
+   <div class="pad ability-pad"><button data-action="jump"><i class="symbol wing-icon" aria-hidden="true">⌁</i><span id="jumpName">Flap</span></button><button data-action="attack"><i class="symbol claw-icon" aria-hidden="true">Ⅲ</i><span id="smashName">Smash</span></button><button data-action="grab" aria-keyshortcuts="E"><i class="symbol grab-icon" aria-hidden="true"></i><span id="grabName">Grab</span></button><button data-action="roar" aria-keyshortcuts="C"><i class="symbol roar-icon" aria-hidden="true">◎</i><span id="roarName">Roar</span><b id="chargeBar"></b></button></div>
   </div>
  </section>
  <div id="veil" hidden><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"><div class="dialog-band"></div><small id="dialogDistrict"></small><h2 id="dialogTitle"></h2><p id="dialogText"></p><div id="results" hidden></div><div id="dialogActions"></div></section></div>

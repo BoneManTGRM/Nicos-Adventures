@@ -1,3 +1,5 @@
+import {drawNacho} from './nacho-art.mjs';
+import {drawPerson} from './pedestrian-art.mjs';
 import {drawStreetPeople} from './pedestrian-art.mjs';
 import {grabTarget} from './pedestrians.mjs';
 import {drawDefense} from './defense-art.mjs';
@@ -37,6 +39,7 @@ export class Renderer {
   event(e) {
     this.smashFX.reduced=this.reduced;
     this.smashFX.event(e);
+    if(e.kind==='personLanded')this.burst(e.x,e.y,4,'dust');
     if(e.kind==='hit')this.shake=Math.max(this.shake,1.35);
     else if(e.kind==='collapse')this.shake=Math.max(this.shake,3.2);
     else if(e.kind==='floorImpact')this.shake=Math.max(this.shake,1.7);
@@ -47,7 +50,7 @@ export class Renderer {
     else if(e.kind==='stomp'||e.kind==='land'||e.kind==='leap'){
       this.burst(e.x,e.y+3,e.kind==='stomp'?22:7,'dust');
       if(e.kind==='stomp'){
-        this.rings.push({x:e.x,y:e.y,age:0,max:.45,size:120,type:'floor'});
+        this.rings.push({x:e.x,y:e.y,age:0,max:.45,size:e.belly?154:120,type:'floor'});
         this.shake=Math.max(this.shake,5);
       }
     }else if(e.kind==='swing')this.rings.push({x:e.x,y:e.y,dir:e.face,age:0,max:.22,size:35,type:'swipe'});
@@ -77,9 +80,14 @@ export class Renderer {
       c.save();c.translate(b.x,0);drawStructure(c,b,v);c.restore();
     }
     for(const car of s.cars){
-      if(car.x>=camera-55&&car.x<=camera+W+55)drawVehicle(c,car,t,this.reduced);
+      if(car.state!=='held'&&car.x>=camera-55&&car.x<=camera+W+55)drawVehicle(c,car,t,this.reduced);
     }
-    drawStreetPeople(c,s.people,a.grip ? null : grabTarget(s),camera,W,t,this.reduced);
+    drawStreetPeople(c,s.people,a.grip||a.haul ? null : grabTarget(s),camera,W,t,this.reduced);
+    for(const p of s.people){
+      if(!p.toss||p.x<camera-20||p.x>camera+W+20)continue;
+      c.save();c.translate(p.x,-p.toss.y-8);c.rotate(this.reduced?p.toss.angle*.2:p.toss.angle);
+      c.translate(0,8);drawPerson(c,p,t*11,true);c.restore();
+    }
     if(s.defense)drawDefense(c,s,this.reduced,'back');
     const shadeHeight=a.support?.h||0;
     c.fillStyle='rgba(15,13,28,.37)';c.beginPath();c.ellipse(a.x,-shadeHeight+2,Math.max(11,40-(a.y-shadeHeight)*.09),5,0,0,Math.PI*2);c.fill();
@@ -94,6 +102,7 @@ export class Renderer {
       c.restore();
     }
     c.save();c.translate(a.x,-a.y);
+    if(s.monster==='nacho'&&a.haul)this.turnFace=a.face;
     this.turnFace+=(a.face-this.turnFace)*(1-Math.exp(-17*dt));
     const bodyWidth=.54+.46*Math.abs(this.turnFace)+a.land*.045, bodyHeight=1-a.land*.07;
     const facing=Math.sign(this.turnFace)||a.face;
@@ -107,7 +116,8 @@ export class Renderer {
       x:(grip.person.x-a.x)*facing/bodyWidth,
       y:(a.y+3)/bodyHeight-9
     } : null;
-    drawRex(c,{grip,groundHand,time:t,walk:a.walk,facing,air:a.flight,slam:a.dive?1:a.land,swipe:a.swipe,roar:a.roar,charge:s.charge,reduced:this.reduced,glide:a.glide,flap:a.flap,stride:a.stride,hand:a.hand,slide:a.slide});
+    if(s.monster==='nacho')drawNacho(c,a,t,facing,this.reduced);
+    else drawRex(c,{grip,groundHand,time:t,walk:a.walk,facing,air:a.flight,slam:a.dive?1:a.land,swipe:a.swipe,roar:a.roar,charge:s.charge,reduced:this.reduced,glide:a.glide,flap:a.flap,stride:a.stride,hand:a.hand,slide:a.slide});
     c.restore();
     this.smashFX.draw(c,dt,v);
     for(const wave of s.waves){

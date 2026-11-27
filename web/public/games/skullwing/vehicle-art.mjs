@@ -117,7 +117,7 @@ export function drawVehicle(ctx,v,time,reduced=false) {
 
   ctx.save();
   ctx.translate(v.x, roadOffset);
-  oval(ctx,'rgba(21,18,37,'+Math.max(.07,.34-height*.0024)+')',0,.3,
+  if(v.state!=='held')oval(ctx,'rgba(21,18,37,'+Math.max(.07,.34-height*.0024)+')',0,.3,
     Math.max(4,w*.112-height*.07),index===5?3.1:2.1);
   ctx.translate(0,-height-h/8);
   ctx.rotate(v.angle||0);

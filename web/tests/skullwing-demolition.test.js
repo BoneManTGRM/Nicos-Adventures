@@ -133,3 +133,54 @@ describe('Skullwing grab and eat',()=>{
     }
   });
 });
+
+describe('Nacho the heavyweight luchador',()=>{
+  it.each(cities.map((_,i)=>i))('belly-flops through a rooftop and wrecks street traffic in district %i',district=>{
+    const s=newCity(district,'hard','nacho'), b=s.buildings[0];
+    s.actor.x=b.x;
+    press(s,'jump');advance(s,.3,{...idle,jump:true});
+    expect(s.actor.y).toBeGreaterThan(b.h);
+    press(s,'attack');advance(s,.8);
+    expect(events(s,'stomp').some(e=>e.belly&&e.y===b.h)).toBe(true);
+    expect(b.hp).toBe(0);
+    s.actor.x=s.cars[0].x;
+    press(s,'jump');advance(s,.10);press(s,'attack');advance(s,.9);
+    expect(Object.values(s.wrecks).reduce((sum,n)=>sum+n,0)).toBeGreaterThan(0);
+  });
+  it('can lift a car, jump, turn and throw it into a building',()=>{
+    const s=newCity(0,'easy','nacho'),car=s.cars[0];
+    press(s,'grab');advance(s,.4);expect(s.actor.haul.target).toBe(car);
+    expect(car.state).toBe('held');expect(s.score).toBe(0);
+    press(s,'jump');advance(s,.08,{...idle,left:true});
+    press(s,'grab');advance(s,.22,{...idle,left:true});
+    expect(s.actor.haul).toBeNull();expect(car.vx).toBeLessThan(0);
+    expect(car.state).toBe('airborne');expect(car.y).toBeGreaterThan(120);
+    const flat=newCity(0,'easy','nacho'), first=flat.cars[0];
+    // Bring the next facade into the overhead throw's path.
+    flat.buildings[0].h=175;
+    press(flat,'grab');press(flat,'grab');advance(flat,1.4);
+    expect(first.state).toBe('wreck');expect(flat.buildings[0].hp).toBe(0);
+    expect(events(flat,'toss')).toHaveLength(1);
+  });
+  it('can punch a person and a car, or separately grab and throw the person',()=>{
+    const punch=newCity(0,'easy','nacho');press(punch,'attack');
+    expect(punch.people[0].toss.vx).toBeGreaterThan(0);
+    expect(punch.cars[0].state).toBe('airborne');
+    const s=newCity(0,'easy','nacho'),p=s.people[0];
+    press(s,'roar');press(s,'grab');advance(s,.4);
+    expect(s.actor.haul.target).toBe(p);expect(s.cars[0].state).toBe('driving');
+    press(s,'roar');advance(s,.2);
+    expect(p.toss.y).toBeGreaterThan(60);expect(s.score).toBe(35);
+    advance(s,1.5);
+    expect(p.onStreet).toBe(true);expect(p.toss).toBeNull();
+    s.actor.x=p.x-32;press(s,'roar');press(s,'roar');advance(s,1.8);
+    expect(s.score).toBe(35);expect(events(s,'toss')).toHaveLength(2);
+  });
+});
+
+it.each([['grab','car'],['roar','person']])('Nacho can punch a held %s object away',(action,kind)=>{
+  const s=newCity(0,'easy','nacho');
+  press(s,action);advance(s,.45);press(s,'attack');advance(s,.03);
+  expect(s.actor.haul).toBeNull();
+  expect(events(s,'toss')[0]).toMatchObject({target:kind,punched:true});
+});

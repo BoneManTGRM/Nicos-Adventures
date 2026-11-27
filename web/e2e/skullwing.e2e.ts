@@ -126,3 +126,24 @@ test("Skullwing picks up a pedestrian and eats on a second press", async ({ page
   await expect(page.locator("#score")).toHaveText("75");
   await expect(button).toHaveAccessibleName(es ? "Agarrar" : "Grab");
 });
+
+test("select Nacho, throw traffic and people, then belly flop", async ({page}, info)=>{
+  const es=info.project.metadata.language==="es-MX";
+  await page.goto("/games/skullwing/?mode=easy&lang="+(es?"es-MX":"en"));
+  await page.getByRole("button",{name:"Nacho",exact:true}).click();
+  await expect(page.locator("#nacho")).toHaveAttribute("aria-pressed","true");
+  await page.locator("#start").click();
+  const move=(action:string,key:string)=>info.project.use.hasTouch?page.locator('[data-action="'+action+'"]').tap():page.keyboard.press(key);
+  await move("grab","e");
+  await expect(page.locator('[data-action="grab"]')).toHaveAccessibleName(es?"Lanzar auto":"Throw car");
+  await move("grab","e");
+  await expect(page.locator("#wreckCount")).toBeVisible();
+  await move("roar","c");
+  await expect(page.locator('[data-action="roar"]')).toHaveAccessibleName(es?"Lanzar persona":"Throw person");
+  await move("roar","c");
+  await expect(page.locator("#callout")).toContainText(es?"POR LOS AIRES":"FLYING TOSS");
+  await move("jump","Space");
+  await expect(page.locator("#smashName")).toHaveText(es?"Plancha":"Flop");
+  await move("attack","x");
+  await expect(page.locator("#callout")).toContainText(es?"PLANCHAZO":"BELLY FLOP");
+});
