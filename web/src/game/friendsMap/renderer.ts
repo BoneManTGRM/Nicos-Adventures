@@ -5,10 +5,21 @@ import boltSource from '../../assets/boltbot/boltbot-premium-poses-atlas.webp';
 import sparkySource from '../../assets/pets/sparky-idle-v2.webp';
 import { loadCanonicalNicoImage } from '../../nico/canonicalNicoArt';
 import type { NicoProfessionId } from '../../types';
-import { companionPositions, MAP_HEIGHT, MAP_WIDTH, STOPS, TOKENS } from './simulation';
+import { companionPositions, MAP_HEIGHT, MAP_WIDTH, SKY_BELLS, STOPS, TOKENS } from './simulation';
 import type { Friend, MapState, Viewport } from './simulation';
+import { paintFriend, type MotionSheets } from './motion';
+const motionFiles = import.meta.glob<string>('../../assets/friends-motion/*.webp',{eager:true,query:'?url',import:'default'});
+async function loadSheets(profession: NicoProfessionId): Promise<MotionSheets> {
+  const sheets: MotionSheets = {};
+  await Promise.all(Object.entries(motionFiles).map(async ([path, url]) => {
+    const friend = path.split('/').at(-1)?.split('.')[0] as Friend;
+    if (friend === 'nico' && profession !== 'explorer') return;
+    const art = await image(url).catch(() => null); if (art) sheets[friend] = art;
+  }));
+  return sheets;
+}
 export const FRIEND_NAMES: Record<Friend, string> = { nico: 'Nico', becca: 'Becca', lua: 'Lua', boltbot: 'BoltBot', sparky: 'Sparky' };
-export type MapAssets = { map: HTMLImageElement; sprites: Record<Friend, HTMLCanvasElement> };
+export type MapAssets = { map: HTMLImageElement; sheets: MotionSheets; sprites: Record<Friend, HTMLCanvasElement> };
 function image(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const art = new Image(), timer = window.setTimeout(() => fail(), 15000);
@@ -38,8 +49,8 @@ function sprite(art: HTMLImageElement, height: number, atlas = false): HTMLCanva
   return out;
 }
 export async function loadMapAssets(profession: NicoProfessionId): Promise<MapAssets> {
-  const [map, nico, becca, lua, boltbot, sparky] = await Promise.all([image(mapSource), loadCanonicalNicoImage(profession), image(beccaSource), image(luaSource), image(boltSource), image(sparkySource)]);
-  return { map, sprites: { nico: sprite(nico, 88), becca: sprite(becca, 86), lua: sprite(lua, 76), boltbot: sprite(boltbot, 91, true), sparky: sprite(sparky, 51) } };
+  const [map, nico, becca, lua, boltbot, sparky, sheets] = await Promise.all([image(mapSource), loadCanonicalNicoImage(profession), image(beccaSource), image(luaSource), image(boltSource), image(sparkySource), loadSheets(profession)]);
+  return { map, sheets, sprites: { nico: sprite(nico, 88), becca: sprite(becca, 86), lua: sprite(lua, 76), boltbot: sprite(boltbot, 91, true), sparky: sprite(sparky, 51) } };
 }
 function disc(c: CanvasRenderingContext2D, x: number, y: number, r: number, color: string) { c.fillStyle = color; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill(); }
 function star(c: CanvasRenderingContext2D, x: number, y: number, size: number) {
@@ -64,6 +75,18 @@ export function drawMap(c: CanvasRenderingContext2D, assets: MapAssets, s: MapSt
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#143b49'; c.fillRect(0, 0, view.width, view.height);
   c.setTransform(view.scale, 0, 0, view.scale, -view.x * view.scale, -view.y * view.scale);
   c.drawImage(assets.map, 0, 0, MAP_WIDTH, MAP_HEIGHT);
+  if (s.path.length) {
+    c.save(); c.beginPath(); c.moveTo(s.player.x,s.player.y);
+    for (const p of s.path) c.lineTo(p.x,p.y);
+    c.strokeStyle='#fff1b8bb'; c.lineWidth=3; c.setLineDash([3,9]); c.lineDashOffset=-s.time*20; c.stroke(); c.restore();
+  }
+  for (const bell of SKY_BELLS) if (!s.bells.includes(bell.id)) {
+    const x=bell.x,y=bell.y-56+Math.sin(s.time*3+bell.x)*3;
+    c.save(); c.strokeStyle='#fee7a582'; c.lineWidth=1.7; c.setLineDash([2,5]); c.beginPath(); c.moveTo(x,y+14);c.lineTo(x,bell.y);c.stroke();c.setLineDash([]);
+    c.translate(x,y); const glow=c.createRadialGradient(0,0,1,0,0,22);glow.addColorStop(0,'#fff6acb0');glow.addColorStop(1,'#ffe89100');c.fillStyle=glow;c.fillRect(-22,-22,44,44);
+    c.fillStyle='#ffda75';c.strokeStyle='#86552b';c.lineWidth=1.8;c.beginPath();c.moveTo(-10,6);c.quadraticCurveTo(-6,2,-6,-4);c.bezierCurveTo(-5,-13,6,-13,7,-3);c.quadraticCurveTo(7,2,10,6);c.closePath();c.fill();c.stroke();
+    disc(c,0,9,3,'#ffeab1');star(c,-9,-10,4);c.restore();
+  }
   for (const token of TOKENS) if (!s.collected.includes(token.id)) star(c, token.x, token.y, 12);
   STOPS.forEach((stop, i) => {
     if (s.completed.includes(stop.id) || s.action?.id === stop.id) activityArt(c, stop.id, stop.x, stop.y, s.action?.id === stop.id ? s.action.elapsed : 0);
@@ -76,9 +99,12 @@ export function drawMap(c: CanvasRenderingContext2D, assets: MapAssets, s: MapSt
     const art = assets.sprites[actor.friend], x = Math.round(actor.x), y = Math.round(actor.y);
     c.fillStyle = '#112b4270'; c.beginPath(); c.ellipse(x, y, art.width * .35, 5, 0, 0, Math.PI * 2); c.fill();
     if (actor.friend === s.leader) { c.strokeStyle = '#fff6b4'; c.lineWidth = 2; c.beginPath(); c.ellipse(x, y, art.width * .46, 7, 0, 0, Math.PI * 2); c.stroke(); }
-    c.save(); c.translate(x, y); c.scale(actor.facing, 1);
-    const bob = actor.moving ? Math.abs(Math.sin(s.time * 12 + ROSTER_INDEX[actor.friend])) * 3 : 0;
-    c.drawImage(art, Math.round(-art.width / 2), Math.round(-art.height - bob)); c.restore();
+    if (actor.lift > 4 || (s.dashTime && actor.moving)) {
+      c.save(); c.globalAlpha = .65;
+      for (let k=0;k<4;k++) star(c,x-actor.facing*(10+k*7),y-actor.lift*.6-5+Math.sin(s.time*14+k)*6,3.5-k*.5);
+      c.restore();
+    }
+    paintFriend(c,art,assets.sheets,actor.friend,x,y,actor.facing,actor.moving,s.time,actor.lift,s.dashTime>0,actor.friend===s.leader ? s.trick : 0);
     if (actor.friend === s.leader) {
       c.font = 'bold 13px system-ui'; const name = FRIEND_NAMES[actor.friend], w = c.measureText(name).width + 14;
       c.fillStyle = '#102538e6'; c.fillRect(x - w / 2, y + 7, w, 21); c.fillStyle = '#fff6d6'; c.fillText(name, x, y + 22);
@@ -87,4 +113,3 @@ export function drawMap(c: CanvasRenderingContext2D, assets: MapAssets, s: MapSt
   }
   c.setTransform(1, 0, 0, 1, 0, 0);
 }
-const ROSTER_INDEX: Record<Friend, number> = { nico: 0, becca: 1, lua: 2, boltbot: 3, sparky: 4 };
