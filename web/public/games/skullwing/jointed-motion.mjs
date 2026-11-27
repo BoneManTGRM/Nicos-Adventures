@@ -118,6 +118,30 @@ export function articulate(image,pose){
   }};
 }
 
+// At cruising speed the joint solution repeats once per stride. Retain only the
+// selected character's cycle. Custom grips, turns and attacks still solve per draw.
+const strideFrames=96;
+let currentRunner,cycleTiles;
+function cruisingFigure(image,a,monster){
+  if(currentRunner!==monster){currentRunner=monster;cycleTiles=new Array(strideFrames);}
+  const turns=a.stride/tau,nearest=Math.round(turns*strideFrames);
+  const index=(nearest%strideFrames+strideFrames)%strideFrames;
+  const templatePhase=index*tau/strideFrames;
+  let tile=cycleTiles[index];
+  if(!tile){
+    const ape=monster==='skullwing',x=ape?-114:-61,y=ape?-156:-141;
+    const w=ape?236:137,h=-y+12,scale=1.5;
+    const cv=document.createElement('canvas');cv.width=Math.ceil(w*scale);cv.height=Math.ceil(h*scale);
+    const g=cv.getContext('2d');g.setTransform(scale,0,0,scale,-x*scale,-y*scale);
+    const runner={...a,stride:templatePhase,walk:1,flight:0};
+    articulate(image,jointPose(runner,monster,0,true)).paint(g);
+    tile=cycleTiles[index]={cv,x,y,w:cv.width/scale,h:cv.height/scale};
+  }
+  // Cancel the fractional stride displacement at the sole in ground contact.
+  const offset=(nearest/strideFrames-turns)*build[monster].stride;
+  return {paint(c){c.drawImage(tile.cv,tile.x+offset,tile.y,tile.w,tile.h);}};
+}
+
 // Ground actions share the same skeleton, so attacking does not restart a step.
 export function withJoints(a,time,monster,s,reduced){
   const movingPickup=a.grounded&&a.walk>.35&&['lift','wall','eat'].includes(s.mode);
@@ -131,6 +155,8 @@ export function withJoints(a,time,monster,s,reduced){
     s.mode='turn';
     if(s.p.t===1)s.face=1;
   }else if(image?.complete&&image.naturalWidth){
-    s.figure=articulate(image,jointPose(a,monster,time,reduced));s.mode='joints';
+    const cruise=s.mode==='stride'&&a.walk>=.8&&a.grounded&&Math.abs(a.yaw??a.face)>.999;
+    s.figure=cruise?cruisingFigure(image,a,monster):articulate(image,jointPose(a,monster,time,reduced));
+    s.mode='joints';
   }
 }
