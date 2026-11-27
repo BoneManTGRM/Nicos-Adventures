@@ -58,4 +58,24 @@ describe.each(['skullwing','nacho'])('%s limb motion',monster=>{
     expect(headings.some(v=>Math.abs(v)<.11)).toBe(true);
     expect(headings.at(-1)).toBe(-1);
   });
+  it('rotates into the aerial special and unwinds through touchdown',()=>{
+    const city=newCity(0,'easy',monster),a=city.actor;
+    press(city,'jump');
+    for(let i=0;i<30;i++)step(city,{...idle,jump:true},dt);
+    press(city,'attack');
+    const pitch=[],wings=[];
+    let landed=false;
+    for(let i=0;i<180;i++){
+      step(city,idle,dt);
+      const pose=jointPose(a,monster,city.time);
+      pitch.push(pose.root.angle);wings.push(pose.wing.angle);
+      if(a.splashPose>0)landed=true;
+      if(i)expect(Math.abs(pitch[i]-pitch[i-1])).toBeLessThan(.24);
+    }
+    expect(landed).toBe(true);
+    expect(Math.max(...pitch)).toBeGreaterThan(monster==='nacho'?1.35:.60);
+    expect(pitch.at(-1)).toBeLessThan(.01);
+    if(monster==='skullwing')expect(Math.max(...wings)-Math.min(...wings)).toBeGreaterThan(.08);
+  });
+
 });

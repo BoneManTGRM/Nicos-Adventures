@@ -388,7 +388,23 @@ for(const value of ['easy','hard'])el(value).onclick=()=>{
 for(const id of ['skullwing','nacho'])el(id).onclick=()=>{
   monster=id;write('monster',id);reflectSelection();localize();
 };
-el('launchCity').onclick=el('start').onclick=()=>{unlock();begin(selected);};
+let launchRequest=0;
+el('launchCity').onclick=el('start').onclick=async()=>{
+  unlock();
+  const request=++launchRequest,fighter=monster;
+  const picture=fighter==='nacho'?preloadNacho():preloadSkullwing();
+  if(!picture.complete||!picture.naturalWidth){
+    el('startText').textContent=t('Loading…','Cargando…');
+    try { await picture.decode(); }
+    catch {
+      if(request===launchRequest)el('startText').textContent=t('Tap to retry','Toca para reintentar');
+      return;
+    }
+  }
+  if(request!==launchRequest)return;
+  el('startText').textContent=t('Smash the city','Aplasta la ciudad');
+  if(monster===fighter&&mode==='menu')begin(selected);
+};
 el('pause').onclick=()=>showDialog('pause');
 el('controls').addEventListener('contextmenu',e=>e.preventDefault());
 localize();
