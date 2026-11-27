@@ -37,7 +37,7 @@ export function newCity(district,difficulty='easy',monster='skullwing') {
   }
   const cars=makeTraffic(buildings,district,x+100);
   return {district,difficulty,monster:monster==='nacho'?'nacho':'skullwing',defense:difficulty==='hard'?makeDefense():null,outcome:null,buildings,cars,people:makePedestrians(buildings,district),length:x+100,time:0,actor:{
-    x:77,y:0,vx:0,vy:0,face:1,turn:0,walk:0,stride:0,idle:0,grounded:true,support:null,
+    x:77,y:0,vx:0,vy:0,face:1,yaw:1,airTime:0,landTime:1,turn:0,walk:0,stride:0,idle:0,grounded:true,support:null,
     coyote:.09,jumpBuffer:0,jumpHeld:false,airFlaps:1,flight:0,glide:0,dive:false,
     haul:null,throwPose:0,splashPose:0,flopTilt:0,flopWindup:0,grip:null,swipe:0,hand:0,roar:0,land:0,flap:0,slide:0,attackWait:0
   },wrecks:{car:0,police:0,tank:0},score:0,cleared:0,combo:0,maxCombo:0,chainClock:0,charge:1,chunks:[],waves:[],events:[],done:false,finishWait:0};
@@ -65,7 +65,7 @@ function jump(s) {
   if(a.grounded || a.coyote>0){
     a.splashPose=0;a.throwPose=0;
     if(s.monster==='nacho')a.swipe=0;
-    a.vy=s.monster==='nacho'?550:425;a.grounded=false;a.support=null;a.coyote=0;a.airFlaps=1;a.flap=.7;
+    a.airTime=0;a.vy=s.monster==='nacho'?550:425;a.grounded=false;a.support=null;a.coyote=0;a.airFlaps=1;a.flap=.7;
     emit(s,'leap',{x:a.x,y:a.y});
   }else if(s.monster!=='nacho'&&a.airFlaps>0){
     a.airFlaps--;a.vy=355;a.flap=1;emit(s,'flap',{x:a.x,y:a.y+70});
@@ -128,7 +128,7 @@ export function press(s,action){
 }
 function land(s,roof,impactSpeed){
   const a=s.actor, stomp=a.dive;
-  a.grounded=true;a.support=roof;a.y=roof?.h ?? 0;a.vy=0;a.dive=false;a.airFlaps=1;
+  a.landTime=0;a.grounded=true;a.support=roof;a.y=roof?.h ?? 0;a.vy=0;a.dive=false;a.airFlaps=1;
   a.land=stomp?1:clamp(impactSpeed/600,.2,.74);
   const belly=stomp&&s.monster==='nacho';
   const impactX=a.x+(belly?a.face*18:0);
@@ -166,9 +166,17 @@ export function step(s,input,dt) {
   if(axis && a.face!==axis){a.turn=1;if(a.grounded&&Math.abs(a.vx)>110)a.slide=1;a.face=axis;}
   const acceleration=a.grounded?690:430;
   a.vx=approach(a.vx,axis*(a.dive?120:a.roar>.55?116:227),dt*(axis?acceleration:a.grounded?670:118));
+  const previousX=a.x;
+  a.yaw=approach(a.yaw,a.face,dt*12);
   a.x=clamp(a.x+a.vx*dt,26,s.length-24);
-  const speed=Math.abs(a.vx)/227;
-  a.walk+=(speed-a.walk)*(1-Math.exp(-10*dt));a.stride+=dt*(2.2+speed*7);a.idle+=dt;
+  const speed=Math.abs(a.x-previousX)/(227*dt)||0;
+  a.walk+=(speed-a.walk)*(1-Math.exp(-10*dt));a.idle+=dt;
+  if(a.grounded){
+    // One cycle covers one complete left-right stride in world space.
+    const length=s.monster==='nacho'?96:110;
+    a.stride+=(a.x-previousX)*a.face*2*Math.PI/length;
+    a.landTime+=dt;
+  }else a.airTime+=dt;
   a.jumpHeld=!!input.jump;
   if(a.grounded && a.support && (a.support.hp<=0 || Math.abs(a.x-a.support.x)>a.support.w/2+5)){
     a.grounded=false;a.support=null;a.coyote=.08;
