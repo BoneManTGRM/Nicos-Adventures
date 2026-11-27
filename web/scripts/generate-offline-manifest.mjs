@@ -52,9 +52,9 @@ const lagoonFiles = readdirSync(path.join(dist, lagoon), { withFileTypes: true }
   .filter(entry => entry.isFile() && entry.name !== "index.html")
   .map(entry => lagoon + entry.name);
 const skullwing = "/games/skullwing/";
-const skullwingFiles = readdirSync(path.join(dist, skullwing), { withFileTypes: true })
+const skullwingFiles = readdirSync(path.join(dist, skullwing), { recursive: true, withFileTypes: true })
   .filter(entry => entry.isFile() && entry.name !== "index.html")
-  .map(entry => skullwing + entry.name);
+  .map(entry => "/" + path.relative(dist, path.join(entry.parentPath, entry.name)).split(path.sep).join("/"));
 const mascaras = "/games/mascaras-del-volcan/";
 const mascarasFiles = readdirSync(path.join(dist, mascaras), { withFileTypes: true })
   .filter(entry => entry.isFile() && entry.name !== "index.html")
