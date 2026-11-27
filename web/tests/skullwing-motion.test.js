@@ -79,3 +79,41 @@ describe.each(['skullwing','nacho'])('%s limb motion',monster=>{
   });
 
 });
+
+describe('Nacho eating a vehicle',()=>{
+  it.each([
+    ['car',1,false],['car',-1,true],['tank',1,true],['tank',-1,false]
+  ])('lowers the %s in front of his face and returns both elbows to guard (%i, walking %s)',(kind,facing,walking)=>{
+    const s=newCity(0,'easy','nacho'),a=s.actor,car=s.cars[0];
+    Object.assign(car,{type:kind,width:kind==='tank'?62:44});
+    a.face=a.yaw=facing;
+    a.x=car.x-facing*28;
+    const moving=walking?(facing===1?right:left):idle;
+    press(s,'grab');press(s,'extra');
+    for(let i=0;i<60&&a.haul.phase==='lift';i++)step(s,moving,dt);
+    expect(a.haul.phase).toBe('eat');
+    let previous,atBite;
+    for(let i=0;i<88;i++){
+      const {limbs}=jointPose(a,'nacho',s.time);
+      const arms=limbs.map(limb=>limb.arm);
+      if(previous){
+        for(const [side,arm] of arms.entries()){
+          const prior=previous[side];
+          expect(Math.hypot(arm.mid.x-prior.mid.x,arm.mid.y-prior.mid.y)).toBeLessThan(7);
+          expect(Math.hypot(arm.mid.x-arm.start.x,arm.mid.y-arm.start.y)).toBeGreaterThan(15);
+        }
+      }
+      if(i===22){
+        const carPos=carryAnchor(a);
+        expect((carPos.x-a.x)*facing-car.width*.46).toBeGreaterThan(9);
+      }
+      if(a.haul?.bit&&!atBite)atBite=arms;
+      previous=arms;step(s,moving,dt);
+    }
+    expect(atBite).toBeDefined();
+    const [guide,support]=atBite;
+    expect(support.mid.y).toBeGreaterThan(support.start.y+8);
+    expect(guide.end.y).toBeGreaterThan(support.end.y+14);
+    expect(a.haul).toBeNull();expect(s.score).toBe(125);
+  });
+});

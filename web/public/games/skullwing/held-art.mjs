@@ -1,15 +1,17 @@
 import {drawVehicle} from './vehicle-art.mjs';
 import {drawPerson} from './pedestrian-art.mjs';
 import {drawWallChunk} from './demolition-art.mjs';
-import {carryAnchor} from './nacho-moves.mjs';
+import {carryAnchor,nachoCarBite} from './nacho-moves.mjs';
 import {BITE} from './pedestrians.mjs';
 
 export function drawHeld(c,a,facing,time,reduced) {
   const h=a.haul;
   if(!h||h.bit||(h.kind==='wall'&&!h.target.detached))return;
-  const hand=carryAnchor(a);
+  const carBite=nachoCarBite(h),hand=carryAnchor(a,carBite);
   c.save();c.translate((hand.x-a.x)*facing,a.y-hand.y);
-  if(h.phase==='eat'){
+  if(carBite){
+    c.rotate(carBite.angle);c.scale(carBite.scale,carBite.scale);
+  }else if(h.phase==='eat'){
     const t=Math.min(1,h.age/BITE),scale=1-t*t*.89;
     c.scale(scale,scale);c.rotate(-.48*t);
   }

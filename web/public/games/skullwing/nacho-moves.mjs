@@ -20,11 +20,33 @@ export function carTarget(s) {
   return nearest;
 }
 
+// Move the chassis clear of the mask, then bring its bumper to the mouth.
+// The wrists and the drawn car use the same rotation, scale and contact points.
+export function nachoCarBite(h) {
+  if(h?.monster!=='nacho'||h.kind!=='car'||h.phase!=='eat')return null;
+  const t=h.age/BITE;
+  const forward=ease(t/.56),lower=ease((t-.19)/.48);
+  const bite=ease((t-.63)/.37),scale=mix(1,.16,bite);
+  const halfChassis=(h.target.width??44)*.46;
+  return {
+    x:mix(1,15+halfChassis*scale,forward),y:mix(146,110,lower)+7*bite,
+    angle:.14*lower+.10*bite,scale,
+    nearGrip:1-ease((h.age-BITE)/.25),farGrip:1-ease((h.age-.21)/.20),
+    resumeSwing:ease((h.age-.48)/(RELEASE-.48)),
+    // The elbow rolls under the wrist while the arm is out in front.
+    nearBend:mix(-1,1,ease((t-.20)/.38))
+  };
+}
+
 // Physics, the held object and both wrists follow one path in world space.
-export function carryAnchor(a) {
+export function carryAnchor(a,carBite=nachoCarBite(a.haul)) {
   const h=a.haul,ape=h.monster==='skullwing',car=h.kind==='car';
   const direction=Math.sin((a.yaw??a.face)*Math.PI/2);
   const rest=ape?{x:91,y:101}:car?{x:1,y:146}:h.kind==='wall'?{x:23,y:81}:{x:51,y:101};
+  if(carBite){
+    const facing=Math.sign(a.yaw??a.face)||a.face;
+    return {x:a.x+facing*carBite.x,y:a.y+carBite.y};
+  }
   let x=rest.x,y=rest.y;
   if(h.phase==='lift'||h.phase==='tear'){
     const wall=h.kind==='wall',delay=wall?.19:ape?.12:REACH;

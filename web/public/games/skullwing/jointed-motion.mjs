@@ -1,6 +1,6 @@
 import {parts} from './motion/joints.mjs';
 import {drawHeld} from './held-art.mjs';
-import {carryAnchor} from './nacho-moves.mjs';
+import {carryAnchor,nachoCarBite} from './nacho-moves.mjs';
 
 const tau=2*Math.PI;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -44,7 +44,8 @@ export function jointPose(a,monster,time,reduced=false){
   const stride=weight(a.walk/.80),cycle=Math.sin(a.stride);
   const yaw=a.yaw??a.face,side=Math.abs(yaw),facing=Math.sign(yaw)||a.face;
   const breath=reduced?0:.7*Math.sin(time*2.6);
-  const anchor=a.haul?carryAnchor(a):null;
+  const carBite=nachoCarBite(a.haul);
+  const anchor=a.haul?carryAnchor(a,carBite):null;
   const handHeight=anchor?anchor.y-a.y:0;
   const h=a.haul,flight=a.flight||0,slam=a.slamDrive||0;
   const scoop=h?.phase==='lift'?weight(1-handHeight/(ape?88:110))*weight(h.age/.105):0;
@@ -107,12 +108,24 @@ export function jointPose(a,monster,time,reduced=false){
     let elbowSide=1;
     if(anchor&&(near||h.kind!=='person')){
       const spread=h.kind==='car'?(ape?8:13):h.kind==='wall'?5:0;
-      const worldX=(anchor.x-a.x)*facing-opposite*spread,worldY=a.y-anchor.y+(spread?2:0);
+      let gripX=-opposite*spread,gripY=spread?2:0,contact=grip;
+      if(!ape&&h.kind==='car')elbowSide=near?-1:1;
+      if(carBite){
+        const cos=Math.cos(carBite.angle),sin=Math.sin(carBite.angle);
+        const offsetX=gripX*cos-gripY*sin,offsetY=gripX*sin+gripY*cos;
+        gripX=offsetX*carBite.scale;
+        // Knuckles stay under the bumper as the last piece reaches his lips.
+        gripY=offsetY*carBite.scale+3*(1-carBite.scale);
+        hand.x=blend(shoulder.x+(near?24:30),hand.x,carBite.resumeSwing);
+        hand.y=blend(shoulder.y+28,hand.y,carBite.resumeSwing);
+        contact=near?carBite.nearGrip:carBite.farGrip;
+        elbowSide=near?carBite.nearBend:1;
+      }
+      const worldX=(anchor.x-a.x)*facing+gripX,worldY=a.y-anchor.y+gripY;
       // Undo the body's aerial pitch before asking the arm to meet a world-space prop.
       const dx=worldX-root.x,dy=worldY-root.y;
       const palmX=dx*Math.cos(pitch)+dy*Math.sin(pitch),palmY=-dx*Math.sin(pitch)+dy*Math.cos(pitch)-66;
-      hand.x=blend(hand.x,palmX,grip);hand.y=blend(hand.y,palmY,grip);
-      if(!ape&&h.kind==='car')elbowSide=near?-1:1;
+      hand.x=blend(hand.x,palmX,contact);hand.y=blend(hand.y,palmY,contact);
     }else if(punch&&(near===Boolean(a.hand))){
       hand.x=blend(hand.x-12*wind,shoulder.x+rig.arm[0]+rig.arm[1]-1,drive);
       hand.y=blend(hand.y+wind*3,shoulder.y+6,drive);
