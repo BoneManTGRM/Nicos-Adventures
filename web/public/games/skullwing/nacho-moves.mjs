@@ -1,4 +1,3 @@
-import {frames} from './nacho-frames.mjs';
 import {stepWallTear} from './wall-tear.mjs';
 import {BITE,RELEASE,BITE_POINTS,grabTarget} from './pedestrians.mjs';
 
@@ -21,81 +20,27 @@ export function carTarget(s) {
   return nearest;
 }
 
-// The drawn hands and the carried object's trajectory share the same lift timeline.
-const liftToChest=['scoop','scoopLow1','scoopLow2','low','lowRack1','lowRack2','rack'];
-const carLift=[...liftToChest,'rackPress1','rackPress2','press','pressOverhead1','pressOverhead2','overhead'];
-const personLift=[...liftToChest,'rackGrip1','rackGrip2','grip'];
-function palm(name) {
-  const f=frames[name];
-  return {
-    x:(f.hand[0]-f.pivot)*f.height*f.rect[2]/f.rect[3],
-    y:(1-f.hand[1])*f.height-(f.bottom??0)
-  };
-}
-// Space the cels along the path that the painted palms actually travel. The
-// prop thus accelerates once through the lift, even where poses are far apart.
-function liftTrack(keys) {
-  let distance=0;
-  return keys.map((name,i)=>{
-    const point=palm(name);
-    if(i){
-      const previous=palm(keys[i-1]);
-      distance+=Math.hypot(point.x-previous.x,point.y-previous.y);
-    }
-    return {name,...point,distance};
-  });
-}
-const tracks={car:liftTrack(carLift),person:liftTrack(personLift)};
-const reach=['guard','guardScoop1','guardScoop2','scoop'];
-
-export function carryPose(a) {
-  const h=a.haul,skull=h.monster==='skullwing';
-  if(h.kind==='wall'){
-    const k=h.phase==='tear'?ease((h.age-.19)/.30):1;
-    return {name:skull?(k<.35?'strike':'hold'):(k<.35?'punch':'rack'),lean:Math.sin(k*Math.PI)*-.055,
-      x:skull?91:23,y:skull?101:81,wallPull:k};
-  }
-  if(skull){
-    const k=h.phase==='lift'?ease((h.age-.12)/.37):1;
-    const bite=h.phase==='eat'?ease(h.age/BITE):0;
-    return {name:bite>.33?'bite':k<.47?'reach':'hold',lean:0,x:mix(91,33,bite),y:mix(101,100,bite),lift:k};
-  }
-  const track=tracks[h.kind],last=track[track.length-1];
-  if(h.phase==='eat'){
-    const k=ease(h.age/BITE);
-    return {name:k<.32?'snackLift':k<1?'snackBite':'snackGulp',lean:0,x:mix(last.x,14,k),y:mix(last.y,109,k)};
-  }
-  if(h.phase==='lift'&&h.age<REACH){
-    const index=Math.round(ease(h.age/REACH)*(reach.length-1));
-    return {...track[0],name:reach[index],body:{from:"guard",to:"scoop",t:ease(h.age/REACH)},lean:0};
-  }
-  if(h.phase!=='lift'){
-    const lean=h.phase==='throw'?-.09*Math.sin(Math.PI*Math.min(1,h.age/WINDUP)):0;
-    return {...last,lean};
-  }
-  const distance=last.distance*ease((h.age-REACH)/HOIST);
-  const end=track.findIndex((p,i)=>i>0&&p.distance>=distance);
-  if(end<1)return {...last,lean:0};
-  const from=track[end-1],to=track[end],part=(distance-from.distance)/(to.distance-from.distance);
-  const key=Math.floor((end-1)/3)*3;
-  const body={from:track[key].name,to:track[key+3].name,t:(end-1-key+part)/3};
-  return {name:part<.5?from.name:to.name,body,lean:0,x:mix(from.x,to.x,part),y:mix(from.y,to.y,part)};
-}
-
-export function carryAnchor(a,pose=carryPose(a)) {
-  const h=a.haul,{x:handX,y:height,lean}=pose;
+// Physics, the held object and both wrists follow one path in world space.
+export function carryAnchor(a) {
+  const h=a.haul,ape=h.monster==='skullwing',car=h.kind==='car';
   const direction=Math.sin((a.yaw??a.face)*Math.PI/2);
-  const x=a.x+direction*(handX*Math.cos(lean)+height*Math.sin(lean));
-  const y=a.y+height*Math.cos(lean)-handX*Math.sin(lean);
-  if(pose.wallPull!==undefined||pose.lift!==undefined){
-    const k=pose.wallPull??pose.lift;
-    return {x:mix(h.startX,x,k),y:mix(h.startY,y,k)};
+  const rest=ape?{x:91,y:101}:car?{x:1,y:146}:h.kind==='wall'?{x:23,y:81}:{x:51,y:101};
+  let x=rest.x,y=rest.y;
+  if(h.phase==='lift'||h.phase==='tear'){
+    const wall=h.kind==='wall',delay=wall?.19:ape?.12:REACH;
+    const k=ease((h.age-delay)/(wall?.30:ape?.37:HOIST));
+    const arc=Math.sin(Math.PI*k);
+    return {x:mix(h.startX,a.x+direction*x,k)+direction*arc*(wall?-4:car?13:7),
+      y:mix(h.startY,a.y+y,k)};
   }
-  if(h.phase==='lift'&&h.age<REACH+.065){
-    const k=ease((h.age-REACH)/.065);
-    return {x:mix(h.startX,x,k),y:mix(h.startY,y,k)};
+  if(h.phase==='throw'){
+    const t=Math.min(1,h.age/WINDUP),wind=Math.sin(Math.PI*t);
+    x-=10*wind;y+=5*wind;
+  }else if(h.phase==='eat'){
+    const k=ease(h.age/BITE);
+    x=mix(x,ape?68:10,k);y=mix(y,ape?96:116,k);
   }
-  return {x,y};
+  return {x:a.x+direction*x,y:a.y+y};
 }
 
 export function liftOrThrow(s, kind) {
@@ -135,6 +80,7 @@ export function releaseHaul(s, punched=false) {
     launchPerson(target,x,y-8,a.face*(punched?282:225)+a.vx*.25,punched?82:154);
     if (!target.throwScored) { s.score += 35; target.throwScored = true; }
   }
+  a.releaseHand={x:(x-a.x)*(Math.sign(a.yaw)||a.face),y:a.y-y};
   a.throwKind=h.kind;a.haul = null; a.grip=null; a.throwPose = 1;
   s.events.push({kind:'toss',target:h.kind,x,y,dir:a.face,punched});
 }
@@ -154,7 +100,6 @@ export function stepHauls(s, dt, hitBuilding) {
   const a = s.actor;
   a.throwPose = Math.max(0,a.throwPose-2.8*dt);
   a.splashPose = Math.max(0,a.splashPose-dt*2.4);
-  a.flopTilt += ((a.dive || a.splashPose>.5 ? 1 : 0)-a.flopTilt)*(1-Math.exp(-dt*17));
   const h = a.haul;
   if (h) {
     h.age += dt;

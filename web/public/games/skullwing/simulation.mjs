@@ -39,7 +39,7 @@ export function newCity(district,difficulty='easy',monster='skullwing') {
   return {district,difficulty,monster:monster==='nacho'?'nacho':'skullwing',defense:difficulty==='hard'?makeDefense():null,outcome:null,buildings,cars,people:makePedestrians(buildings,district),length:x+100,time:0,actor:{
     x:77,y:0,vx:0,vy:0,face:1,yaw:1,airTime:0,landTime:1,turn:0,walk:0,stride:0,idle:0,grounded:true,support:null,
     coyote:.09,jumpBuffer:0,jumpHeld:false,airFlaps:1,flight:0,glide:0,dive:false,
-    haul:null,throwPose:0,splashPose:0,flopTilt:0,flopWindup:0,grip:null,swipe:0,hand:0,roar:0,land:0,flap:0,slide:0,attackWait:0
+    haul:null,throwPose:0,splashPose:0,slamDrive:0,flopWindup:0,grip:null,swipe:0,hand:0,roar:0,land:0,flap:0,slide:0,attackWait:0
   },wrecks:{car:0,police:0,tank:0},score:0,cleared:0,combo:0,maxCombo:0,chainClock:0,charge:1,chunks:[],waves:[],events:[],done:false,finishWait:0};
 }
 function emit(s,kind,props={}) {s.events.push({kind,district:s.district,...props});}
@@ -231,6 +231,9 @@ export function step(s,input,dt) {
     if(b.fall>=1){b.ruin=true;emit(s,'settle',{x:b.x,y:6,w:b.w});}
   }
   stepHauls(s,dt,hitBuilding);
+  const impact=a.splashPose,release=clamp((impact-.08)/.66,0,1);
+  const slamTarget=a.dive?1:release*release*(3-2*release);
+  a.slamDrive+=(slamTarget-a.slamDrive)*(1-Math.exp(-dt*(a.dive?17:24)));
   if(s.chunks.length)stepFlyingWalls(s,dt,hitBuilding,hitTraffic);
   stepTraffic(s,dt,hitBuilding);
   stepDefense(s,dt);

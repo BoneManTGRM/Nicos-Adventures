@@ -128,28 +128,37 @@ test("Skullwing picks up a pedestrian and eats on a second press", async ({ page
 
 test("select Nacho, throw traffic and people, then belly flop", async ({page}, info)=>{
   const es=info.project.metadata.language==="es-MX";
-  await page.addInitScript(() => {
-    const proto = CanvasRenderingContext2D.prototype;
-    const original = proto.drawImage;
-    proto.drawImage = new Proxy(original, {
-      apply(target, ctx: CanvasRenderingContext2D, args) {
-        const image = args[0];
-        let labels: string[] = [];
-        if (image instanceof HTMLImageElement) {
-          const name = image.currentSrc.split("/").pop();
-          if (name === "nacho-joints.webp") labels = ["joints"];
-          if (name === "nacho-lift0.webp" || name === "nacho-combat.webp") labels = ["lift"];
-          if (name === "nacho-splash.webp") labels = ["splash"];
-          if (name === "nacho-air0.webp") labels = ["air"];
-        } else if (image instanceof HTMLCanvasElement) {
-          labels = Object.keys(image.dataset).filter(k => k.startsWith("observed")).map(k => k.slice(8));
-        }
-        for (const label of labels) ctx.canvas.dataset["observed" + label] = "yes";
-        return Reflect.apply(target, ctx, args);
-      },
-    });
+  const oldArtwork: string[] = [];
+  page.on("request", request => {
+    if (/\/(?:motion\/nacho-(?:air|lift|bite|fight|carry)|nacho-(?:splash|combat|landing|stride)\.webp)/.test(request.url())) oldArtwork.push(request.url());
   });
   await page.goto("/games/skullwing/?mode=easy&lang="+(es?"es-MX":"en"));
+  await page.evaluate(async () => {
+    const modulePath="/games/skullwing/motion/joints.mjs";
+    const {nacho}=(await import(modulePath)).parts;
+    const proto=CanvasRenderingContext2D.prototype,original=proto.drawImage;
+    let headTop=0;
+    proto.drawImage=new Proxy(original,{
+      apply(target,ctx:CanvasRenderingContext2D,args){
+        const image=args[0],canvas=ctx.canvas;
+        if(canvas.id==="world"&&image instanceof HTMLImageElement&&image.currentSrc.endsWith("/nacho-joints.webp")){
+          const rect=args.slice(1,5).join(","),t=ctx.getTransform();
+          if(rect===nacho.body.rect.join(",")){
+            canvas.dataset.observedjoints="yes";
+            headTop=t.f+t.d*args[6];
+            const pitch=Math.abs(Math.atan2(t.b,t.a));
+            if(pitch>1.05)canvas.dataset.horizontal="yes";
+            if(canvas.dataset.horizontal&&pitch<.16)canvas.dataset.uprightAgain="yes";
+          }
+          if(rect===nacho.fore.rect.join(",")){
+            const dx=nacho.fore.end[0]-nacho.fore.start[0],dy=nacho.fore.end[1]-nacho.fore.start[1];
+            if(t.f+t.b*dx+t.d*dy<headTop)canvas.dataset.overhead="yes";
+          }
+        }
+        return Reflect.apply(target,ctx,args);
+      }
+    });
+  });
   await page.getByRole("button",{name:"Nacho",exact:true}).click();
   await expect(page.locator("#nacho")).toHaveAttribute("aria-pressed","true");
   await expect(page.locator("img#nachoPoster")).toBeVisible();
@@ -161,7 +170,7 @@ test("select Nacho, throw traffic and people, then belly flop", async ({page}, i
   await expect(page.locator('[data-action="grab"]')).toHaveAccessibleName(es?"Lanzar auto":"Throw car");
   await move("grab","e");
   await expect(page.locator("#wreckCount")).toBeVisible();
-  await expect(world).toHaveAttribute("data-observedlift","yes");
+  await expect(world).toHaveAttribute("data-overhead","yes");
   await move("roar","c");
   await expect(page.locator('[data-action="roar"]')).toHaveAccessibleName(es?"Lanzar persona":"Throw person");
   await move("roar","c");
@@ -170,8 +179,9 @@ test("select Nacho, throw traffic and people, then belly flop", async ({page}, i
   await expect(page.locator("#smashName")).toHaveText(es?"Plancha":"Flop");
   await move("attack","x");
   await expect(page.locator("#callout")).toContainText(es?"PLANCHAZO":"BELLY FLOP");
-  await expect(world).toHaveAttribute("data-observedsplash","yes");
-  await expect(world).toHaveAttribute("data-observedair","yes");
+  await expect(world).toHaveAttribute("data-horizontal","yes");
+  await expect(world).toHaveAttribute("data-upright-again","yes");
+  expect(oldArtwork).toEqual([]);
 });
 
 for (const monster of ["skullwing","nacho"]) {
