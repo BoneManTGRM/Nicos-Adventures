@@ -1,3 +1,4 @@
+import {makePedestrians,grabOrEat,stepPedestrians} from './pedestrians.mjs';
 import {cities} from './cities.mjs';
 import {makeDefense,stepDefense,disruptDrone} from './defense.mjs';
 import {makeTraffic,hitTraffic,stepTraffic} from './traffic.mjs';
@@ -33,10 +34,10 @@ export function newCity(district,difficulty='easy') {
     x+=w+(route.gaps?route.gaps[i%route.gaps.length]+rand()*7:17+rand()*32);
   }
   const cars=makeTraffic(buildings,district,x+100);
-  return {district,difficulty,defense:difficulty==='hard'?makeDefense():null,outcome:null,buildings,cars,length:x+100,time:0,actor:{
+  return {district,difficulty,defense:difficulty==='hard'?makeDefense():null,outcome:null,buildings,cars,people:makePedestrians(buildings,district),length:x+100,time:0,actor:{
     x:77,y:0,vx:0,vy:0,face:1,turn:0,walk:0,stride:0,idle:0,grounded:true,support:null,
     coyote:.09,jumpBuffer:0,jumpHeld:false,airFlaps:1,flight:0,glide:0,dive:false,
-    swipe:0,hand:0,roar:0,land:0,flap:0,slide:0,attackWait:0
+    grip:null,swipe:0,hand:0,roar:0,land:0,flap:0,slide:0,attackWait:0
   },wrecks:{car:0,police:0,tank:0},score:0,cleared:0,combo:0,maxCombo:0,chainClock:0,charge:1,waves:[],events:[],done:false,finishWait:0};
 }
 function emit(s,kind,props={}) {s.events.push({kind,district:s.district,...props});}
@@ -84,6 +85,7 @@ export function press(s,action){
   if(s.done || s.outcome || s.finishWait>0) return;
   const a=s.actor;
   if(action==='jump'){a.jumpHeld=true;jump(s);}
+  if(action==='grab') grabOrEat(s);
   if(action==='attack') swing(s);
   if(action==='roar' && s.charge>=.999 && !a.dive){
     s.charge=0;a.roar=1;s.waves.push({x:a.x,y:a.y+68,age:0,hit:new Set(),vehicles:new Set()});
@@ -182,5 +184,6 @@ export function step(s,input,dt) {
   }
   stepTraffic(s,dt,hitBuilding);
   stepDefense(s,dt);
+  if(!s.outcome)stepPedestrians(s,dt);
   if(s.finishWait>0){s.finishWait-=dt;if(s.finishWait<=0){s.done=true;s.outcome='clear';emit(s,'clear');}}
 }

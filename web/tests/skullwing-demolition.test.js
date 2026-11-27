@@ -93,3 +93,43 @@ describe('Skullwing difficulty',()=>{
     expect(events(city,'bolt')).toHaveLength(0);expect(city.defense.hp).toBe(5);
   });
 });
+
+describe('Skullwing grab and eat',()=>{
+  it.each(cities.map((_,i)=>i))('lets the player carry a person and eat exactly once in district %i',district=>{
+    const city=newCity(district,'hard'),person=city.people[0];
+    city.defense.hp=3;
+    press(city,'grab');
+    expect(city.actor.grip.person).toBe(person);
+    expect(person.onStreet).toBe(false);
+    advance(city,.55);
+    press(city,'jump');
+    advance(city,.2,{...idle,left:true,jump:true});
+    expect(city.actor.grip.phase).toBe('hold');
+    expect(city.score).toBe(0);
+    press(city,'grab');press(city,'grab');
+    advance(city,.9);
+    expect(city.actor.grip).toBeNull();
+    expect(city.defense.hp).toBe(4);
+    expect(events(city,'chomp')).toEqual([{kind:'chomp',points:75,healed:true}]);
+    expect(city.score).toBe(75);
+  });
+
+  it('queues a quick second tap, caps health, and never grabs remotely or after defeat',()=>{
+    for(const difficulty of ['easy','hard']){
+      const city=newCity(0,difficulty);
+      city.actor.face=-1;
+      press(city,'grab');expect(city.actor.grip).toBeNull();
+      city.actor.face=1;city.actor.y=88;
+      press(city,'grab');expect(city.actor.grip).toBeNull();
+      city.actor.y=0;
+      for(let i=0;i<5;i++)press(city,'grab');
+      advance(city,1.3);
+      expect(city.score).toBe(75);
+      expect(city.defense?.hp??5).toBe(5);
+      expect(events(city,'chomp')).toHaveLength(1);
+      press(city,'grab');expect(city.actor.grip).toBeNull();
+      city.outcome='defeat';city.actor.x=city.people[1].x-28;
+      press(city,'grab');expect(city.actor.grip).toBeNull();
+    }
+  });
+});
