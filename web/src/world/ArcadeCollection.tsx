@@ -1,6 +1,6 @@
 import { lazy, Suspense, useLayoutEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import mapPreview from "../assets/world/nicos-world-map-restored-960.webp";
+import mapPreview from "../assets/art/starwhale-voyage.webp";
 import type { LocalProfile } from "../types";
 import { tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
@@ -17,7 +17,10 @@ const StarTagArcade = lazy(() => import("./StarTagArcade").then(module => ({ def
 const SignalRun = lazy(() => import("./SignalRun").then(module => ({ default: module.SignalRun })));
 export function Arcade({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
   const language = profile.language;
-  const [activeGame, setActiveGame] = useState<string | null>(() => new URLSearchParams(window.location.search).get("play") === "number-dash" ? "signal-run" : null);
+  const [activeGame, setActiveGame] = useState<string | null>(() => {
+    const play = new URLSearchParams(window.location.search).get("play");
+    return play === "friends-map" ? "friends-map" : play === "number-dash" ? "signal-run" : null;
+  });
   const [legacyOpen, setLegacyOpen] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answerIndex, setAnswerIndex] = useState<number | null>(null);
@@ -33,7 +36,7 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
     else url.searchParams.delete("play");
     window.history.replaceState(null, "", url);
     setActiveGame(game); setQuestionIndex(0); setAnswerIndex(null); setSessionScore(0);
-    const name = game === "signal-run" ? (language === "es-MX" ? "Carrera de números" : "Number Dash") : optionLabel(game, language);
+    const name = game === 'friends-map' ? (language === 'es-MX' ? 'Nico y sus amigos' : 'Nico & Friends') : game === "signal-run" ? (language === "es-MX" ? "Carrera de números" : "Number Dash") : optionLabel(game, language);
     announce(language === "es-MX" ? `Juego abierto: ${name}.` : `Game opened: ${name}.`);
   };
   const answer = (index: number) => {
@@ -48,7 +51,7 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
   };
   const nextQuestion = () => { setQuestionIndex(current => current + 1); setAnswerIndex(null); };
   const closeGame = () => { const url = new URL(window.location.href); url.searchParams.delete("play"); window.history.replaceState(null, "", url); setActiveGame(null); };
-  if (activeGame === 'friends-map') return <Suspense fallback={<div className="fw-empty" role="status">{language === 'es-MX' ? 'Preparando el mapa…' : 'Preparing the map…'}</div>}><FriendsMap key={profile.id} profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
+  if (activeGame === 'friends-map') return <Suspense fallback={<div className="fw-empty" role="status">{language === 'es-MX' ? 'Preparando el mapa…' : 'Preparing the map…'}</div>}><FriendsMap key={profile.id} profile={profile} update={update} announce={announce} close={closeGame} /></Suspense>;
   if (activeGame === 'star-tag-adventure') return <Suspense fallback={<div className="fw-empty" role="status">{language === 'es-MX' ? 'Cargando la aventura…' : 'Loading the adventure…'}</div>}><StarTagArcade profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
   if (activeGame === FRIENDLY_DUEL_ID) return <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la arena…" : "Preparing the arena…"}</div>}><FriendlyDuel profile={profile} update={update} announce={announce} close={() => setActiveGame(null)} /></Suspense>;
   if (activeGame === "signal-run") return <Suspense fallback={<div className="fw-empty" role="status">{language === "es-MX" ? "Preparando la carrera…" : "Preparing the dash…"}</div>}><SignalRun profile={profile} update={update} announce={announce} close={closeGame} /></Suspense>;
@@ -67,8 +70,8 @@ export function Arcade({ profile, update, announce }: { profile: LocalProfile; u
   return <div className="arcade-hub">
     <article className="arcade-signal-feature"><div><small>{language === "es-MX" ? "NUEVO · MATES EN ACCIÓN" : "NEW · MATH IN MOTION"}</small><h2>⚡ {language === "es-MX" ? "Carrera de números" : "Number Dash"}</h2><p>{language === "es-MX" ? "Elige la respuesta correcta para impulsar a BoltBot. Haz rachas, supera etapas y aprende sumas, restas y multiplicaciones." : "Pick the right answer to power BoltBot. Build combos, clear stages, and learn addition, subtraction, and multiplication."}</p><small>{tr(ui.bestScore, language)}: {profile.arcadeScores["signal-run"] ?? 0}</small></div><button type="button" data-testid="open-signal-run" onClick={() => openGame("signal-run")}>▶ {language === "es-MX" ? "Jugar y aprender" : "Play and learn"}</button></article>
     <article className="arcade-friends-feature">
-      <div className="arcade-friends-feature__art" role="img" aria-label={language === 'es-MX' ? 'Isla para explorar con amigos' : 'Island to explore with friends'} style={{ '--friends-preview': `url("${mapPreview}")` } as CSSProperties} />
-      <div className="arcade-friends-feature__copy"><small>{language === 'es-MX' ? 'NUEVO · EXPLORACIÓN 2D' : 'NEW · 2D EXPLORATION'}</small><h2>{language === 'es-MX' ? 'Nico y sus amigos' : 'Nico & Friends'}</h2><p>{language === 'es-MX' ? 'Camina con Becca, Lua, BoltBot y Sparky. Explora la isla, ayuda en cinco lugares y encuentra estrellas. Tres modos en un mapa ligero.' : 'Walk with Becca, Lua, BoltBot and Sparky. Explore the island, help at five places, and find stars. Three modes on one lightweight map.'}</p><button type="button" data-testid="open-friends-map" onClick={() => openGame('friends-map')}>▶ {language === 'es-MX' ? 'Jugar en el mapa' : 'Play on the map'}</button></div>
+      <div className="arcade-friends-feature__art" role="img" aria-label={language === 'es-MX' ? 'Ballena estelar sobre la isla al atardecer' : 'A luminous starwhale above the island harbor'} style={{ '--friends-preview': `url("${mapPreview}")` } as CSSProperties} />
+      <div className="arcade-friends-feature__copy"><small>{language === 'es-MX' ? 'VIAJE DE LA BALLENA ESTELAR' : 'STARWHALE VOYAGE'}</small><h2>{language === 'es-MX' ? 'Nico y sus amigos' : 'Nico & Friends'}</h2><p>{language === 'es-MX' ? 'Salta por la isla con tus amigos, recoge campanas y pilota un barco volador. Enciende cinco faros para cabalgar una ballena estelar.' : 'Leap for sky bells with your friends, then pilot a flying skiff. Light five beacons to ride the starwhale home.'}</p><button type="button" data-testid="open-friends-map" onClick={() => openGame('friends-map')}>▶ {language === 'es-MX' ? 'Jugar con Nico y sus amigos' : 'Play Nico & Friends'}</button></div>
     </article>
     <article className="arcade-star-feature"><span aria-hidden="true">✦</span><div><small>{language === 'es-MX' ? 'NUEVO · ACCIÓN 3D EN TIEMPO REAL' : 'NEW · REAL-TIME 3D ACTION'}</small><h2>{language === 'es-MX' ? 'Aventura de Estrellas' : 'Star Tag Adventure'}</h2><p>{language === 'es-MX' ? 'Explora como Nico con BoltBot y Sparky. Muévete, apunta, lanza estrellas y esquiva burbujas en tres rondas de aliens juguetones.' : 'Explore as Nico with BoltBot and Sparky. Move, aim, launch stars and dodge bubbles through three waves of playful aliens.'}</p></div><button type="button" className="fw-primary" data-testid="open-star-tag" onClick={() => openGame('star-tag-adventure')}>▶ {language === 'es-MX' ? 'Entrar a la arena' : 'Enter the arena'}</button></article>
     <details className="arcade-legacy" open={legacyOpen} onToggle={event => setLegacyOpen(event.currentTarget.open)}><summary>{language === 'es-MX' ? 'Juegos anteriores y progreso guardado' : 'Earlier games & saved progress'}</summary><p>{language === 'es-MX' ? 'Tus puntuaciones anteriores siguen aquí. Los nuevos juegos están arriba.' : 'Your earlier scores are still here. The new games are above.'}</p>

@@ -6,7 +6,12 @@ export const FRAME_MS = 1000 / 30;
 export const frameDue = (now: number, previous: number) => previous === 0 || now - previous + .05 >= FRAME_MS;
 export const ROSTER = ['nico', 'becca', 'lua', 'boltbot', 'sparky'] as const;
 export type Friend = typeof ROSTER[number];
-export type Mode = 'explore' | 'stars' | 'parade';
+export type Mode = 'explore' | 'stars' | 'parade' | 'bells';
+export const SKY_BELLS = [
+  { id: 'welcome', x: 520, y: 540 }, { id: 'pier', x: 558, y: 761 },
+  { id: 'copper', x: 442, y: 382 }, { id: 'bridge', x: 786, y: 466 },
+  { id: 'castle', x: 1003, y: 388 }, { id: 'lookout', x: 1176, y: 685 },
+] as const;
 export type Status = 'ready' | 'playing' | 'paused';
 export type Input = { x: number; y: number; interact: boolean };
 export type StopId = 'garden' | 'workshop' | 'treehouse' | 'castle' | 'observatory';
@@ -84,6 +89,7 @@ export type MapState = {
   status: Status; mode: Mode; leader: Friend; player: Point; facing: number;
   trail: Point[]; path: Point[]; action: { id: StopId; elapsed: number } | null;
   completed: StopId[]; collected: string[]; greeted: Friend[]; time: number;
+  bells: string[]; jumpTime: number; trick: number; usedTrick: boolean; dashTime: number; dashRest: number; heading: Point;
   traveled: number; moving: boolean; celebration: number; revision: number;
 };
 function initialTrail(): Point[] {
@@ -102,23 +108,41 @@ export function createMapState(missions: readonly string[] = []): MapState {
     completed: STOPS.filter(s => missions.includes(`friends-map:stop:${s.id}`)).map(s => s.id),
     collected: TOKENS.filter(t => missions.includes(`friends-map:star:${t.id}`)).map(t => t.id),
     greeted: ROSTER.filter(f => missions.includes(`friends-map:friend:${f}`)),
-    time: 0, traveled: 0, moving: false, celebration: 0, revision: 0 };
+    bells: SKY_BELLS.filter(b => missions.includes(`friends-map:bell:${b.id}`)).map(b => b.id),
+    jumpTime: 0, trick: 0, usedTrick: false, dashTime: 0, dashRest: 0, heading: {x: 0,y: -1}, time: 0, traveled: 0, moving: false, celebration: 0, revision: 0 };
 }
 export function nearbyStop(s: MapState): Stop | undefined { return STOPS.find(stop => distance(stop, s.player) < 42); }
 export function destination(s: MapState, p: Point): void { s.path = findPath(s.player, p); s.action = null; }
 export function selectFriend(s: MapState, friend: Friend): void { if (ROSTER.includes(friend)) { s.leader = friend; s.action = null; } }
-export function pauseMap(s: MapState): void { s.status = 'paused'; s.path = []; s.action = null; s.moving = false; s.celebration = 0; }
-export function busy(s: MapState, input: Input): boolean { return s.status === 'playing' && Boolean(input.x || input.y || input.interact || s.path.length || s.action || s.celebration > 0); }
+export function pauseMap(s: MapState): void { s.status = 'paused'; s.path = []; s.action = null; s.moving = false; s.celebration = s.jumpTime = s.dashTime = s.dashRest = s.trick = 0; s.usedTrick = false; }
+export function busy(s: MapState, input: Input): boolean { return s.status === 'playing' && Boolean(input.x || input.y || input.interact || s.path.length || s.action || s.jumpTime || s.dashRest || s.celebration > 0); }
 export function progress(s: MapState): { count: number; total: number } {
-  return s.mode === 'stars' ? { count: s.collected.length, total: TOKENS.length } : s.mode === 'parade' ? { count: s.greeted.length, total: ROSTER.length } : { count: s.completed.length, total: STOPS.length };
+  return s.mode === 'bells' ? {count:s.bells.length,total:SKY_BELLS.length} : s.mode === 'stars' ? { count: s.collected.length, total: TOKENS.length } : s.mode === 'parade' ? { count: s.greeted.length, total: ROSTER.length } : { count: s.completed.length, total: STOPS.length };
 }
-export function score(s: MapState): number { return s.collected.length * 10 + s.completed.length * 25 + s.greeted.length * 5; }
-export function missionIds(s: MapState): string[] { return [...s.completed.map(id => `friends-map:stop:${id}`), ...s.collected.map(id => `friends-map:star:${id}`), ...s.greeted.map(id => `friends-map:friend:${id}`)]; }
-export function companionPositions(s: MapState): (Point & { friend: Friend; facing: number; moving: boolean })[] {
+export function score(s: MapState): number { return s.collected.length * 10 + s.completed.length * 25 + s.greeted.length * 5 + s.bells.length * 15; }
+export function missionIds(s: MapState): string[] { return [...s.bells.map(id => `friends-map:bell:${id}`), ...s.completed.map(id => `friends-map:stop:${id}`), ...s.collected.map(id => `friends-map:star:${id}`), ...s.greeted.map(id => `friends-map:friend:${id}`)]; }
+const JUMP_DURATION = 1.05;
+const LIFT: Record<Friend, number> = { nico: 54, becca: 58, lua: 68, boltbot: 52, sparky: 43 };
+export function jumpHeight(s: MapState, friend: Friend, index: number) {
+  if (!s.jumpTime) return 0;
+  const phase = (JUMP_DURATION - s.jumpTime - index * .07) / .70;
+  return phase > 0 && phase < 1 ? 4 * phase * (1 - phase) * LIFT[friend] : 0;
+}
+export function moveSkill(s: MapState, skill: 'jump' | 'dash') {
+  if (s.status !== 'playing') return;
+  if (skill === 'jump' && !s.jumpTime) { s.action = null; s.jumpTime = JUMP_DURATION; s.usedTrick = false; }
+  else if (skill === 'jump' && !s.usedTrick && jumpHeight(s,s.leader,0)>8) {
+    s.usedTrick = true; s.jumpTime = .90; s.trick = .58;
+  }
+  if (skill === 'dash' && !s.dashRest) { s.action = null; s.dashTime = .46; s.dashRest = 1.05; }
+}
+export function companionPositions(s: MapState): (Point & { friend: Friend; facing: number; moving: boolean; lift: number })[] {
   const order = [s.leader, ...ROSTER.filter(f => f !== s.leader)];
   return order.map((friend, i) => {
     const at = i === 0 ? s.player : s.trail[Math.min(s.trail.length - 1, i * 15)];
-    return { ...at, friend, facing: s.facing, moving: s.moving };
+    const ahead = s.trail[Math.max(0, i * 15 - 4)];
+    const facing = i && Math.abs(ahead.x - at.x) > .8 ? Math.sign(ahead.x - at.x) : s.facing;
+    return { ...at, friend, facing, moving: s.moving, lift: jumpHeight(s,friend,i) };
   });
 }
 function move(s: MapState, dx: number, dy: number): void {
@@ -130,24 +154,32 @@ function move(s: MapState, dx: number, dy: number): void {
   }
   const d = distance(before, s.player); s.moving = d > .001; s.traveled += d;
   if (Math.abs(dx) > .01) s.facing = dx < 0 ? -1 : 1;
-  if (distance(s.player, s.trail[0]) >= 1.7) { s.trail.unshift({ ...s.player }); if (s.trail.length > 90) s.trail.length = 90; }
+  if (d > .01) s.heading = { x: (s.player.x - before.x) / d, y: (s.player.y - before.y) / d };
+  const anchor = s.trail[0], span = distance(anchor,s.player);
+  for (let t = 3; t <= span; t += 3) s.trail.unshift({ x: anchor.x + (s.player.x-anchor.x)*t/span, y: anchor.y + (s.player.y-anchor.y)*t/span });
+  if (s.trail.length > 90) s.trail.length = 90;
 }
 export function stepMap(s: MapState, input: Input, delta: number): void {
   if (s.status !== 'playing' || !Number.isFinite(delta) || delta <= 0) return;
   const dt = Math.min(delta, .05); s.time += dt; s.moving = false;
   s.celebration = Math.max(0, s.celebration - dt);
+  s.trick = Math.max(0,s.trick-dt); s.jumpTime = Math.max(0,s.jumpTime-dt); s.dashTime = Math.max(0,s.dashTime-dt); s.dashRest = Math.max(0,s.dashRest-dt);
   let x = clamp(finite(input.x), -1, 1), y = clamp(finite(input.y), -1, 1);
   if (x || y) { s.path = []; s.action = null; }
   else {
     while (s.path.length && distance(s.player, s.path[0]) < 2) s.path.shift();
     if (s.path.length) { const target = s.path[0], d = distance(s.player, target); x = (target.x - s.player.x) / d; y = (target.y - s.player.y) / d; }
   }
+  if (!x && !y && s.dashTime > 0) { x = s.heading.x; y = s.heading.y; }
   if (x || y) {
     const d = s.path.length ? distance(s.player, s.path[0]) : Infinity;
-    const speed = Math.min(170 * dt, d) / Math.max(1, Math.hypot(x, y));
+    const speed = Math.min((s.dashTime > 0 ? 360 : 170) * dt, d) / Math.max(1, Math.hypot(x, y));
     move(s, x * speed, y * speed);
   }
   for (const token of TOKENS) if (!s.collected.includes(token.id) && distance(token, s.player) < 21) { s.collected.push(token.id); s.revision++; s.celebration = .6; }
+  if (jumpHeight(s,s.leader,0) > 24) for (const b of SKY_BELLS) {
+    if (!s.bells.includes(b.id) && distance(s.player,b) < 35) { s.bells.push(b.id); s.celebration = .85; s.revision++; }
+  }
   if (input.interact) {
     const stop = nearbyStop(s); input.interact = false;
     if (stop && !s.action) { s.path = []; s.action = { id: stop.id, elapsed: 0 }; }

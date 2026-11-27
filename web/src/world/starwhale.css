@@ -1,0 +1,46 @@
+.voyage { position:absolute; inset:0; z-index:12; display:flex; flex-direction:column; color:#fff4d8; background:#091d2d; overflow:hidden; padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); box-sizing:border-box; }
+.voyage .voyage-bar,.voyage-hud { display:flex; align-items:center; justify-content:space-between; gap:.6rem; padding:.4rem clamp(.65rem,3vw,2rem); background:#0e2537; }
+.voyage .voyage-bar button,.voyage .voyage-card>button:not(.voyage-primary) { background:#152f40; border:1px solid #446277; border-radius:12px; font-size:.85rem; min-height:44px; }
+.voyage-bar strong { font-size:.86rem; color:#f0dfb3; } .voyage-bar i { font-style:normal; color:#ffcf7c; }
+.voyage-chart { flex:1; min-height:0; overflow:auto; display:grid; grid-template-columns:minmax(0,1.18fr) minmax(0,1fr); }
+.voyage-cover { display:flex; align-items:flex-end; position:relative; background:linear-gradient(0deg,#091e30 0%,#13223a09 73%),url('../assets/art/starwhale-voyage.webp') 76% 35%/cover; padding:clamp(1.25rem,4vw,4.5rem); }
+.voyage-cover>div { max-width:34rem; } .voyage-cover small,.voyage-hud small { color:#b4f0e0; font-weight:800; letter-spacing:.16em; }
+.voyage-cover h2,.friends-map__overlay .friends-map__story-title { font-family:Georgia,'Times New Roman',serif; letter-spacing:-.045em; line-height:.96; font-size:clamp(2.8rem,6.5vw,6.6rem); color:#fff3cf; text-shadow:0 3px 18px #061320; margin:.4rem 0 .7rem; }
+.voyage-cover p,.voyage-plan p,.voyage-card p { line-height:1.45; margin:.35rem 0; color:#e6ecea; font-size:1rem; }
+.voyage-plan { padding:clamp(1.1rem,3.5vw,3rem); display:flex; flex-direction:column; justify-content:center; gap:.75rem; background:radial-gradient(ellipse at 100% 0,#264453,#0e2636 72%); }
+.voyage-chapters { display:grid; grid-template-columns:repeat(3,1fr); gap:.45rem; }
+.voyage .voyage-chapters button { position:relative; display:grid; justify-items:center; padding:.4rem .1rem; min-height:64px; background:#132c3e; border:1px solid #546974; border-radius:14px; }
+.voyage-chapters button b { color:var(--gem); font-size:1.55rem; line-height:1.15; font-family:Georgia,serif; }
+.voyage-chapters small { font-size:.78rem; color:#e3e7df; } .voyage-chapters i { position:absolute; top:3px; right:6px; color:#b9fccd; }
+.voyage .voyage-chapters [aria-pressed=true] { background:#314756; border-color:var(--gem); box-shadow:inset 0 -3px var(--gem); }
+.voyage-plan h3,.voyage-card h3 { font:700 clamp(1.55rem,3.4vw,2.8rem)/1.05 Georgia,serif; margin:.45rem 0 0; }
+.voyage-settings { display:flex; align-items:center; flex-wrap:wrap; gap:.55rem; }
+.voyage-settings>div { display:flex; gap:.25rem; } .voyage .voyage-settings button { background:transparent; border-color:#496576; font-size:.85rem; min-height:44px; }
+.voyage .voyage-settings [aria-pressed=true] { border-color:#e9c880; background:#4c473a; } .voyage-settings small { color:#c8d9d5; font-size:.8rem; }
+.friends-map button.voyage-primary,.friends-map button.voyage-power { color:#142b35; border:1px solid #ffedb0; background:linear-gradient(#ffe8a7,#ecc16c); font-weight:850; min-height:49px; }
+.voyage-hud { background:#173447; flex-wrap:wrap; padding-block:.55rem; }
+.voyage-hud h2 { font:700 clamp(1.15rem,2.6vw,1.8rem)/1.1 Georgia,serif; margin:.15rem 0; } .voyage-hud small { font-size:.74rem; }
+.voyage-hud strong { margin-left:auto; color:var(--voyage-color); } .voyage-hud span { font-weight:700; }
+.voyage-field { flex:1; min-height:0; position:relative; background:linear-gradient(0deg,#0d273793,#27485d44 75%),var(--voyage-sky) center/cover; }
+.voyage-field canvas { width:100%; height:100%; display:block; touch-action:none; cursor:crosshair; }
+.voyage-card { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:safe center; gap:.52rem; padding:1rem; overflow:auto; background:linear-gradient(#0c2435dd,#0b2233f5); text-align:center; }
+.voyage-card p { max-width:35rem; } .voyage-seal { display:grid; place-items:center; width:57px; height:57px; border-radius:50%; color:var(--voyage-color); font:2.1rem Georgia,serif; border:3px double var(--voyage-color); }
+.voyage-card button { min-width:min(240px,100%); } .voyage-card strong { color:#ffe1a3; }
+.voyage-deck { padding:.55rem clamp(.7rem,3vw,2rem) .7rem; background:#102837; border-top:1px solid #526775; display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.voyage-deck p { margin:0; font-size:.95rem; color:#e0e9e7; }
+.voyage-deck>div { display:flex; gap:.35rem; flex:none; } .voyage-deck button { min-width:50px; touch-action:manipulation; } .voyage-deck .voyage-power { min-width:130px; }
+@media(max-width:680px) and (orientation:portrait) {
+  .voyage-chart { display:flex; flex-direction:column; }
+  .voyage-cover { min-height:clamp(175px,29dvh,310px); box-sizing:border-box; padding:1rem 1.2rem; background-position:76% 35%; }
+  .voyage-cover>div { max-width:25rem; } .voyage-cover h2 { font-size:clamp(2.3rem,10vw,3.6rem); max-width:7.5em; }
+  .voyage-cover p,.voyage-plan p { font-size:.94rem; } .voyage-plan { flex:1; padding:.85rem 1rem 1.1rem; gap:.55rem; }
+  .voyage .voyage-chapters button { min-height:51px; } .voyage-plan h3 { margin-top:.25rem; }
+  .voyage-deck { display:grid; gap:.45rem; } .voyage-deck>div { display:grid; grid-template-columns:1fr 1fr 2.3fr; } .voyage-bar strong { font-size:.76rem; }
+}
+@media(max-height:510px) and (orientation:landscape) {
+  .voyage-plan { padding:.65rem 1.2rem; gap:.3rem; justify-content:safe center; }
+  .voyage .voyage-chapters button { min-height:43px; padding:1px; } .voyage-chapters { grid-template-columns:repeat(6,1fr); }
+  .voyage-cover { padding:1.3rem; } .voyage-cover h2 { font-size:2.8rem; } .voyage .voyage-hud { padding-block:.15rem; }
+  .voyage-hud small,.voyage-seal { display:none; } .voyage-deck { padding-block:.2rem; } .voyage-deck p {font-size:.8rem;}
+  .voyage-card { flex-flow:row wrap; align-content:safe center; } .voyage-card h3,.voyage-card p { width:100%; } .voyage-card button { min-width:110px; }
+}

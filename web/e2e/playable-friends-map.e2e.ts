@@ -133,3 +133,25 @@ test('tap-to-walk uses the illustrated map and switches the camera without scrol
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.locator('.friends-map')).toHaveAttribute('data-map-status', 'paused');
 });
+
+test('an island jump rings a bell and a rescue flight responds to steering, power and pause', async ({ page }, info) => {
+  const es = await open(page, info);
+  const game = page.locator('.friends-map');
+  await game.getByRole('button', {name: es ? 'Saltar' : 'Jump', exact:true}).click();
+  await expect.poll(() => game.locator('.friends-map__status').textContent()).toMatch(/★\s*15/);
+  await game.getByRole('button',{name: es ? 'Correr' : 'Dash',exact:true}).click();
+  await game.getByRole('button',{name: es ? '✦ Volar' : '✦ Fly'}).click();
+  const voyage = page.getByRole('dialog',{name: es ? 'Viaje de la ballena estelar' : 'Starwhale Voyage'});
+  await expect(voyage.getByRole('button',{name: es ? 'Cabalga la ballena estelar' : 'Ride the Starwhale'})).toBeDisabled();
+  await voyage.getByRole('button',{name: es ? 'Despegar con Becca' : 'Fly with Becca'}).click();
+  await voyage.getByRole('button',{name: es ? 'Subir' : 'Climb'}).click();
+  await voyage.getByRole('button',{name: es ? 'Bajar' : 'Descend'}).click();
+  await voyage.getByRole('button',{name: es ? '✿ Florecer' : '✿ Bloom'}).click();
+  await expect(voyage.getByRole('button',{name: es ? '✿ Florecer' : '✿ Bloom'})).toBeDisabled();
+  await expect(voyage.locator('.voyage-hud strong')).toHaveText('✿ 1/6',{timeout:15000});
+  await voyage.getByRole('button',{name: es ? 'Pausa' : 'Pause',exact:true}).click();
+  await expect(voyage).toHaveAttribute('data-screen','paused');
+  await voyage.getByRole('button',{name: es ? 'Continuar vuelo' : 'Resume flight'}).click();
+  await expect(voyage).toHaveAttribute('data-screen','flying');
+  await photo(page,info,'starwhale-rescue-flight');
+});

@@ -1,3 +1,4 @@
+import { paintFriend } from './motion';
 import type { MapAssets } from './renderer';
 import { indoorFriends, ROOM_FURNITURE, ROOM_HEIGHT, ROOM_PARTS, ROOM_WIDTH, ROOMS, WORKSTATION } from './interiors';
 import type { InteriorState } from './interiors';
@@ -89,8 +90,7 @@ export function drawInterior(c: CanvasRenderingContext2D, assets: MapAssets, s: 
     const art = assets.sprites[actor.friend], x = actor.x, y = actor.y;
     ellipse(c, x, y, art.width * .33, 5, '#12233266');
     if (actor.friend === leader) { c.strokeStyle = '#fff0b1'; c.lineWidth = 2; c.beginPath(); c.ellipse(x, y, art.width * .48, 7, 0, 0, Math.PI * 2); c.stroke(); }
-    c.save(); c.translate(x, y); c.scale(s.facing, 1);
-    c.drawImage(art, -art.width / 2, -art.height - (s.moving ? Math.abs(Math.sin(s.time * 12)) * 2 : 0)); c.restore();
+    paintFriend(c,art,assets.sheets,actor.friend,x,y,s.facing,s.moving,s.time);
   }
   c.setTransform(1, 0, 0, 1, 0, 0);
 }
