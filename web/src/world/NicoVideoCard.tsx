@@ -24,6 +24,7 @@ export function NicoVideoCard({ language }: { language: Language }) {
         const url = await loadNicoBasketball();
         if (current !== attempt.current) return;
         el.src = url;
+        setLoading(false);
       } else if (el.error) {
         el.load();
       }
