@@ -194,7 +194,7 @@ export function MonsterLab({ profile, update, announce }: { profile: LocalProfil
   );
 }
 
-export function MonsterHabitats({ profile, update, announce }: { profile: LocalProfile; update: UpdateProfile; announce: Announce }) {
+export function MonsterHabitats({ profile, update, announce, openLab }: { profile: LocalProfile; update: UpdateProfile; announce: Announce; openLab: () => void }) {
   const language = profile.language;
 
   const care = (monsterId: string, amount: number, action: { en: string; "es-MX": string }) => {
@@ -222,7 +222,10 @@ export function MonsterHabitats({ profile, update, announce }: { profile: LocalP
     announce(`${monster.name}: ${action[language]}. ${tr(ui.friendship, language)} ${nextFriendship}/100.${milestoneText}`);
   };
 
-  if (!profile.monsters.length) return <EmptyState emoji="🏕️">{tr(ui.createMonsterFirst, language)}</EmptyState>;
+  if (!profile.monsters.length) return <div className="atlas-habitat-invite">
+    <p>{tr(ui.createMonsterFirst, language)}</p>
+    <button type="button" className="fw-primary" onClick={openLab}>{language === "es-MX" ? "Crear mi primer monstruo" : "Make my first monster"}</button>
+  </div>;
 
   return (
     <div className="fw-card-grid">

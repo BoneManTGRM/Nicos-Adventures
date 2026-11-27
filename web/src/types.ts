@@ -158,6 +158,7 @@ export type NicoWardrobe = {
 };
 
 export type NicoPreferences = {
+  clubhouseVisited?: boolean;
   profession: NicoProfessionId;
   accentColor: string;
   speechEnabled: boolean;

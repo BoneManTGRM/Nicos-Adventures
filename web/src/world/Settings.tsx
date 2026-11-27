@@ -54,10 +54,15 @@ export function Settings({
     announce(language === "es-MX" ? "Respaldo descargado." : "Backup downloaded.");
   };
 
+  const profilesFull = store.profiles.length >= 12;
+  const capacityMessage = language === "es-MX"
+    ? "Ya tienes 12 perfiles. Para agregar uno o restaurar una copia, libera un espacio primero."
+    : "All 12 profile slots are in use. Free a slot before adding a profile or restoring a copy.";
+
   const addProfile = () => {
-    if (!newName.trim()) return;
+    if (!newName.trim() || profilesFull) return;
     const next = createProfile(newName, language);
-    setStore({ ...store, activeProfileId: next.id, profiles: [...store.profiles, next].slice(-12) });
+    setStore({ ...store, activeProfileId: next.id, profiles: [...store.profiles, next] });
     setNewName("");
     setStatus(language === "es-MX" ? "Perfil agregado." : "Profile added.");
     announce(language === "es-MX" ? `${next.playerName}: perfil agregado.` : `${next.playerName}: profile added.`);
@@ -85,9 +90,10 @@ export function Settings({
   };
 
   const restore = async (file: File) => {
+    if (profilesFull) return;
     try {
       const imported = importProfile(await file.text());
-      setStore({ ...store, activeProfileId: imported.id, profiles: [...store.profiles, imported].slice(-12) });
+      setStore({ ...store, activeProfileId: imported.id, profiles: [...store.profiles, imported] });
       setStatus(language === "es-MX" ? "Perfil restaurado correctamente." : "Profile restored successfully.");
       announce(language === "es-MX" ? "Perfil restaurado correctamente." : "Profile restored successfully.");
     } catch {
@@ -137,8 +143,9 @@ export function Settings({
         </div>
         <div className="settings-inline-form">
           <label>{language === "es-MX" ? "Nuevo amigo" : "New friend"}<input value={newName} maxLength={24} onChange={(event) => setNewName(event.target.value)} /></label>
-          <button type="button" onClick={addProfile} disabled={!newName.trim()}>＋ {language === "es-MX" ? "Agregar perfil" : "Add profile"}</button>
+          <button type="button" onClick={addProfile} disabled={profilesFull || !newName.trim()}>＋ {language === "es-MX" ? "Agregar perfil" : "Add profile"}</button>
         </div>
+        {profilesFull && <p>{capacityMessage}</p>}
         <button type="button" className="danger" onClick={deleteProfile} disabled={store.profiles.length <= 1}>🗑️ {language === "es-MX" ? "Eliminar perfil activo" : "Delete active profile"}</button>
       </section>
 
@@ -152,7 +159,7 @@ export function Settings({
         </div>
         <div className="fw-action-row">
           <button type="button" onClick={download}>⬇️ {language === "es-MX" ? "Descargar respaldo" : "Download backup"}</button>
-          <button type="button" onClick={() => fileInput.current?.click()}>⬆️ {language === "es-MX" ? "Restaurar respaldo" : "Restore backup"}</button>
+          <button type="button" disabled={profilesFull} onClick={() => fileInput.current?.click()}>⬆️ {language === "es-MX" ? "Restaurar respaldo" : "Restore backup"}</button>
         </div>
         <input hidden ref={fileInput} type="file" accept=".json,application/json" onChange={(event) => { const file = event.target.files?.[0]; if (file) void restore(file); }} />
       </section>

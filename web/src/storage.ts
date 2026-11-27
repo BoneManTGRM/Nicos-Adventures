@@ -359,6 +359,7 @@ function normalizeNico(candidate: unknown): NicoPreferences {
   return {
     profession,
     accentColor,
+    ...(value.clubhouseVisited === true ? { clubhouseVisited: true } : {}),
     speechEnabled: value.speechEnabled !== false,
     favoriteOutfits: Array.isArray(value.favoriteOutfits) ? [...new Set(value.favoriteOutfits.filter((v: unknown) => professionIds.includes(v as NicoProfessionId)))].slice(0,26) as NicoProfessionId[] : [],
     wardrobe: normalizeWardrobe(value.wardrobe, profession, accentColor),

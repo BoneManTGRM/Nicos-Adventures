@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Language, LocalProfile, SectionId } from "../types";
 import { fieldLabel, tr, ui } from "../i18n/core";
 import { optionLabel } from "../i18n/display";
+import { destinationArt } from "./destinationAtlas";
 import { WORLD_SECTIONS } from "./catalogs";
 
 export type UpdateProfile = (profile: LocalProfile) => void;
@@ -52,9 +53,10 @@ export function AppHeader({
 
 export function PageTitle({ sectionId, language }: { sectionId: SectionId; language: Language }) {
   const section = WORLD_SECTIONS.find((item) => item.id === sectionId) ?? WORLD_SECTIONS[0];
+  const illustrated = section.id !== "world-map" && !(["robo-lab", "robot-home", "game-arcade"] as SectionId[]).includes(section.id);
   return (
-    <header className="fw-page-header" data-section-id={section.id}>
-      <span aria-hidden="true">{section.emoji}</span>
+    <header className={`fw-page-header${illustrated ? " atlas-arrival" : ""}`} data-section-id={section.id}>
+      {illustrated && section.id !== "world-map" ? <img className="atlas-arrival__art" src={destinationArt(section.id)} alt="" decoding="async" /> : <span aria-hidden="true">{section.emoji}</span>}
       <div>
         <small>{tr(ui.destination, language)}</small>
         <h1 id="page-title" tabIndex={-1}>{tr(section.name, language)}</h1>

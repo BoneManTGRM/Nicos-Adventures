@@ -55,15 +55,37 @@ test('homecoming artwork, placement, mini game, language and reload', async ({ p
   expect(errors).toEqual([]);
 });
 
-test('Nico TV defers video transfer until play', async ({ page }) => {
+test('Nico TV defers video transfer until play', async ({ page }, info) => {
   const transfers: string[] = []; page.on('request', request => { if (/\.mp4|\.b64/.test(request.url()) && /basketball/.test(request.url())) transfers.push(request.url()); });
   await page.goto('/');
   await expect(page.getByTestId('continue-world')).toBeVisible();
+  const spanish = info.project.metadata.language === 'es-MX';
+  if (spanish && await page.locator('html').getAttribute('lang') !== 'es-MX') {
+    await page.getByRole('button', { name: 'Cambiar a español de México' }).click();
+  }
+  await expect(page.locator('.nico-video-card h2')).toHaveText(spanish ? 'Mira a Nico jugar' : 'Watch Nico play');
   await expect(page.locator('.nico-video-card video')).toHaveAttribute('preload', 'none');
   expect(transfers).toEqual([]);
   await page.locator('.nico-video-card__play').click();
   await expect.poll(() => transfers.some(url => url.endsWith('.mp4'))).toBe(true);
   expect(transfers.some(url => url.includes('.b64'))).toBe(false);
+  const player = page.locator('.nico-video-card video');
+  await expect.poll(() => player.evaluate((el: HTMLVideoElement) => [el.videoWidth, el.videoHeight])).toEqual([512, 692]);
+  await expect.poll(() => player.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0);
+  const poster = await player.evaluate(async (el: HTMLVideoElement) => {
+    const image = new Image();
+    image.src = el.poster;
+    await image.decode();
+    return [image.naturalWidth, image.naturalHeight];
+  });
+  expect(poster).toEqual([512, 692]);
+
+  await page.locator('.nico-guide__launcher').click();
+  await page.locator('.nico-guide__primary').click();
+  const spotlight = page.locator('.nico-video__dialog video');
+  await expect(spotlight).toHaveAttribute('poster', await player.getAttribute('poster') as string);
+  await expect.poll(() => spotlight.evaluate((el: HTMLVideoElement) => [el.videoWidth, el.videoHeight])).toEqual([512, 692]);
+  await expect.poll(() => spotlight.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0);
 });
 
 

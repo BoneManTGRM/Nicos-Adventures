@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useActiveProfileStore } from "../hooks/useActiveProfileStore";
 import type { SectionId } from "../types";
 import { NicoCostumeFigure } from "./NicoCostumeFigure";
+import { destinationArt } from "../world/destinationAtlas";
 import { openNicoWorld } from "./NicoWorldExperience";
 
 type Targets = {
@@ -74,11 +75,12 @@ export default function NicoPortalArt() {
     portals.push(createPortal(
       <button
         type="button"
-        className="fw-destination nico-world-destination"
+        className="fw-destination atlas-place nico-world-destination" data-group="home"
         onClick={() => openNicoWorld("ask")}
-        aria-label={`${text.clubhouse}. ${text.clubhouseDescription}`}
+        aria-label={`${text.clubhouse}. ${text.clubhouseDescription}${profile.nico.clubhouseVisited ? profile.language === "es-MX" ? " Ya visitado." : " Visited." : ""}`}
       >
-        <span className="nico-world-destination__art">{character(text.clubhouse)}</span>
+        <span className="atlas-place__picture nico-world-destination__art" aria-hidden="true"><img src={destinationArt("robot-home")} alt="" loading="lazy" decoding="async" />{character(text.clubhouse)}
+          {profile.nico.clubhouseVisited && <span className="atlas-place__stamp">{profile.language === "es-MX" ? "✓ Visitado" : "✓ Visited"}</span>}</span>
         <strong>{text.clubhouse}</strong>
         <small>{text.clubhouseDescription}</small>
       </button>,

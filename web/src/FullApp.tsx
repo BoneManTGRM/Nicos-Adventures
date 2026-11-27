@@ -23,7 +23,7 @@ const PetWorkshop = lazy(() => import("./world/PetWorkshop").then(module => ({ d
 import { RoboLab } from "./world/RoboLab";
 import { Settings } from "./world/Settings";
 import { StoryCastle } from "./world/StoryCastle";
-import { WorldMap } from "./world/WorldMap";
+const WorldMap = lazy(() => import("./world/WorldMap").then(module => ({ default: module.WorldMap })));
 import { VisitorCounter } from "./world/VisitorCounter";
 import { WORLD_SECTIONS } from "./world/catalogs";
 import "./styles.css";
@@ -36,9 +36,9 @@ import "./world/creative-memory.css";
 import "./world/robot-home-polish.css";
 import "./world/story-mobile-fixes.css";
 import "./world/local-media-art.css";
-import "./world/star-bridge-map.css";
 import "./world/site-polish.css";
 import "./world/connected-polish.css";
+import "./world/atlas-arrival.css";
 const Arcade = lazy(() => import("./world/Arcade").then(module => ({ default: module.Arcade })));
 const RobotHome = lazy(() => import("./world/RobotHome").then(module => ({ default: module.RobotHome })));
 const CousinsAdventure = lazy(() => import("./world/CousinsAdventure").then((module) => ({ default: module.CousinsAdventure })));
@@ -56,6 +56,16 @@ export default function FullApp() {
  const pendingTitleFocus = useRef<"keyboard" | "pointer" | null>(null);
  const lastNavigationInput = useRef<"keyboard" | "pointer">("pointer");
  const announce = (message: string) => setAnnouncement(current => ({ id: current.id + 1, message }));
+ useEffect(() => {
+  const followMapLink = () => {
+   if (["#destinations", "#star-bridge"].includes(window.location.hash) && profile.selectedSection !== "world-map") {
+    commitProfile(current => ({ ...current, selectedSection: "world-map" }));
+   }
+  };
+  followMapLink();
+  window.addEventListener("hashchange", followMapLink);
+  return () => window.removeEventListener("hashchange", followMapLink);
+ }, [profile.selectedSection, commitProfile]);
  useEffect(() => {
   if (!["arcade", "friends-map", "number-dash", "monster-garage", "rainbow-kingdom"].includes(new URLSearchParams(window.location.search).get("play") ?? "")) return;
   if (profile.selectedSection !== "game-arcade") commitProfile(current => ({ ...current, selectedSection: "game-arcade" }));
@@ -85,7 +95,14 @@ export default function FullApp() {
   window.addEventListener("keyup", focusAfterKeyUp, { once: true });
   return () => { window.removeEventListener("keyup", focusAfterKeyUp); window.cancelAnimationFrame(firstFrame); window.cancelAnimationFrame(secondFrame); };
  }, [profile.selectedSection]);
- const presentSection = () => { pendingTitleFocus.current = lastNavigationInput.current; lastNavigationInput.current = "pointer"; window.scrollTo({ top: 0, left: 0, behavior: "auto" }); };
+ const presentSection = () => {
+  if (["#destinations", "#star-bridge"].includes(window.location.hash)) {
+   const url = new URL(window.location.href); url.hash = ""; window.history.replaceState(window.history.state, "", url);
+  }
+  pendingTitleFocus.current = lastNavigationInput.current;
+  lastNavigationInput.current = "pointer";
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+ };
  const open = (sectionId: SectionId) => {
   if (sectionId !== "game-arcade" && ["arcade", "friends-map", "number-dash", "monster-garage", "rainbow-kingdom"].includes(new URLSearchParams(window.location.search).get("play") ?? "")) {
    const url = new URL(window.location.href); url.searchParams.delete("play"); window.history.replaceState(null, "", url);
@@ -129,15 +146,15 @@ export default function FullApp() {
    case "becca-corner": return <Suspense fallback={<div className="fw-empty" role="status">{profile.language === "es-MX" ? "Abriendo el taller mágico…" : "Opening the magic workshop…"}</div>}><BeccaCorner language={profile.language} /></Suspense>;
    case "cousins-adventure": return <Suspense fallback={<div className="fw-empty" role="status">{profile.language === "es-MX" ? "Abriendo el mapa de aventuras…" : "Opening the adventure map…"}</div>}><CousinsAdventure language={profile.language} /></Suspense>;
    case "monster-lab": return <MonsterLab {...props} />;
-   case "monster-habitats": return <MonsterHabitats {...props} />;
+   case "monster-habitats": return <MonsterHabitats {...props} openLab={() => open("monster-lab")} />;
    case "art-studio": return <ArtStudio {...props} initialArtworkId={creationIntent?.kind==='art'?creationIntent.id:undefined} openHome={()=>open('robot-home')} />;
    case "story-castle": return <StoryCastle {...props} initialStoryId={creationIntent?.kind==='story'?creationIntent.id:undefined} openHome={()=>open('robot-home')} />;
    case "game-arcade": return <Arcade {...props} />;
    case "dinosaur-valley": return <DinosaurValley {...props} />;
    case "pet-workshop": return <PetWorkshop {...props} />;
    case "robot-home": return <RobotHome {...props} open={open} beginStarBridge={beginStarBridge} continueAdventure={continueAdventure} openArtwork={id=>openCreation('art',id)} openStory={id=>openCreation('story',id)} />;
-   case "memory-book": return <Museum profile={profile} />;
-   case "badge-book": return <Badges profile={profile} />;
+   case "memory-book": return <Museum profile={profile} openCreation={openCreation} />;
+   case "badge-book": return <Badges profile={profile} open={open} continueAdventure={continueAdventure} />;
    case "parent-settings": return <Settings store={store} profile={profile} setStore={setStore} update={updateProfile} announce={announce} />;
    default: return <WorldMap profile={profile} open={open} beginStarBridge={beginStarBridge} advanceStarBridge={advanceStarBridge} onCreate={()=>setMenu('create')} initialBridgeOpen={bridgeRequested} />;
   }
