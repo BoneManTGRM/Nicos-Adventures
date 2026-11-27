@@ -57,8 +57,8 @@ function exposeRoom(c,b,site,index,wear,p) {
   const rng = random(b.seed+index*8129);
   const cx=clamp(site.x,-b.w*.47,b.w*.47), cy=-clamp(site.y,4,b.h-2);
   const rx=b.w*(.14+wear*.085)+rng()*2, ry=8+wear*8+rng()*3;
-  const outline=[];
-  for (let n=0;n<17;n++) {
+  const outline=site.chunk?site.chunk.points.map(([x,y])=>[cx+x,cy+y]):[];
+  for (let n=0;!site.chunk&&n<17;n++) {
     const angle=(n+.2*rng())*2*Math.PI/17, radius=.70+rng()*.45;
     outline.push([cx+Math.cos(angle)*rx*radius,cy+Math.sin(angle)*ry*radius]);
   }
@@ -344,4 +344,24 @@ export function drawStructure(c,b,{district=0,time=0,reduced=false}={}) {
     state.broken=null;
     paint(c,state.ruin);
   } else drawBreak(c,state.broken,b.fall);
+}
+
+const chunkTiles=new WeakMap();
+export function drawWallChunk(c,chunk) {
+  let tile=chunkTiles.get(chunk);
+  if(!tile){
+    tile=surface(-23,-20,46,43,2);
+    const ctx=tile.c,pts=chunk.points;
+    ctx.save();trace(ctx,pts);ctx.clip();ctx.translate(-chunk.sx,chunk.sy);
+    drawBuilding(ctx,{...chunk.building,hp:chunk.building.maxHp},{district:chunk.district,reduced:true});
+    ctx.restore();
+    const tone=materials[chunk.district]||materials[0];
+    for(let i=4;i<9;i++){
+      const a=pts[i],b=pts[(i+1)%pts.length];
+      face(ctx,[a,b,[b[0]+2,b[1]+3],[a[0]+2,a[1]+3]],i%2?tone.cut:tone.dark);
+    }
+    line(ctx,[[-9,10],[-10,15],[-13,17]],tone.steel,1.2);
+    chunkTiles.set(chunk,tile);
+  }
+  paint(c,tile,0,-11);
 }

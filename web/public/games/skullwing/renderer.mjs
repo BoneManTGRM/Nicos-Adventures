@@ -3,11 +3,12 @@ import {drawPerson} from './pedestrian-art.mjs';
 import {drawStreetPeople} from './pedestrian-art.mjs';
 import {grabTarget} from './pedestrians.mjs';
 import {drawDefense} from './defense-art.mjs';
-import {drawStructure} from './demolition-art.mjs';
+import {drawStructure,drawWallChunk} from './demolition-art.mjs';
 import {drawVehicle} from './vehicle-art.mjs';
 import {SmashFX} from './smash-fx.mjs';
 import {drawBackdrop,drawStreet} from './city-art.mjs';
-import {drawRex} from './rex.mjs';
+import {drawSkullwing} from './skullwing-art.mjs';
+import {drawMeteorTrail,drawMeteorImpact} from './meteor-art.mjs';
 import {clamp} from './simulation.mjs';
 
 export class Renderer {
@@ -39,6 +40,8 @@ export class Renderer {
   event(e) {
     this.smashFX.reduced=this.reduced;
     this.smashFX.event(e);
+    if(e.kind==='wallRip'||e.kind==='wallBreak'){this.burst(e.x,e.y,16,'chips');this.shake=Math.max(this.shake,2.7);}
+    if(e.kind==='stomp'&&e.meteor)this.rings.push({x:e.x+13,y:e.y,age:0,max:.53,size:118,type:'meteor'});
     if(e.kind==='personLanded')this.burst(e.x,e.y,4,'dust');
     if(e.kind==='hit')this.shake=Math.max(this.shake,1.35);
     else if(e.kind==='collapse')this.shake=Math.max(this.shake,3.2);
@@ -88,6 +91,10 @@ export class Renderer {
       c.save();c.translate(p.x,-p.toss.y-8);c.rotate(this.reduced?p.toss.angle*.2:p.toss.angle);
       c.translate(0,8);drawPerson(c,p,t*11,true);c.restore();
     }
+    for(const chunk of s.chunks){
+      c.save();c.translate(chunk.x,-chunk.y);c.rotate(chunk.angle);drawWallChunk(c,chunk);c.restore();
+    }
+    if(a.dive&&s.monster==='skullwing')drawMeteorTrail(c,a,t,this.reduced);
     if(s.defense)drawDefense(c,s,this.reduced,'back');
     const shadeHeight=a.support?.h||0;
     c.fillStyle='rgba(15,13,28,.37)';c.beginPath();c.ellipse(a.x,-shadeHeight+2,Math.max(11,40-(a.y-shadeHeight)*.09),5,0,0,Math.PI*2);c.fill();
@@ -102,22 +109,10 @@ export class Renderer {
       c.restore();
     }
     c.save();c.translate(a.x,-a.y);
-    if(s.monster==='nacho'&&a.haul)this.turnFace=a.face;
-    this.turnFace+=(a.face-this.turnFace)*(1-Math.exp(-17*dt));
-    const bodyWidth=.54+.46*Math.abs(this.turnFace)+a.land*.045, bodyHeight=1-a.land*.07;
-    const facing=Math.sign(this.turnFace)||a.face;
-    c.scale(bodyWidth,bodyHeight);
-    if(s.outcome==='defeat'){
-      const knee=Math.min(1,(s.downTime||0)*1.65);
-      c.rotate(a.face*knee*(this.reduced?.13:.52));c.scale(1,1-knee*.26);
-    }
-    const grip=a.grip;
-    const groundHand=grip?.phase==='lift' ? {
-      x:(grip.person.x-a.x)*facing/bodyWidth,
-      y:(a.y+3)/bodyHeight-9
-    } : null;
+    const facing=a.face;
+    if(s.outcome==='defeat')c.rotate(a.face*Math.min(1,(s.downTime||0)*1.65)*(this.reduced?.13:.52));
     if(s.monster==='nacho')drawNacho(c,a,t,facing,this.reduced);
-    else drawRex(c,{grip,groundHand,time:t,walk:a.walk,facing,air:a.flight,slam:a.dive?1:a.land,swipe:a.swipe,roar:a.roar,charge:s.charge,reduced:this.reduced,glide:a.glide,flap:a.flap,stride:a.stride,hand:a.hand,slide:a.slide});
+    else drawSkullwing(c,a,t,facing,this.reduced);
     c.restore();
     this.smashFX.draw(c,dt,v);
     for(const wave of s.waves){
@@ -131,7 +126,8 @@ export class Renderer {
     for(const ring of this.rings){
       const k=ring.age/ring.max;c.save();c.translate(ring.x,-ring.y);c.globalAlpha=1-k;
       c.lineWidth=2.6*(1-k)+.6;c.strokeStyle=ring.type==='floor'?'#ffe6a2':'#c1faff';
-      if(ring.type==='swipe'){
+      if(ring.type==='meteor')drawMeteorImpact(c,ring,this.reduced);
+      else if(ring.type==='swipe'){
         c.scale(ring.dir,1);for(let i=0;i<3;i++){c.beginPath();c.moveTo(-24+i*3,-23+i*8);c.quadraticCurveTo(23+k*12,-8+i*7,17+k*10,14+i*6);c.stroke();}
       }else{c.beginPath();c.ellipse(0,0,Math.max(1,ring.size*k),Math.max(1,ring.size*k*(ring.type==='floor'?.14:.29)),0,0,Math.PI*2);c.stroke();}
       c.restore();ring.age+=dt;
