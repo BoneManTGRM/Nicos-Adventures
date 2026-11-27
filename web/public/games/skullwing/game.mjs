@@ -1,4 +1,5 @@
-import {paintNachoPoster} from './nacho-art.mjs';
+import {preloadSkullwing} from './skullwing-art.mjs';
+import {preloadNacho} from './nacho-art.mjs';
 import {cities} from './cities.mjs';
 import {newCity,step,press} from './simulation.mjs';
 import {Renderer} from './renderer.mjs';
@@ -74,12 +75,17 @@ function effect(e){
   if(e.kind==='floorImpact'&&city.time-floorStamp>.095){
     floorStamp=city.time;crunch(.24,1250,.11);tone(102,38,.19,.057,'triangle');
   }
+  if(e.kind==='wallGrab'){updateGrabButton();setHint();}
+  if(e.kind==='wallMiss')hint(t('Face a nearby standing wall.','Mira hacia un edificio cercano que siga en pie.'),2);
+  if(e.kind==='wallRip')callout(t('WALL RIPPED!','¡MURO ARRANCADO!'),.85);
   if(e.kind==='lift'){tone(116,252,.19,.040,'triangle');}
   if(e.kind==='toss'){tone(330,125,.20,.052,'sawtooth');}
   if(e.belly){crunch(.24,1450,.16);tone(82,30,.37,.11);}
   if(e.kind==='grab')tone(230,400,.13,.032,'triangle');
   if(e.kind==='chomp'){tone(260,94,.10,.05,'square');tone(370,620,.16,.035,'triangle',.09);}
   if(e.kind==='swing')tone(e.hit?160:250,e.hit?43:100,.115,.039,'triangle');
+  if(e.kind==='wallRip'){crunch(.25,1830,.13);tone(88,32,.22,.06);}
+  if(e.kind==='dive'&&city.monster==='skullwing')tone(620,90,.22,.047,'triangle');
   if(e.kind==='stomp'){tone(110,29,.31,.10,'sine');tone(154,41,.14,.04,'triangle');}
   if(e.kind==='land')tone(82,42,.12,.028,'sine');
   if(e.kind==='warning')tone(480,690,.14,.023,'triangle');
@@ -150,6 +156,8 @@ function updateFighter(){
   el('heroTitle').setAttribute('aria-label',nacho?'Nacho':'Skullwing');
   el('heroFirst').hidden=nacho;el('heroLast').textContent=nacho?'NACHO':'WING';
   el('nachoPoster').hidden=!nacho;
+  el('skullPoster').hidden=nacho;
+  if(nacho)preloadNacho();else preloadSkullwing();
   el('jumpName').textContent=nacho?t('Jump','Saltar'):t('Flap','Volar');
   el('chargeBar').hidden=nacho;
 }
@@ -171,18 +179,20 @@ function clearInput(){keys.clear();pointers.clear();syncInput();}
 function hint(text,seconds){el('hint').textContent=text;hintUntil=(city?.time||0)+seconds;}
 function setHint(){
   const touch=matchMedia('(pointer: coarse)').matches;
-  if(city.monster==='nacho'){
-    if(city.actor.haul){
-      const key=city.actor.haul.kind==='car'?'E':'C';
-      hint(t(touch?'Face your target, then tap Throw.':'Face your target, then press '+key+' again to throw.',
-        touch?'Mira hacia tu objetivo y toca Lanzar.':'Mira hacia tu objetivo y pulsa '+key+' otra vez para lanzar.'),6);
-    }else hint(t(touch?'Tap Jump, then Flop in midair. Lift a car or person from the street.':'Space to jump, X in midair to belly flop. E lifts a car, C grabs a person.',
-      touch?'Salta y toca Plancha en el aire. Levanta autos o personas en la calle.':'Espacio para saltar, X en el aire para una plancha. E levanta autos y C agarra personas.'),7);
+  const h=city.actor.haul;
+  if(h){
+    if(h.kind==='wall')hint(t(touch?'Tap Hurl to throw the wall chunk.':'Press R to hurl the wall chunk.',touch?'Toca Lanzar para arrojar el muro.':'Pulsa R para lanzar el trozo de muro.'),6);
+    else if(city.monster==='nacho')hint(t(touch?'Tap Throw or Eat.':'Press '+(h.kind==='car'?'E':'C')+' to throw, or F to eat.',touch?'Toca Lanzar o Comer.':'Pulsa '+(h.kind==='car'?'E':'C')+' para lanzar o F para comer.'),6);
+    else hint(t(touch?'Tap Eat or Throw.':'Press E to eat or F to throw.',touch?'Toca Comer o Lanzar.':'Pulsa E para comer o F para lanzar.'),6);
     return;
   }
-  if(city.actor.grip)hint(t(touch?'Tap Eat to take a bite.':'Press E again to eat.',touch?'Toca Comer para dar una mordida.':'Pulsa E otra vez para comer.'),6);
-  else if(city.defense&&helpStage===0)hint(t('See the amber target? Move or jump to dodge.','¿Ves la mira ámbar? Muévete o salta para esquivar.'),7);
-  else if(helpStage===0)hint(t(touch?'Tap Grab beside a person, then tap Eat.':'Move with ← → or A / D. Press E near a person, then E to eat.',touch?'Toca Agarrar junto a alguien y luego toca Comer.':'Muévete con ← → o A / D. Pulsa E para agarrar y otra vez para comer.'),8);
+  if(city.monster==='nacho'){
+    hint(t(touch?'Jump, then Flop in the air. Rip Wall pulls out a piece of a tower.':'Space jumps. X belly flops. E lifts cars, C lifts people, R rips walls.',
+      touch?'Salta y toca Plancha en el aire. Arrancar saca un trozo del muro.':'Espacio salta. X hace una plancha. E agarra autos, C personas y R arranca muros.'),7);
+    return;
+  }
+  if(city.defense&&helpStage===0)hint(t('See the amber target? Move or jump to dodge.','¿Ves la mira ámbar? Muévete o salta para esquivar.'),7);
+  else if(helpStage===0)hint(t(touch?'Grab a person or car. Jump, then tap Meteor in the air.':'E grabs people, F grabs cars, R rips walls. Jump with Space and press X for Meteor.',touch?'Agarra personas o autos. Salta y toca Meteoro en el aire.':'E agarra personas, F autos y R arranca muros. Salta con Espacio y pulsa X para Meteoro.'),8);
   else if(helpStage===1)hint(t(touch?'Tap Flap twice to fly. Hold it to glide.':'Tap Space twice to fly. Hold it to glide.',touch?'Toca Volar dos veces. Mantenlo para planear.':'Pulsa Espacio dos veces. Mantenlo para planear.'),6);
   else if(helpStage===2)hint(t(touch?'Tap Smash in midair to dive.':'Press X in midair to dive.',touch?'Toca Golpe en el aire para caer con fuerza.':'Pulsa X en el aire para caer con fuerza.'),5);
   else hint(t(touch?'Roar shakes every nearby building.':'Press C to roar through nearby buildings.',touch?'Ruge para sacudir los edificios cercanos.':'Pulsa C para sacudir los edificios cercanos.'),6);
@@ -200,6 +210,13 @@ function leave(){
 }
 function updateGrabButton(){
   const car=buttons.get('grab'),person=buttons.get('roar');
+  const heldItem=city?.actor.haul,wall=heldItem?.kind==='wall',nacho=monster==='nacho';
+  el('extraName').textContent=nacho?t('Eat','Comer'):heldItem?t('Throw','Lanzar'):t('Car','Auto');
+  const extra=buttons.get('extra'),tear=buttons.get('tear');
+  extra.setAttribute('aria-label',nacho?t('Eat','Comer'):heldItem?t('Throw','Lanzar'):t('Lift car','Levantar auto'));
+  extra.setAttribute('aria-disabled',String(nacho&&(!heldItem||wall)));
+  el('tearName').textContent=wall?t('Hurl','Lanzar'):t('Rip wall','Arrancar');
+  tear.setAttribute('aria-disabled',String(!!heldItem&&!wall));
   if(monster==='nacho'){
     const held=city?.actor.haul?.kind;
     const throwText=t('Throw','Lanzar'),carText=held==='car'?throwText:t('Car','Auto'),personText=held==='person'?throwText:t('Person','Persona');
@@ -212,12 +229,14 @@ function updateGrabButton(){
     person.setAttribute('aria-label',held==='person'?t('Throw person','Lanzar persona'):t('Grab person','Agarrar persona'));
     car.title=car.getAttribute('aria-label')+' (E)';person.title=person.getAttribute('aria-label')+' (C)';
     car.classList.toggle('carrying',held==='car');person.classList.toggle('carrying',held==='person');
-    car.setAttribute('aria-disabled',String(held==='person'));person.setAttribute('aria-disabled',String(held==='car'));
+    car.setAttribute('aria-disabled',String(held==='person'||wall));person.setAttribute('aria-disabled',String(held==='car'||wall));
     return;
   }
+  el('roarName').textContent=t('Roar','Rugir');
   car.removeAttribute('aria-label');person.removeAttribute('aria-label');
-  car.removeAttribute('aria-disabled');person.classList.remove('carrying');person.title=t('Roar','Rugir')+' (C)';
-  const holding=!!city?.actor.grip;
+  car.setAttribute('aria-disabled',String(wall));person.classList.remove('carrying');person.title=t('Roar','Rugir')+' (C)';
+  el('smashName').textContent=city&&!city.actor.grounded?t('Meteor','Meteoro'):t('Smash','Golpe');
+  const holding=!!heldItem&&!wall;
   const label=holding?t('Eat','Comer'):t('Grab','Agarrar');
   const button=buttons.get('grab');
   if(el('grabName').textContent!==label)el('grabName').textContent=label;
@@ -254,13 +273,17 @@ function receive(e){
       const landmark=cities[city.district].landmark;callout(t(landmark.en,landmark.es)+' +250',1.2);
     }else if(e.combo>=2)callout(t('CHAIN REACTION','¡EN CADENA!')+' ×'+e.combo);
   }
+  if(e.kind==='wallGrab'){updateGrabButton();setHint();}
+  if(e.kind==='wallMiss')hint(t('Face a nearby standing wall.','Mira hacia un edificio cercano que siga en pie.'),2);
+  if(e.kind==='wallRip')callout(t('WALL RIPPED!','¡MURO ARRANCADO!'),.85);
   if(e.kind==='lift'){updateGrabButton();setHint();}
   if(e.kind==='liftMiss')hint(e.target==='car'?t('Face a nearby vehicle on the street.','Acércate a un vehículo y mira hacia él.'):t('Face someone nearby on the street.','Acércate a una persona y mira hacia ella.'),2.3);
   if(e.kind==='toss') {
-    updateGrabButton();callout(e.punched?t('POWER PUNCH!','¡PUÑETAZO!'):e.target==='car'?t('CAR TOSS!','¡AUTO AL AIRE!'):t('FLYING TOSS!','¡POR LOS AIRES!'),.9);
+    updateGrabButton();callout(e.punched?t('POWER PUNCH!','¡PUÑETAZO!'):e.target==='wall'?t('WALL HURL!','¡MURO AL AIRE!'):e.target==='car'?t('CAR TOSS!','¡AUTO AL AIRE!'):t('FLYING TOSS!','¡POR LOS AIRES!'),.9);
     el('hint').textContent='';hintUntil=0;
   }
   if(e.kind==='stomp'&&e.belly)callout(t('BELLY FLOP!','¡PLANCHAZO!'),1.05);
+  if(e.kind==='stomp'&&e.meteor)callout(t('METEOR DROP!','¡CAÍDA METEORO!'),.95);
   if(e.kind==='grab') {updateGrabButton();setHint();}
   if(e.kind==='grabMiss')hint(t('Face someone on the street and move closer.','Acércate a alguien en la calle y mira hacia esa persona.'),2.4);
   if(e.kind==='chomp'){
@@ -326,10 +349,10 @@ function showDialog(which){
   el('dialogActions').replaceChildren(...options.map(([label,fn])=>{const b=document.createElement('button');b.textContent=label;b.onclick=fn;return b;}));
   el('dialogActions').firstElementChild.focus({preventScroll:true});
 }
-const mapping={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',ArrowUp:'jump',KeyW:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyE:'grab',KeyC:'roar',KeyK:'roar'};
+const mapping={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',ArrowUp:'jump',KeyW:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyF:'extra',KeyR:'tear',KeyE:'grab',KeyC:'roar',KeyK:'roar'};
 function act(action){
   if(city.monster!=='nacho'&&action==='roar'&&city.charge<.999)hint(t('Roar is recharging. Smash a tower to charge it faster.','El rugido se recarga. Golpea una torre para cargarlo antes.'),2.6);
-  press(city,action);if(city.monster==='nacho')updateGrabButton();
+  press(city,action);updateGrabButton();
 }
 document.querySelectorAll('[data-action]').forEach(b=>{
   const action=b.dataset.action;buttons.set(action,b);
@@ -365,7 +388,6 @@ for(const value of ['easy','hard'])el(value).onclick=()=>{
 for(const id of ['skullwing','nacho'])el(id).onclick=()=>{
   monster=id;write('monster',id);reflectSelection();localize();
 };
-paintNachoPoster(el('nachoPoster'));
 el('launchCity').onclick=el('start').onclick=()=>{unlock();begin(selected);};
 el('pause').onclick=()=>showDialog('pause');
 el('controls').addEventListener('contextmenu',e=>e.preventDefault());

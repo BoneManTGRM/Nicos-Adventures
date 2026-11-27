@@ -26,43 +26,18 @@ export function grabTarget(s) {
   return target;
 }
 
-export function grabOrEat(s) {
-  const grip = s.actor.grip;
-  if (grip) {
-    if (grip.phase === 'lift') grip.eatQueued = true;
-    if (grip.phase === 'hold') { grip.phase = 'eat'; grip.age = 0; }
-    return;
-  }
-  const person = grabTarget(s);
-  if (!person) { s.events.push({kind: 'grabMiss'}); return; }
-  person.onStreet = false;
-  s.actor.grip = {person, phase: 'lift', age: 0, eatQueued: false};
-  s.events.push({kind: 'grab'});
-}
-
 export function stepPedestrians(s, dt) {
   for (const p of s.people) {
     if (!p.onStreet) continue;
     const near = Math.abs(s.actor.x - p.x) < 110 && Math.abs(s.actor.vx) > 16;
-    const speed = near ? p.pace * 3 : p.pace;
+    const alarm=near||s.actor.dive||s.actor.roar>.65;
+    p.panic=Math.max(0,(p.panic||0)-dt);
+    if(alarm&&Math.abs(s.actor.x-p.x)<120)p.panic=.9;
+    if(p.panic>0&&Math.abs(p.x-p.home)<p.span*.8)p.dir=Math.sign(p.x-s.actor.x)||p.dir;
+    const speed = p.panic>0 ? p.pace * 3 : p.pace;
     p.x += p.dir * speed * dt;
     if (p.x >= p.home + p.span) { p.x = p.home + p.span; p.dir = -1; }
     if (p.x <= p.home - p.span) { p.x = p.home - p.span; p.dir = 1; }
-    p.stride += dt * (near ? 13 : 5);
-  }
-  const g = s.actor.grip;
-  if (!g || g.phase === 'hold') return;
-  const previousAge = g.age;
-  g.age += dt;
-  if (g.phase === 'lift' && g.age >= LIFT) {
-    g.phase = g.eatQueued ? 'eat' : 'hold'; g.age = 0;
-  } else if (g.phase === 'eat') {
-    if (previousAge < BITE && g.age >= BITE && !s.outcome && !s.finishWait) {
-      const healed = !!s.defense && s.defense.hp < s.defense.maxHp;
-      if (healed) s.defense.hp++;
-      s.score += BITE_POINTS;
-      s.events.push({kind: 'chomp', points: BITE_POINTS, healed});
-    }
-    if (g.age >= RELEASE) s.actor.grip = null;
+    p.stride += dt * (p.panic>0 ? 13 : 5);
   }
 }

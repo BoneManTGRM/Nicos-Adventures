@@ -1,5 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {cities} from '../public/games/skullwing/cities.mjs';
+import {carryAnchor} from '../public/games/skullwing/nacho-moves.mjs';
 import {newCity,press,step} from '../public/games/skullwing/simulation.mjs';
 
 const idle={right:false,left:false,jump:false,attack:false};
@@ -147,6 +148,23 @@ describe('Nacho the heavyweight luchador',()=>{
     press(s,'jump');advance(s,.10);press(s,'attack');advance(s,.9);
     expect(Object.values(s.wrecks).reduce((sum,n)=>sum+n,0)).toBeGreaterThan(0);
   });
+  it.each(['grab','roar'])('reaches down, then raises the held target continuously with %s',action=>{
+    const s=newCity(0,'easy','nacho');
+    press(s,action);
+    const start=carryAnchor(s.actor);
+    advance(s,.075);
+    expect(carryAnchor(s.actor)).toEqual(start);
+    let previous=start;
+    for(let tick=0;tick<54;tick++){
+      advance(s,1/120);
+      const current=carryAnchor(s.actor);
+      expect(current.y).toBeGreaterThanOrEqual(previous.y-.001);
+      expect(Math.hypot(current.x-previous.x,current.y-previous.y)).toBeLessThan(8);
+      previous=current;
+    }
+    expect(s.actor.haul.phase).toBe('hold');
+    expect(previous.y-start.y).toBeGreaterThan(85);
+  });
   it('can lift a car, jump, turn and throw it into a building',()=>{
     const s=newCity(0,'easy','nacho'),car=s.cars[0];
     press(s,'grab');advance(s,.4);expect(s.actor.haul.target).toBe(car);
@@ -183,4 +201,56 @@ it.each([['grab','car'],['roar','person']])('Nacho can punch a held %s object aw
   press(s,action);advance(s,.45);press(s,'attack');advance(s,.03);
   expect(s.actor.haul).toBeNull();
   expect(events(s,'toss')[0]).toMatchObject({target:kind,punched:true});
+});
+
+describe.each(['skullwing','nacho'])('%s shared monster moves',monster=>{
+  it.each(['car','person'])('gives a grabbed %s both an eat and a throw outcome',kind=>{
+    const skull=monster==='skullwing';
+    for(const choice of ['eat','throw']){
+      const s=newCity(0,'hard',monster);
+      s.defense.hp=3;
+      const target=kind==='car'?s.cars[0]:s.people[0];
+      const pickup=skull?(kind==='car'?'extra':'grab'):(kind==='car'?'grab':'roar');
+      press(s,pickup);
+      expect(s.actor.haul.target).toBe(target);
+      const finish=choice==='eat'?(skull?'grab':'extra'):(skull?'extra':pickup);
+      press(s,finish);press(s,finish);
+      advance(s,.69);
+      if(choice==='throw'){
+        expect(events(s,'toss')).toHaveLength(1);
+        expect(kind==='car'?target.state==='airborne':!!target.toss).toBe(true);
+      }else{
+        advance(s,.64);
+        expect(s.score).toBe(kind==='car'?125:75);
+        expect(s.defense.hp).toBe(4);
+        expect(events(s,'chomp')).toHaveLength(1);
+        expect(kind==='car'?!s.cars.includes(target):!target.onStreet).toBe(true);
+      }
+      expect(s.actor.haul).toBeNull();
+    }
+  });
+  it('tears a matching facade section and hurls it, damaging the next wall',()=>{
+    const s=newCity(0,'easy',monster),first=s.buildings[0],next=s.buildings[1];
+    const health=first.hp;
+    press(s,'tear');expect(first.hp).toBe(health);
+    advance(s,.53);
+    const held=s.actor.haul;
+    expect(held.kind).toBe('wall');expect(held.target.detached).toBe(true);
+    expect(first.hp).toBe(health-1);expect(first.damageSites.at(-1).chunk).toBe(held.target);
+    if(monster==='nacho')press(s,'extra');else press(s,'grab');
+    expect(held.phase).toBe('hold');
+    s.actor.x=next.x-next.w/2-120;
+    press(s,'tear');advance(s,.19);
+    expect(s.chunks).toHaveLength(1);expect(s.actor.haul).toBeNull();
+    advance(s,1.4);
+    expect(s.chunks).toHaveLength(0);expect(next.hp).toBeLessThan(next.maxHp);
+  });
+});
+it('Skullwing winds up in the air and lands a Meteor Drop on the tower',()=>{
+  const s=newCity(0,'easy','skullwing'),b=s.buildings[0];s.actor.x=b.x;
+  press(s,'jump');advance(s,.29,{...idle,jump:true});press(s,'attack');
+  expect(s.actor.flopWindup).toBeGreaterThan(0);
+  advance(s,.9);
+  expect(events(s,'stomp').some(e=>e.meteor&&e.y===b.h)).toBe(true);
+  expect(b.hp).toBe(0);
 });

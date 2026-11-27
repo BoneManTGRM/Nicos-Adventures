@@ -5,8 +5,7 @@ test("Skullwing accepts touch and keyboard attacks and returns to city selection
   const touch = info.project.use.hasTouch === true;
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
-  // Exercise the normal game path. The original illustration can also play
-  // every move if the painted sheet fails to load.
+  // Exercise the normal game path. Verify the new full-body and street art are painted in the playfield.
   await page.addInitScript(() => {
     const prototype = CanvasRenderingContext2D.prototype;
     const original = prototype.drawImage;
@@ -15,10 +14,10 @@ test("Skullwing accepts touch and keyboard attacks and returns to city selection
         const image = args[0];
         if (ctx.canvas.id === "world" && image instanceof HTMLImageElement && image.naturalWidth) {
           const flags = ctx.canvas.dataset;
-          if (image.currentSrc.endsWith("/skullwing-painted.webp")) flags.paintedCharacterSeen = "yes";
-          if (image.currentSrc.endsWith("/skullwing-hindlegs.webp")) flags.paintedLegsSeen = "yes";
+          if (image.currentSrc.endsWith("/skullwing-street.webp")) flags.paintedCharacterSeen = "yes";
+          if (image.currentSrc.endsWith("/street-people.webp")) flags.paintedPeopleSeen = "yes";
           if (image.currentSrc.endsWith("/vehicles.webp")) flags.paintedVehiclesSeen = "yes";
-          if (flags.paintedCharacterSeen && flags.paintedLegsSeen && flags.paintedVehiclesSeen) prototype.drawImage = original;
+          if (flags.paintedCharacterSeen && flags.paintedPeopleSeen && flags.paintedVehiclesSeen) prototype.drawImage = original;
         }
         return Reflect.apply(target, ctx, args);
       },
@@ -28,7 +27,7 @@ test("Skullwing accepts touch and keyboard attacks and returns to city selection
   const start = page.getByRole("button", { name: spanish ? "Aplasta la ciudad" : "Smash the city" });
   await start.click();
   await expect(page.locator("#world")).toHaveAttribute("data-painted-character-seen", "yes");
-  await expect(page.locator("#world")).toHaveAttribute("data-painted-legs-seen", "yes");
+  await expect(page.locator("#world")).toHaveAttribute("data-painted-people-seen", "yes");
   await expect(page.locator("#world")).toHaveAttribute("data-painted-vehicles-seen", "yes");
   const roar = page.locator('[data-action="roar"]');
   if (touch) {
@@ -129,15 +128,33 @@ test("Skullwing picks up a pedestrian and eats on a second press", async ({ page
 
 test("select Nacho, throw traffic and people, then belly flop", async ({page}, info)=>{
   const es=info.project.metadata.language==="es-MX";
+  await page.addInitScript(() => {
+    const proto = CanvasRenderingContext2D.prototype;
+    const original = proto.drawImage;
+    proto.drawImage = new Proxy(original, {
+      apply(target, ctx: CanvasRenderingContext2D, args) {
+        const image = args[0];
+        if (ctx.canvas.id === "world" && image instanceof HTMLImageElement) {
+          const match = image.currentSrc.match(/\/nacho-(stride|combat|splash|landing)\.webp$/);
+          if (match) ctx.canvas.setAttribute("data-nacho-" + match[1], "yes");
+        }
+        return Reflect.apply(target, ctx, args);
+      },
+    });
+  });
   await page.goto("/games/skullwing/?mode=easy&lang="+(es?"es-MX":"en"));
   await page.getByRole("button",{name:"Nacho",exact:true}).click();
   await expect(page.locator("#nacho")).toHaveAttribute("aria-pressed","true");
+  await expect(page.locator("img#nachoPoster")).toBeVisible();
   await page.locator("#start").click();
+  const world = page.locator("#world");
+  await expect(world).toHaveAttribute("data-nacho-stride","yes");
   const move=(action:string,key:string)=>info.project.use.hasTouch?page.locator('[data-action="'+action+'"]').tap():page.keyboard.press(key);
   await move("grab","e");
   await expect(page.locator('[data-action="grab"]')).toHaveAccessibleName(es?"Lanzar auto":"Throw car");
   await move("grab","e");
   await expect(page.locator("#wreckCount")).toBeVisible();
+  await expect(world).toHaveAttribute("data-nacho-combat","yes");
   await move("roar","c");
   await expect(page.locator('[data-action="roar"]')).toHaveAccessibleName(es?"Lanzar persona":"Throw person");
   await move("roar","c");
@@ -146,4 +163,28 @@ test("select Nacho, throw traffic and people, then belly flop", async ({page}, i
   await expect(page.locator("#smashName")).toHaveText(es?"Plancha":"Flop");
   await move("attack","x");
   await expect(page.locator("#callout")).toContainText(es?"PLANCHAZO":"BELLY FLOP");
+  await expect(world).toHaveAttribute("data-nacho-splash","yes");
+  await expect(world).toHaveAttribute("data-nacho-landing","yes");
 });
+
+for (const monster of ["skullwing","nacho"]) {
+  test(monster+" rips a standing tower, hurls the wall and eats a car",async({page},info)=>{
+    const es=info.project.metadata.language==="es-MX";
+    await page.goto("/games/skullwing/?monster="+monster+"&mode=easy&lang="+(es?"es-MX":"en"));
+    const start=page.locator("#start");
+    const move=(action:string,key:string)=>info.project.use.hasTouch?page.locator('[data-action="'+action+'"]').tap():page.keyboard.press(key);
+    await start.click();
+    await move("tear","r");
+    await expect(page.locator("#callout")).toContainText(es?"MURO ARRANCADO":"WALL RIPPED");
+    await expect(page.locator("#tearName")).toHaveText(es?"Lanzar":"Hurl");
+    await move("tear","r");
+    await expect(page.locator("#tearName")).toHaveText(es?"Arrancar":"Rip wall");
+    await page.locator("#pause").click();
+    await page.getByRole("button",{name:es?"Elegir ciudad":"City select"}).click();
+    await start.click();
+    await move(monster==="nacho"?"grab":"extra",monster==="nacho"?"e":"f");
+    await move(monster==="nacho"?"extra":"grab",monster==="nacho"?"f":"e");
+    await expect(page.locator("#score")).toHaveText("125");
+    await expect(page.locator("#wreckCount")).toContainText("1");
+  });
+}

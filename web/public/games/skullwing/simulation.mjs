@@ -1,5 +1,6 @@
-import {liftOrThrow,releaseHaul,punchPeople,stepNacho} from './nacho-moves.mjs';
-import {makePedestrians,grabOrEat,stepPedestrians} from './pedestrians.mjs';
+import {liftOrThrow,releaseHaul,punchPeople,stepHauls,chooseHeld} from './nacho-moves.mjs';
+import {makePedestrians,stepPedestrians} from './pedestrians.mjs';
+import {grabWall,stepFlyingWalls} from './wall-tear.mjs';
 import {cities} from './cities.mjs';
 import {makeDefense,stepDefense,disruptDrone} from './defense.mjs';
 import {makeTraffic,hitTraffic,stepTraffic} from './traffic.mjs';
@@ -39,14 +40,14 @@ export function newCity(district,difficulty='easy',monster='skullwing') {
     x:77,y:0,vx:0,vy:0,face:1,turn:0,walk:0,stride:0,idle:0,grounded:true,support:null,
     coyote:.09,jumpBuffer:0,jumpHeld:false,airFlaps:1,flight:0,glide:0,dive:false,
     haul:null,throwPose:0,splashPose:0,flopTilt:0,flopWindup:0,grip:null,swipe:0,hand:0,roar:0,land:0,flap:0,slide:0,attackWait:0
-  },wrecks:{car:0,police:0,tank:0},score:0,cleared:0,combo:0,maxCombo:0,chainClock:0,charge:1,waves:[],events:[],done:false,finishWait:0};
+  },wrecks:{car:0,police:0,tank:0},score:0,cleared:0,combo:0,maxCombo:0,chainClock:0,charge:1,chunks:[],waves:[],events:[],done:false,finishWait:0};
 }
 function emit(s,kind,props={}) {s.events.push({kind,district:s.district,...props});}
-function hitBuilding(s,b,amount,direction,worldX,height,style) {
+function hitBuilding(s,b,amount,direction,worldX,height,style,chunk) {
   if(b.hp<=0) return false;
   b.hp=Math.max(0,b.hp-amount); b.impact=1; b.tilt=direction; s.charge=clamp(s.charge+.05,0,1);
   b.hitX=clamp(worldX-b.x,-b.w*.49,b.w*.49);b.hitY=clamp(height,4,b.h-2);
-  b.breakStyle=style;b.damageSites.push({x:b.hitX,y:b.hitY,side:Math.sign(b.hitX)||-direction});
+  b.breakStyle=style;b.damageSites.push({x:b.hitX,y:b.hitY,side:Math.sign(b.hitX)||-direction,chunk});
   emit(s,'hit',{b,x:b.x+b.hitX,y:b.hitY,direction,style});s.score+=20;
   if(b.hp===0){
     b.fall=.0001;b.fallDir=direction||1;s.cleared++;s.combo=s.chainClock>0?s.combo+1:1;
@@ -62,6 +63,8 @@ function jump(s) {
   const a=s.actor;
   if(a.dive) return;
   if(a.grounded || a.coyote>0){
+    a.splashPose=0;a.throwPose=0;
+    if(s.monster==='nacho')a.swipe=0;
     a.vy=s.monster==='nacho'?550:425;a.grounded=false;a.support=null;a.coyote=0;a.airFlaps=1;a.flap=.7;
     emit(s,'leap',{x:a.x,y:a.y});
   }else if(s.monster!=='nacho'&&a.airFlaps>0){
@@ -70,16 +73,19 @@ function jump(s) {
 }
 function swing(s) {
   const a=s.actor;
-  if(a.dive || a.attackWait>0) return;
+  if(a.dive || a.attackWait>0 || a.haul?.phase==='eat' || a.haul?.phase==='tear') return;
   if(!a.grounded) {
     if(s.monster==='nacho'){
       if(a.haul)releaseHaul(s);
       a.vx+=a.face*95;
       a.flopWindup=.13;
       a.vy=Math.max(85,Math.min(a.vy,235));
-    }else a.vy=Math.min(a.vy,-370);
+    }else{
+      a.flopWindup=.105;a.vy=Math.min(165,Math.max(65,a.vy));a.vx+=a.face*65;
+    }
     a.dive=true;a.attackWait=.22;emit(s,'dive',{x:a.x,y:a.y});return;
   }
+  if(s.monster==='nacho'){a.splashPose=0;a.throwPose=0;}
   a.swipe=1;a.hand=1-a.hand;a.attackWait=.34;
   if(s.monster==='nacho' && a.haul){
     const item=a.haul.kind;
@@ -99,10 +105,21 @@ export function press(s,action){
   if(s.done || s.outcome || s.finishWait>0) return;
   const a=s.actor;
   if(action==='jump'){a.jumpHeld=true;jump(s);}
-  if(s.monster==='nacho' && (action==='grab'||action==='roar')){
-    liftOrThrow(s,action==='grab'?'car':'person');return;
+  if(action==='tear'){
+    if(a.haul?.kind==='wall')chooseHeld(s,'throw');else grabWall(s);
+    return;
   }
-  if(action==='grab') grabOrEat(s);
+  if(action==='extra'){
+    if(s.monster==='nacho')chooseHeld(s,'eat');
+    else if(a.haul)chooseHeld(s,'throw');else liftOrThrow(s,'car');
+    return;
+  }
+  if(action==='grab'){
+    if(s.monster==='nacho')liftOrThrow(s,'car');
+    else if(a.haul)chooseHeld(s,'eat');else liftOrThrow(s,'person');
+    return;
+  }
+  if(action==='roar'&&s.monster==='nacho'){liftOrThrow(s,'person');return;}
   if(action==='attack') swing(s);
   if(action==='roar' && s.charge>=.999 && !a.dive){
     s.charge=0;a.roar=1;s.waves.push({x:a.x,y:a.y+68,age:0,hit:new Set(),vehicles:new Set()});
@@ -115,12 +132,12 @@ function land(s,roof,impactSpeed){
   a.land=stomp?1:clamp(impactSpeed/600,.2,.74);
   const belly=stomp&&s.monster==='nacho';
   const impactX=a.x+(belly?a.face*18:0);
-  if(belly)a.splashPose=1;
-  emit(s,stomp?'stomp':'land',{x:impactX,y:a.y,power:a.land,belly});
+  if(stomp)a.splashPose=1;
+  emit(s,stomp?'stomp':'land',{x:impactX,y:a.y,power:a.land,belly,meteor:stomp&&!belly});
   if(stomp){
     let brokeFloor=false;
     for(const b of s.buildings){
-      if(Math.abs(b.x-impactX)>b.w/2+(belly?110:80) || b.h+40<a.y) continue;
+      if(Math.abs(b.x-impactX)>b.w/2+(belly?110:100) || b.h+40<a.y) continue;
       hitBuilding(s,b,belly?4:3,Math.sign(b.x-impactX)||a.face,impactX,a.y+8,'stomp');
       if(b===roof&&b.hp===0) brokeFloor=true;
     }
@@ -163,7 +180,7 @@ export function step(s,input,dt) {
     const old=a.y;
     if(a.flopWindup>0){
       a.flopWindup=Math.max(0,a.flopWindup-dt);
-      a.vy=a.flopWindup>0?a.vy-dt*780:-390;
+      a.vy=a.flopWindup>0?a.vy-dt*780:(s.monster==='nacho'?-390:-575);
     }else a.vy=Math.max(gliding?-75:-780,a.vy-dt*(a.dive?1880:gliding?300:a.jumpHeld?730:1080));
     a.y+=a.vy*dt;
     if(a.vy<=0){
@@ -205,7 +222,8 @@ export function step(s,input,dt) {
     }
     if(b.fall>=1){b.ruin=true;emit(s,'settle',{x:b.x,y:6,w:b.w});}
   }
-  if(s.monster==='nacho')stepNacho(s,dt);
+  stepHauls(s,dt,hitBuilding);
+  if(s.chunks.length)stepFlyingWalls(s,dt,hitBuilding,hitTraffic);
   stepTraffic(s,dt,hitBuilding);
   stepDefense(s,dt);
   if(!s.outcome)stepPedestrians(s,dt);

@@ -15,7 +15,7 @@
  </header>
  <div id="menu">
   <section class="cover">
-   <div class="cover-art"></div><canvas id="nachoPoster" width="420" height="360" aria-hidden="true" hidden></canvas><div class="cover-ink"></div>
+   <div class="cover-art"></div><img id="skullPoster" src="./skullwing-champion.webp" alt="" decoding="async"><img id="nachoPoster" src="./nacho-champion.webp" alt="" decoding="async" hidden><div class="cover-ink"></div>
    <div class="hero-copy"><h1 id="heroTitle" aria-label="Skullwing"><span id="heroFirst">SKULL</span><strong id="heroLast">WING</strong></h1>
    <div id="fighters" class="fighters" role="group" aria-label="Choose your monster"><button id="skullwing" type="button" aria-pressed="true">Skullwing</button><button id="nacho" type="button" aria-pressed="false">Nacho</button></div>
    <div id="modes" class="modes" role="group" aria-label="Difficulty"><button id="easy" type="button" aria-pressed="true">Easy</button><button id="hard" type="button" aria-pressed="false">Hard</button></div>
@@ -29,7 +29,7 @@
   <div id="stage"><canvas id="world" aria-label="City destruction playfield"></canvas><div id="mapHud"><div id="minimap" aria-hidden="true"></div><span id="clearCount"></span><span id="wreckCount" hidden></span></div><div id="health" role="status" aria-live="polite" hidden><span id="hearts" aria-hidden="true"></span><span id="hpText"></span></div><div id="combo" hidden></div><div id="callout" aria-live="polite"></div>
   <div id="hint"></div></div>
   <div id="controls"><div class="pad move-pad"><button data-action="left" aria-label="Move left"><span class="chev left"></span></button><button data-action="right" aria-label="Move right"><span class="chev"></span></button></div>
-   <div class="pad ability-pad"><button data-action="jump"><i class="symbol wing-icon" aria-hidden="true">⌁</i><span id="jumpName">Flap</span></button><button data-action="attack"><i class="symbol claw-icon" aria-hidden="true">Ⅲ</i><span id="smashName">Smash</span></button><button data-action="grab" aria-keyshortcuts="E"><i class="symbol grab-icon" aria-hidden="true"></i><span id="grabName">Grab</span></button><button data-action="roar" aria-keyshortcuts="C"><i class="symbol roar-icon" aria-hidden="true">◎</i><span id="roarName">Roar</span><b id="chargeBar"></b></button></div>
+   <div class="pad ability-pad"><button data-action="jump"><i class="symbol wing-icon" aria-hidden="true">⌁</i><span id="jumpName">Flap</span></button><button data-action="attack"><i class="symbol claw-icon" aria-hidden="true">Ⅲ</i><span id="smashName">Smash</span></button><button data-action="grab" aria-keyshortcuts="E"><i class="symbol grab-icon" aria-hidden="true"></i><span id="grabName">Grab</span></button><button data-action="roar" aria-keyshortcuts="C"><i class="symbol roar-icon" aria-hidden="true">◎</i><span id="roarName">Roar</span><b id="chargeBar"></b></button><button data-action="extra" aria-keyshortcuts="F"><i class="symbol" aria-hidden="true">✦</i><span id="extraName">Car</span></button><button data-action="tear" aria-keyshortcuts="R"><i class="symbol" aria-hidden="true">▦</i><span id="tearName">Rip wall</span></button></div>
   </div>
  </section>
  <div id="veil" hidden><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"><div class="dialog-band"></div><small id="dialogDistrict"></small><h2 id="dialogTitle"></h2><p id="dialogText"></p><div id="results" hidden></div><div id="dialogActions"></div></section></div>

@@ -37,7 +37,7 @@
 #app[data-monster=nacho]{--acid:#ffd16e}
 #app[data-monster=nacho] .fighters [aria-pressed=true]{background:#ffd16e;border-color:#ffe6b0}
 #app[data-monster=nacho] .cover-art{background-image:linear-gradient(110deg,#29102277,transparent 63%),url('./caldera.webp');background-position:center}
-#nachoPoster{position:absolute;right:8%;bottom:2%;width:min(52vw,580px);height:94%;object-fit:contain;object-position:right bottom;z-index:-1;filter:drop-shadow(4px 8px 1px #2c1738a8);pointer-events:none}
+#nachoPoster{position:absolute;right:8%;bottom:2%;width:49%;height:94%;object-fit:contain;object-position:center bottom;z-index:-1;filter:drop-shadow(4px 8px 1px #2c1738a8);pointer-events:none}
 #app[data-monster=nacho] .hero-copy{position:relative;z-index:1}
 #app[data-monster=nacho] .roar-icon,#app[data-monster=nacho] .grab-icon,#app[data-monster=nacho] .claw-icon,#app[data-monster=nacho] .wing-icon{display:block;width:21px;height:17px;background:currentColor;font-size:0}
 #app[data-monster=nacho] .wing-icon{clip-path:polygon(32% 100%,32% 52%,5% 63%,50% 0,96% 62%,68% 52%,68% 100%)}
@@ -47,4 +47,18 @@
 #app[data-monster=nacho] .ability-pad .carrying{color:#32223a;background:#ffcb73;border-color:#ffe7a6}
 #app[data-monster=nacho] .ability-pad .carrying i{clip-path:polygon(0 57%,56% 42%,45% 15%,100% 35%,66% 82%,64% 57%,8% 84%)}
 #app[data-monster=nacho] [aria-disabled=true]{opacity:.65}
-@media(max-width:620px){#nachoPoster{width:78%;height:68%;right:-8%;bottom:24%;object-position:right top}.fighters{margin-top:14px}.fighters button{padding:6px 11px}.hero-copy{max-width:100%}#app[data-monster=nacho] .cover-ink{background:linear-gradient(90deg,#151022b8,transparent 77%),linear-gradient(0deg,#121223 1%,transparent 85%)}}
+@media(max-width:620px){#nachoPoster{width:51%;height:89%;right:1%;bottom:5%;object-position:center center}#app[data-monster=nacho] .hero-copy{width:49%;padding-inline:12px 2px}#app[data-monster=nacho] h1{font-size:clamp(2.6rem,12vw,4.45rem)}#app[data-monster=nacho] .fighters{gap:3px}#app[data-monster=nacho] .fighters button{padding-inline:7px}#app[data-monster=nacho] .main-button{padding-inline:10px}.fighters{margin-top:14px}.fighters button{padding:6px 11px}.hero-copy{max-width:100%}#app[data-monster=nacho] .cover-ink{background:linear-gradient(90deg,#151022b8,transparent 77%),linear-gradient(0deg,#121223 1%,transparent 85%)}}
+
+#app[data-monster=skullwing] .cover-art{background-image:url('./harbor.webp');background-position:center}
+#skullPoster{position:absolute;z-index:-1;right:2%;bottom:4%;width:62%;height:95%;object-fit:contain;object-position:right center;filter:drop-shadow(0 9px 9px #16102c66);pointer-events:none}
+.ability-pad [data-action=extra]{color:#ffe2a8;background:#493823;border-color:#866a40}
+.ability-pad [data-action=tear]{color:#d1e6ff;background:#283e54;border-color:#526e8a}
+.ability-pad [aria-disabled=true]{opacity:.64}
+@media(max-width:660px) and (orientation:portrait){
+  #controls{padding:7px 9px max(8px,env(safe-area-inset-bottom));gap:8px}
+  .ability-pad{display:grid;grid-template-columns:repeat(3,minmax(44px,1fr));flex:1;max-width:252px;gap:5px}
+  .ability-pad button{width:100%;min-height:44px;height:44px;padding:2px;gap:1px}
+  .move-pad button{width:clamp(44px,12vw,64px);height:72px}
+  #skullPoster{width:61%;height:76%;bottom:15%;right:0}
+}
+@media(orientation:landscape) and (max-height:570px){.ability-pad button{width:clamp(48px,7.6vw,76px);min-width:44px}}

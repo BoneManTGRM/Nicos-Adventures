@@ -1,3 +1,6 @@
+import {crowdFrames} from './monster-frames.mjs';
+const atlas=typeof Image==='function'?new Image():null;
+if(atlas)atlas.src=new URL('./street-people.webp',import.meta.url).href;
 const outfits = [
   ['#f7c845','#b16d2e','#9e563a','#253b69'],
   ['#61d7d0','#318485','#ecc49b','#58314e'],
@@ -9,6 +12,15 @@ const outfits = [
 
 // The origin is at the soles so the same figure can stand on the street or in a hand.
 export function drawPerson(c, p, stride, held = false) {
+  if(atlas?.complete&&atlas.naturalWidth){
+    const phase=Math.sin(stride),row=held?2:phase>=0?0:1;
+    const [x,y,w,h]=crowdFrames[row*4+p.style%4],height=held?23:p.panic?24:22;
+    const width=w*height/h;
+    c.save();c.scale(held?1:p.dir,1);
+    c.translate(0,-Math.abs(Math.cos(stride))*(held?.45:p.panic?1.1:.45));
+    c.rotate(held?Math.sin(stride)*.075:phase*(p.panic?.045:.022));
+    c.drawImage(atlas,x,y,w,h,-width*.50,-height,width,height);c.restore();return;
+  }
   const [shirt, shade, skin, pants] = outfits[p.style];
   const gait = Math.sin(stride), bob = Math.abs(Math.cos(stride)) * .6;
   c.save(); c.scale(held ? 1 : p.dir, 1); c.translate(0, -bob);
