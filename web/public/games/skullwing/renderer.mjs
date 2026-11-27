@@ -1,3 +1,5 @@
+import {drawStreetPeople} from './pedestrian-art.mjs';
+import {grabTarget} from './pedestrians.mjs';
 import {drawDefense} from './defense-art.mjs';
 import {drawStructure} from './demolition-art.mjs';
 import {drawVehicle} from './vehicle-art.mjs';
@@ -77,6 +79,7 @@ export class Renderer {
     for(const car of s.cars){
       if(car.x>=camera-55&&car.x<=camera+W+55)drawVehicle(c,car,t,this.reduced);
     }
+    drawStreetPeople(c,s.people,a.grip ? null : grabTarget(s),camera,W,t,this.reduced);
     if(s.defense)drawDefense(c,s,this.reduced,'back');
     const shadeHeight=a.support?.h||0;
     c.fillStyle='rgba(15,13,28,.37)';c.beginPath();c.ellipse(a.x,-shadeHeight+2,Math.max(11,40-(a.y-shadeHeight)*.09),5,0,0,Math.PI*2);c.fill();
@@ -92,12 +95,19 @@ export class Renderer {
     }
     c.save();c.translate(a.x,-a.y);
     this.turnFace+=(a.face-this.turnFace)*(1-Math.exp(-17*dt));
-    c.scale(.54+.46*Math.abs(this.turnFace)+a.land*.045,1-a.land*.07);
+    const bodyWidth=.54+.46*Math.abs(this.turnFace)+a.land*.045, bodyHeight=1-a.land*.07;
+    const facing=Math.sign(this.turnFace)||a.face;
+    c.scale(bodyWidth,bodyHeight);
     if(s.outcome==='defeat'){
       const knee=Math.min(1,(s.downTime||0)*1.65);
       c.rotate(a.face*knee*(this.reduced?.13:.52));c.scale(1,1-knee*.26);
     }
-    drawRex(c,{time:t,walk:a.walk,facing:Math.sign(this.turnFace)||a.face,air:a.flight,slam:a.dive?1:a.land,swipe:a.swipe,roar:a.roar,charge:s.charge,reduced:this.reduced,glide:a.glide,flap:a.flap,stride:a.stride,hand:a.hand,slide:a.slide});
+    const grip=a.grip;
+    const groundHand=grip?.phase==='lift' ? {
+      x:(grip.person.x-a.x)*facing/bodyWidth,
+      y:(a.y+3)/bodyHeight-9
+    } : null;
+    drawRex(c,{grip,groundHand,time:t,walk:a.walk,facing,air:a.flight,slam:a.dive?1:a.land,swipe:a.swipe,roar:a.roar,charge:s.charge,reduced:this.reduced,glide:a.glide,flap:a.flap,stride:a.stride,hand:a.hand,slide:a.slide});
     c.restore();
     this.smashFX.draw(c,dt,v);
     for(const wave of s.waves){

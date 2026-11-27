@@ -111,3 +111,18 @@ test("all cities are selectable and Hard can defeat and restart Skullwing", asyn
   await expect(page.locator("#districtName")).toHaveText(spanish ? "Ciudad Orbital" : "Orbit City");
   expect(errors).toEqual([]);
 });
+
+test("Skullwing picks up a pedestrian and eats on a second press", async ({ page }, info) => {
+  const es = info.project.metadata.language === "es-MX";
+  await page.goto("/games/skullwing/?mode=easy&lang=" + (es ? "es-MX" : "en"));
+  await page.locator("#start").click();
+  const button = page.locator('[data-action="grab"]');
+  const useMove = () => info.project.use.hasTouch ? button.tap() : page.keyboard.press("e");
+  await expect(button).toHaveAccessibleName(es ? "Agarrar" : "Grab");
+  await useMove();
+  await expect(button).toHaveAccessibleName(es ? "Comer" : "Eat");
+  await expect(page.locator("#score")).toHaveText("0");
+  await useMove();
+  await expect(page.locator("#score")).toHaveText("75");
+  await expect(button).toHaveAccessibleName(es ? "Agarrar" : "Grab");
+});

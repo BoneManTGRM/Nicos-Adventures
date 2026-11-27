@@ -70,6 +70,8 @@ function effect(e){
   if(e.kind==='floorImpact'&&city.time-floorStamp>.095){
     floorStamp=city.time;crunch(.24,1250,.11);tone(102,38,.19,.057,'triangle');
   }
+  if(e.kind==='grab')tone(230,400,.13,.032,'triangle');
+  if(e.kind==='chomp'){tone(260,94,.10,.05,'square');tone(370,620,.16,.035,'triangle',.09);}
   if(e.kind==='swing')tone(e.hit?160:250,e.hit?43:100,.115,.039,'triangle');
   if(e.kind==='stomp'){tone(110,29,.31,.10,'sine');tone(154,41,.14,.04,'triangle');}
   if(e.kind==='land')tone(82,42,.12,.028,'sine');
@@ -129,7 +131,7 @@ function localize(){
   buttons.get('right')?.setAttribute('aria-label',t('Move right','Mover a la derecha'));
   el('world').setAttribute('aria-label',t('City destruction playfield','Ciudad para demoler'));
   el('modes').setAttribute('aria-label',t('Difficulty','Dificultad'));
-  updateDifficulty();audibleLabel();makeCards();
+  updateGrabButton();updateDifficulty();audibleLabel();makeCards();
   if(city){el('districtName').textContent=names()[city.district];if(mode==='play'){setHint();hud();}}
   if(dialog)showDialog(dialog);
 }
@@ -151,8 +153,9 @@ function clearInput(){keys.clear();pointers.clear();syncInput();}
 function hint(text,seconds){el('hint').textContent=text;hintUntil=(city?.time||0)+seconds;}
 function setHint(){
   const touch=matchMedia('(pointer: coarse)').matches;
-  if(city.defense&&helpStage===0)hint(t('See the amber target? Move or jump to dodge.','¿Ves la mira ámbar? Muévete o salta para esquivar.'),7);
-  else if(helpStage===0)hint(t(touch?'Hold Smash near a car to send it into a tower.':'Move with ← → or A / D. Hold X to punch cars and towers.',touch?'Mantén Golpe junto a un auto para lanzarlo contra una torre.':'Muévete con ← → o A / D. Mantén X para golpear.'),8);
+  if(city.actor.grip)hint(t(touch?'Tap Eat to take a bite.':'Press E again to eat.',touch?'Toca Comer para dar una mordida.':'Pulsa E otra vez para comer.'),6);
+  else if(city.defense&&helpStage===0)hint(t('See the amber target? Move or jump to dodge.','¿Ves la mira ámbar? Muévete o salta para esquivar.'),7);
+  else if(helpStage===0)hint(t(touch?'Tap Grab beside a person, then tap Eat.':'Move with ← → or A / D. Press E near a person, then E to eat.',touch?'Toca Agarrar junto a alguien y luego toca Comer.':'Muévete con ← → o A / D. Pulsa E para agarrar y otra vez para comer.'),8);
   else if(helpStage===1)hint(t(touch?'Tap Flap twice to fly. Hold it to glide.':'Tap Space twice to fly. Hold it to glide.',touch?'Toca Volar dos veces. Mantenlo para planear.':'Pulsa Espacio dos veces. Mantenlo para planear.'),6);
   else if(helpStage===2)hint(t(touch?'Tap Smash in midair to dive.':'Press X in midair to dive.',touch?'Toca Golpe en el aire para caer con fuerza.':'Pulsa X en el aire para caer con fuerza.'),5);
   else hint(t(touch?'Roar shakes every nearby building.':'Press C to roar through nearby buildings.',touch?'Ruge para sacudir los edificios cercanos.':'Pulsa C para sacudir los edificios cercanos.'),6);
@@ -168,7 +171,16 @@ function begin(index){
 function leave(){
   clearInput();closeDialog(false);city=null;setMode('menu');makeCards();el('start').focus({preventScroll:true});
 }
+function updateGrabButton(){
+  const holding=!!city?.actor.grip;
+  const label=holding?t('Eat','Comer'):t('Grab','Agarrar');
+  const button=buttons.get('grab');
+  if(el('grabName').textContent!==label)el('grabName').textContent=label;
+  button.classList.toggle('carrying',holding);
+  button.title=label+' (E)';
+}
 function hud(){
+  updateGrabButton();
   el('score').textContent=city.score.toLocaleString(es?'es-MX':'en-US');
   el('clearCount').textContent=city.cleared+' / '+city.buildings.length;
   el('clearCount').setAttribute('aria-label',t('Buildings down','Edificios derribados')+' '+el('clearCount').textContent);
@@ -196,6 +208,12 @@ function receive(e){
     if(e.b.landmark){
       const landmark=cities[city.district].landmark;callout(t(landmark.en,landmark.es)+' +250',1.2);
     }else if(e.combo>=2)callout(t('CHAIN REACTION','¡EN CADENA!')+' ×'+e.combo);
+  }
+  if(e.kind==='grab') {updateGrabButton();setHint();}
+  if(e.kind==='grabMiss')hint(t('Face someone on the street and move closer.','Acércate a alguien en la calle y mira hacia esa persona.'),2.4);
+  if(e.kind==='chomp'){
+    callout(t('CHOMP!','¡ÑAM!')+' +'+e.points+(e.healed?'  ♥ +1':''),1.1);
+    hintUntil=0;el('hint').textContent='';
   }
   if(e.kind==='ricochet')callout(t('CRASH BONUS +55','¡CHOQUE! +55'),.7);
   if(e.kind==='vehicleExplosion'){
@@ -237,8 +255,8 @@ function showDialog(which){
   el('dialogText').textContent=lost?
     t('Jump when a warning locks on, or roar to knock the drone out of the sky.','Cuando aparezca la mira, salta o ruge para derribar el dron.'):done?
     [t('Cars','Autos')+' '+tally.car,t('Police cruisers','Patrullas')+' '+tally.police,t('Tanks','Tanques')+' '+tally.tank].join(' · '):
-    t(touch?'Tap Flap twice to climb. Hold to glide. Smash in the air to dive.':'Arrows or A/D to move. Space to flap or glide, X to smash or dive, C to roar.',
-      touch?'Toca Volar dos veces para subir. Mantén para planear. Golpea en el aire para caer.':'Flechas o A/D para moverte. Espacio para volar o planear, X para golpear o caer, C para rugir.');
+    t(touch?'Tap Flap twice to climb. Hold to glide. Smash in the air to dive. Tap Grab by a person, then Eat.':'Arrows or A/D to move. Space to flap or glide, X to smash or dive, C to roar. Press E to grab, then E to eat.',
+      touch?'Toca Volar dos veces para subir. Mantén para planear. Golpea en el aire para caer. Toca Agarrar y luego Comer.':'Flechas o A/D para moverte. Espacio para volar o planear, X para golpear o caer, C para rugir. Pulsa E para agarrar y otra vez para comer.');
   el('results').hidden=!done&&!lost;
   if(lost)el('results').textContent=city.cleared+' / '+city.buildings.length+' '+t('buildings down','edificios derribados')+' · '+city.score+' '+t('points','puntos');
   if(done){
@@ -251,7 +269,7 @@ function showDialog(which){
   el('dialogActions').replaceChildren(...options.map(([label,fn])=>{const b=document.createElement('button');b.textContent=label;b.onclick=fn;return b;}));
   el('dialogActions').firstElementChild.focus({preventScroll:true});
 }
-const mapping={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',ArrowUp:'jump',KeyW:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyC:'roar',KeyK:'roar'};
+const mapping={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',ArrowUp:'jump',KeyW:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyE:'grab',KeyC:'roar',KeyK:'roar'};
 function act(action){
   if(action==='roar'&&city.charge<.999)hint(t('Roar is recharging. Smash a tower to charge it faster.','El rugido se recarga. Golpea una torre para cargarlo antes.'),2.6);
   press(city,action);

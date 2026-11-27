@@ -1,3 +1,5 @@
+import {drawPerson} from './pedestrian-art.mjs';
+import {CONTACT,LIFT,BITE,RELEASE} from './pedestrians.mjs';
 import * as painted from './painted-rig.mjs';
 
 // Skullwing is painted in local space, with the street at y = 0 and his nose facing right.
@@ -224,7 +226,29 @@ function skull(ctx, roar, blink, energy) {
   shape(ctx,'M -10 -22 L -5 -25 L 0 -26 M 3 -26 L 7 -25',null,'#fff9df',.95);
 }
 
-export function drawRex(ctx, {time=0,walk=0,facing=1,air=0,slam=0,swipe=0,roar=0,charge=0,reduced=false,glide=0,stride=time*10.2,flap=0,slide=0,hand=0} = {}) {
+function ease(value) {
+  const t=Math.min(1,Math.max(0,value));
+  return t*t*(3-2*t);
+}
+const mix=(from,to,t)=>from+(to-from)*t;
+
+function gripPose(grip,groundHand,bob) {
+  const {phase,age}=grip;
+  const carryX=53,carryY=-43+bob;
+  if(phase==='lift'){
+    const lift=ease((age-CONTACT)/(LIFT-CONTACT));
+    return {weight:ease(age/CONTACT),x:mix(groundHand.x,carryX,lift)+8*Math.sin(Math.PI*lift),
+      y:mix(groundHand.y,carryY,lift),curl:lift,jaw:0,tilt:.35*lift,size:1};
+  }
+  if(phase==='hold')return {weight:1,x:carryX,y:carryY,curl:1,jaw:0,tilt:.35,size:1};
+  const bite=ease(age/BITE),returning=ease((age-BITE)/(RELEASE-BITE));
+  const jaw=ease(age/.24)*(1-ease((age-BITE+.06)/.15));
+  return {weight:1-returning,x:mix(carryX,33,bite)+5*Math.sin(Math.PI*bite),
+    y:mix(carryY,-81+bob,bite),curl:1,jaw:jaw+.17*Math.sin(returning*Math.PI*2)**2,
+    tilt:.35+bite*.98,size:1-ease((age-BITE+.14)/.14)};
+}
+
+export function drawRex(ctx, {grip=null,groundHand=null,time=0,walk=0,facing=1,air=0,slam=0,swipe=0,roar=0,charge=0,reduced=false,glide=0,stride=time*10.2,flap=0,slide=0,hand=0} = {}) {
   const gait=walk*(reduced ? .68 : 1);
   const step=Math.sin(stride),lift=Math.cos(stride);
   const strike=Math.sin((1-swipe)*Math.PI)*swipe**.32;
@@ -237,6 +261,7 @@ export function drawRex(ctx, {time=0,walk=0,facing=1,air=0,slam=0,swipe=0,roar=0
   const downstroke=-flap*.88*Math.cos((1-flap)*Math.PI*1.65);
   const wingMotion=(wingIdle+downstroke)*(reduced ? .34 : 1);
   const bob=(Math.sin(time*2.6)*.9-Math.abs(lift)*2.5*gait+crush*4+brace*3)*(reduced ? .45 : 1);
+  const holding=grip ? gripPose(grip,groundHand,bob) : null;
   const lean=step*.035*gait+strike*.105+crush*.05-air*.06-brace*.14;
   ctx.save();ctx.scale(facing<0?-1:1,1);ctx.lineCap='round';ctx.lineJoin='round';
   if(painted.ready()) ctx.imageSmoothingQuality='medium';
@@ -253,9 +278,30 @@ export function drawRex(ctx, {time=0,walk=0,facing=1,air=0,slam=0,swipe=0,roar=0
   ctx.save();ctx.translate(0,bob);ctx.translate(-6,-45);ctx.rotate(lean);ctx.translate(6,45);
   body(ctx);
   ctx.save();ctx.translate(14+strike*3,-90+crush*2-voice*3);ctx.rotate(-voice*.17+strike*.07+Math.sin(time*2.8)*.014);
-  skull(ctx,voice+strike*.2,(time+1.7)%4.23,Math.max(charge,voice));ctx.restore();ctx.restore();
-  const handX=14-step*19*gait+air*11+frontHook*49-beat*14-backHook*6-brace*7;
-  const handY=-8-Math.max(0,lift)*12*gait-air*21-frontHook*52-beat*57-backHook*10;
-  arm(ctx,-11,-79+bob, -7-step*7*gait+frontHook*25-beat*11+air*4, -44+bob-frontHook*19-beat*4-air*6, handX,handY,true);
+  skull(ctx,Math.max(voice+strike*.2,holding?.jaw||0),(time+1.7)%4.23,Math.max(charge,voice));ctx.restore();ctx.restore();
+  let handX=14-step*19*gait+air*11+frontHook*49-beat*14-backHook*6-brace*7;
+  let handY=-8-Math.max(0,lift)*12*gait-air*21-frontHook*52-beat*57-backHook*10;
+  let elbowX=-7-step*7*gait+frontHook*25-beat*11+air*4,elbowY=-44+bob-frontHook*19-beat*4-air*6;
+  if(holding){
+    handX=mix(handX,holding.x,holding.weight);
+    handY=mix(handY,holding.y,holding.weight);
+    elbowX=mix(elbowX,12+holding.curl*9,holding.weight);
+    elbowY=mix(elbowY,-39+bob,holding.weight);
+  }
+  arm(ctx,-11,-79+bob,elbowX,elbowY,handX,handY,true);
+  if(holding && holding.size>0){
+    const reaching=grip.phase==='lift'&&grip.age<CONTACT;
+    ctx.save();
+    ctx.translate(reaching?groundHand.x:handX,reaching?groundHand.y+9:handY);
+    if(!reaching){
+      ctx.rotate(-holding.tilt);ctx.scale(holding.size,holding.size);ctx.translate(0,9);
+    }
+    drawPerson(ctx,grip.person,reaching?grip.person.stride:time*(reduced?5:15),!reaching);
+    if(!reaching){
+      oval(ctx,-2,-8.5,3.1,2.1,'#343958',-.2);
+      oval(ctx,-2.5,-9.3,2.3,.9,'#8891af',-.2);
+    }
+    ctx.restore();
+  }
   ctx.restore();
 }
