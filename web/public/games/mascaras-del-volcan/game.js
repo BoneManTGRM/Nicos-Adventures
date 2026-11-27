@@ -68,6 +68,7 @@
   let records=readObj('records2');if(!records||typeof records!=='object'||Array.isArray(records))records={};
   let tour=true, bout=null, paused=false, won=false, active=false, raf=0, previous=0, buffer=0, uiStamp='',announceUntil=0,tipKey='',tipUntil=0,shake=0;
   let particles=[],ghosts=[],ghostTime=0;const audio=new LuchaAudio({enabled:sound});const inputs=new Map(),buttons={};
+  let official,finishSeconds=0,awaitingResult=false;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const t=k=>strings[lang][k];
   function selectMask(id){const previous=selected;selected=maskOf(id)||masks[0];partner=otherMask(selected.id,partner===selected?previous.id:partner.id);persist('mask',String(selected.id));persist('partner',String(partner.id));labels();}
@@ -110,7 +111,7 @@
     for(const [id,key] of Object.entries({start:'start',help:'help',cardtitle:'card',helpTitle:'helpTitle',closeHelp:'ok',you:'you',oQuit:'back',pause:'pause'}))get(id).textContent=t(key);
     get('career').textContent=belts?t('belt')+' · '+belts:'';
     const rules=t('rules').map(pair=>pair.slice());rules[2][1]=t('ruleRope');rules.splice(2,0,[lang==='en'?'Combos & reversals':'Combos y contraataques',t('ruleCombo')]);rules.push([t('tagFormat'),t('tagRules')]);get('ruleList').replaceChildren(...rules.map(([name,txt])=>{const p=document.createElement('p'),b=document.createElement('b');b.textContent=name+'. ';p.append(b,txt);return p;}));
-    uiStamp='';if(active){get('stage').textContent=tour?t('bout')+' '+(bout.round+1)+' / 5':t('exhibition');if(paused||bout.mode==='end')showOverlay();setHUD();}
+    uiStamp='';if(active){get('stage').textContent=tour?t('bout')+' '+(bout.round+1)+' / 5':t('exhibition');if(paused||(bout.mode==='end'&&!awaitingResult))showOverlay();setHUD();}
     else{offerings();drawCards();}
   }
   get('level').onchange=()=>{level=get('level').value;persist('level',level);drawCards();};
@@ -122,6 +123,7 @@
   function hint(key,secs=1.4){tipKey=key;tipUntil=bout.time+secs;}
   function sparks(x,y,col,n){for(let i=0;i<n;i++){const a=Math.PI*2*(i/n)+Math.random()*.45,sp=34+Math.random()*120;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-22,life:.24+Math.random()*.26,col});}}
   function onEvent(ev,arg){
+    official.notice(ev,arg,bout);
     if(ev==='bell'||ev==='kickout')audio.scene('fight',bout.round);
     else if(ev==='pin')audio.scene('pin',bout.round);
     else if(ev==='end')audio.scene('finished',bout.round);
@@ -149,11 +151,12 @@
       case 'end':{
         won=arg;if(won){const key=recordKey(bout.round),prior=records[key]||{};records[key]={points:Math.max(prior.points||0,bout.stats.points),stars:Math.max(prior.stars||0,stars())};persist('records2',JSON.stringify(records));
           if(tour){if(bout.round===4){belts++;persist('belts',String(belts));markRound(0);}else markRound(bout.round+1);}}
-        clearInputs();setHUD();showOverlay();break;}
+        clearInputs();setHUD();awaitingResult=true;finishSeconds=0;break;}
     }
   }
   function launch(round){
     audio.unlock();audio.scene('intro',round);cancelAnimationFrame(raf);const Engine=format==='team'?LuchaTeamBout:LuchaBout;bout=new Engine(round,onEvent,Math.random,{hero:selected.id,partner:partner.id,level});
+    official=new window.LuchaOfficial();finishSeconds=0;awaitingResult=false;
     cameraZoom=1;cameraX=400;cameraTime=0;
     window.prepareLuchadores([bout.hero.id,bout.rival.id,...(bout.partner?[bout.partner.id,bout.opponentPartner.id]:[])]);
     document.body.classList.toggle('team-mode',format==='team');get('teamHud').hidden=format!=='team';
@@ -246,8 +249,7 @@
     ctx.save();ctx.setTransform(backingScale,0,0,backingScale,0,0);ctx.save();frameRing(h,r);
     if(shake>.2)ctx.translate(Math.sin(time*97)*shake,Math.cos(time*103)*shake*.55);
     window.drawArena(ctx,aspect);
-    const midpoint=(h.x+r.x)/2,refX=bout.pin?Math.max(90,Math.min(710,bout.pin.def.x-76)):400+Math.sin(time*.61)*50+(midpoint-400)*.18;
-    window.drawReferee(ctx,{x:refX,y:bout.pin?333:283,count:bout.pin?.count||0,time,pinning:!!bout.pin,motion:!reduced});
+    official.draw(ctx,bout,finishSeconds,!reduced);
     const motion=bout.partner?bout.choreography():null;
     if(bout.partner){
       for(const [side,bench,x,face] of [['hero',bout.partner,76,1],['rival',bout.opponentPartner,724,-1]]){
@@ -262,8 +264,12 @@
     }
     for(const g of ghosts){ctx.save();ctx.globalAlpha=g.life*.6;window.drawLuchador(ctx,g);ctx.restore();}
     for(const f of [r,h]){if(bout.exchange?.out===f)continue;ctx.fillStyle='#192d3540';ctx.beginPath();ctx.ellipse(f.x,352,Math.max(17,40-f.height*.19),7,0,0,Math.PI*2);ctx.fill();}
-    let fighters=bout.pin?[bout.pin.def,bout.pin.atk]:[r,h];if(bout.toss)fighters=[bout.toss.atk,bout.toss.def];
-    fighters.forEach(f=>{if(bout.exchange?.out===f)return;const pose=f.state,scale=f.id===3||f.id===7?1.49:f.id===4?1.26:1.36;
+    let fighters=bout.pin?[bout.pin.def,bout.pin.atk]:[r,h];
+    if(bout.mode==='end'&&finishSeconds<.75)fighters=won?[r,h]:[h,r];
+    if(bout.toss)fighters=[bout.toss.atk,bout.toss.def];
+    fighters.forEach(f=>{if(bout.exchange?.out===f)return;
+      const holdCover=f.state==='win'&&bout.mode==='end'&&finishSeconds<.75;
+      const pose=holdCover?'pin':f.state,scale=f.id===3||f.id===7?1.49:f.id===4?1.26:1.36;
       const phase=f.duration?Math.min(1,f.elapsed/f.duration):f.state==='walk'?(f.steps*3)%1:0;
       if(!reduced&&f===h&&['spring','dive'].includes(pose)&&time>ghostTime){
         ghosts.push({id:f.id,x:f.x,y:350-f.height,face:f.face,scale,pose,phase,time,life:.22});ghostTime=time+.08;
@@ -288,7 +294,13 @@
       for(const g of ghosts)g.life-=elapsed;ghosts=ghosts.filter(g=>g.life>0);
       for(const p of particles){p.life-=elapsed;p.x+=p.vx*elapsed;p.y+=p.vy*elapsed;p.vy+=145*elapsed;}particles=particles.filter(p=>p.life>0);shake*=Math.exp(-elapsed*13);
       if(bout.time>announceUntil&&get('announce').textContent)get('announce').textContent='';setHUD();draw();
-    }else if(!paused&&bout.mode==='end'){draw();return;}
+    }else if(!paused&&bout.mode==='end'){
+      finishSeconds+=elapsed;draw();
+      if(finishSeconds>=1.28){
+        if(awaitingResult){awaitingResult=false;get('announce').textContent='';showOverlay();}
+        return;
+      }
+    }
     raf=requestAnimationFrame(frame);
   }
   function drawTrophy(){

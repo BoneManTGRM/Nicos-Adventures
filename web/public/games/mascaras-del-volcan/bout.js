@@ -1,5 +1,6 @@
 'use strict';
 class LuchaBout {
+  static countInterval=.92;
   constructor(round, emit=()=>{}, random=Math.random, options={}) {
     this.round=round; this.emit=emit; this.random=random; this.time=0; this.mode='intro'; this.intro=1.65;
     this.hero=this.fighter([0,4,5].includes(options.hero)?options.hero:0,253,1);
@@ -127,7 +128,7 @@ class LuchaBout {
     if(this.mode==='end')return;this.time+=dt;
     if(this.mode==='intro'){this.intro-=dt;if(this.intro<=0){this.mode='fight';this.emit('bell');}return;}
     if(this.mode==='pin'){
-      const p=this.pin;p.t+=dt;const count=Math.min(3,Math.floor(p.t/.92));
+      const p=this.pin;p.t+=dt;const count=Math.min(3,Math.floor(p.t/LuchaBout.countInterval));
       if(count>p.count){p.count=count;this.emit('count',count);if(count===2&&p.willEscape){this.endPin(false);return;}if(count===3)this.endPin(true);}return;
     }
     const h=this.hero,r=this.rival;this.advance(h,r,dt);this.advance(r,h,dt);
