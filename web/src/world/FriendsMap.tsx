@@ -13,6 +13,7 @@ import { drawInterior } from '../game/friendsMap/interiorRenderer';
 import { RoomPuzzle } from './RoomPuzzle';
 import './friends-map.css';
 
+const Canopy = lazy(() => import('./ClockworkCanopy').then(module => ({default:module.ClockworkCanopy})));
 const Voyage = lazy(() => import('./StarwhaleVoyage').then(module => ({default:module.StarwhaleVoyage})));
 const modeCopy: Record<Mode, { en: string; es: string; help: string; ayuda: string }> = {
   explore: { en: 'Island helpers', es: 'Ayudantes de la isla', help: 'Visit the five places and help your friends. Walk to a numbered marker, then press the action button.', ayuda: 'Visita los cinco lugares y ayuda a tus amigos. Camina hasta un número y pulsa el botón de acción.' },
@@ -28,8 +29,8 @@ export function FriendsMap({ profile, update, announce, close }: { profile: Loca
   const [view, setView] = useState(() => hud(s, inside));
   const [ready, setReady] = useState(false), [failed, setFailed] = useState(false), [attempt, setAttempt] = useState(0);
   const [menu, setMenu] = useState(false), [notice, setNotice] = useState(''), [overview, setOverview] = useState(false);
-  const [voyage,setVoyage] = useState(false);
-  const voyageOpen = useRef(false), mapAssets = useRef<MapAssets | null>(null);
+  const [adventure,setAdventure] = useState<'voyage'|'canopy'|null>(null);
+  const adventureOpen = useRef(false), mapAssets = useRef<MapAssets | null>(null);
   const overviewRef = useRef(false), input = useRef<Input>({ x: 0, y: 0, interact: false });
   const keys = useRef(new Set<string>()), pointers = useRef(new Map<number, Point>());
   const canvas = useRef<HTMLCanvasElement>(null), surface = useRef<HTMLDivElement>(null), region = useRef<HTMLElement>(null), dialog = useRef<HTMLDivElement>(null);
@@ -39,8 +40,8 @@ export function FriendsMap({ profile, update, announce, close }: { profile: Loca
   const syncHud = useCallback(() => setView(old => { const next = hud(s, inside); return JSON.stringify(old) === JSON.stringify(next) ? old : next; }), [s, inside]);
   const clear = useCallback(() => { keys.current.clear(); pointers.current.clear(); input.current = { x: 0, y: 0, interact: false }; }, []);
   const pause = useCallback(() => { clear(); if (s.status === 'playing') pauseMap(s); stopInterior(inside); control.current.cancel(); syncHud(); }, [s, inside, clear, syncHud]);
-  const openVoyage = () => { pause(); voyageOpen.current = true; setVoyage(true); };
-  const closeVoyage = useCallback(() => { voyageOpen.current = false; setVoyage(false); syncHud(); control.current.wake(); },[syncHud]);
+  const openAdventure = (choice: 'voyage'|'canopy') => { pause(); adventureOpen.current = true; setAdventure(choice); };
+  const closeAdventure = useCallback(() => { adventureOpen.current = false; setAdventure(null); syncHud(); control.current.wake(); },[syncHud]);
   const dismissMenu = useCallback(() => setMenu(false), []);
   useDialogFocusTrap({ open: menu, dialogRef: dialog, onClose: dismissMenu });
   const syncInput = useCallback(() => {
@@ -113,7 +114,7 @@ export function FriendsMap({ profile, update, announce, close }: { profile: Loca
     control.current = { wake, cancel, save };
     const hidden = () => { if (document.hidden) pause(); else wake(); };
     const down = (event: KeyboardEvent) => {
-      if (voyageOpen.current || inside.puzzleOpen || event.defaultPrevented || !region.current?.contains(document.activeElement) || dialog.current?.contains(document.activeElement)) return;
+      if (adventureOpen.current || inside.puzzleOpen || event.defaultPrevented || !region.current?.contains(document.activeElement) || dialog.current?.contains(document.activeElement)) return;
       if (event.code === 'Escape') { event.preventDefault(); pause(); return; }
       if (s.status !== 'playing' || (event.target as HTMLElement)?.matches('input,select,textarea,[contenteditable="true"]')) return;
       if (['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight'].includes(event.code)) { event.preventDefault(); keys.current.add(event.code); syncInput(); }
@@ -162,16 +163,17 @@ export function FriendsMap({ profile, update, announce, close }: { profile: Loca
           const r = event.currentTarget.getBoundingClientRect();
           walk(screenToWorld(camera.current, { x: (event.clientX - r.left) / r.width * event.currentTarget.width, y: (event.clientY - r.top) / r.height * event.currentTarget.height }));
         }} />
-            {active && !room && <button className="friends-map__fly" onClick={openVoyage}>✦ {es?'Volar':'Fly'}</button>}
+            {active && !room && <button className="friends-map__fly" onClick={()=>openAdventure('voyage')}>✦ {es?'Volar':'Fly'}</button>}
       {active && !room && <button type="button" className="friends-map__overview" aria-pressed={overview} onClick={() => { overviewRef.current = !overviewRef.current; setOverview(overviewRef.current); control.current.wake(); }}>{overview ? (es ? 'Seguir' : 'Follow') : (es ? 'Ver isla' : 'Whole island')}</button>}
       {active && room && <div className="friends-map__interior-hint"><span>{es ? 'Materiales' : 'Supplies'} {view.roomFound}/2 · {es ? 'Toca el suelo para caminar' : 'Tap the floor to walk'}</span></div>}
-      {(!active || failed) && !menu && !voyage && <div className={`friends-map__overlay ${view.status==='ready'&&!failed?'friends-map__opening':''}`}>
-        {view.status==='ready'&&!failed?<><div className="friends-map__opening-copy"><small>{es?'NICO Y SUS AMIGOS':'NICO & FRIENDS'}</small><h2 className="friends-map__story-title">{es?'Viaje de la ballena estelar':'Starwhale Voyage'}</h2><p>{es?'Una ballena canta sobre la isla. Zarpa con tus amigos y sigue su voz.':'A whale is singing above the island. Set sail with your friends and follow her voice.'}</p>
-        <div className="friends-map__opening-actions"><button className="friends-map__primary" disabled={!ready} onClick={openVoyage}>{es?'Empezar el viaje':'Start the voyage'}</button><button data-testid="map-start" disabled={!ready} onClick={start}>{ready?(es?'Explorar a pie':'Explore on foot'):(es?'Preparando la isla…':'Preparing the island…')}</button></div></div></>:
+      {(!active || failed) && !menu && !adventure && <div className={`friends-map__overlay ${view.status==='ready'&&!failed?'friends-map__opening':''}`}>
+        {view.status==='ready'&&!failed?<><div className="friends-map__opening-copy"><small>{es?'NICO Y SUS AMIGOS':'NICO & FRIENDS'}</small><h2 className="friends-map__story-title">{es?'El bosque de engranajes':'Clockwork Canopy'}</h2><p>{es?'Nueve polluelos se perdieron entre las copas de los árboles. Salta, planea y balancéate para reunir a la familia del búho guardián.':'Nine owlets are missing. Swing through the treetops, cross the crystal caverns and bring them home to the guardian.'}</p>
+        <div className="friends-map__opening-actions"><button className="friends-map__primary" disabled={!ready} data-testid="open-clockwork-canopy" onClick={()=>openAdventure('canopy')}>{es?'Jugar al rescate':'Play the rescue'}</button><div><button disabled={!ready} onClick={()=>openAdventure('voyage')}>{es?'Viaje estelar':'Starwhale Voyage'}</button><button data-testid="map-start" disabled={!ready} onClick={start}>{ready?(es?'Explorar a pie':'Explore on foot'):(es?'Preparando…':'Preparing…')}</button></div></div></div></>:
         <><h2>{failed?(es?'La isla espera':'Island on standby'):(es?'Un pequeño descanso':'A little breather')}</h2>
         <p>{failed?(es?'No se pudo cargar el mapa. Intenta de nuevo.':'The map could not load. Please try again.'):room?(es?room.meta:room.goal):(es?instructions.ayuda:instructions.help)}</p>
         {failed?<button onClick={()=>setAttempt(n=>n+1)}>{es?'Reintentar':'Try again'}</button>:<button className="friends-map__primary" data-testid="map-start" onClick={start}>{es?'Continuar':'Resume'}</button>}
-        {!failed&&!room&&<button onClick={openVoyage}>{es?'Volar con amigos':'Fly with friends'}</button>}</>}
+        {!failed&&!room&&<button onClick={()=>openAdventure('canopy')}>{es?'Ir al rescate':'Play the rescue'}</button>}
+        {!failed&&!room&&<button onClick={()=>openAdventure('voyage')}>{es?'Volar con amigos':'Fly with friends'}</button>}</>}
       </div>}
     </div>
     <div className="friends-map__team" role="group" aria-label={es ? 'Elige quién guía' : 'Choose who leads'}>{ROSTER.map(friend => <button type="button" key={friend} data-map-friend={friend} disabled={!ready || menu || view.puzzleOpen} aria-pressed={view.leader === friend} onClick={() => choose(friend)}>{FRIEND_NAMES[friend]}{view.greeted.split(',').includes(friend) ? ' ✓' : ''}</button>)}</div>
@@ -199,7 +201,8 @@ export function FriendsMap({ profile, update, announce, close }: { profile: Loca
       <p className="friends-map__privacy">{es ? 'Los amigos son personajes de este dispositivo, no jugadores en línea. Progreso guardado con tu perfil; sin cuenta nueva. El mapa se dibuja solo al jugar y descansa al quedar quieto.' : 'Friends are characters on this device, not online players. Progress saves with your profile; no new account. The map draws while playing and rests when still.'}</p>
       <button type="button" className="friends-map__primary" onClick={start}>{es ? 'Volver al mapa' : 'Back to the map'}</button>
     </div></div>}
-    {voyage && <Suspense fallback={<div className="friends-map__overlay" role="status">{es?'Abriendo la bitácora…':'Opening the flight log…'}</div>}><Voyage profile={profile} update={update} close={closeVoyage} assets={mapAssets.current}/></Suspense>}
+    {adventure==='canopy' && mapAssets.current && <Suspense fallback={<div className="friends-map__overlay" role="status">{es?'Abriendo el bosque…':'Opening the canopy…'}</div>}><Canopy profile={profile} update={update} close={closeAdventure} assets={mapAssets.current}/></Suspense>}
+    {adventure==='voyage' && <Suspense fallback={<div className="friends-map__overlay" role="status">{es?'Abriendo la bitácora…':'Opening the flight log…'}</div>}><Voyage profile={profile} update={update} close={closeAdventure} assets={mapAssets.current}/></Suspense>}
     {view.puzzleOpen && inside.room && <RoomPuzzle state={inside} es={es} change={roomChanged} close={closePuzzle} />}
   </section>;
 }

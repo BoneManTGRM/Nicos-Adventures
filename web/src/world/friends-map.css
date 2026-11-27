@@ -8,7 +8,7 @@ body.friends-map-open *{animation-play-state:paused!important}
 
 .friends-map__surface .friends-map__opening {
   align-items:flex-start; justify-content:flex-end; text-align:left; box-sizing:border-box;
-  padding:clamp(18px,4.5vw,60px); background:linear-gradient(0deg,#071b2cef 0%,#10253a22 63%),url('../assets/art/starwhale-voyage.webp') 74% 32%/cover;
+  padding:clamp(18px,4.5vw,60px); background:linear-gradient(0deg,#071b2cef 0%,#10253a22 63%),url('../assets/canopy/cover.webp') 67% 38%/cover;
 }
 .friends-map__opening-copy { max-width:550px; }
 .friends-map__opening-copy small { font-weight:850; color:#b9f4e0; letter-spacing:.2em; font-size:.8rem; }
@@ -24,3 +24,8 @@ body.friends-map-open *{animation-play-state:paused!important}
 .arcade-friends-feature .arcade-friends-feature__art { background-position:76% 33%; }
 @media(max-width:600px){.friends-map__opening-copy{padding-bottom:1.4rem;max-width:30rem}.friends-map__opening .friends-map__story-title{max-width:7em;font-size:clamp(2.85rem,12vw,4.3rem)}.friends-map__opening-copy p{font-size:1rem;max-width:24rem}.friends-map__opening-actions button{flex:1}.friends-map__opening-actions{flex-wrap:nowrap}}
 @media(max-height:500px) and (orientation:landscape){.friends-map__surface .friends-map__opening{padding:1.1rem 2rem}.friends-map__opening .friends-map__story-title{font-size:2.8rem}.friends-map__opening-copy p{max-width:25rem}.friends-map__opening-copy{padding:0}.friends-map .friends-map__moves button{font-size:.75rem;min-height:36px}}
+
+.friends-map .friends-map__opening-actions{display:grid;justify-items:start;gap:.5rem}
+.friends-map__opening-actions>div{display:flex;gap:.45rem;flex-wrap:wrap}
+.friends-map__opening-actions .friends-map__primary{min-width:12.5rem;letter-spacing:.01em}
+@media(max-width:600px){.friends-map__opening-actions{width:100%}.friends-map__opening-actions>div{width:100%}.friends-map__opening-actions .friends-map__primary{width:100%}.friends-map__opening .friends-map__story-title{max-width:7em}.friends-map__surface .friends-map__opening{background-position:79% 37%}}
