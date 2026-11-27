@@ -67,7 +67,7 @@ export function carryPose(a) {
   }
   if(h.phase==='lift'&&h.age<REACH){
     const index=Math.round(ease(h.age/REACH)*(reach.length-1));
-    return {...track[0],name:reach[index],lean:0};
+    return {...track[0],name:reach[index],body:{from:"guard",to:"scoop",t:ease(h.age/REACH)},lean:0};
   }
   if(h.phase!=='lift'){
     const lean=h.phase==='throw'?-.09*Math.sin(Math.PI*Math.min(1,h.age/WINDUP)):0;
@@ -77,12 +77,15 @@ export function carryPose(a) {
   const end=track.findIndex((p,i)=>i>0&&p.distance>=distance);
   if(end<1)return {...last,lean:0};
   const from=track[end-1],to=track[end],part=(distance-from.distance)/(to.distance-from.distance);
-  return {name:part<.5?from.name:to.name,lean:0,x:mix(from.x,to.x,part),y:mix(from.y,to.y,part)};
+  const key=Math.floor((end-1)/3)*3;
+  const body={from:track[key].name,to:track[key+3].name,t:(end-1-key+part)/3};
+  return {name:part<.5?from.name:to.name,body,lean:0,x:mix(from.x,to.x,part),y:mix(from.y,to.y,part)};
 }
 
 export function carryAnchor(a,pose=carryPose(a)) {
   const h=a.haul,{x:handX,y:height,lean}=pose;
-  const x=a.x+a.face*(handX*Math.cos(lean)+height*Math.sin(lean));
+  const direction=Math.sin((a.yaw??a.face)*Math.PI/2);
+  const x=a.x+direction*(handX*Math.cos(lean)+height*Math.sin(lean));
   const y=a.y+height*Math.cos(lean)-handX*Math.sin(lean);
   if(pose.wallPull!==undefined||pose.lift!==undefined){
     const k=pose.wallPull??pose.lift;
@@ -132,7 +135,7 @@ export function releaseHaul(s, punched=false) {
     launchPerson(target,x,y-8,a.face*(punched?282:225)+a.vx*.25,punched?82:154);
     if (!target.throwScored) { s.score += 35; target.throwScored = true; }
   }
-  a.haul = null; a.grip=null; a.throwPose = 1;
+  a.throwKind=h.kind;a.haul = null; a.grip=null; a.throwPose = 1;
   s.events.push({kind:'toss',target:h.kind,x,y,dir:a.face,punched});
 }
 

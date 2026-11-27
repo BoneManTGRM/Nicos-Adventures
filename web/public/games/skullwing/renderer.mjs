@@ -114,7 +114,7 @@ export class Renderer {
     if(s.defense)drawDefense(c,s,this.reduced,'back');
     const shadeHeight=a.support?.h||0;
     c.fillStyle='rgba(15,13,28,.37)';c.beginPath();c.ellipse(a.x,-shadeHeight+2,Math.max(11,40-(a.y-shadeHeight)*.09),5,0,0,Math.PI*2);c.fill();
-    const foot=Math.floor(a.stride*1.14);
+    const foot=Math.floor(a.stride/Math.PI);
     if(foot!==this.foot && a.walk>.48 && a.grounded && !this.reduced)this.burst(a.x-a.face*13,a.y+3,3,'dust',-a.face);
     this.foot=foot;
     if(a.dive || a.glide>.35){

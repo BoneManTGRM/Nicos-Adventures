@@ -1,104 +1,55 @@
 import {frames} from './nacho-frames.mjs';
 import {drawHeld} from './held-art.mjs';
 import {carryPose} from './nacho-moves.mjs';
+import {artImage,drawMotion,paintedCel,pose,preloadTransitions,timeline,visualYaw} from './motion-player.mjs';
 
-const images=new Map();
-function imageFor(name) {
-  if(!images.has(name)&&typeof Image==='function'){
-    const image=new Image();
-    image.src=new URL('./nacho-'+name+'.webp',import.meta.url).href;
-    images.set(name,image);
+import {preloadJoints,withJoints} from './jointed-motion.mjs';
+const punch=['guard','wind','punch','punch','guard'];
+const flop=['jump','tip','dive'];
+const recover=['dive','impact','pushup','rise','guard'];
+const eatTimes=[0,.27,.54,.70,1];
+const limit=n=>Math.max(0,Math.min(1,n));
+function original(name){
+  const f=frames[name]||frames.guard;
+  return paintedCel(artImage('./nacho-'+f.sheet+'.webp'),f,f.rect);
+}
+export function preloadNacho(){
+  for(const sheet of ['stride','combat','splash','snack','champion'])artImage('./nacho-'+sheet+'.webp');
+  preloadJoints('nacho');preloadTransitions('nacho');
+}
+const heldPose=kind=>kind==='car'?'overhead':kind==='person'?'grip':'rack';
+function loadedMotion(a,h,hand){
+  const rest=heldPose(h.kind);
+  if(h.phase==='tear'){
+    return {mode:'wall',p:timeline(['guard','wind','punch','punch','rack'],[0,.12,.32,.39,1],h.age/.49)};
   }
-  return images.get(name);
+  if(h.phase==='lift')return {mode:'lift',p:hand.body||pose(rest)};
+  if(h.phase==='eat')return {mode:'eat',p:timeline([rest,'snackLift','snackBite','snackGulp','guard'],eatTimes,h.age/.7)};
+  if(h.phase==='throw')return {mode:'carry',p:pose(rest),angle:hand.lean};
+  return {mode:'carry',p:pose(rest)};
 }
-export function preloadNacho() {
-  for(const name of ['champion','stride','combat','splash','walk','hoist','strike','landing','snack'])imageFor(name);
-}
-const ready=image=>image?.complete&&image.naturalWidth>0;
-const cycle=['stepA','stepAOut','passBIn','passB','passBOut','stepBIn',
-  'stepB','stepBOut','passAIn','passA','passAOut','stepAIn'];
-
-// Durations are expressed as progress through each simulation action. Holding
-// the contact drawing briefly gives hits weight while the recovery keeps moving.
-const punch=['guard','guardWind1','guardWind2','wind','windPunch1','windPunch2','punch','punch','punchGuard1','punchGuard2','guard'];
-const release=['throw','throw','throwGuard1','throwGuard2','guard'];
-const takeoff=['guard','guardJump1','guardJump2','jump'];
-const flop=['jump','jumpTip1','jumpTip2','tip','tipDive1','tipDive2','dive'];
-const recovery=['impact','impact','impactPushup1','impactPushup2','pushup','pushupRise1','pushupRise2','rise','riseGuard1','riseGuard2','guard'];
-function sample(poses,t) {
-  return poses[Math.round(Math.max(0,Math.min(1,t))*(poses.length-1))];
-}
-
-function movingPose(a) {
-  if(a.dive)return sample(flop,1-a.flopWindup/.13);
-  if(a.splashPose>0)return sample(recovery,1-a.splashPose);
-  if(a.throwPose>0)return sample(release,1-a.throwPose);
-  if(a.swipe>0)return sample(punch,1-a.swipe);
-  if(!a.grounded)return sample(takeoff,(.7-a.flap)/.19);
-  if(a.walk>.12){
-    const phase=a.stride/(2*Math.PI);
-    return cycle[Math.floor((phase-Math.floor(phase))*cycle.length)];
+function motion(a,hand){
+  if(a.haul)return loadedMotion(a,a.haul,hand);
+  if(a.dive)return {mode:'flop',p:timeline(flop,[0,.55,1],1-a.flopWindup/.13),angle:.035*a.flopTilt};
+  if(a.splashPose>0)return {mode:'recover',p:timeline(recover,[0,.15,.42,.72,1],1-a.splashPose)};
+  if(a.throwPose>0)return {mode:'release',p:timeline([heldPose(a.throwKind),'throw','guard'],[0,.32,1],1-a.throwPose)};
+  if(a.swipe>0)return {mode:'punch',p:timeline(punch,[0,.19,.42,.49,1],1-a.swipe)};
+  if(!a.grounded){
+    if(a.airTime<.15)return {mode:'jump',p:pose('guard','jump',a.airTime/.15)};
+    const open=limit((-a.vy-55)/510)*.77;
+    return {mode:'jump',p:pose('jump','rise',open),angle:.027*Math.sin(Math.min(1,a.airTime/.65)*Math.PI*2)};
   }
-  return 'guard';
+  if(a.landTime<.17)return {mode:'landing',p:pose('rise','guard',a.landTime/.17)};
+  return {mode:'stride',p:pose('guard')};
 }
-
-function wholeFigure(c,image,frame,angle,bottom=0) {
-  const [sx,sy,sw,sh]=frame.rect, h=frame.height,w=h*sw/sh;
-  c.save();c.rotate(angle);
-  c.drawImage(image,sx,sy,sw,sh,-w*frame.pivot,-h+bottom,w,h);
-  c.restore();
-}
-
-// Give a loaded walk a short shuffle without bending the painted upper body or
-// breaking the grip. Below the leg fork each boot follows its own planted step.
-function carryingFigure(c,image,frame,a,lean) {
-  if(a.walk<.12 || !a.grounded || a.haul.phase!=='hold'){
-    wholeFigure(c,image,frame,lean,frame.bottom??0);return;
+export function drawNacho(c,a,time,facing,reduced=false){
+  const hand=a.haul?carryPose(a):null,s=motion(a,hand),yaw=visualYaw(a);
+  s.face=Math.sign(yaw)||facing;
+  withJoints(a,time,'nacho',s,reduced);
+  if(reduced){s.bob=0;s.angle=hand?.lean||0;s.stretch=1;}
+  if(!drawMotion(c,a,time,'nacho',s,original)){
+    const im=artImage('./nacho-champion.webp');
+    if(im?.complete&&im.naturalWidth){const w=140*im.naturalWidth/im.naturalHeight;c.save();c.scale(s.face,1);c.drawImage(im,-w*.48,-140,w,140);c.restore();}
   }
-  const [sx,sy,sw,sh]=frame.rect,h=frame.height,w=h*sw/sh;
-  const stageX=-w*frame.pivot,split=frame===frames.overhead?.48:.42;
-  const fork=.73,cutY=Math.round(sh*fork),cutX=Math.round(sw*split);
-  c.save();c.rotate(lean);
-  c.drawImage(image,sx,sy,sw,cutY,stageX,-h,w,cutY*h/sh);
-  // Source rows meet on integer pixel boundaries; the slight overlap below
-  // fills subpixel antialiasing at the edges during movement.
-  const strips=9;
-  for(const direction of [-1,1]){
-    const x0=direction<0?0:cutX, width=direction<0?cutX:sw-cutX;
-    const gait=Math.sin(a.stride)*direction*a.walk, lift=Math.max(0,gait)*4;
-    function offset(y){
-      const p=(y-cutY)/(sh-cutY);
-      return [stageX+x0*w/sw+gait*4*p*p,-h+y*h/sh-lift*p*p];
-    }
-    for(let i=0;i<strips;i++){
-      const y0=cutY+Math.round((sh-cutY)*i/strips), y1=cutY+Math.round((sh-cutY)*(i+1)/strips);
-      const [dx,dy]=offset(y0),[,nextY]=offset(y1);
-      c.drawImage(image,sx+x0,sy+y0,width,y1-y0,dx,dy,width*w/sw,nextY-dy+.18);
-    }
-  }
-  c.restore();
-}
-
-export function drawNacho(c,a,time,facing,reduced=false) {
-  c.save();c.scale(facing,1);
-  const haul=a.haul,pose=haul?carryPose(a):null;
-  const name=pose?.name??movingPose(a),frame=frames[name],sheet=imageFor(frame.sheet);
-  if(ready(sheet)){
-    if(haul)carryingFigure(c,sheet,frame,a,pose.lean);
-    else{
-      const idle=name==='guard'&&!reduced;
-      const lean=idle?Math.sin(time*2.5)*.007:
-        name==='tip'?(a.flopWindup-.06)*1.1:
-        name==='dive'?.035:0;
-      wholeFigure(c,sheet,frame,lean,frame.bottom??0);
-    }
-  }else{
-    const champion=imageFor('champion');
-    if(ready(champion)){
-      const h=140,w=h*champion.naturalWidth/champion.naturalHeight;
-      c.drawImage(champion,-w*.48,-h,w,h);
-    }
-  }
-  drawHeld(c,a,facing,time,reduced,pose);
-  c.restore();
+  c.save();c.scale(s.face,1);drawHeld(c,a,s.face,time,reduced,hand);c.restore();
 }
