@@ -1,3 +1,4 @@
+import {paintNachoPoster} from './nacho-art.mjs';
 import {cities} from './cities.mjs';
 import {newCity,step,press} from './simulation.mjs';
 import {Renderer} from './renderer.mjs';
@@ -12,12 +13,15 @@ const t=(en,mx)=>es?mx:en;
 const names=()=>cities.map(c=>t(c.en,c.es));
 const savedMode=read('difficulty','easy');
 let difficulty=(['easy','hard'].includes(q.get('mode'))?q.get('mode'):savedMode)==='hard'?'hard':'easy';
+const requestedMonster=q.get('monster');
+let monster=(['nacho','skullwing'].includes(requestedMonster)?requestedMonster:read('monster','skullwing'))==='nacho'?'nacho':'skullwing';
 let selected=Math.max(0,cities.findIndex(c=>c.slug===q.get('city')));
 let mode='menu',dialog='',sound=read('sound',true),records=read('records',{});
-const recordKey=index=>difficulty==='hard'?'hard-'+index:String(index);
+const recordKey=index=>(monster==='nacho'?'nacho-':'')+(difficulty==='hard'?'hard-':'')+index;
 function reflectSelection(){
   const url=new URL(location.href);
   url.searchParams.set('city',cities[selected].slug);url.searchParams.set('mode',difficulty);
+  url.searchParams.set('monster',monster);
   history.replaceState(null,'',url);
 }
 if(!records||typeof records!=='object')records={};
@@ -70,6 +74,9 @@ function effect(e){
   if(e.kind==='floorImpact'&&city.time-floorStamp>.095){
     floorStamp=city.time;crunch(.24,1250,.11);tone(102,38,.19,.057,'triangle');
   }
+  if(e.kind==='lift'){tone(116,252,.19,.040,'triangle');}
+  if(e.kind==='toss'){tone(330,125,.20,.052,'sawtooth');}
+  if(e.belly){crunch(.24,1450,.16);tone(82,30,.37,.11);}
   if(e.kind==='grab')tone(230,400,.13,.032,'triangle');
   if(e.kind==='chomp'){tone(260,94,.10,.05,'square');tone(370,620,.16,.035,'triangle',.09);}
   if(e.kind==='swing')tone(e.hit?160:250,e.hit?43:100,.115,.039,'triangle');
@@ -131,16 +138,27 @@ function localize(){
   buttons.get('right')?.setAttribute('aria-label',t('Move right','Mover a la derecha'));
   el('world').setAttribute('aria-label',t('City destruction playfield','Ciudad para demoler'));
   el('modes').setAttribute('aria-label',t('Difficulty','Dificultad'));
-  updateGrabButton();updateDifficulty();audibleLabel();makeCards();
+  updateFighter();updateGrabButton();updateDifficulty();audibleLabel();makeCards();
   if(city){el('districtName').textContent=names()[city.district];if(mode==='play'){setHint();hud();}}
   if(dialog)showDialog(dialog);
+}
+function updateFighter(){
+  const nacho=monster==='nacho';
+  el('app').dataset.monster=monster;
+  el('fighters').setAttribute('aria-label',t('Choose your monster','Elige tu monstruo'));
+  el('nacho').setAttribute('aria-pressed',String(nacho));el('skullwing').setAttribute('aria-pressed',String(!nacho));
+  el('heroTitle').setAttribute('aria-label',nacho?'Nacho':'Skullwing');
+  el('heroFirst').hidden=nacho;el('heroLast').textContent=nacho?'NACHO':'WING';
+  el('nachoPoster').hidden=!nacho;
+  el('jumpName').textContent=nacho?t('Jump','Saltar'):t('Flap','Volar');
+  el('chargeBar').hidden=nacho;
 }
 function updateDifficulty(){
   const hard=difficulty==='hard';
   el('easy').setAttribute('aria-pressed',String(!hard));
   el('hard').setAttribute('aria-pressed',String(hard));
   el('pitch').textContent=hard?t('Five hearts. Dodge the amber target.','Cinco corazones. Esquiva la mira ámbar.'):
-    t('Smash at your own pace.','Derriba la ciudad a tu ritmo.');
+    monster==='nacho'?t('Body-slam a tower. Throw a car.','Cae de panza sobre una torre. Lanza un auto.'):t('Smash at your own pace.','Derriba la ciudad a tu ritmo.');
 }
 function setMode(value){
   mode=value;el('app').dataset.view=value;el('menu').hidden=value!=='menu';el('arena').hidden=value!=='play';
@@ -153,6 +171,15 @@ function clearInput(){keys.clear();pointers.clear();syncInput();}
 function hint(text,seconds){el('hint').textContent=text;hintUntil=(city?.time||0)+seconds;}
 function setHint(){
   const touch=matchMedia('(pointer: coarse)').matches;
+  if(city.monster==='nacho'){
+    if(city.actor.haul){
+      const key=city.actor.haul.kind==='car'?'E':'C';
+      hint(t(touch?'Face your target, then tap Throw.':'Face your target, then press '+key+' again to throw.',
+        touch?'Mira hacia tu objetivo y toca Lanzar.':'Mira hacia tu objetivo y pulsa '+key+' otra vez para lanzar.'),6);
+    }else hint(t(touch?'Tap Jump, then Flop in midair. Lift a car or person from the street.':'Space to jump, X in midair to belly flop. E lifts a car, C grabs a person.',
+      touch?'Salta y toca Plancha en el aire. Levanta autos o personas en la calle.':'Espacio para saltar, X en el aire para una plancha. E levanta autos y C agarra personas.'),7);
+    return;
+  }
   if(city.actor.grip)hint(t(touch?'Tap Eat to take a bite.':'Press E again to eat.',touch?'Toca Comer para dar una mordida.':'Pulsa E otra vez para comer.'),6);
   else if(city.defense&&helpStage===0)hint(t('See the amber target? Move or jump to dodge.','¿Ves la mira ámbar? Muévete o salta para esquivar.'),7);
   else if(helpStage===0)hint(t(touch?'Tap Grab beside a person, then tap Eat.':'Move with ← → or A / D. Press E near a person, then E to eat.',touch?'Toca Agarrar junto a alguien y luego toca Comer.':'Muévete con ← → o A / D. Pulsa E para agarrar y otra vez para comer.'),8);
@@ -162,7 +189,7 @@ function setHint(){
 }
 function callout(text,seconds=.9){el('callout').textContent=text;callUntil=city.time+seconds;}
 function begin(index){
-  selected=index;city=newCity(index,difficulty);reflectSelection();recordBefore=Number(records[recordKey(index)])||0;audioStamp=blastStamp=floorStamp=-1;
+  selected=index;city=newCity(index,difficulty,monster);reflectSelection();recordBefore=Number(records[recordKey(index)])||0;audioStamp=blastStamp=floorStamp=-1;
   clearInput();closeDialog(false);setMode('play');render.reset();render.resize();last=0;acc=0;nextHud=0;
   hadFlight=false;helpStage=0;el('callout').textContent='';el('districtName').textContent=names()[index];
   el('minimap').replaceChildren(...city.buildings.map(b=>{const n=document.createElement('i');n.style.height=(3+b.h/20)+'px';if(b.landmark)n.dataset.landmark='true';return n;}));
@@ -172,6 +199,24 @@ function leave(){
   clearInput();closeDialog(false);city=null;setMode('menu');makeCards();el('start').focus({preventScroll:true});
 }
 function updateGrabButton(){
+  const car=buttons.get('grab'),person=buttons.get('roar');
+  if(monster==='nacho'){
+    const held=city?.actor.haul?.kind;
+    const throwText=t('Throw','Lanzar'),carText=held==='car'?throwText:t('Car','Auto'),personText=held==='person'?throwText:t('Person','Persona');
+    if(el('grabName').textContent!==carText)el('grabName').textContent=carText;
+    if(el('roarName').textContent!==personText)el('roarName').textContent=personText;
+    const airborne=city&&!city.actor.grounded;
+    const attack=airborne?t('Flop','Plancha'):t('Punch','Golpe');
+    if(el('smashName').textContent!==attack)el('smashName').textContent=attack;
+    car.setAttribute('aria-label',held==='car'?t('Throw car','Lanzar auto'):t('Lift car','Levantar auto'));
+    person.setAttribute('aria-label',held==='person'?t('Throw person','Lanzar persona'):t('Grab person','Agarrar persona'));
+    car.title=car.getAttribute('aria-label')+' (E)';person.title=person.getAttribute('aria-label')+' (C)';
+    car.classList.toggle('carrying',held==='car');person.classList.toggle('carrying',held==='person');
+    car.setAttribute('aria-disabled',String(held==='person'));person.setAttribute('aria-disabled',String(held==='car'));
+    return;
+  }
+  car.removeAttribute('aria-label');person.removeAttribute('aria-label');
+  car.removeAttribute('aria-disabled');person.classList.remove('carrying');person.title=t('Roar','Rugir')+' (C)';
   const holding=!!city?.actor.grip;
   const label=holding?t('Eat','Comer'):t('Grab','Agarrar');
   const button=buttons.get('grab');
@@ -198,7 +243,7 @@ function hud(){
   const dots=el('minimap').children;
   city.buildings.forEach((b,i)=>{dots[i].className=b.hp<=0?'down':i===near?'near':'';});
   const combo=el('combo');combo.hidden=city.combo<2;if(city.combo>=2)combo.textContent='×'+city.combo+' '+t('chain','en cadena');
-  const ready=city.charge>=.999;buttons.get('roar').setAttribute('aria-disabled',String(!ready));
+  if(city.monster!=='nacho')buttons.get('roar').setAttribute('aria-disabled',String(city.charge<.999));
   el('chargeBar').style.transform='scaleX('+city.charge.toFixed(2)+')';
 }
 function receive(e){
@@ -209,6 +254,13 @@ function receive(e){
       const landmark=cities[city.district].landmark;callout(t(landmark.en,landmark.es)+' +250',1.2);
     }else if(e.combo>=2)callout(t('CHAIN REACTION','¡EN CADENA!')+' ×'+e.combo);
   }
+  if(e.kind==='lift'){updateGrabButton();setHint();}
+  if(e.kind==='liftMiss')hint(e.target==='car'?t('Face a nearby vehicle on the street.','Acércate a un vehículo y mira hacia él.'):t('Face someone nearby on the street.','Acércate a una persona y mira hacia ella.'),2.3);
+  if(e.kind==='toss') {
+    updateGrabButton();callout(e.punched?t('POWER PUNCH!','¡PUÑETAZO!'):e.target==='car'?t('CAR TOSS!','¡AUTO AL AIRE!'):t('FLYING TOSS!','¡POR LOS AIRES!'),.9);
+    el('hint').textContent='';hintUntil=0;
+  }
+  if(e.kind==='stomp'&&e.belly)callout(t('BELLY FLOP!','¡PLANCHAZO!'),1.05);
   if(e.kind==='grab') {updateGrabButton();setHint();}
   if(e.kind==='grabMiss')hint(t('Face someone on the street and move closer.','Acércate a alguien en la calle y mira hacia esa persona.'),2.4);
   if(e.kind==='chomp'){
@@ -249,7 +301,7 @@ function showDialog(which){
   dialog=which;clearInput();el('arena').inert=true;document.querySelector('.bar').inert=true;el('veil').hidden=false;
   el('dialogDistrict').textContent=names()[city.district].toUpperCase();
   const done=which==='clear',lost=which==='defeat';
-  el('dialogTitle').textContent=lost?t('Skullwing is down!','¡Skullwing cayó!'):done?t('City flattened!','¡Ciudad demolida!'):t('Paused','En pausa');
+  el('dialogTitle').textContent=lost?(city.monster==='nacho'?t('Nacho is down!','¡Nacho cayó!'):t('Skullwing is down!','¡Skullwing cayó!')):done?t('City flattened!','¡Ciudad demolida!'):t('Paused','En pausa');
   const touch=matchMedia('(pointer: coarse)').matches;
   const tally=city.wrecks;
   el('dialogText').textContent=lost?
@@ -257,6 +309,11 @@ function showDialog(which){
     [t('Cars','Autos')+' '+tally.car,t('Police cruisers','Patrullas')+' '+tally.police,t('Tanks','Tanques')+' '+tally.tank].join(' · '):
     t(touch?'Tap Flap twice to climb. Hold to glide. Smash in the air to dive. Tap Grab by a person, then Eat.':'Arrows or A/D to move. Space to flap or glide, X to smash or dive, C to roar. Press E to grab, then E to eat.',
       touch?'Toca Volar dos veces para subir. Mantén para planear. Golpea en el aire para caer. Toca Agarrar y luego Comer.':'Flechas o A/D para moverte. Espacio para volar o planear, X para golpear o caer, C para rugir. Pulsa E para agarrar y otra vez para comer.');
+  if(city.monster==='nacho'&&!done){
+    el('dialogText').textContent=lost?t('Jump to dodge the amber target.','Salta para esquivar la mira ámbar.'):
+      t(touch?'Punch on the ground. Jump, then tap Flop over a car or rooftop. Tap Car or Person to lift, then Throw.':'Move with A/D or the arrows. Space jumps. X punches on the ground or belly flops in the air. E lifts cars and C grabs people. Press the same key again to throw.',
+      touch?'Golpea en el suelo. Salta y toca Plancha sobre un auto o un techo. Toca Auto o Persona para levantar y luego Lanzar.':'Muévete con A/D o las flechas. Espacio salta. X golpea en el suelo o hace una plancha en el aire. E levanta autos y C agarra personas. Repite la tecla para lanzar.');
+  }
   el('results').hidden=!done&&!lost;
   if(lost)el('results').textContent=city.cleared+' / '+city.buildings.length+' '+t('buildings down','edificios derribados')+' · '+city.score+' '+t('points','puntos');
   if(done){
@@ -271,8 +328,8 @@ function showDialog(which){
 }
 const mapping={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',ArrowUp:'jump',KeyW:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyE:'grab',KeyC:'roar',KeyK:'roar'};
 function act(action){
-  if(action==='roar'&&city.charge<.999)hint(t('Roar is recharging. Smash a tower to charge it faster.','El rugido se recarga. Golpea una torre para cargarlo antes.'),2.6);
-  press(city,action);
+  if(city.monster!=='nacho'&&action==='roar'&&city.charge<.999)hint(t('Roar is recharging. Smash a tower to charge it faster.','El rugido se recarga. Golpea una torre para cargarlo antes.'),2.6);
+  press(city,action);if(city.monster==='nacho')updateGrabButton();
 }
 document.querySelectorAll('[data-action]').forEach(b=>{
   const action=b.dataset.action;buttons.set(action,b);
@@ -305,6 +362,10 @@ el('lang').onclick=()=>{es=!es;write('spanish',es);const url=new URL(location.hr
 for(const value of ['easy','hard'])el(value).onclick=()=>{
   difficulty=value;write('difficulty',value);reflectSelection();updateDifficulty();makeCards();
 };
+for(const id of ['skullwing','nacho'])el(id).onclick=()=>{
+  monster=id;write('monster',id);reflectSelection();localize();
+};
+paintNachoPoster(el('nachoPoster'));
 el('launchCity').onclick=el('start').onclick=()=>{unlock();begin(selected);};
 el('pause').onclick=()=>showDialog('pause');
 el('controls').addEventListener('contextmenu',e=>e.preventDefault());
