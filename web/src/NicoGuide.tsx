@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAppStore } from "./app/AppStoreContext";
 import { NicoCostumeFigure } from "./nico/NicoCostumeFigure";
-import { NICO_VIDEO, NICO_POSTER } from "./world/NicoVideoCard";
+import { loadNicoBasketball, NICO_POSTER } from "./world/nicoBasketball";
 
 import { openNicoWorld } from "./nico/NicoWorldExperience";
 import "./nico-guide.css";
@@ -149,7 +149,14 @@ export default function NicoGuide() {
       return;
     }
 
-    setMedia({ status: "ready", videoUrl: NICO_VIDEO, posterUrl: NICO_POSTER });
+    let active = true;
+    setMedia({ status: "loading", videoUrl: "", posterUrl: "" });
+    void loadNicoBasketball().then(videoUrl => {
+      if (active) setMedia({ status: "ready", videoUrl, posterUrl: NICO_POSTER });
+    }).catch(() => {
+      if (active) setMedia({ status: "error", videoUrl: "", posterUrl: "" });
+    });
+    return () => { active = false; };
   }, [isVideoOpen, mediaAttempt]);
 
   const openWorldMap = () => {

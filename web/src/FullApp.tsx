@@ -58,7 +58,7 @@ export default function FullApp() {
  const announce = (message: string) => setAnnouncement(current => ({ id: current.id + 1, message }));
  useEffect(() => {
   const followMapLink = () => {
-   if (["#destinations", "#star-bridge"].includes(window.location.hash) && profile.selectedSection !== "world-map") {
+   if (["#destinations", "#star-bridge", "#nico-tv"].includes(window.location.hash) && profile.selectedSection !== "world-map") {
     commitProfile(current => ({ ...current, selectedSection: "world-map" }));
    }
   };
@@ -96,7 +96,7 @@ export default function FullApp() {
   return () => { window.removeEventListener("keyup", focusAfterKeyUp); window.cancelAnimationFrame(firstFrame); window.cancelAnimationFrame(secondFrame); };
  }, [profile.selectedSection]);
  const presentSection = () => {
-  if (["#destinations", "#star-bridge"].includes(window.location.hash)) {
+  if (["#destinations", "#star-bridge", "#nico-tv"].includes(window.location.hash)) {
    const url = new URL(window.location.href); url.hash = ""; window.history.replaceState(window.history.state, "", url);
   }
   pendingTitleFocus.current = lastNavigationInput.current;

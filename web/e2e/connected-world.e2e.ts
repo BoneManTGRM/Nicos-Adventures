@@ -57,7 +57,7 @@ test('homecoming artwork, placement, mini game, language and reload', async ({ p
 
 test('Nico TV defers video transfer until play', async ({ page }, info) => {
   const transfers: string[] = []; page.on('request', request => { if (/\.mp4|\.b64/.test(request.url()) && /basketball/.test(request.url())) transfers.push(request.url()); });
-  await page.goto('/');
+  await page.goto('/#nico-tv');
   await expect(page.getByTestId('continue-world')).toBeVisible();
   const spanish = info.project.metadata.language === 'es-MX';
   if (spanish && await page.locator('html').getAttribute('lang') !== 'es-MX') {
@@ -86,6 +86,9 @@ test('Nico TV defers video transfer until play', async ({ page }, info) => {
   await expect(spotlight).toHaveAttribute('poster', await player.getAttribute('poster') as string);
   await expect.poll(() => spotlight.evaluate((el: HTMLVideoElement) => [el.videoWidth, el.videoHeight])).toEqual([512, 692]);
   await expect.poll(() => spotlight.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0);
+  await spotlight.evaluate((el: HTMLVideoElement) => { el.currentTime = 3; });
+  await expect.poll(() => spotlight.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(3);
+  expect(transfers.filter(url => url.endsWith('.mp4'))).toHaveLength(1);
 });
 
 
