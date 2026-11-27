@@ -44,7 +44,7 @@ export function WorldMap({
   const dinosaurValleyAvailable = hasDinosaurValleyAccess(profile);
   useEffect(() => {
     const anchor = window.location.hash;
-    if (anchor !== "#destinations" && anchor !== "#star-bridge") return;
+    if (!["#destinations", "#star-bridge", "#nico-tv"].includes(anchor)) return;
     const frame = requestAnimationFrame(() => document.getElementById(anchor.slice(1))?.scrollIntoView({ block: "start" }));
     return () => cancelAnimationFrame(frame);
   }, []);
