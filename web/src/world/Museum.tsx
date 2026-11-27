@@ -18,6 +18,7 @@ type MemoryEntry = {
   subtitle: string;
   details: string;
   movieProjectId?: string;
+  creation?: { kind: "art" | "story"; id: string };
 };
 
 const categoryCopy: Record<MemoryCategory, { en: string; "es-MX": string; emoji: string }> = {
@@ -56,15 +57,15 @@ export function buildMemoryEntries(profile: LocalProfile): MemoryEntry[] {
   }
   for (const monster of profile.monsters) entries.push({ id: `monster:${monster.id}`, category: "monster", emoji: "👾", title: monster.name, subtitle: `${optionLabel(monster.body, language)} · ${optionLabel(monster.habitat, language)}`, details: `${optionLabel(monster.personality, language)} · ${language === "es-MX" ? "Amistad" : "Friendship"} ${monster.friendship}/100` });
   for (const pet of profile.pets) entries.push({ id: `pet:${pet.id}`, category: "pet", emoji: "🐕", title: pet.name, subtitle: `${optionLabel(pet.species, language)} · ${optionLabel(pet.personality, language)}`, details: `${language === "es-MX" ? "Vínculo" : "Bond"} ${pet.bond}/100 · ${pet.tricks.length} ${language === "es-MX" ? "trucos" : "tricks"}` });
-  for (const artwork of profile.artwork) entries.push({ id: `artwork:${artwork.id}`, category: "artwork", emoji: "🖼️", title: artwork.title, subtitle: artwork.subject, details: artwork.caption });
-  for (const story of profile.stories) entries.push({ id: `story:${story.id}`, category: "story", emoji: "📖", title: story.title, subtitle: `${story.hero} · ${storyPages(story).length} ${story.language === "es-MX" ? "páginas" : "pages"}`, details: storyPages(story).join(" ") });
+  for (const artwork of profile.artwork) entries.push({ id: `artwork:${artwork.id}`, category: "artwork", creation: { kind: "art", id: artwork.id }, emoji: "🖼️", title: artwork.title, subtitle: artwork.subject, details: artwork.caption });
+  for (const story of profile.stories) entries.push({ id: `story:${story.id}`, category: "story", creation: { kind: "story", id: story.id }, emoji: "📖", title: story.title, subtitle: `${story.hero} · ${storyPages(story).length} ${story.language === "es-MX" ? "páginas" : "pages"}`, details: storyPages(story).join(" ") });
   for (const dinosaur of profile.dinosaurs.filter((item) => item.discovered)) entries.push({ id: `dinosaur:${dinosaur.id}`, category: "dinosaur", emoji: dinosaur.emoji, title: dinosaur.name, subtitle: optionLabel(dinosaur.period, language), details: language === "es-MX" ? "Entrada desbloqueada en la guía de campo." : "Field-guide entry unlocked." });
   profile.fossils.forEach((fossil, index) => entries.push({ id: `fossil:${index}:${fossil}`, category: "fossil", emoji: "🦴", title: fossilLabel(fossil, language), subtitle: language === "es-MX" ? "Colección de fósiles" : "Fossil collection", details: language === "es-MX" ? "Recuperado durante una expedición." : "Recovered during an expedition." }));
   for (const project of profile.movieProjects) entries.push({ id: `movie:${project.id}`, category: "movie", emoji: "🎬", title: project.title, subtitle: `${project.durationMs / 1000}s · ${project.characters.length} ${language === "es-MX" ? "personajes" : "characters"}`, details: project.caption || (language === "es-MX" ? "Proyecto de película local" : "Local movie project"), movieProjectId: project.id });
   return entries;
 }
 
-export function Museum({ profile }: { profile: LocalProfile }) {
+export function Museum({ profile, openCreation }: { profile: LocalProfile; openCreation: (kind: "art" | "story", id: string) => void }) {
   const language = profile.language;
   const entries = useMemo(() => buildMemoryEntries(profile), [profile]);
   const [category, setCategory] = useState<MemoryCategory>("all");
@@ -78,7 +79,8 @@ export function Museum({ profile }: { profile: LocalProfile }) {
       return categoryMatch && queryMatch;
     });
   }, [category, entries, language, query]);
-  const selected = entries.find((entry) => entry.id === selectedId) ?? filtered[0] ?? null;
+  const selected = filtered.find((entry) => entry.id === selectedId) ?? filtered[0] ?? null;
+  const creation = selected?.creation;
   const discoveredAnimals = mergeAnimalLibrary(profile.animals).filter((item) => item.discovered).length;
   const summary = [
     { emoji: "🤖", value: profile.robots.length, label: categoryCopy.robot[language] },
@@ -121,6 +123,9 @@ export function Museum({ profile }: { profile: LocalProfile }) {
             <h2>{selected.title}</h2>
             <p>{selected.subtitle}</p>
             <div>{selected.details}</div>
+            {creation && <button type="button" className="fw-primary" onClick={() => openCreation(creation.kind, creation.id)}>
+              {creation.kind === "art" ? language === "es-MX" ? "Abrir en el Estudio de arte" : "Open in Art Studio" : language === "es-MX" ? "Leer mi cuento" : "Read my story"}
+            </button>}
             {selected.movieProjectId && <button type="button" className="fw-primary" onClick={() => openNicoWorld("showtime", selected.movieProjectId)}>{language === "es-MX" ? "Recrear película" : "Recreate movie"} →</button>}
           </>
         ) : <EmptyState emoji="🏛️">{language === "es-MX" ? "Crea y descubre elementos para llenar el museo." : "Create and discover items to fill the museum."}</EmptyState>}

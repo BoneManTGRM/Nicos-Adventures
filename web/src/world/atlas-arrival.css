@@ -1,0 +1,14 @@
+.fw-app:not([data-play-layout=true]) .fw-page-header.atlas-arrival { position: relative; isolation: isolate; min-height: clamp(8rem,14vw,12rem); overflow: hidden; border: 1px solid #495e6e; border-radius: 18px; margin: 1rem 0; padding: 1.1rem clamp(1rem,3vw,2rem); background: #142838; color: #fff7e9; }
+.atlas-arrival .atlas-arrival__art { position: absolute; z-index: -2; right: 0; top: 0; width: 52%; height: 100%; object-fit: cover; }
+.atlas-arrival::before { content: ''; position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg,#142838 30%,#142838f4 49%,#14283800 80%); }
+.atlas-arrival > div { max-width: 65%; }
+.fw-app .atlas-arrival h1 { line-height: 1.08; font-size: clamp(1.45rem,3.2vw,2.7rem); margin: .2em 0; }
+.fw-app .atlas-arrival small { color: #ffd48b; }
+.fw-app .atlas-arrival p { color: #e1e7ed; }
+.badge-progress-grid .atlas-badge-action { justify-self: start; grid-column: 1/-1; min-height: 44px; padding: .5rem .85rem; border: 1px solid #809b9f; border-radius: .7rem; color: #dff7ef; background: #163b48; font: inherit; font-weight: 700; cursor: pointer; }
+.atlas-habitat-invite { background: #1d3645; border: 1px solid #678081; border-radius: 16px; padding: 1.25rem; }
+.atlas-habitat-invite p { margin-top: 0; }
+@media (max-width: 620px) {
+  .atlas-arrival > div { max-width: 69%; }
+  .atlas-arrival::before { background: linear-gradient(90deg,#142838 34%,#142838f5 58%,#14283835 90%); }
+}

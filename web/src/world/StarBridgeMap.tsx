@@ -1,5 +1,8 @@
 import type { StarBridgeState, StarBridgeStep } from "../game/goldenAdventure";
 import { tr, type Localized } from "../i18n/core";
+import bridgeBroken from "../assets/atlas/star-bridge-broken.webp";
+import bridgeRestored from "../assets/atlas/star-bridge-restored.webp";
+import { nextAdventure } from "./journey";
 import type { Language } from "../types";
 
 type MissionPhase = "discover" | "prepare" | "repair" | "complete";
@@ -9,16 +12,14 @@ const copy = {
   titleBroken: { en: "The Broken Star Bridge", "es-MX": "El Puente Estelar Roto" },
   titleRestored: { en: "The Star Bridge shines again!", "es-MX": "¡El Puente Estelar brilla de nuevo!" },
   brokenDescription: {
-    en: "The bridge to Dinosaur Valley has gone dark. Nico needs a clever robot partner to discover what happened.",
-    "es-MX": "El puente hacia el Valle de Dinosaurios se apagó. Nico necesita un robot muy ingenioso para descubrir qué pasó.",
+    en: "The lights went out over Dinosaur Valley. Help BoltBot find the missing spark and light the way across.",
+    "es-MX": "Se apagaron las luces del Valle de Dinosaurios. Ayuda a BoltBot a encontrar la falla y a encender el puente.",
   },
   restoredDescription: {
     en: "Nico and BoltBot restored the Star Core. Dinosaur Valley is ready to explore.",
     "es-MX": "Nico y BoltBot restauraron el Núcleo Estelar. El Valle de Dinosaurios está listo para explorar.",
   },
   statusDiscover: { en: "New mission", "es-MX": "Misión nueva" },
-  statusPrepare: { en: "Prepare BoltBot", "es-MX": "Prepara a BoltBot" },
-  statusRepair: { en: "Repair in progress", "es-MX": "Reparación en curso" },
   statusComplete: { en: "Bridge restored · Valley unlocked", "es-MX": "Puente restaurado · Valle desbloqueado" },
   begin: { en: "Begin the adventure", "es-MX": "Comenzar la aventura" },
   continue: { en: "Continue in Robo Lab", "es-MX": "Continuar en el Laboratorio de Robots" },
@@ -69,41 +70,35 @@ export function StarBridgeMap({
       : phase === "repair"
         ? { label: state.step === "logic_passed" ? copy.travelBridge : copy.continueRepair, onClick: openBridge }
         : { label: copy.visitValley, onClick: openDinosaurValley };
-  const status = phase === "discover"
-    ? copy.statusDiscover
-    : phase === "prepare"
-      ? copy.statusPrepare
-      : phase === "repair"
-        ? copy.statusRepair
-        : copy.statusComplete;
+  const es = language === "es-MX";
+  const milestones = es ? ["Descubre", "Prepara", "Repara", "Explora"] : ["Discover", "Prepare", "Repair", "Explore"];
+  const current = (["discover", "prepare", "repair", "complete"] as const).indexOf(phase);
+  const status = phase === "prepare" || phase === "repair"
+    ? nextAdventure(state.step, language).label
+    : tr(complete ? copy.statusComplete : copy.statusDiscover, language);
 
   return (
-    <section
+    <section id="star-bridge"
       className={`fw-star-bridge ${complete ? "is-restored" : "is-broken"}`}
       aria-labelledby="star-bridge-title"
     >
+      <div className="fw-star-bridge__scene" role="img" aria-label={tr(complete ? copy.bridgeRestored : copy.bridgeBroken, language)}>
+        <img src={complete ? bridgeRestored : bridgeBroken} alt="" width="1200" height="395" loading="lazy" decoding="async" />
+        <span className="bridge-fireflies" aria-hidden="true"><i /><i /><i /></span>
+      </div>
       <div className="fw-star-bridge__story">
         <small>{tr(copy.eyebrow, language)}</small>
         <h2 id="star-bridge-title">{tr(complete ? copy.titleRestored : copy.titleBroken, language)}</h2>
         <p>{tr(complete ? copy.restoredDescription : copy.brokenDescription, language)}</p>
-        <strong className="fw-star-bridge__status">{tr(status, language)}</strong>
-        {action ? (
-          <button type="button" className="fw-star-bridge__action" onClick={action.onClick}>
+        <ol className="bridge-route" aria-label={es ? "Ruta de la misión" : "Mission route"}>
+          {milestones.map((name, index) => <li key={index} data-state={index < current ? "done" : undefined} aria-current={index === current ? "step" : undefined}>
+            <span aria-hidden="true">{index < current ? "✓" : "✦"}</span>{name}
+          </li>)}
+        </ol>
+        <strong className="fw-star-bridge__status">{status}</strong>
+        <button type="button" className="fw-star-bridge__action" onClick={action.onClick}>
             {tr(action.label, language)}
-          </button>
-        ) : null}
-      </div>
-      <div
-        className="fw-star-bridge__scene"
-        role="img"
-        aria-label={tr(complete ? copy.bridgeRestored : copy.bridgeBroken, language)}
-      >
-        <span className="fw-star-bridge__tower fw-star-bridge__tower--left" aria-hidden="true">✦</span>
-        <span className="fw-star-bridge__beam fw-star-bridge__beam--left" aria-hidden="true" />
-        <span className="fw-star-bridge__core" aria-hidden="true">★</span>
-        <span className="fw-star-bridge__beam fw-star-bridge__beam--right" aria-hidden="true" />
-        <span className="fw-star-bridge__tower fw-star-bridge__tower--right" aria-hidden="true">✦</span>
-        {!complete ? <span className="fw-star-bridge__fault" aria-hidden="true">⚡</span> : null}
+        </button>
       </div>
     </section>
   );

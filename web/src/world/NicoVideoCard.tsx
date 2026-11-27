@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { Language } from "../types";
 import "./nico-video-card.css";
-export const NICO_VIDEO = "/assets/nico/video/nico-basketball.mp4";
-export const NICO_POSTER = "/assets/nico/video/nico-basketball-poster.jpg";
+export const NICO_VIDEO = "/assets/nico/video/court-v2/nico-basketball.mp4";
+export const NICO_POSTER = "/assets/nico/video/court-v2/nico-basketball-poster.jpg";
 export function NicoVideoCard({ language }: { language: Language }) {
   const es = language === 'es-MX', video = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState(false);

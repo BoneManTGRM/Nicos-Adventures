@@ -10,6 +10,9 @@
 /assets/media/*
   X-Robots-Tag: noindex, noarchive
 
+/assets/nico/video/court-v2/*
+  X-Robots-Tag: noindex, noarchive
+
 /sw.js
   Cache-Control: no-cache
 

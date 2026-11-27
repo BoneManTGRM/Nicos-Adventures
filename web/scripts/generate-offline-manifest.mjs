@@ -9,9 +9,11 @@ if (!existsSync(path.join(dist, "index.html")) || !existsSync(assets)) {
   throw new Error("Production output is missing; run Vite before generating the offline manifest");
 }
 
+const atlasPaintings = new Set(readdirSync(path.join(root, "src/assets/atlas")).map(name => path.basename(name, ".webp")));
 const bundleUrls = readdirSync(assets, { withFileTypes: true })
   .filter((entry) => entry.isFile() && (
     /\.(?:js|css)$/.test(entry.name)
+    || (entry.name.endsWith(".webp") && atlasPaintings.has(entry.name.replace(/-[a-zA-Z0-9_-]{8}\.webp$/, "")))
     || /^(?:garage-|kingdom-|unicorn-(?:turn|float|prance|rest)-v2).*\.webp$/.test(entry.name)
     || /^nico-(?:explorer-atlas|professions(?:-[a-z]+)?-atlas|librarian)-.*\.webp$/.test(entry.name)
     || /^boltbot-premium-poses-atlas-.*\.webp$/.test(entry.name)

@@ -106,6 +106,12 @@ export default function NicoWorldExperience() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const text = copy[profile.language];
 
+  useEffect(() => {
+    if (open && !profile.nico.clubhouseVisited) {
+      commitProfile(current => ({ ...current, nico: { ...current.nico, clubhouseVisited: true } }));
+    }
+  }, [open, profile.id, profile.nico.clubhouseVisited, commitProfile]);
+
   const openHub = useCallback((nextTab: NicoHubTab, project: MovieProject | null = null) => {
     setEditingProject(project);
     setTab(nextTab);

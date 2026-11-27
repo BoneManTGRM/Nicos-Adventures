@@ -1,61 +1,33 @@
 .fw-star-bridge {
-  grid-column: 1 / -1;
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(280px, .9fr) minmax(360px, 1.1fr);
-  min-height: 290px;
-  overflow: hidden;
-  border: 1px solid rgba(103, 232, 249, .45);
-  border-radius: 28px;
-  background: radial-gradient(circle at 78% 25%, rgba(125, 211, 252, .24), transparent 28%), linear-gradient(145deg, #102856, #050d25 72%);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, .34);
+  grid-column: 1/-1; display: grid; grid-template-columns: 1.1fr 1fr; align-items: stretch;
+  overflow: hidden; isolation: isolate; scroll-margin-top: 6rem;
+  border: 1px solid #71684d; border-radius: 24px; color: #fff6e7; background: #18243a;
 }
-
-.fw-star-bridge__story { z-index: 2; padding: 30px; }
-.fw-star-bridge__story > small { color: #67e8f9; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-.fw-star-bridge__story h2 { font-size: clamp(27px, 4vw, 44px); line-height: 1.02; margin: 10px 0; }
-.fw-star-bridge__story p { max-width: 560px; color: #c0cdec; line-height: 1.55; }
-.fw-star-bridge__status { display: block; margin: 18px 0 14px; color: #fde68a; }
-.fw-star-bridge__action { border: 1px solid #fde68a; border-radius: 14px; background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; padding: 12px 18px; font-size: 16px; font-weight: 800; box-shadow: 0 10px 30px rgba(245, 158, 11, .22); }
-
-.fw-star-bridge__scene { position: relative; min-height: 290px; background: radial-gradient(circle at 50% 40%, rgba(250, 204, 21, .12), transparent 24%), linear-gradient(180deg, transparent 58%, rgba(2, 6, 23, .7) 59%); }
-.fw-star-bridge__tower { position: absolute; bottom: 46px; display: grid; place-items: center; width: 60px; height: 132px; border: 2px solid #67e8f9; border-radius: 24px 24px 8px 8px; background: linear-gradient(#164e63, #082f49); color: #fde68a; font-size: 30px; box-shadow: 0 0 28px rgba(34, 211, 238, .24); }
-.fw-star-bridge__tower--left { left: 8%; }
-.fw-star-bridge__tower--right { right: 8%; }
-.fw-star-bridge__beam { position: absolute; bottom: 91px; width: 34%; height: 16px; border: 2px solid #38bdf8; background: linear-gradient(180deg, #a5f3fc, #0ea5e9); box-shadow: 0 0 20px rgba(34, 211, 238, .65); }
-.fw-star-bridge__beam--left { left: 16%; transform: rotate(7deg); transform-origin: left; }
-.fw-star-bridge__beam--right { right: 16%; transform: rotate(-7deg); transform-origin: right; }
-.fw-star-bridge__core { position: absolute; z-index: 2; left: 50%; bottom: 98px; transform: translateX(-50%); display: grid; place-items: center; width: 66px; height: 66px; border: 2px solid #fde68a; border-radius: 50%; background: #172554; color: #fde68a; font-size: 33px; box-shadow: 0 0 30px rgba(250, 204, 21, .22); }
-.fw-star-bridge__fault { position: absolute; z-index: 3; left: 50%; bottom: 78px; transform: translateX(-50%); font-size: 60px; filter: drop-shadow(0 0 14px #f97316); animation: fw-star-fault 1.8s ease-in-out infinite; }
-
-.fw-star-bridge.is-broken .fw-star-bridge__beam--left { transform: rotate(14deg) translateY(5px); }
-.fw-star-bridge.is-broken .fw-star-bridge__beam--right { transform: rotate(-14deg) translateY(5px); }
-.fw-star-bridge.is-broken .fw-star-bridge__core { opacity: .35; filter: grayscale(1); }
-.fw-star-bridge.is-restored { border-color: rgba(250, 204, 21, .7); background: radial-gradient(circle at 78% 30%, rgba(250, 204, 21, .25), transparent 32%), linear-gradient(145deg, #12386b, #07152d 70%); }
-.fw-star-bridge.is-restored .fw-star-bridge__core { animation: fw-star-core 2.4s ease-in-out infinite; box-shadow: 0 0 46px rgba(250, 204, 21, .72); }
-
-@keyframes fw-star-fault { 50% { transform: translateX(-50%) scale(.86); opacity: .68; } }
-@keyframes fw-star-core { 50% { transform: translateX(-50%) scale(1.08); } }
-
-@media (max-width: 900px) {
-  .fw-star-bridge { grid-template-columns: 1fr; }
-  .fw-star-bridge__scene { min-height: 240px; }
+.fw-star-bridge__scene { position: relative; overflow: hidden; min-height: 17rem; background: #19334c; }
+.fw-star-bridge__scene img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fw-star-bridge__story { padding: clamp(1.2rem,3vw,2.4rem); align-self: center; }
+.fw-star-bridge__story > small { color: #ffce73; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.fw-star-bridge__story h2 { margin: .5rem 0; font-size: clamp(1.8rem,3.6vw,3.1rem); line-height: 1.05; color: #fff8ed; text-wrap: balance; }
+.fw-star-bridge__story p { max-width: 47ch; margin: .75rem 0; color: #e2e7ee; line-height: 1.5; }
+.fw-star-bridge__status { display: block; margin: .9rem 0 .5rem; color: #ffe1a2; }
+.fw-star-bridge__action { font: inherit; font-weight: 850; min-height: 46px; padding: .7rem 1.2rem; color: #28201c; background: #ffd176; border: 1px solid #ffe1a3; border-radius: .85rem; cursor: pointer; }
+.fw-star-bridge__action:hover { background: #ffe0a1; }
+.bridge-route { display: flex; list-style: none; margin: 1rem 0 0; padding: 0; }
+.bridge-route li { flex: 1; min-width: 0; position: relative; display: grid; gap: .35rem; justify-items: center; color: #bac7d7; font-size: .875rem; }
+.bridge-route li::before { position: absolute; content: ''; top: 11px; height: 2px; left: -50%; right: 50%; background: #536578; }
+.bridge-route li:first-child::before { display: none; }
+.bridge-route li span { z-index: 1; width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid #6d8197; background: #243349; border-radius: 50%; line-height: 1; }
+.bridge-route li[data-state=done] span { color: #143734; background: #a2dfc7; }
+.bridge-route li[aria-current=step] { color: #ffdd99; font-weight: 800; }
+.bridge-route li[aria-current=step] span { color: #251f17; background: #ffcd73; border-color: #ffe2a4; }
+.bridge-fireflies { position: absolute; inset: 0; pointer-events: none; }
+.bridge-fireflies i { position: absolute; left: 34%; top: 66%; width: 4px; height: 4px; border-radius: 50%; background: #fff3ae; box-shadow: 0 0 8px #ffd57c; animation: bridge-drift 4.5s ease-in-out infinite alternate; }
+.bridge-fireflies i:nth-child(2) { left: 65%; top: 53%; animation-delay: -2s; }
+.bridge-fireflies i:nth-child(3) { left: 55%; top: 36%; animation-delay: -3s; }
+@keyframes bridge-drift { from { transform: translate(-4px,5px); opacity: .2; } to { transform: translate(4px,-6px); opacity: .9; } }
+@media (max-width: 720px) {
+  .fw-star-bridge { grid-template-columns: minmax(0,1fr); border-radius: 18px; }
+  .fw-star-bridge__scene { min-height: 0; aspect-ratio: 2.35; }
+  .fw-star-bridge__action { width: 100%; }
 }
-
-@media (max-width: 620px) {
-  .fw-star-bridge__story { padding: 22px; }
-  .fw-star-bridge__scene { min-height: 210px; }
-  .fw-star-bridge__tower { bottom: 32px; width: 48px; height: 110px; }
-  .fw-star-bridge__beam { bottom: 68px; }
-  .fw-star-bridge__core { bottom: 73px; }
-  .fw-star-bridge__fault { bottom: 58px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fw-star-bridge__fault,
-  .fw-star-bridge.is-restored .fw-star-bridge__core { animation: none; }
-}
-
-.fw-destination.is-locked { cursor: not-allowed; opacity: .68; border-style: dashed; }
-.fw-destination.is-locked:hover { transform: none; border-color: var(--fw-line); }
-.fw-destination.is-locked small { color: #fde68a; }
+@media (prefers-reduced-motion: reduce) { .bridge-fireflies i { animation: none; } }

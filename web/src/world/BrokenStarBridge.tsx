@@ -11,7 +11,8 @@ import type { StarBridgeEvent, StarBridgeState } from "../game/goldenAdventure";
 import { AdventureAudio } from "../game3d/audio/AdventureAudio";
 import { PremiumBoltBotSprite } from "../boltbot/PremiumBoltBotSprite";
 import { NicoCostumeFigure } from "../nico/NicoCostumeFigure";
-import worldArt from "../assets/world/nicos-world-map-restored-960.webp";
+import bridgeBroken from "../assets/atlas/star-bridge-broken.webp";
+import bridgeRestored from "../assets/atlas/star-bridge-restored.webp";
 import { tr, type Localized } from "../i18n/core";
 import type { Language, Robot } from "../types";
 import "./broken-star-bridge.css";
@@ -20,8 +21,8 @@ const copy = {
   eyebrow: { en: "Golden Adventure · Star Bridge", "es-MX": "Aventura dorada · Puente Estelar" },
   inspectTitle: { en: "Inspect the bridge fault", "es-MX": "Inspecciona la falla del puente" },
   inspectBody: {
-    en: "Nico spots three damaged areas. Help BoltBot find the one that stopped Star energy from reaching the bridge.",
-    "es-MX": "Nico observa tres zonas dañadas. Ayuda a BoltBot a encontrar la que impide que la energía estelar llegue al puente.",
+    en: "Tap a marker to inspect it. Which part stopped the Star Core from powering the bridge?",
+    "es-MX": "Toca un marcador para revisarlo. ¿Qué pieza impide que la energía del Núcleo Estelar llegue al puente?",
   },
   installTitle: { en: "Install the Star Core", "es-MX": "Instala el Núcleo Estelar" },
   installBody: {
@@ -74,23 +75,18 @@ const commandCopy: Record<StarCoreCommand, Localized> = {
   charge: { en: "Charge", "es-MX": "Cargar" },
 };
 
-function BridgeScene({ state, robot, selectedFault, language }: {
-  state: StarBridgeState; robot: Robot; selectedFault: string | null; language: Language;
+function BridgeScene({ state, robot, selectedFault, language, selectFault }: {
+  state: StarBridgeState; robot: Robot; selectedFault: string | null; language: Language; selectFault: (id: string) => void;
 }) {
   const stage = starBridgeRepairStage(state.step);
   const complete = stage === "complete";
-  return <div className="illustrated-bridge" data-renderer="premium-2d" data-stage={stage} role="img" aria-label={tr(copy.scene, language)}>
-    <img className="illustrated-bridge__landscape" src={worldArt} alt="" />
-    <div className="illustrated-bridge__mist" />
-    <svg className="illustrated-bridge__deck" viewBox="0 0 600 300" aria-hidden="true">
-      <path d="M0 270 Q140 180 260 245 L260 300H0Z M340 245Q460 180 600 270V300H340Z" fill="#153c52"/>
-      <path d="M70 200 Q300 290 530 200" fill="none" stroke="#756399" strokeWidth="22"/>
-      <path d={complete ? "M70 200 Q300 240 530 200" : "M70 200L237 224 M365 224L530 200"} fill="none" stroke={complete ? "#f9db86" : "#a6c1cf"} strokeWidth="18"/>
-      {[90,180,420,510].map(x=><g key={x}><path d={`M${x} 215V100`} stroke="#bd9a6d" strokeWidth="12"/><circle cx={x} cy="100" r="9" fill="#ffeab2"/></g>)}
-      <path d="M90 105Q300 210 510 105" fill="none" stroke="#e7c792" strokeWidth="4"/>
-      <path d="M275 224L300 190L325 224L300 254Z" fill={stage === "activate" || complete ? "#ffeaa1" : "#17253c"} stroke={selectedFault === "dark-core-socket" ? "#ffdc7a" : "#76dce6"} strokeWidth="5"/>
-      {complete && <path d="M90 204Q300 246 510 204" fill="none" stroke="#fff4b3" strokeWidth="4"/>}
-    </svg>
+  return <div className="illustrated-bridge" data-renderer="premium-2d" data-stage={stage} role="group" aria-label={tr(copy.scene, language)}>
+    <img className="illustrated-bridge__landscape" src={complete ? bridgeRestored : bridgeBroken} alt="" />
+    {stage === "inspect" && <div className="bridge-probes">
+      {STAR_BRIDGE_FAULT_TARGETS.map((target, index) => <button key={target.id} type="button" data-target={target.id}
+        aria-label={`${language === "es-MX" ? "Examinar marcador" : "Inspect marker"} ${index + 1}`} aria-describedby={`bridge-probe-${target.id}`}
+        aria-pressed={selectedFault === target.id} onClick={() => selectFault(target.id)}>{index + 1}</button>)}
+    </div>}
     <div className="illustrated-bridge__nico"><NicoCostumeFigure profession="explorer" alt="Nico" /></div>
     <div className="illustrated-bridge__robot"><PremiumBoltBotSprite robot={robot} action={complete ? "celebrate" : stage === "install" ? "repair" : "scan"} alt={robot.name} /></div>
     <span className="illustrated-bridge__caption">✦ {language === "es-MX" ? "Puente Estelar" : "Star Bridge"}</span>
@@ -103,12 +99,14 @@ export function BrokenStarBridge({
   language,
   advance,
   close,
+  visitValley,
 }: {
   state: StarBridgeState;
   robot: Robot;
   language: Language;
   advance: (event: StarBridgeEvent) => void;
   close: () => void;
+  visitValley: () => void;
 }) {
   const stage = starBridgeRepairStage(state.step);
   const audio = useMemo(() => new AdventureAudio(), []);
@@ -149,14 +147,14 @@ export function BrokenStarBridge({
         <p>{tr(body, language)}</p>
       </div>
       <div className="broken-bridge__layout">
-        <BridgeScene state={state} robot={robot} selectedFault={selectedFault} language={language} />
+        <BridgeScene state={state} robot={robot} selectedFault={selectedFault} language={language} selectFault={setSelectedFault} />
         <div className="broken-bridge__controls">
           {stage === "inspect" ? (
             <>
               <div className="bridge-fault-grid" role="group" aria-label={tr(copy.inspectTitle, language)}>
-                {STAR_BRIDGE_FAULT_TARGETS.map((target) => (
+                {STAR_BRIDGE_FAULT_TARGETS.map((target, index) => (
                   <button type="button" aria-pressed={selectedFault === target.id} key={target.id} onClick={() => setSelectedFault(target.id)}>
-                    <strong>{tr(faultCopy[target.id].name, language)}</strong>
+                    <strong id={`bridge-probe-${target.id}`}><b className="bridge-probe-key" aria-hidden="true">{index + 1}</b> {tr(faultCopy[target.id].name, language)}</strong>
                     <span>{tr(faultCopy[target.id].clue, language)}</span>
                     <small>{language === "es-MX" ? "Nivel de daño" : "Damage level"}: {target.severity}</small>
                   </button>
@@ -186,7 +184,8 @@ export function BrokenStarBridge({
             <div className="bridge-achievement" role="status">
               <span aria-hidden="true">🏅</span>
               <strong>{tr(copy.achievement, language)}</strong>
-              <button type="button" className="fw-primary" onClick={close}>{tr(copy.back, language)}</button>
+              <button type="button" className="fw-primary" onClick={visitValley}>{language === "es-MX" ? "Entrar al Valle de Dinosaurios" : "Enter Dinosaur Valley"}</button>
+              <button type="button" onClick={close}>{tr(copy.back, language)}</button>
             </div>
           ) : null}
         </div>
