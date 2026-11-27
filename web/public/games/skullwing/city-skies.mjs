@@ -27,6 +27,14 @@ function balloon(c,x,y){
   c.fillStyle='#c69f66';c.beginPath();c.ellipse(x,y-1.3,8,3.25,-.08,0,tau);c.fill();
   c.fillStyle='#685b50';c.fillRect(x-2,y+5,4,2.4);
 }
+// On a phone only a narrow window of the panoramic painting is visible.
+export function drawSkyWindow(c,img,pan,ground,w,h,width,height){
+  const top=Math.max(0,ground-h),visible=Math.min(ground,height)-top;
+  if(visible<=0)return;
+  const xScale=img.naturalWidth/w,yScale=img.naturalHeight/h;
+  c.drawImage(img,pan*xScale,(top-ground+h)*yScale,width*xScale,visible*yScale,0,top,width,visible);
+}
+
 export function drawCitySky(c,v,city,p){
   const {width,height,ground,camera=0,time=0,reduced=false}=v,t=reduced?0:time;
   const img=load(city);
@@ -38,7 +46,7 @@ export function drawCitySky(c,v,city,p){
     const travel=Math.min(margin*.65,Math.max(65,v.levelWidth? v.levelWidth*.095:160));
     const start=Math.max(0,Math.min(margin-travel,w*city.focus-width*.50-travel*.15));
     const pan=start+travel*Math.min(1,camera/Math.max(1,(v.levelWidth||1900)-width));
-    c.drawImage(img,-pan,ground-h,w,h);
+    drawSkyWindow(c,img,pan,ground,w,h,width,height);
   }else{
     // A local silhouette keeps the street legible while its painting decodes.
     for(let i=-1;i<width/32+1;i++){

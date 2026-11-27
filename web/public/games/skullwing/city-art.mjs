@@ -1,6 +1,6 @@
 import {cities} from './cities.mjs';
 import {expansionPalettes} from './city-palettes.mjs';
-import {drawCitySky} from './city-skies.mjs';
+import {drawCitySky,drawSkyWindow} from './city-skies.mjs';
 import {drawLandmark} from './landmark-art.mjs';
 // Painted scenery uses repeating parallax plates. The moving details are drawn
 // separately so a whole city block never needs to be repainted onto a cache.
@@ -265,7 +265,7 @@ export function drawBackdrop(c,view) {
     const scale=Math.max((width+52)/w,ground/h);
     const margin=w*scale-width;
     const pan=Math.min(margin, Math.max(0, margin*.26 + camera*.10));
-    c.drawImage(harborPainting,-pan,ground-h*scale,w*scale,h*scale);
+    drawSkyWindow(c,harborPainting,pan,ground,w*scale,h*scale,width,height);
     const x=mod(287+t*3-camera*.12,765)-24;
     for(let bx=x;bx<width+25;bx+=765)blimp(c,bx,ground*.42+Math.sin(t*.34)*1.3,d,p);
   } else {

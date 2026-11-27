@@ -14,17 +14,32 @@ import {clamp} from './simulation.mjs';
 export class Renderer {
   constructor(canvas,reduced) {
     this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});
+    this.maxRatio=Math.min(window.devicePixelRatio||1,1.75);this.ratio=this.maxRatio;
+    this.sampleSeconds=0;this.sampleFrames=0;this.stableSeconds=0;
     this.reduced=reduced;this.smashFX=new SmashFX(reduced);this.reset();
   }
   reset(){this.smashFX.clear();this.camera=0;this.lift=0;this.shake=0;this.parts=[];this.rings=[];this.frame=0;this.foot=0;this.turnFace=1;}
   resize(){
     const box=this.canvas.getBoundingClientRect();if(!box.width||!box.height)return;
-    const ratio=Math.min(window.devicePixelRatio||1,1.75);
+    this.maxRatio=Math.min(window.devicePixelRatio||1,1.75);
+    const ratio=Math.min(this.ratio,this.maxRatio);
     const w=Math.round(box.width*ratio),h=Math.round(box.height*ratio);
     if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;}
     this.scale=Math.min(box.width/318,Math.max(.80,box.height/303),2.22);
     this.width=box.width/this.scale;this.height=box.height/this.scale;
     this.pixel=this.canvas.width/this.width;
+  }
+  pace(dt){
+    if(dt<=0)return;
+    this.sampleSeconds+=dt;this.sampleFrames++;
+    if(this.sampleSeconds<.8)return;
+    const interval=this.sampleSeconds/this.sampleFrames;
+    this.stableSeconds=interval<.018?this.stableSeconds+this.sampleSeconds:0;
+    this.sampleSeconds=0;this.sampleFrames=0;
+    let next=this.ratio;
+    if(interval>.023)next=Math.max(Math.min(1,this.maxRatio),this.ratio-.25);
+    else if(this.stableSeconds>=12){next=Math.min(this.maxRatio,this.ratio+.25);this.stableSeconds=0;}
+    if(next!==this.ratio){this.ratio=next;this.resize();}
   }
   burst(x,y,count,type,dir=0){
     const colors=type==='chips'?['#f5bc77','#abadbc','#8e769e','#506685','#fce4a0']:
@@ -62,6 +77,7 @@ export class Renderer {
     else if(e.kind==='roar')this.shake=Math.max(this.shake,3.5);
   }
   render(s,dt){
+    this.pace(dt);
     const c=this.ctx,W=this.width,H=this.height;if(!W||!H)return;
     this.frame+=dt;const a=s.actor, look=W*.42-clamp(a.vx*.15,-27,27);
     const target=clamp(a.x-look,0,Math.max(0,s.length-W));
