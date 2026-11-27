@@ -206,17 +206,30 @@ for (const monster of ["skullwing", "nacho"]) {
       const names = ["upper", "farUpper", "thigh", "farThigh"];
       const byRect = new Map(names.map(name => [tiles[name].rect.join(","), name]));
       const angles = new Map(names.map(name => [name, new Set<number>()]));
+      const tilesDrawn = new WeakMap<HTMLCanvasElement,Map<string,number>>();
+      function record(canvas: HTMLCanvasElement, limb: string, angle: number) {
+        if (canvas.id === "world") {
+          angles.get(limb)!.add(angle);
+          if (names.every(n => angles.get(n)!.size >= 8)) canvas.dataset.limbsMoving = "yes";
+        } else {
+          let joints = tilesDrawn.get(canvas);
+          if (!joints) { joints = new Map(); tilesDrawn.set(canvas,joints); }
+          joints.set(limb,angle);
+        }
+      }
       const original = CanvasRenderingContext2D.prototype.drawImage;
       CanvasRenderingContext2D.prototype.drawImage = new Proxy(original, {
         apply(target, ctx: CanvasRenderingContext2D, args) {
-          if (ctx.canvas.id === "world" && args[0] instanceof HTMLImageElement &&
-              args[0].currentSrc.endsWith(monster + "-joints.webp")) {
+          const image = args[0];
+          if (image instanceof HTMLImageElement && image.currentSrc.endsWith(monster + "-joints.webp")) {
             const limb = byRect.get(args.slice(1,5).join(","));
             if (limb) {
               const t = ctx.getTransform();
-              angles.get(limb)!.add(Math.round(Math.atan2(t.b,t.a)*180/Math.PI));
-              if (names.every(n => angles.get(n)!.size >= 8)) ctx.canvas.dataset.limbsMoving = "yes";
+              record(ctx.canvas,limb,Math.round(Math.atan2(t.b,t.a)*180/Math.PI));
             }
+          } else if (image instanceof HTMLCanvasElement) {
+            // Count a cached joint pose only when it actually reaches the playfield.
+            tilesDrawn.get(image)?.forEach((angle,limb) => record(ctx.canvas,limb,angle));
           }
           return Reflect.apply(target,ctx,args);
         }
