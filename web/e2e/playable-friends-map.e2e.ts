@@ -155,3 +155,45 @@ test('an island jump rings a bell and a rescue flight responds to steering, powe
   await expect(voyage).toHaveAttribute('data-screen','flying');
   await photo(page,info,'starwhale-rescue-flight');
 });
+
+test('Clockwork Canopy rescues an owlet, switches moves, and remembers the rescue', async ({page}, info) => {
+  const es = info.project.metadata.language === 'es-MX';
+  const errors: string[] = [];
+  page.on('pageerror', err => errors.push(err.message));
+  if (es) {
+    await page.goto('/');
+    await page.locator('.fw-brand').click();
+    await page.getByRole('button', {name: 'Cambiar a español de México'}).click();
+  }
+  await page.goto('/?play=friends-map');
+  const enter = page.getByTestId('open-clockwork-canopy');
+  await expect(enter).toBeEnabled({timeout:25000});
+  await enter.click();
+  const game = page.locator('.canopy-game');
+  const canvas = game.locator('canvas');
+  await expect(canvas).toHaveAttribute('data-ground','0',{timeout:20000});
+  await expect(game.getByRole('heading',{name: es ? 'Arboleda de molinos' : 'Windmill Grove'})).toBeVisible();
+  const right = game.locator('[data-canopy-control="right"]');
+  const rect = (await right.boundingBox())!;
+  await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);
+  await page.mouse.down();
+  await expect(game).toHaveAttribute('data-owlets','1');
+  await page.mouse.up();
+  await game.getByRole('button',{name: es ? 'Cambiar de amigo' : 'Switch friend'}).click();
+  await game.getByRole('button',{name:/^Becca ·/}).click();
+  await expect(game).toHaveAttribute('data-hero','becca');
+  const action = game.locator('[data-canopy-control="power"]');
+  await expect(action).toHaveAccessibleName(es ? 'Liana' : 'Vine swing');
+  await action.click();
+  await expect.poll(async()=>Number(await canvas.getAttribute('data-y'))).toBeLessThan(310);
+  await photo(page,info,'clockwork-canopy-in-motion');
+  await game.getByRole('button',{name: es ? 'Pausa' : 'Pause',exact:true}).click();
+  await expect(game).toHaveAttribute('data-panel','pause');
+  await game.getByRole('button',{name: es ? 'Continuar' : 'Resume',exact:true}).click();
+  await expect(game).toHaveAttribute('data-panel','play');
+  await page.goto('/?play=friends-map');
+  await enter.click();
+  await expect(game).toHaveAttribute('data-owlets','1');
+  await expect(canvas).toHaveAttribute('data-ground','0');
+  expect(errors).toEqual([]);
+});
