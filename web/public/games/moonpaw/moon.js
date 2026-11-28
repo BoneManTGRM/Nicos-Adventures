@@ -2,7 +2,7 @@
 
 const moonSpell=(()=>{
   const tau=Math.PI*2, summon=.31, ready=.56, fall=.55, lifetime=5.05;
-  const skimTimes=[.51,.83,1.17,3.69];
+  const skimTimes=[.51,.83,1.17,3.69], drillTime=1.26, drillSteps=7;
   const unit=t=>Math.max(0,Math.min(1,t));
   const ease=t=>t*t*(3-2*t);
   const find=()=>flight?.specialAttackFX.find(f=>f.kind==='moon'&&f.index===flight.index);
@@ -44,13 +44,51 @@ const moonSpell=(()=>{
     peelCrust(world,spot,.095,'nova');spark(p.x+spot.x*p.r,p.y+spot.y*p.r,'#d5e9ff',reduceMotion?3:7,45);
     gainEnergy(2);tone(340+f.next*48,175,.074,'triangle',.021);applyWorldDamage(1);
   }
+  function capture(f){
+    // A well can catch a moon already in orbit or intercept its normal descent.
+    if(f.dropping){
+      f.launch=plunge(f,unit(f.dropAge/fall));f.dropAge=0;
+    }
+    f.vortex=true;f.drilled=0;f.requestedAt=f.age+.14;f.target={x:0,y:0};
+    showNotice('GRAVITY MOON · CORE DRILL',1.18);
+    tone(185,69,.43,'triangle',.056);
+  }
+
+  function spiral(f,t){
+    const flatten=.76,src=f.launch;
+    const start=Math.atan2(src.y/flatten,src.x);
+    const reach=Math.hypot(src.x,src.y/flatten);
+    const r=(1-t)*(reach+.30*Math.sin(Math.PI*t));
+    const angle=start+tau*1.22*t;
+    return {x:r*Math.cos(angle),y:r*flatten*Math.sin(angle),z:1};
+  }
+
+  function drill(f,part){
+    // Successive curved wedges overlap end to end, carving a continuous spiral.
+    const world=worlds[f.index],p=orbitTarget(),lo=part/drillSteps,hi=(part+1)/drillSteps;
+    const mid=spiral(f,(lo+hi)/2),a=[],b=[],radius=.038+.008*f.power+.018*hi;
+    for(let j=0;j<=5;j++){
+      const t=lo+(hi-lo)*j/5,q=spiral(f,t),v=spiral(f,t+.001);
+      const dx=v.x-q.x,dy=v.y-q.y,len=Math.hypot(dx,dy)||1;
+      const body=clipToDisc(q.x,q.y);
+      for(const [edge,sign] of [[a,-1],[b,1]]){
+        edge.push([(body.x-mid.x)/radius-sign*dy/len,(body.y-mid.y)/radius+sign*dx/len]);
+      }
+    }
+    world.skin.incise(mid.x,mid.y,spinAngle(),radius,a.concat(b.reverse()));
+    const point=spiral(f,hi);
+    spark(p.x+point.x*p.r,p.y+point.y*p.r,'#c9b4ff',reduceMotion?2:6,51);
+    if(part%2===0){tone(285+part*61,125,.09,'triangle',.027);applyWorldDamage(1);}
+  }
+
   function landing(f){
     const p=orbitTarget(),q=f.target;
-    strikeSurface(q,'gravity',.85+.67*f.power,'comet');
+    strikeSurface(q,'gravity',.85+.67*f.power+(f.vortex?.68:0),f.vortex?'gravity':'comet');
+    const damage=3+f.power+(f.vortex?2:0);
     spark(p.x+p.r*q.x,p.y+p.r*q.y,'#d7eaff',reduceMotion?7:16,124);
-    labels.push({x:p.x+p.r*q.x,y:p.y+p.r*(q.y-.13),val:'−'+(3+f.power),life:.8});
+    labels.push({x:p.x+p.r*q.x,y:p.y+p.r*(q.y-.13),val:f.vortex?'−'+damage+' CORE':'−'+damage,life:.8});
     gainEnergy(10+f.power);hitSound('gravity',f.power);
-    tone(99,37,.42,'triangle',.070);applyWorldDamage(3+f.power);
+    tone(99,37,.42,'triangle',.070);applyWorldDamage(damage);
   }
   function update(dt){
     if(!flight||flight.phase!=='fight')return;
@@ -59,6 +97,7 @@ const moonSpell=(()=>{
       const f=list[i];if(f.kind!=='moon')continue;
       if(f.index!==flight.index){list.splice(i,1);continue;}
       f.age+=dt;
+      if(!f.hit&&!f.vortex&&flight.well>0)capture(f);
       let fallStep=dt;
       if(!f.dropping){
         const trigger=f.target?Math.max(ready,f.requestedAt):lifetime;
@@ -75,10 +114,16 @@ const moonSpell=(()=>{
         tone(565,150,.38,'sine',.05);
       }
       f.dropAge+=fallStep;
-      if(!f.hit&&f.dropAge>=fall){
+      const duration=f.vortex?drillTime:fall;
+      if(f.vortex){
+        while(f.drilled<drillSteps&&f.dropAge/duration>=(f.drilled+1)/drillSteps){
+          drill(f,f.drilled++);if(flight.phase!=='fight')return;
+        }
+      }
+      if(!f.hit&&f.dropAge>=duration){
         f.hit=true;landing(f);if(flight.phase!=='fight')return;
       }
-      if(f.dropAge>fall+.62)list.splice(i,1);
+      if(f.dropAge>duration+.62)list.splice(i,1);
     }
   }
 
@@ -143,7 +188,7 @@ const moonSpell=(()=>{
       ctx.save();
       if(!f.dropping){ctx.globalAlpha=unit(f.age/.35);track(f,p,false);track(f,p,true);ctx.globalAlpha=1;}
       if(f.hit){
-        const t=unit((f.dropAge-fall)/.58),q=f.target,x=p.x+p.r*q.x,y=p.y+p.r*q.y;
+        const t=unit((f.dropAge-(f.vortex?drillTime:fall))/.58),q=f.target,x=p.x+p.r*q.x,y=p.y+p.r*q.y;
         const size=p.r*(.44+.085*f.power)*ease(t);
         ctx.globalAlpha=1-t;ctx.translate(x,y);ctx.rotate(-.22);
         for(let i=0;i<2;i++){
@@ -154,25 +199,25 @@ const moonSpell=(()=>{
       }
       const orbiting=f.age>=summon&&!f.dropping;
       let q;
-      if(f.dropping)q=plunge(f,unit(f.dropAge/fall));
+      if(f.dropping)q=f.vortex?spiral(f,unit(f.dropAge/drillTime)):plunge(f,unit(f.dropAge/fall));
       else if(orbiting)q=orbit(f,f.age);
       else {
         const t=ease(unit(f.age/summon)),end=orbit(f,summon);
         q={x:(f.origin.x*W-p.x)/p.r*(1-t)+end.x*t,y:(f.origin.y*H-p.y)/p.r*(1-t)+end.y*t-.18*Math.sin(t*Math.PI),z:1};
       }
       if(q.z<0){ctx.beginPath();ctx.rect(0,0,W,H);ctx.moveTo(p.x+p.r,p.y);ctx.arc(p.x,p.y,p.r,0,tau);ctx.clip('evenodd');}
-      const x=p.x+p.r*q.x,y=p.y+p.r*q.y,r=p.r*(.137+.02*f.power)*(.88+.14*q.z)*(f.dropping?1+.45*unit(f.dropAge/fall):1);
+      const x=p.x+p.r*q.x,y=p.y+p.r*q.y,r=p.r*(.137+.02*f.power)*(.88+.14*q.z)*(f.dropping?(f.vortex?1-.57*unit(f.dropAge/drillTime):1+.45*unit(f.dropAge/fall)):1);
       if(f.dropping||orbiting){
-        const trail=new Path2D(),count=14;
+        const trail=new Path2D(),count=f.vortex?26:14;
         for(let j=0;j<=count;j++){
-          const ago=(count-j)/count*.19;let position;
-          if(f.dropping)position=plunge(f,unit((f.dropAge-ago)/fall));
+          const ago=(count-j)/count*(f.vortex?.65:.19);let position;
+          if(f.dropping)position=f.vortex?spiral(f,unit((f.dropAge-ago)/drillTime)):plunge(f,unit((f.dropAge-ago)/fall));
           else position=orbit(f,Math.max(summon,f.age-ago));
           const tx=p.x+p.r*position.x,ty=p.y+p.r*position.y;
           if(!j)trail.moveTo(tx,ty);else trail.lineTo(tx,ty);
         }
-        ctx.lineCap='round';ctx.strokeStyle=f.dropping?'#ffc6808c':'#9dcdff63';ctx.lineWidth=r*(f.dropping?1.22:.56);ctx.stroke(trail);
-        ctx.strokeStyle=f.dropping?'#ffdfab':'#e0f4ff';ctx.lineWidth=r*.17;ctx.stroke(trail);
+        ctx.lineCap='round';ctx.strokeStyle=f.vortex?'#c67dff75':f.dropping?'#ffc6808c':'#9dcdff63';ctx.lineWidth=r*(f.dropping?1.22:.56);ctx.stroke(trail);
+        ctx.strokeStyle=f.vortex?'#eac0ff':f.dropping?'#ffdfab':'#e0f4ff';ctx.lineWidth=r*.17;ctx.stroke(trail);
       }
       ctx.translate(x,y);ctx.rotate(-.20+(reduceMotion?0:.21*Math.sin(f.age*1.6)));
       ctx.drawImage(paintedMoon(),-r,-r,r*2,r*2);ctx.restore();

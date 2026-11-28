@@ -178,3 +178,6 @@ background:linear-gradient(#fff7dc 16%,#f9dfa8 51%,#e2a95f 87%);background-clip:
   .spellbook-nav button{padding:3px 10px;font-size:11px}
   .cabinet:has(#arsenal:not([hidden])) .screen{height:calc(100svh - 229px)}
 }
+
+@media(min-width:711px),(orientation:landscape){#lab{grid-template-columns:repeat(4,minmax(0,1fr))}}
+#load-spitball{color:#ffdda2}

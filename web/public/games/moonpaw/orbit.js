@@ -16,13 +16,13 @@ const planetSpells={
   nova:{name:'Nova Beam',icon:'spark',color:'#ffd497',core:'#fff5dc',hint:'Punch through the planet. Hit the rim to blast off chunks.'},
   solar:{name:'Solar Flare',icon:'solar',color:'#ff9359',core:'#fff1a6',hint:'Melt a tunnel. Its walls keep burning wider.'},
   cryo:{name:'Ice Lance',icon:'frost',color:'#83eaff',core:'#e9ffff',hint:'Freeze the crust, then break it with Nova Beam.'},
-  gravity:{name:'Gravity Well',icon:'gravity',color:'#cb98ff',core:'#f5dcff',hint:'Split the crust and pull nearby meteors into it.'},
+  gravity:{name:'Gravity Well',icon:'gravity',color:'#cb98ff',core:'#f5dcff',hint:'Pull in nearby meteors. Combine with Pocket Moon to drill into the core.'},
   comet:{name:'Comet Rain',icon:'comet',color:'#ffae84',core:'#fff6ca',hint:'Call down a volley. Charge your cast for more comets.'},
   storm:{name:'Chain Lightning',icon:'storm',color:'#afbbff',core:'#f8ffff',hint:'Arc through meteors and split the crust at two points.'},
   crescent:{name:'Crescent Saw',icon:'crescent',color:'#a0ffdb',core:'#fff8d3',hint:'Send a spinning crescent carving a curved trench. Charge for a longer cut.',attack:crescentSpell},
   bloom:{name:'Crystal Bloom',icon:'bloom',color:'#ffb9e2',core:'#ecfff9',hint:'Plant a crystal seed and watch it erupt through the crust.',attack:bloomSpell},
   wormhole:{name:'Wormhole Punch',icon:'wormhole',color:'#ef9bff',core:'#fff0ff',hint:'Punch through linked portals to open two holes in the planet.',attack:wormholeSpell},
-  dragon:{name:'Flaming Dragon',icon:'dragon',color:'#ffa453',core:'#fff2a5',hint:'Summon a fire dragon to dive into the crust and blast out the other side.',attack:dragonSpell},
+  dragon:{name:'Flaming Dragon',icon:'dragon',color:'#ffa453',core:'#fff2a5',hint:'Aim through Phantom Claws trenches to send dragon fire racing down the cuts.',attack:dragonSpell},
   fleet:{name:'Starfleet Raid',icon:'fleet',color:'#7feaff',core:'#e5ffff',hint:'Call in a squadron for a strafing run. Hold to summon more ships.',attack:fleetSpell},
   yarn:{name:'Cosmic Yarn',icon:'yarn',color:'#ffabda',core:'#fff3cf',hint:'Cast to wrap the planet in yarn. Tap again to pull the loops tight.',attack:yarnSpell},
   claws:{name:'Phantom Claws',icon:'claws',color:'#8af3e2',core:'#e9fffb',hint:'Swipe across the planet to carve three trenches. Cross an earlier slash to tear out a chunk.',attack:clawSpell},
@@ -30,9 +30,13 @@ const planetSpells={
   heist:{name:'Core Heist',icon:'heist',color:'#ffae72',core:'#fff2bb',hint:'Reach through a portal, steal the glowing core and watch the shell buckle.',attack:heistSpell},
   pinball:{name:'Meteor Pinball',icon:'pinball',color:'#94eaff',core:'#f3fbff',hint:'Cast to set up three bumpers. Tap Cast as the meteor returns to Moonpaw to bat it back.',attack:pinballSpell},
   mirror:{name:'Mirror Pounce',icon:'mirror',color:'#c6a1ff',core:'#f7f1ff',hint:'Summon three mirror cats to pounce from different sides and hollow out one cavern.',attack:mirrorSpell},
-  moon:{name:'Pocket Moon',icon:'moon',color:'#ffe8a2',core:'#ffffed',hint:'Cast to send a moon skimming around the planet. Tap the surface again to drop it there.',attack:moonSpell},
+  moon:{name:'Pocket Moon',icon:'moon',color:'#ffe8a2',core:'#ffffed',hint:'Cast to orbit, then tap to drop. Add Gravity Well to spiral down to the core.',attack:moonSpell},
   potion:{name:'Potion Roulette',icon:'potion',color:'#a8ef92',core:'#f4ffe3',hint:'Toss a potion for candy glass, an inflating shell or wobbling blobs. Hit it again to see what happens.',attack:potionSpell},
-  monster:{name:'World Eater',icon:'monster',color:'#72edeb',core:'#ffdfa8',hint:'Turn into a giant monster and bite away half the planet. Cast again to eat the rest.',attack:monsterSpell}
+  monster:{name:'World Eater',icon:'monster',color:'#72edeb',core:'#ffdfa8',hint:'Bite away half the planet. Cast again to eat the rest, or select Spitball ready to fling the chunk.',attack:monsterSpell},
+  spitball:{name:'Planet Spitball',icon:'spitball',color:'#ffd898',core:'#fff3d2',hint:'Load up with World Eater. Tap the exposed core to spit your planet chunk through it.',attack:spitballSpell},
+  zipper:{name:'Cosmic Zipper',icon:'zipper',color:'#7ff3d9',core:'#fff3d2',hint:'Swipe a path across the planet to unzip the crust. Tap or press Cast for an automatic path.',attack:zipperSpell},
+  stampede:{name:'Nine Lives Stampede',icon:'stampede',color:'#c6a7ff',core:'#fff3d2',hint:'Tap to the beat as eight ghost cats open a tunnel. Nail the ninth beat to ride the core out.',attack:stampedeSpell},
+  cutter:{name:'Constellation Cutter',icon:'cutter',color:'#ffdc89',core:'#fff3d2',hint:'Tap three points to cut a triangle out of the planet. Tap a fourth spot to launch the wedge.',attack:cutterSpell}
 };
 const spellOrder=Object.keys(planetSpells);
 const specialAttacks=Object.values(planetSpells).map(spell=>spell.attack).filter(Boolean);
@@ -170,6 +174,7 @@ function beginEncounter(){
   flight.frostHalo=null;
   cooldown=0;hud();orbitUI();
   showNotice(flight.index===0?'TAP TO BLAST A HOLE':worlds[flight.index].name.toUpperCase(),flight.index===0?3:1.2);
+  hatchlings.begin();
 }
 function releaseNova(){
   if(!flight||flight.phase!=='fight')return;
@@ -194,12 +199,19 @@ function projectedAim(p,aim){
 function shootNova(power,aim,path){
   if(!flight||mode!=='play'||flight.phase!=='fight')return;
   const kind=selectedSpell,spot=projectedAim(orbitTarget(),aim),encounter=flight,index=flight.index;
+  if(kind==='spitball'&&!spitballSpell.loaded()){showNotice('USE WORLD EATER TO LOAD A CHUNK',1.5);return}
+  if(kind==='cutter'&&cooldown<=0){
+    beginGesture(kind,power,null);
+    fireOrbitSpell(kind,power,spot,path);
+    return;
+  }
+  const loadedShot=kind==='spitball'&&spitballSpell.loaded();
   const twoPart=kind==='moon'||kind==='yarn';
   if(twoPart&&actorPending()&&acting.kind===kind){
     acting.followUp??={spot,power};
     return;
   }
-  if(cooldown>0&&!(twoPart&&planetSpells[kind].attack.actionLabel()))return;
+  if(cooldown>0&&!loadedShot&&!(twoPart&&planetSpells[kind].attack.actionLabel()))return;
   beginGesture(kind,power,()=>{
     if(flight!==encounter||flight.index!==index||flight.phase!=='fight'||mode!=='play')return;
     const followUp=acting.followUp;
@@ -210,6 +222,7 @@ function shootNova(power,aim,path){
 function fireOrbitSpell(kind,power,spot,path){
   const world=worlds[flight.index],p=orbitTarget(),spell=planetSpells[kind];
   const x1=p.x+p.r*spot.x,y1=p.y+p.r*spot.y;
+  if(hatchlings.observeCast(spot,kind,power))return;
   flight.scars++;
   if(kind!=='potion')potionSpell.onHit(spot,kind);
   if(kind==='purr')yarnSpell.pullForPurr();
@@ -288,6 +301,7 @@ function spawnMeteor(){
     ice:0,dead:false,age:Math.random()*5,spin:Math.random()-.5});
 }
 function updateOrbit(dt){
+  stampedeSpell.advanceRide(dt);
   if(flight.frostHalo&&(flight.frostHalo.age+=dt)>.65)flight.frostHalo=null;
   for(const list of [flight.effects,flight.arcs])for(const effect of list)effect.age+=dt;
   flight.effects=flight.effects.filter(e=>e.age<e.life);flight.arcs=flight.arcs.filter(e=>e.age<.48);
@@ -314,7 +328,7 @@ function updateOrbit(dt){
     }
     return;
   }
-  flight.spin+=reduceMotion?0:dt*(.030+flight.index*.005)*(flight.brittle>0?.57:1);
+  flight.spin+=(reduceMotion||hatchlings.chipping())?0:dt*(.030+flight.index*.005)*(flight.brittle>0?.57:1);
   const spinningWorld=worlds[flight.index];
   spinningWorld.skin.advance(dt,spinAngle(),(p,size,kind)=>peelCrust(spinningWorld,p,size,kind));
   updateComets(dt);if(flight.phase!=='fight')return;
@@ -343,7 +357,7 @@ function updateOrbit(dt){
   flight.wellAge+=dt;
   if((keys.has('Space')||castPointer!==null)&&cooldown<=0&&!actorPending()){
     flight.charge=Math.min(1,flight.charge+dt/.92);
-    if(flight.charge>=1&&selectedSpell!=='purr'&&selectedSpell!=='pinball'&&selectedSpell!=='moon'&&selectedSpell!=='yarn'){flight.charge=0;shootNova(3)}
+    if(flight.charge>=1&&!['purr','pinball','moon','yarn','cutter','stampede'].includes(selectedSpell)){flight.charge=0;shootNova(3)}
   }
   if(flight.phase!=='fight')return;
   if(difficulty==='hard'){
@@ -499,10 +513,10 @@ function drawMeteor(e){
 function drawOrbitForeground(){
   if(flight.phase==='launch')return;
   const p=orbitTarget(),world=worlds[flight.index];
-  const mageOpacity=monsterSpell.playerOpacity();
+  const mageOpacity=monsterSpell.playerOpacity()*stampedeSpell.riderOpacity();
   if(mageOpacity>0){ctx.save();ctx.globalAlpha=mageOpacity;drawCatTrail();drawFrostHalo();ctx.restore()}
   if(flight.phase==='break')drawBreakLight(p,world,flight.age,false);
-  drawPlanet();drawEjecta();drawComets();drawArcs();drawImpactArt();
+  drawPlanet();hatchlings.drawWorld();spitballSpell.drawAim();drawEjecta();drawComets();drawArcs();drawImpactArt();
   if(clawStroke?.points.length){
     const points=clawStroke.points;
     ctx.save();ctx.translate(p.x,p.y);ctx.scale(p.r,p.r);
@@ -528,6 +542,7 @@ function drawOrbitForeground(){
     ctx.save();ctx.shadowBlur=12;ctx.shadowColor='#ffd4b5';star(x,y,5+f*15,'#fff4c8');
     ctx.strokeStyle='#d5adff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,10+f*7,-Math.PI/2,-Math.PI/2+Math.PI*2*f);ctx.stroke();ctx.restore();
   }
+  stampedeSpell.drawRide();
   if(mageOpacity>.12)drawCastingGesture();
   if(!flight.beam)return;
   const b=flight.beam,spell=planetSpells[b.kind],life=b.kind==='gravity'?.58:.38;

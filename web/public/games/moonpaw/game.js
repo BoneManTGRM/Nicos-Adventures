@@ -95,12 +95,14 @@ function setMode(next){
   $('missionLabel').textContent=difficulty.toUpperCase()+(flight?' ORBIT':' LESSON');
   $('blink').hidden=!!flight;
   showSupernova();
+  $('load-spitball').hidden=true;
   $('arsenal').hidden=mode!=='title'&&!(flight&&mode==='play');
   if(!flight){$('weakness').hidden=true;$('cast').style.color='';$('castSymbol').setAttribute('href','#i-spark')}
   else chooseSpell(selectedSpell,false);
   $('graduationLaunch').hidden=!!flight||mode!=='won';const title=mode==='title',play=mode==='play';
   $('intro').hidden=!title;$('dialog').hidden=play||title;$('pause').hidden=!play;$('track').hidden=title;$('spellDeck').hidden=!play;$('idleControls').hidden=play;$('lesson').hidden=!play;
   if(!play){if(flight)flight.charge=0;clearInput();$('notice').textContent='';noticeTime=0}
+  hatchlings.syncControls();
 }
 function home(){
   resetActor();
@@ -139,6 +141,7 @@ wide.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFull
 document.addEventListener('fullscreenchange',wideUI);
 window.addEventListener('blur',()=>{if(mode==='play')pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='play')pause()});
 $('supernova').onclick=unleashSupernova;
+$('load-spitball').onclick=()=>{if(flight?.phase==='fight'&&spitballSpell.loaded())chooseSpell('spitball')};
 for(const page of bookPages){
   $('book-'+page.id).onclick=()=>chooseSpell(lastSpellOnPage.get(page.id)||page.firstElementChild.id.slice(5));
 }
@@ -164,16 +167,18 @@ window.addEventListener('keydown',e=>{
     if(!e.repeat){if(e.code==='KeyF')frostWave();else blink()}
     return;
   }
-  if(e.code==='Space'&&selectedSpell==='pinball'&&e.repeat)return;
-  if(e.code==='Space'&&tryReturnMeteor()){return}
+  if(e.code==='Space'&&['stampede','pinball'].includes(selectedSpell)&&e.repeat)return;
+  if(e.code==='Space'&&trySpellTiming()){return}
   keys.add(e.code);
 });
 window.addEventListener('keyup',e=>{
   if(e.code==='Space'&&keys.has('Space')&&flight&&mode==='play')releaseNova();
   keys.delete(e.code);
 });
-function tryReturnMeteor(){
-  return selectedSpell==='pinball'&&flight?.phase==='fight'&&mode==='play'&&pinballSpell.tryBat();
+function trySpellTiming(){
+  if(flight?.phase!=='fight'||mode!=='play')return false;
+  if(selectedSpell==='stampede')return stampedeSpell.tryBeat();
+  return selectedSpell==='pinball'&&pinballSpell.tryBat();
 }
 function traceClaw(p){
   const spot=projectedAim(orbitTarget(),p),points=clawStroke.points,last=points.at(-1);
@@ -186,10 +191,10 @@ function localPoint(e){const r=screenEl.getBoundingClientRect();return{x:e.clien
 screenEl.addEventListener('pointerdown',e=>{
   if(mode!=='play'||drag||clawStroke||e.target.closest('button'))return;
   e.preventDefault();const p=localPoint(e);
-  if(tryReturnMeteor())return;
+  if(trySpellTiming())return;
   if(flight?.phase==='fight'&&pointOnWorld(p.x,p.y)){
-    if(selectedSpell==='claws'){
-      clawStroke={id:e.pointerId,points:[],encounter:flight,index:flight.index};
+    if(selectedSpell==='claws'||selectedSpell==='zipper'){
+      clawStroke={spell:selectedSpell,id:e.pointerId,points:[],encounter:flight,index:flight.index};
       traceClaw(p);screenEl.setPointerCapture(e.pointerId);
     }else shootNova(1,p);
     return;
@@ -206,15 +211,15 @@ screenEl.addEventListener('pointermove',e=>{
 function lift(e){
   if(clawStroke?.id===e.pointerId){
     const stroke=clawStroke;
-    if(e.type==='pointerup'&&mode==='play'&&flight===stroke.encounter&&flight.index===stroke.index&&selectedSpell==='claws'){
+    if(e.type==='pointerup'&&mode==='play'&&flight===stroke.encounter&&flight.index===stroke.index&&selectedSpell===stroke.spell){
       const p=localPoint(e);traceClaw(p);shootNova(1,p,stroke.points);
     }
     clawStroke=null;
   }
   if(drag?.id===e.pointerId)drag=null;if(castPointer===e.pointerId){castPointer=null;if(flight&&mode==='play'){if(e.type==='pointerup')releaseNova();else flight.charge=0}}}
 for(const evt of ['pointerup','pointercancel','lostpointercapture']){screenEl.addEventListener(evt,lift);$('cast').addEventListener(evt,lift)}
-$('cast').addEventListener('pointerdown',e=>{if(mode!=='play')return;e.preventDefault();if(tryReturnMeteor())return;castPointer=e.pointerId;$('cast').setPointerCapture(e.pointerId);if(!flight)fire()});
-$('cast').addEventListener('click',e=>{if(e.detail===0&&!tryReturnMeteor()){if(flight)shootNova(1);else fire()}});
+$('cast').addEventListener('pointerdown',e=>{if(mode!=='play')return;e.preventDefault();if(trySpellTiming())return;castPointer=e.pointerId;$('cast').setPointerCapture(e.pointerId);if(!flight)fire()});
+$('cast').addEventListener('click',e=>{if(e.detail===0&&!trySpellTiming()){if(flight)shootNova(1);else fire()}});
 $('frost').onclick=frostWave;
 $('blink').onclick=blink;
 function lessonUI(){
@@ -230,6 +235,7 @@ function learn(){
 }
 function spellUI(){
   if(flight&&mode==='play'){
+    $('load-spitball').hidden=flight.phase!=='fight'||!spitballSpell.loaded()||selectedSpell==='spitball';
     const action=planetSpells[selectedSpell].attack?.actionLabel?.();
     const hint=action||(coarse?'HOLD':'HOLD SPACE');
     if($('boltKey').textContent!==hint)$('boltKey').textContent=hint;
@@ -301,7 +307,8 @@ function placePlayer(){
     cat.style.transform='translate(-50%,-50%) perspective(600px) rotateY('+bank+'deg) rotateZ('+player.tilt+'deg) scale('+(scale*depth)+')';
   }
   const hitFlash=invulnerable>.15&&Math.floor(invulnerable*9)%2&&mode==='play'?.62:1;
-  cat.style.opacity=String(hitFlash*(flight?monsterSpell.playerOpacity():1));
+  cat.style.opacity=String(hitFlash*(flight?monsterSpell.playerOpacity()*stampedeSpell.riderOpacity():1));
+  spitballSpell.drawCheeks();
 }
 function fire(){
   if(mode!=='play'||cooldown>0||actorPending())return;
@@ -546,7 +553,7 @@ function drawScene(){
     ctx.globalAlpha=.18+(.5+.5*Math.sin((reduceMotion?0:clock)*1.5+s.a))*.48;ctx.fillStyle='#ece6ff';ctx.fillRect(x,y,s.n,s.n)}
   ctx.globalAlpha=1;
   if(mode==='title'){ctx.restore();return}
-  if(flight)drawOrbitForeground();
+  if(flight)drawOrbitForeground();else if(mode==='play')hatchlings.drawSchool();
   if(gate)drawGate();
   for(const e of entities){if(!e.dead){if(e.kind==='meteor')drawMeteor(e);else if(e.kind==='gem')drawGem(e);else if(['potion','rune','hoop'].includes(e.kind))drawPractice(e);else drawEnemy(e);if(e.ice>0)drawIce(e)}}
   for(const s of shots){ctx.fillStyle='#55cacd';ctx.fillRect(s.x-13,s.y-2,13,4);ctx.fillStyle='#d9fffb';ctx.fillRect(s.x-5,s.y-2,8,4);star(s.x,s.y,5,'#c0fff6')}

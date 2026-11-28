@@ -27,6 +27,7 @@ const monsterSpell=(()=>{
       const bite=skin.bite(turn),after=skin.frame(turn);
       if(after){ink.globalCompositeOperation='destination-out';ink.drawImage(after,0,0,112,112)}
       f.morsel=sample;
+      if(bite.remaining)spitballSpell.load(world);
       for(let n=0;n<(reduceMotion?5:14);n++)f.chips.push({x:f.target.x-.12-Math.random()*.65,y:(Math.random()-.5)*1.45,size:.025+Math.random()*.052});
       gainEnergy(15);tone(148,29,.29,'sawtooth',.085);ring(p.x+p.r*f.target.x,p.y,world.core,p.r*.75);
       flight.hp=bite.remaining?Math.max(1,Math.round(flight.hp*bite.remaining/bite.before)):0;

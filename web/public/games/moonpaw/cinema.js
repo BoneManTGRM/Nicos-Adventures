@@ -25,6 +25,10 @@ const impactStyles={
   mirror:{map:'vortex',color:'#c6a1ff',scale:.73,life:.65},
   moon:{map:'flare',color:'#ffe8a2',scale:.73,life:.65},
   potion:{map:'ice',color:'#a8ef92',scale:.73,life:.65},
+  spitball:{map:'flare',color:'#ffd898',scale:.75,life:.60},
+  zipper:{map:'ice',color:'#7ff3d9',scale:.75,life:.60},
+  stampede:{map:'vortex',color:'#c6a7ff',scale:.75,life:.60},
+  cutter:{map:'storm',color:'#ffdc89',scale:.75,life:.60},
   monster:{map:'vortex',color:'#72edeb',scale:.95,life:.74},
   super:{map:'storm',color:'#ffe9a5',scale:1.29,life:1.03}
 };

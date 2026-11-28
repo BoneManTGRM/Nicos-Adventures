@@ -26,13 +26,104 @@ const dragonSpell = (() => {
     const entry = onDisc(spot.x, latitude);
     const side = spot.x > .12 ? -1 : 1;
     const exit = onDisc(side*.87*Math.sqrt(1-latitude*latitude), latitude);
-    flight.specialAttackFX.push({
+    const fx={
       kind:'dragon', index:flight.index, age:0, power, entry, exit,
       origin:{x:paw.x/W, y:paw.y/H}, turn:spinAngle(), entered:false, emerged:false
-    });
+    };
+    // When a claw trench is targeted, track that rotating strip during the dive.
+    igniteScars(fx);fx.tracked=fx.fires.length>0;
+    flight.specialAttackFX.push(fx);
     castFlash = 1; cooldown = 1.48;
     tone(150, 400, .35, 'triangle', .065);
     tone(390, 115, .45, 'sawtooth', .025);
+  }
+
+  // Fire can travel only into an existing, front-facing claw scar touched by
+  // the dragon's bore. Find the exact crossing along its projected polyline.
+  function igniteScars(fx) {
+    fx.fires=[];
+    const x0=fx.entry.x,x1=fx.exit.x,y=fx.entry.y;
+    const left=Math.min(x0,x1),right=Math.max(x0,x1);
+    for(const scar of flight.clawScars||[]){
+      if(scar.index!==fx.index||!scar.cuts.length)continue;
+      let best=null;
+      for(const lane of scar.lanes){
+        let a=projected(lane[0],scar.turn);
+        for(let i=1;i<lane.length;i++){
+          const b=projected(lane[i],scar.turn);
+          if(a.z>0&&b.z>0){
+            const dy=b.y-a.y;
+            // Parallel traces can share any part of the chord.
+            const t=Math.abs(dy)>.0001?unit((y-a.y)/dy):
+              Math.abs(b.x-a.x)>.0001?unit((clamp(x0,Math.min(a.x,b.x),Math.max(a.x,b.x))-a.x)/(b.x-a.x)):0;
+            const x=a.x+t*(b.x-a.x),cy=a.y+t*dy;
+            const distance=Math.hypot(x-clamp(x,left,right),cy-y);
+            if(distance<.063&&(!best||distance<best.distance)){
+              best={distance,seed:i-1+t,along:unit((x-x0)/(x1-x0))};
+            }
+          }
+          a=b;
+        }
+      }
+      if(best)fx.fires.push({scar,seed:best.seed,start:contact+(breach-contact)*best.along,step:0});
+    }
+  }
+
+  function burnScars(fx) {
+    for(const fire of fx.fires||[]){
+      const t=fx.age-fire.start;
+      if(t<0)continue;
+      if(!fire.step){
+        if(!fx.fireAnnounced){fx.fireAnnounced=true;showNotice('DRAGONFIRE CLAWS',1.1);}
+        fire.step=1;tone(530,830,.16,'sawtooth',.018);
+      }
+      if(t<.43||fire.step>1)continue;
+      fire.step=2;
+      const world=worlds[fx.index];
+      for(const cut of fire.scar.cuts){
+        // Heat the same solid incision the player drew, including hooked swipes.
+        cut.kind='solar';cut.wall=cutProfiles.solar.wall;cut.age=0;
+        world.skin.widen(cut,.011+.003*fx.power);
+      }
+      gainEnergy(4);applyWorldDamage(1+Math.ceil(fx.power/2));
+      if(flight.phase!=='fight')return;
+    }
+  }
+
+  function fireLines(fx,p) {
+    for(const fire of fx.fires||[]){
+      const age=fx.age-fire.start;
+      if(age<0||age>1.12)continue;
+      const lanes=fire.scar.lanes,count=lanes[0].length-1;
+      const spread=unit(age/.52)*Math.max(fire.seed,count-fire.seed);
+      const from=Math.max(0,fire.seed-spread),to=Math.min(count,fire.seed+spread);
+      ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineCap='round';ctx.lineJoin='round';
+      ctx.globalAlpha=unit((1.12-age)/.38);
+      for(const lane of lanes){
+        const path=new Path2D();let started=false;
+        function at(t){
+          const i=Math.min(count-1,Math.floor(t)),u=t-i;
+          const a=projected(lane[i],fire.scar.turn),b=projected(lane[i+1],fire.scar.turn);
+          return {x:p.x+p.r*(a.x+(b.x-a.x)*u),y:p.y+p.r*(a.y+(b.y-a.y)*u),z:a.z+(b.z-a.z)*u};
+        }
+        const nodes=[from];
+        for(let k=Math.floor(from)+1;k<to;k++)nodes.push(k);
+        nodes.push(to);
+        for(const t of nodes){
+          const v=at(t);if(v.z<=0){started=false;continue;}
+          if(started)path.lineTo(v.x,v.y);else path.moveTo(v.x,v.y);started=true;
+        }
+        for(const [color,width] of [['#f04d1a95',.079],['#ff9a3f',.036],['#fff6b5',.011]]){
+          ctx.strokeStyle=color;ctx.lineWidth=Math.max(.65,width*p.r);ctx.stroke(path);
+        }
+        if(!reduceMotion&&age<.55){
+          for(const tip of [at(from),at(to)])if(tip.z>0){
+            ctx.fillStyle='#ffdf82';ctx.beginPath();ctx.arc(tip.x,tip.y,p.r*.027,0,tau);ctx.fill();
+          }
+        }
+      }
+      ctx.restore();
+    }
   }
 
   function hit(fx, point, eruption) {
@@ -70,7 +161,8 @@ const dragonSpell = (() => {
       if (fx.index !== flight.index) { list.splice(i,1); continue; }
       fx.age += dt;
       if (!fx.entered && fx.age >= contact) {
-        fx.entered = true; fx.turn = spinAngle();
+        fx.entered = true;
+        if(!fx.tracked){fx.turn=spinAngle();igniteScars(fx)}
         hit(fx, fx.entry, false);
         if (flight.phase !== 'fight') return;
       }
@@ -79,6 +171,7 @@ const dragonSpell = (() => {
         hit(fx, fx.exit, true);
         if (flight.phase !== 'fight') return;
       }
+      burnScars(fx);if(flight.phase!=='fight')return;
       if (fx.age >= life) list.splice(i,1);
     }
   }
@@ -227,15 +320,15 @@ const dragonSpell = (() => {
     const p=orbitTarget();
     for(const fx of flight.specialAttackFX){
       if(fx.kind!=='dragon'||fx.index!==flight.index)continue;
-      const entry=screenPoint(fx.entered?projected(fx.entry,fx.turn):fx.entry,p);
-      const exit=screenPoint(fx.entered?projected(fx.exit,fx.turn):fx.exit,p);
+      const entry=screenPoint((fx.entered||fx.tracked)?projected(fx.entry,fx.turn):fx.entry,p);
+      const exit=screenPoint((fx.entered||fx.tracked)?projected(fx.exit,fx.turn):fx.exit,p);
       const origin={x:W*fx.origin.x,y:H*fx.origin.y};
       const dx=entry.x-origin.x,dy=entry.y-origin.y;
       const arch=reduceMotion ? p.r*.25 : p.r*.76;
       const bend={x:origin.x+.57*dx-p.r*.18,y:origin.y+.53*dy-arch};
       const aim=Math.atan2(entry.y-bend.y,entry.x-bend.x);
       const length=p.r*(.99+.15*fx.power);
-      magma(fx,p,entry,exit);
+      magma(fx,p,entry,exit);fireLines(fx,p);
       if(fx.age<contact){
         const t=unit(fx.age/contact),s=1-t;
         const nose={x:s*s*origin.x+2*s*t*bend.x+t*t*entry.x,y:s*s*origin.y+2*s*t*bend.y+t*t*entry.y};
