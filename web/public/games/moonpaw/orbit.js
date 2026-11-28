@@ -18,9 +18,13 @@ const planetSpells={
   cryo:{name:'Ice Lance',icon:'frost',color:'#83eaff',core:'#e9ffff',hint:'Freeze the crust, then break it with Nova Beam.'},
   gravity:{name:'Gravity Well',icon:'gravity',color:'#cb98ff',core:'#f5dcff',hint:'Split the crust and pull nearby meteors into it.'},
   comet:{name:'Comet Rain',icon:'comet',color:'#ffae84',core:'#fff6ca',hint:'Call down a volley. Charge your cast for more comets.'},
-  storm:{name:'Chain Lightning',icon:'storm',color:'#afbbff',core:'#f8ffff',hint:'Arc through meteors and split the crust at two points.'}
+  storm:{name:'Chain Lightning',icon:'storm',color:'#afbbff',core:'#f8ffff',hint:'Arc through meteors and split the crust at two points.'},
+  crescent:{name:'Crescent Saw',icon:'crescent',color:'#a0ffdb',core:'#fff8d3',hint:'Send a spinning crescent carving a curved trench. Charge for a longer cut.',attack:crescentSpell},
+  bloom:{name:'Crystal Bloom',icon:'bloom',color:'#ffb9e2',core:'#ecfff9',hint:'Plant a crystal seed and watch it erupt through the crust.',attack:bloomSpell},
+  wormhole:{name:'Wormhole Punch',icon:'wormhole',color:'#ef9bff',core:'#fff0ff',hint:'Punch through linked portals to open two holes in the planet.',attack:wormholeSpell}
 };
 const spellOrder=Object.keys(planetSpells);
+const specialAttacks=Object.values(planetSpells).map(spell=>spell.attack).filter(Boolean);
 let selectedSpell='nova',flight=null;
 function chooseSpell(kind,feedback=true){
   if(!planetSpells[kind])return;
@@ -107,7 +111,7 @@ function launchOrbit(carryScore){
   entities=[];shots=[];particles=[];rings=[];labels=[];
   cooldown=invulnerable=burstTime=castFlash=shake=frostCooldown=trailClock=0;
   flight={index:first,first,destroyed:0,hp:world.health,phase:'launch',age:0,charge:0,beam:null,
-    blastX:0,blastY:0,impact:0,meteorTimer:2.6,energy:0,supers:0,effects:[],comets:[],arcs:[],trail:0,spin:0,scars:0,ejecta:[],fragments:[],burnCut:null,burn:0,burnTick:0,brittle:0,well:0,wellAge:0,combos:0};
+    blastX:0,blastY:0,impact:0,meteorTimer:2.6,energy:0,supers:0,specialAttackFX:[],effects:[],comets:[],arcs:[],trail:0,spin:0,scars:0,ejecta:[],fragments:[],burnCut:null,burn:0,burnTick:0,brittle:0,well:0,wellAge:0,combos:0};
   player.x=W*.23;player.y=H*.65;player.vx=player.vy=player.tilt=0;
   clearInput();setMode('play');hud();spellUI();orbitUI();placePlayer();
   showNotice('LEAVING THE ASTRONOMY TOWER',1.55);tune([294,392,494,659,880]);
@@ -138,6 +142,7 @@ function beginEncounter(){
   const world=worlds[flight.index];world.skin.reset();
   flight.hp=world.health;flight.meteorTimer=1.5;flight.spin=0;flight.scars=0;
   flight.burn=flight.burnTick=flight.brittle=flight.well=flight.wellAge=0;
+  flight.specialAttackFX.length=0;
   flight.burnCut=null;flight.fragments=[];flight.ejecta=[];flight.effects=[];flight.comets=[];flight.arcs=[];
   flight.frostHalo=null;
   cooldown=0;hud();orbitUI();
@@ -173,8 +178,12 @@ function shootNova(power,aim){
 function fireOrbitSpell(kind,power,spot){
   const world=worlds[flight.index],p=orbitTarget(),spell=planetSpells[kind];
   const x1=p.x+p.r*spot.x,y1=p.y+p.r*spot.y;
+  flight.scars++;
+  if(spell.attack){
+    spell.attack.cast(spot,power);
+    return;
+  }
   if(kind==='comet'||kind==='storm'){
-    flight.scars++;
     if(kind==='comet')callComets(spot,power);else chainLightning(spot,power);
     return;
   }
@@ -183,7 +192,6 @@ function fireOrbitSpell(kind,power,spot){
   flight.beam={x0,y0,x1,y1,power,age:0,kind};
   const shatterIce=kind==='nova'&&flight.brittle>0;
   const breakPower=power+(shatterIce?1.4:0);
-  flight.scars++;
   const cut=strikeSurface(spot,kind,breakPower);
   gainEnergy(19+power*2+(shatterIce?10:0));hitSound(kind,power);
   if(kind==='gravity'){
@@ -219,6 +227,7 @@ function fireOrbitSpell(kind,power,spot){
 }
 function shatterWorld(p){
   const world=worlds[flight.index];
+  flight.specialAttackFX.length=0;
   flight.phase='break';flight.age=0;flight.charge=0;flight.comets=[];
   flight.fragments=prepareFragments(world);
   flight.blastX=p.x/W;flight.blastY=p.y/H;flight.destroyed++;
@@ -274,6 +283,12 @@ function updateOrbit(dt){
   const spinningWorld=worlds[flight.index];
   spinningWorld.skin.advance(dt,spinAngle(),(p,size,kind)=>peelCrust(spinningWorld,p,size,kind));
   updateComets(dt);if(flight.phase!=='fight')return;
+  if(flight.specialAttackFX.length){
+    for(const attack of specialAttacks){
+      attack.update(dt);
+      if(flight.phase!=='fight')return;
+    }
+  }
   const wasBurning=flight.burn>0;
   if(flight.burn>0){
     flight.burn=Math.max(0,flight.burn-dt);flight.burnTick-=dt;
@@ -452,6 +467,7 @@ function drawOrbitForeground(){
   drawCatTrail();drawFrostHalo();
   if(flight.phase==='break')drawBreakLight(p,world,flight.age,false);
   drawPlanet();drawEjecta();drawComets();drawArcs();drawImpactArt();
+  if(flight.specialAttackFX.length)for(const attack of specialAttacks)attack.draw();
   if(flight.phase==='break')drawBreakLight(p,world,flight.age,true);
   if(flight.charge>0){
     const f=flight.charge,{x,y}=castingPaw();

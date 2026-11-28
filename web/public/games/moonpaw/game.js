@@ -143,7 +143,7 @@ for(const id of spellOrder)$('pick-'+id).onclick=()=>chooseSpell(id);
 const playKeys=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyW','KeyA','KeyS','KeyD','Space','KeyF','KeyB','KeyP','Escape'];
 window.addEventListener('keydown',e=>{
   if(e.code==='Escape'&&shell.classList.contains('expanded')){shell.classList.remove('expanded');wideUI()}
-  if((mode==='title'||(flight&&mode==='play'))&&/^Digit[1-6]$/.test(e.code)){
+  if((mode==='title'||(flight&&mode==='play'))&&/^Digit[1-9]$/.test(e.code)){
     e.preventDefault();if(!e.repeat)chooseSpell(spellOrder[Number(e.code.slice(-1))-1]);return;
   }
   if(e.code==='KeyR'&&flight&&mode==='play'){e.preventDefault();if(!e.repeat)unleashSupernova();return}

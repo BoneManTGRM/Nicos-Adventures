@@ -12,6 +12,9 @@ const impactStyles={
   gravity:{map:'vortex',color:'#d09dff',scale:.99,life:1.02},
   comet:{map:'flare',color:'#ffbf7e',scale:.80,life:.76},
   storm:{map:'storm',color:'#b0bcff',scale:.71,life:.60},
+  crescent:{map:'flare',color:'#a0ffdb',scale:.58,life:.46},
+  bloom:{map:'ice',color:'#ffb9e2',scale:.66,life:.61},
+  wormhole:{map:'vortex',color:'#ef9bff',scale:.83,life:.76},
   super:{map:'storm',color:'#ffe9a5',scale:1.29,life:1.03}
 };
 function lightSprite(key,x,y,w,h,rotation,alpha){

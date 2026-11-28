@@ -16,6 +16,18 @@ const gestures={
   gravity:{wind:{shoulder:55,elbow:-76,freeArm:34,dy:26},strike:{shoulder:-34,elbow:3,freeArm:-28,dy:-20}},
   comet:{wind:{shoulder:23,elbow:-88,head:10},strike:{shoulder:-42,elbow:-3,head:-9,freeArm:-25,dy:-21}},
   storm:{wind:{roll:13,shoulder:49,elbow:-104},strike:{roll:-12,wrist:-15,freeArm:-26},follow:{shoulder:-19,elbow:19}},
+  // Draw the crescent from a low outside guard to a high, open-handed finish.
+  crescent:{wind:{dx:-19,dy:14,roll:7,shoulder:56,elbow:-33,wrist:12,freeArm:13},
+    strike:{dx:22,dy:-12,roll:-6,shoulder:-18,elbow:1,wrist:-10,freeArm:-12},
+    follow:{dy:-8,roll:-5,shoulder:-29,elbow:14,wrist:8,tailTip:12},time:1.12},
+  // Cup the seed, then lift and open both paws as the flower expands.
+  bloom:{wind:{dx:-8,dy:19,roll:1,stretch:.96,shoulder:31,elbow:-56,wrist:13,freeArm:24,head:7},
+    strike:{dx:4,dy:-21,roll:-2,stretch:1.025,shoulder:-5,elbow:-16,wrist:13,freeArm:-26,head:-4,thigh:7,shin:-9},
+    follow:{dx:2,dy:-9,roll:0,shoulder:-3,elbow:-12,wrist:8,freeArm:-17,thigh:3,shin:-6},time:1.2},
+  // Pull the portal inward, punch its centre, then draw the fist back.
+  wormhole:{wind:{dx:-34,dy:4,roll:10,shoulder:37,elbow:-80,wrist:20,freeArm:17,tail:16,tailTip:-14},
+    strike:{dx:46,dy:2,roll:-3,stretch:1.07,shoulder:16,elbow:7,wrist:-16,freeArm:-18,tail:-14},
+    follow:{dx:-3,dy:3,roll:5,shoulder:28,elbow:-41,wrist:15,freeArm:10,tailTip:14},time:.96},
   super:{wind:{dx:-51,dy:25,stretch:.88,roll:18,elbow:-110,thigh:31,shin:-45,freeArm:43},strike:{dx:56,stretch:1.09,roll:-15,shoulder:-24,wrist:-16,freeArm:-45,thigh:-27,otherLeg:26},time:1.35},
   frost:{wind:{shoulder:23,elbow:-55,freeArm:28},strike:{shoulder:-29,elbow:9,freeArm:-38}},
   blink:{wind:{dx:-21,stretch:.92,shoulder:27,elbow:-59},strike:{dx:17,roll:-14,stretch:1.1,thigh:-25,otherLeg:-15}}
