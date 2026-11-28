@@ -42,6 +42,9 @@ const gestures={
   mirror:{wind:{dx:-30,dy:14,stretch:.90,thigh:25},strike:{dx:40,dy:-19,stretch:1.08,freeArm:-20},time:1.12},
   moon:{wind:{shoulder:-22,head:-8},strike:{dy:-8,roll:7,shoulder:24,wrist:-17}},
   potion:{wind:{wrist:-23,elbow:-66,freeArm:26},strike:{roll:-8,shoulder:-18,wrist:21},follow:{head:7,elbow:-20}},
+  monster:{wind:{dx:-13,dy:7,roll:9,stretch:.92,head:6,shoulder:38,elbow:-76,thigh:14,tailTip:14},
+    strike:{dx:19,dy:-9,roll:-6,stretch:1.11,head:-11,shoulder:-14,elbow:12,freeArm:-21,tail:-16},
+    follow:{dx:9,head:-5,freeArm:-12,thigh:-9},time:1.16},
   super:{wind:{dx:-51,dy:25,stretch:.88,roll:18,elbow:-110,thigh:31,shin:-45,freeArm:43},strike:{dx:56,stretch:1.09,roll:-15,shoulder:-24,wrist:-16,freeArm:-45,thigh:-27,otherLeg:26},time:1.35},
   frost:{wind:{shoulder:23,elbow:-55,freeArm:28},strike:{shoulder:-29,elbow:9,freeArm:-38}},
   blink:{wind:{dx:-21,stretch:.92,shoulder:27,elbow:-59},strike:{dx:17,roll:-14,stretch:1.1,thigh:-25,otherLeg:-15}}

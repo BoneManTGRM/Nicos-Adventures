@@ -31,7 +31,8 @@ const planetSpells={
   pinball:{name:'Meteor Pinball',icon:'pinball',color:'#94eaff',core:'#f3fbff',hint:'Cast to set up three bumpers. Tap Cast as the meteor returns to Moonpaw to bat it back.',attack:pinballSpell},
   mirror:{name:'Mirror Pounce',icon:'mirror',color:'#c6a1ff',core:'#f7f1ff',hint:'Summon three mirror cats to pounce from different sides and hollow out one cavern.',attack:mirrorSpell},
   moon:{name:'Pocket Moon',icon:'moon',color:'#ffe8a2',core:'#ffffed',hint:'Cast to send a moon skimming around the planet. Tap the surface again to drop it there.',attack:moonSpell},
-  potion:{name:'Potion Roulette',icon:'potion',color:'#a8ef92',core:'#f4ffe3',hint:'Toss a potion for candy glass, an inflating shell or wobbling blobs. Hit it again to see what happens.',attack:potionSpell}
+  potion:{name:'Potion Roulette',icon:'potion',color:'#a8ef92',core:'#f4ffe3',hint:'Toss a potion for candy glass, an inflating shell or wobbling blobs. Hit it again to see what happens.',attack:potionSpell},
+  monster:{name:'World Eater',icon:'monster',color:'#72edeb',core:'#ffdfa8',hint:'Turn into a giant monster and bite away half the planet. Cast again to eat the rest.',attack:monsterSpell}
 };
 const spellOrder=Object.keys(planetSpells);
 const specialAttacks=Object.values(planetSpells).map(spell=>spell.attack).filter(Boolean);
@@ -260,7 +261,7 @@ function fireOrbitSpell(kind,power,spot,path){
 }
 function shatterWorld(p){
   const world=worlds[flight.index];
-  flight.specialAttackFX.length=0;
+  flight.specialAttackFX=flight.specialAttackFX.filter(effect=>effect.kind==='monster');
   flight.phase='break';flight.age=0;flight.charge=0;flight.comets=[];
   flight.fragments=prepareFragments(world);
   flight.blastX=p.x/W;flight.blastY=p.y/H;flight.destroyed++;
@@ -295,7 +296,7 @@ function updateOrbit(dt){
   flight.age+=dt;flight.impact=Math.max(0,flight.impact-dt*4);
   if(flight.beam){flight.beam.age+=dt;if(flight.beam.age>(flight.beam.kind==='gravity'?.58:.38))flight.beam=null}
   flight.trail-=dt;
-  if(flight.trail<=0){
+  if(flight.trail<=0&&monsterSpell.playerOpacity()>.15){
     flight.trail=.045;
     spark(player.x-player.w*.28,player.y+player.w*.18,flight.phase==='launch'?'#acdfff':'#c9a6ff',2,30);
     particles[particles.length-1].vx-=70;
@@ -306,6 +307,7 @@ function updateOrbit(dt){
     return;
   }
   if(flight.phase==='break'){
+    if(flight.specialAttackFX.length)monsterSpell.update(dt);
     if(flight.age>=2.45){
       if(flight.index===worlds.length-1){endOrbit(true);return}
       worlds[flight.index].releaseSkin();flight.index++;beginEncounter();
@@ -366,7 +368,7 @@ function updateOrbit(dt){
     }
     if(e.ice>0){e.ice=Math.max(0,e.ice-dt);continue}
     e.age+=dt;e.x+=e.vx*dt;e.y+=e.vy*dt;
-    if(Math.hypot(e.x-player.x-player.w*.07,e.y-player.y+player.w*.035)<e.r+player.w*.19){
+    if(monsterSpell.playerOpacity()>.35&&Math.hypot(e.x-player.x-player.w*.07,e.y-player.y+player.w*.035)<e.r+player.w*.19){
       hit(e);if(mode!=='play')return;
     }
   }
@@ -497,7 +499,8 @@ function drawMeteor(e){
 function drawOrbitForeground(){
   if(flight.phase==='launch')return;
   const p=orbitTarget(),world=worlds[flight.index];
-  drawCatTrail();drawFrostHalo();
+  const mageOpacity=monsterSpell.playerOpacity();
+  if(mageOpacity>0){ctx.save();ctx.globalAlpha=mageOpacity;drawCatTrail();drawFrostHalo();ctx.restore()}
   if(flight.phase==='break')drawBreakLight(p,world,flight.age,false);
   drawPlanet();drawEjecta();drawComets();drawArcs();drawImpactArt();
   if(clawStroke?.points.length){
@@ -511,8 +514,12 @@ function drawOrbitForeground(){
     const tip=points.at(-1);ctx.beginPath();ctx.arc(tip.x,tip.y,.032,0,Math.PI*2);ctx.fill();
     ctx.restore();
   }
-  if(flight.specialAttackFX.length)for(const attack of specialAttacks)attack.draw();
-  if(flight.phase==='break')drawBreakLight(p,world,flight.age,true);
+  if(flight.phase==='break'){
+    drawBreakLight(p,world,flight.age,true);
+    if(flight.specialAttackFX.length)monsterSpell.draw();
+  }else if(flight.specialAttackFX.length){
+    for(const attack of specialAttacks)attack.draw();
+  }
   if(flight.charge>0){
     const f=flight.charge,{x,y}=castingPaw();
     if(selectedSpell==='purr')purrSpell.drawCharge(f);
@@ -521,7 +528,7 @@ function drawOrbitForeground(){
     ctx.save();ctx.shadowBlur=12;ctx.shadowColor='#ffd4b5';star(x,y,5+f*15,'#fff4c8');
     ctx.strokeStyle='#d5adff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,10+f*7,-Math.PI/2,-Math.PI/2+Math.PI*2*f);ctx.stroke();ctx.restore();
   }
-  drawCastingGesture();
+  if(mageOpacity>.12)drawCastingGesture();
   if(!flight.beam)return;
   const b=flight.beam,spell=planetSpells[b.kind],life=b.kind==='gravity'?.58:.38;
   const t=b.age/life,fade=1-t;

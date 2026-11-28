@@ -29,7 +29,7 @@ function outlineCut(cut){
 }
 function createPlanetDamage(seed,geology){
   const cuts=[],spalls=[],pending=[],samples=[];
-  let hits=0;
+  let hits=0,bites=0;
   const grid=15;
   for(let iy=0;iy<grid;iy++)for(let iz=0;iz<grid;iz++)for(let ix=0;ix<grid;ix++){
     const x=2*(ix+.5)/grid-1,y=2*(iy+.5)/grid-1,z=2*(iz+.5)/grid-1;
@@ -37,7 +37,7 @@ function createPlanetDamage(seed,geology){
   }
   let removed=0;
   function measure(cut){
-    const a=cut.turn*Math.PI*2,cos=Math.cos(a),sin=Math.sin(a),cap=(cut.radius*1.28)**2;
+    const a=cut.turn*Math.PI*2,cos=Math.cos(a),sin=Math.sin(a),cap=cut.jaw?0:(cut.radius*1.28)**2;
     for(const pt of samples){
       if(pt.gone)continue;
       const across=pt.x*cos-pt.z*sin;
@@ -50,7 +50,9 @@ function createPlanetDamage(seed,geology){
   }
   function widen(cut,amount){
     if(!cut||!cuts.includes(cut))return;
-    cut.radius=Math.min(1.65,cut.radius+amount);outlineCut(cut);measure(cut);
+    if(cut.jaw)cut.x+=amount;
+    else cut.radius=Math.min(1.65,cut.radius+amount);
+    outlineCut(cut);measure(cut);
   }
   // Near-surface pieces peel away after the initial shock. A sphere clipped by
   // an oblique bedding plane leaves both a ragged lip and a flat fractured floor.
@@ -125,10 +127,60 @@ function createPlanetDamage(seed,geology){
       planes.push({x:Math.cos(theta)/len,y:Math.sin(theta)/len,z:lean/len,
         limit:.72+.13*Math.cos(phase+i*3.21)});
     }
-    const cut={planes,x,y,px,pz,ex:x*cos-z*sin,ez:-z*cos-x*sin,turn,radius:size,shape,customOutline:!!outline,wall:style.wall,kind,age:0};
+    const cut={planes,x,y,px,pz,ex:x*cos-z*sin,ez:-z*cos-x*sin,turn,radius:size,shape,jaw:!!outline?.jaw,customOutline:!!outline,wall:style.wall,kind,age:0};
     cuts.push(cut);outlineCut(cut);measure(cut);
     if(!outline)queueSpalls(kind,x,y,z,turn,size,power);
     return cut;
+  }
+  function biteMouth(turn){
+    const a=turn*Math.PI*2,cs=Math.cos(a),sn=Math.sin(a);
+    let x=0,y=0,count=0;
+    for(const pt of samples)if(!pt.gone){
+      x+=pt.x*cs-pt.z*sn;y+=pt.y;count++;
+    }
+    return count?{x:x/count,y:y/count}:{x:0,y:0};
+  }
+  function bite(turn){
+    const total=samples.length,before=1-removed/total;
+    if(!before)return {before,removed:0,remaining:0};
+    if(bites){
+      // The second mouthful takes the remaining body, including material behind
+      // the limb. Future measurements and the renderer agree on the empty solid.
+      bites=2;removed=total;for(const pt of samples)pt.gone=true;
+      return {before,removed:before,remaining:0};
+    }
+    // Tip the jaw slightly into the camera; the exposed half shows a band of
+    // interior immediately and the entire profile turns with the planet.
+    const jawTurn=turn+.024,a=jawTurn*Math.PI*2,cs=Math.cos(a),sn=Math.sin(a);
+    const steps=96,edge=new Float64Array(steps+1),levels=[];
+    const teeth=[[-.84,.15,.12],[-.58,.17,.25],[-.31,.14,.13],[-.049,.18,.19],
+      [.21,.13,.11],[.46,.16,.24],[.74,.16,.15],[.94,.11,.10]];
+    for(let i=0;i<=steps;i++){
+      const y=2*i/steps-1;
+      let x=.14-.45*y*y+.031*Math.sin(7*y+.4);
+      for(const [center,width,reach] of teeth){
+        const side=(y-center)/(y<center?width:width*.77);
+        x+=reach*Math.max(0,1-Math.abs(side))**1.35;
+      }
+      edge[i]=x;
+    }
+    // Place the boundary at the median of the surviving material. Prior holes
+    // therefore reduce the size of this mouthful without moving or refilling them.
+    for(const pt of samples)if(!pt.gone){
+      const y=(pt.row+.5)*2/globeDiameter-1,at=(y+1)*steps*.5;
+      const i=Math.max(0,Math.min(steps-1,Math.floor(at)));
+      const boundary=edge[i]+(edge[i+1]-edge[i])*(at-i);
+      levels.push(pt.x*cs-pt.z*sn-boundary);
+    }
+    levels.sort((x,y)=>x-y);
+    const mid=levels.length>>1,shift=(levels[mid]+levels[Math.max(0,mid-1)])*.5;
+    const anchor=shift+edge[steps/2],radius=.14,shape=[[-(3+anchor)/radius,-1/radius]];
+    for(let i=0;i<=steps;i++)shape.push([(shift+edge[i]-anchor)/radius,(2*i/steps-1)/radius]);
+    shape.push([-(3+anchor)/radius,1/radius]);
+    const cut=strike('nova',anchor,0,jawTurn,1,0,{radius,shape,jaw:true});
+    bites=1;
+    const remaining=1-removed/total;
+    return {before,removed:before-remaining,remaining,cut};
   }
   function project(cut,turn){
     const a=turn*Math.PI*2,cos=Math.cos(a),sin=Math.sin(a);
@@ -138,10 +190,11 @@ function createPlanetDamage(seed,geology){
   // exact removed depth intervals along each viewing ray, including overlapping cuts.
   function render(rgba,geometry,turn,tint,mantle){
     if(!cuts.length)return;
+    if(bites===2){rgba.fill(0);return}
     const n=globeDiameter,step=2/n,cos=Math.cos(turn*Math.PI*2),sin=Math.sin(turn*Math.PI*2);
     const view=cuts.map(c=>{
       const a=(turn-c.turn)*Math.PI*2,p=project(c,turn);
-      const co=Math.cos(a),si=Math.sin(a),scoop=c.radius*1.28;
+      const co=Math.cos(a),si=Math.sin(a),scoop=c.jaw?0:c.radius*1.28;
       const planes=c.planes.map(q=>{
         const nx=q.x*co-q.z*si,nz=q.x*si+q.z*co;
         return {nx,ny:q.y,nz,limit:scoop*q.limit,inv:Math.abs(nz)<1e-7?0:1/nz};
@@ -295,8 +348,8 @@ function createPlanetDamage(seed,geology){
       }
     }
   }
-  return{strike,widen,advance,project,render,
-    reset(){cuts.length=spalls.length=pending.length=0;removed=hits=0;for(const pt of samples)pt.gone=false},
+  return{strike,widen,advance,project,render,bite,biteMouth,
+    reset(){cuts.length=spalls.length=pending.length=0;removed=hits=bites=0;for(const pt of samples)pt.gone=false},
     get remaining(){return 1-removed/samples.length},
     get active(){return cuts.length>0}};
 }

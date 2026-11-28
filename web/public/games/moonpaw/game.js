@@ -300,7 +300,8 @@ function placePlayer(){
     const bank=clamp(player.vx/40,-10,10),depth=1+.07*(player.y/H-.5);
     cat.style.transform='translate(-50%,-50%) perspective(600px) rotateY('+bank+'deg) rotateZ('+player.tilt+'deg) scale('+(scale*depth)+')';
   }
-  cat.style.opacity=invulnerable>.15&&Math.floor(invulnerable*9)%2&&mode==='play'?'.62':'1';
+  const hitFlash=invulnerable>.15&&Math.floor(invulnerable*9)%2&&mode==='play'?.62:1;
+  cat.style.opacity=String(hitFlash*(flight?monsterSpell.playerOpacity():1));
 }
 function fire(){
   if(mode!=='play'||cooldown>0||actorPending())return;

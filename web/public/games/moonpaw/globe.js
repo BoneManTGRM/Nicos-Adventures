@@ -160,6 +160,13 @@ function createPlanetSkin(world){
     get crustArt(){return img.naturalWidth?img:null},
     project:damage.project,
     get remaining(){return damage.remaining},
+    biteMouth:damage.biteMouth,
+    bite(turn){
+      const {before,removed,remaining,cut}=damage.bite(turn);
+      if(cut)recordCut('bite',cut.x,cut.y,cut.turn,cut);
+      changed=true;
+      return {before,removed,remaining};
+    },
     incise(x,y,turn,radius,shape){
       const cut=damage.strike('cryo',x,y,turn,1,0,{radius,shape});
       changed=true;
