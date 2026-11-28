@@ -308,6 +308,21 @@ const hatchlings=(()=>{
       drawCrack(p,project(egg.center));drawTarget(p);positionChip();
     }else if(egg.phase==='rescued')escape(p);
   }
+  let helperTurn=0,lastHelp=-10;
+  function assist(){
+    const pets=[...collection()];
+    if(!pets.length||!followers.length||clock-lastHelp<.85)return;
+    const i=helperTurn%pets.length,pet=species[pets[i]],f=followers[i];
+    if(!f)return;
+    helperTurn++;lastHelp=clock;
+    const target=entities.filter(e=>!e.dead&&e.x>f.x&&isHazard(e)&&e.kind!=='potion')
+      .sort((a,b)=>a.x-b.x)[0];
+    const aim=target?Math.atan2(target.y-f.y,target.x-f.x):0;
+    const speed=Math.max(330,W*.84);
+    shots.push({x:f.x,y:f.y,vx:speed*Math.cos(aim),vy:speed*Math.sin(aim),dead:false,petColor:pet.accent});
+    spark(f.x,f.y,pet.accent,reduceMotion?2:7,52);ring(f.x,f.y,pet.pale,14);
+    f.castAt=clock;
+  }
   function drawSchool(){
     if(flight||mode!=='play')return;
     const book=collection();if(!book.size)return;
@@ -323,8 +338,9 @@ const hatchlings=(()=>{
         ty=cap(player.y+dy+swim*size*.09,size*.63,H-size*.57);
       const f=jump||!prior?{x:tx,y:ty}:prior,k=1-Math.exp(-dt*(5.7-i*.40));
       f.x+=(tx-f.x)*k;f.y+=(ty-f.y)*k;followers[i]=f;
-      baby(f.x,f.y,size,name,clock+i*.83);i++;
+      const recoil=cap(1-(clock-(f.castAt??-10))/.30,0,1);
+      baby(f.x-recoil*size*.12,f.y-recoil*size*.09,size*(1+.07*recoil),name,clock+i*.83);i++;
     }
   }
-  return {begin,observeCast,chipping,drawWorld,drawSchool,syncControls,rescuedNames};
+  return {assist,begin,observeCast,chipping,drawWorld,drawSchool,syncControls,rescuedNames};
 })();

@@ -1,5 +1,5 @@
 const LEGACY_CACHE_MARKER = "nicos-world-static-v22";
-const CACHE = "nicos-world-static-v74-moonpaw-spell-lab";
+const CACHE = "nicos-world-static-v75-moonpaw-spell-mastery";
 const FISHING_DOCUMENT = "/games/starfall-anglers/";
 const GAME_DOCUMENTS = [FISHING_DOCUMENT, "/games/timberline-hunt/", "/games/luma-lagoon/", "/games/skullwing/", "/games/mascaras-del-volcan/", "/games/moonpaw/"];
 const OFFLINE_ASSET_MANIFEST = "/offline-assets.json";

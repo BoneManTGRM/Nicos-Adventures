@@ -34,7 +34,7 @@ const planetSpells={
   potion:{name:'Potion Roulette',icon:'potion',color:'#a8ef92',core:'#f4ffe3',hint:'Toss a potion for candy glass, an inflating shell or wobbling blobs. Hit it again to see what happens.',attack:potionSpell},
   monster:{name:'World Eater',icon:'monster',color:'#72edeb',core:'#ffdfa8',hint:'Bite away half the planet. Cast again to eat the rest, or select Spitball ready to fling the chunk.',attack:monsterSpell},
   spitball:{name:'Planet Spitball',icon:'spitball',color:'#ffd898',core:'#fff3d2',hint:'Load up with World Eater. Tap the exposed core to spit your planet chunk through it.',attack:spitballSpell},
-  zipper:{name:'Cosmic Zipper',icon:'zipper',color:'#7ff3d9',core:'#fff3d2',hint:'Swipe a path across the planet to unzip the crust. Tap or press Cast for an automatic path.',attack:zipperSpell},
+  zipper:{name:'Cosmic Zipper',icon:'zipper',color:'#7ff3d9',core:'#fff3d2',hint:'Swipe a path across the planet to unzip the crust. Hit the glowing seam with another spell to rupture it. Tap Cast for an automatic path.',attack:zipperSpell},
   stampede:{name:'Nine Lives Stampede',icon:'stampede',color:'#c6a7ff',core:'#fff3d2',hint:'Tap to the beat as eight ghost cats open a tunnel. Nail the ninth beat to ride the core out.',attack:stampedeSpell},
   cutter:{name:'Constellation Cutter',icon:'cutter',color:'#ffdc89',core:'#fff3d2',hint:'Tap three points to cut a triangle out of the planet. Tap a fourth spot to launch the wedge.',attack:cutterSpell}
 };
@@ -223,6 +223,10 @@ function fireOrbitSpell(kind,power,spot,path){
   const world=worlds[flight.index],p=orbitTarget(),spell=planetSpells[kind];
   const x1=p.x+p.r*spot.x,y1=p.y+p.r*spot.y;
   if(hatchlings.observeCast(spot,kind,power))return;
+  if(kind!=='zipper'){
+    zipperSpell.rupture(spot);
+    if(flight.phase!=='fight')return;
+  }
   flight.scars++;
   if(kind!=='potion')potionSpell.onHit(spot,kind);
   if(kind==='purr')yarnSpell.pullForPurr();

@@ -320,6 +320,7 @@ function releaseStarBolt(){
   cooldown=burstTime>0?.055:.13;castFlash=1;
   const {x,y}=castingPaw();
   for(const dy of (burstTime>0?[-.19,0,.19]:[0]))shots.push({x,y,vx:Math.max(330,W*.82),vy:dy*H,dead:false});
+  hatchlings.assist();
   tone(620,285,.105,'triangle',.045);spark(x,y,'#b9fff0',3,35);
 }
 function spark(x,y,color,count,power){for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,r=(.2+Math.random()*.8)*power;
@@ -556,7 +557,13 @@ function drawScene(){
   if(flight)drawOrbitForeground();else if(mode==='play')hatchlings.drawSchool();
   if(gate)drawGate();
   for(const e of entities){if(!e.dead){if(e.kind==='meteor')drawMeteor(e);else if(e.kind==='gem')drawGem(e);else if(['potion','rune','hoop'].includes(e.kind))drawPractice(e);else drawEnemy(e);if(e.ice>0)drawIce(e)}}
-  for(const s of shots){ctx.fillStyle='#55cacd';ctx.fillRect(s.x-13,s.y-2,13,4);ctx.fillStyle='#d9fffb';ctx.fillRect(s.x-5,s.y-2,8,4);star(s.x,s.y,5,'#c0fff6')}
+  for(const s of shots){
+    if(s.petColor){
+      ctx.save();ctx.translate(s.x,s.y);ctx.rotate(Math.atan2(s.vy,s.vx));
+      ctx.strokeStyle=s.petColor;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-13,0);ctx.lineTo(0,0);ctx.stroke();
+      star(0,0,6,s.petColor);ctx.restore();continue;
+    }
+    ctx.fillStyle='#55cacd';ctx.fillRect(s.x-13,s.y-2,13,4);ctx.fillStyle='#d9fffb';ctx.fillRect(s.x-5,s.y-2,8,4);star(s.x,s.y,5,'#c0fff6')}
   for(const p of particles){
     ctx.globalAlpha=clamp(p.life*2.6,0,1);
     if(flight){

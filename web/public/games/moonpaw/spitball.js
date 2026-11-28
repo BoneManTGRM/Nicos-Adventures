@@ -107,7 +107,18 @@ const spitballSpell = (() => {
         f.step=2;
         const reverseTurn=f.turn+f.yaw/tau+.5;
         skin.impact('solar',-f.boreX,f.spot.y,reverseTurn,f.core?1.8:.8,1-flight.hp/world.health);
-        if(f.core){skin.widen(f.cut,.075+.014*f.power);showNotice('CORE SHOT!',1.0);addScore(120)}
+        if(f.core){
+          skin.widen(f.cut,.075+.014*f.power);
+          // The pressure wave punches three tapered radial fissures out from the bore.
+          for(let j=0;j<3;j++){
+            const angle=j*tau/3+f.spot.y+.34,c=Math.cos(angle),s=Math.sin(angle);
+            const length=.31+.043*f.power;
+            const shape=[[0,-.024],[length*.5,-.046],[length,-.019],[length*.65,.023],[length*.31,.055],[0,.028]];
+            skin.incise(f.spot.x,f.spot.y,f.turn,.1,shape.map(([x,y])=>[(x*c-y*s)*10,(x*s+y*c)*10]));
+            peelCrust(world,clipToDisc(f.spot.x+c*length,f.spot.y+s*length),.13,'solar');
+          }
+          showNotice('CORE SHOT · PRESSURE FRACTURE',1.1);addScore(120);
+        }
         tone(f.core?880:610,180,.20,'triangle',.055);
         applyWorldDamage(2+(f.core?3:0));
         if(flight.phase!=='fight')return;

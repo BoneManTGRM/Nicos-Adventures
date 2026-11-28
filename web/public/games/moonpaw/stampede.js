@@ -89,6 +89,14 @@ const stampedeSpell = (() => {
     world.skin.impact('solar',x,y,fx.exit.turn,.53+fx.power*.17+quality*1.4,1-flight.hp/world.health);
     ejectCrust(world,fx.exit,fx.power,'solar');
     spark(p.x+p.r*x,p.y+p.r*y,'#fff5bd',reduceMotion ? 5 : 14,92);
+    if(fx.bonus===9){
+      // Stamp a paw into the far hemisphere's visible flank.
+      for(const [dx,dy] of [[-.16,-.10],[-.07,-.19],[.045,-.20],[.14,-.13]]){
+        const toe=clipToDisc(x+dx,y+dy);
+        world.skin.impact('nova',toe.x,toe.y,fx.exit.turn,.56,1-flight.hp/world.health);
+      }
+      addScore(360);tune([784,988,1175]);showNotice('PERFECT NINE · STAR PAW!',1.45);
+    }
     if (fx.bonus) {
       labels.push({x:p.x+p.r*x,y:p.y+p.r*y,val:'ON BEAT '+fx.bonus+'/9',life:.85});
       gainEnergy(fx.bonus);
@@ -165,7 +173,8 @@ const stampedeSpell = (() => {
     ctx.fillRect(x,y,width,30);
     ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='600 11px system-ui,sans-serif';
     ctx.fillStyle=praise?'#fff0ab':ready?'#c2ffdc':'#e3f5ff';
-    ctx.fillText(praise?'On beat!':fx.landed<9?'Tap on beat':'Nine lives!',x+width/2,y+9);
+    const perfect=fx.bonus===9;
+    ctx.fillText(perfect?'Perfect nine!':praise?'On beat!  '+fx.bonus+'/9':fx.landed<9?'Tap on beat':'Nine lives!',x+width/2,y+9);
     for(let i=0;i<9;i++){
       const px=x+9+step*(i+.5),py=y+21;
       ctx.fillStyle=fx.beats[i]?'#ffdf7c':i<fx.landed?'#8cbbd2':'#344158';

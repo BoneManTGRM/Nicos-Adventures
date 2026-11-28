@@ -205,6 +205,20 @@ const moonSpell=(()=>{
         const t=ease(unit(f.age/summon)),end=orbit(f,summon);
         q={x:(f.origin.x*W-p.x)/p.r*(1-t)+end.x*t,y:(f.origin.y*H-p.y)/p.r*(1-t)+end.y*t-.18*Math.sin(t*Math.PI),z:1};
       }
+      if(f.vortex&&f.dropping){
+        const time=unit(f.dropAge/drillTime);
+        // Trace the material already excavated, keeping a dark funnel under the moon.
+        ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+        ctx.beginPath();
+        for(let i=0;i<=40;i++){
+          const s=spiral(f,time*i/40),x=p.x+p.r*s.x,y=p.y+p.r*s.y;
+          if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+        }
+        for(const [width,color] of [[.096,'#2e154bd9'],[.055,'#855dccb8'],[.012,'#e5c8ff']]){
+          ctx.lineWidth=Math.max(1,p.r*width);ctx.strokeStyle=color;ctx.stroke();
+        }
+        ctx.restore();
+      }
       if(q.z<0){ctx.beginPath();ctx.rect(0,0,W,H);ctx.moveTo(p.x+p.r,p.y);ctx.arc(p.x,p.y,p.r,0,tau);ctx.clip('evenodd');}
       const x=p.x+p.r*q.x,y=p.y+p.r*q.y,r=p.r*(.137+.02*f.power)*(.88+.14*q.z)*(f.dropping?(f.vortex?1-.57*unit(f.dropAge/drillTime):1+.45*unit(f.dropAge/fall)):1);
       if(f.dropping||orbiting){

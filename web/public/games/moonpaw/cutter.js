@@ -114,11 +114,23 @@ const cutterSpell = (() => {
         strikeSurface(f.target,'nova',.77+.29*f.power+.64*f.mass,'comet');
         const p=orbitTarget();
         spark(p.x+f.target.x*p.r,p.y+f.target.y*p.r,'#c9efff',reduceMotion?5:13,96);
+        // The three corners shear off on impact and skip outward as separate pieces.
+        f.shards=f.local.map((corner,i)=>{
+          const angle=Math.atan2(corner.y,corner.x),reach=.21+.30*f.mass;
+          return {end:clipToDisc(f.target.x+Math.cos(angle)*reach,f.target.y+Math.sin(angle)*reach),
+            tile:splinterTile(worlds[f.index],i+2),delay:i*.07,landed:false};
+        });
         hitSound('comet',f.power);gainEnergy(8+f.power);
         applyWorldDamage(2+f.power+Math.round(f.mass*2));
         if(flight.phase!=='fight')return;
       }
-      if(elapsed>flightTime+.36)flight.specialAttackFX.splice(i,1);
+      for(const shard of f.shards||[]){
+        if(shard.landed||elapsed<flightTime+shard.delay+.42)continue;
+        shard.landed=true;
+        strikeSurface(shard.end,'nova',.30+.48*f.mass,'nova');
+        if(f.mass>.28){applyWorldDamage(1);if(flight.phase!=='fight')return;}
+      }
+      if(elapsed>flightTime+.85)flight.specialAttackFX.splice(i,1);
     }
   }
   function marker(p,r,index,t){
@@ -174,6 +186,15 @@ const cutterSpell = (() => {
       }
     }
     ctx.globalAlpha=1;
+    for(const shard of f.shards||[]){
+      const t=(f.age-f.launchedAt-flightTime-shard.delay)/.42;
+      if(t<0||t>=1)continue;
+      const x=p.x+p.r*(f.target.x+(shard.end.x-f.target.x)*t);
+      const y=p.y+p.r*(f.target.y+(shard.end.y-f.target.y)*t-.24*Math.sin(t*Math.PI));
+      const size=p.r*(.07+.06*f.mass);
+      ctx.save();ctx.translate(x,y);ctx.rotate(t*(reduceMotion?.5:3));
+      ctx.drawImage(shard.tile,-size,-size*.72,size*2,size*1.44);ctx.restore();
+    }
     if(f.tile&&!f.hit){
       let pose=heldPose(f,f.age);
       if(f.launchedAt!==null){

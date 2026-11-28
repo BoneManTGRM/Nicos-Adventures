@@ -116,6 +116,15 @@ const dragonSpell = (() => {
         for(const [color,width] of [['#f04d1a95',.079],['#ff9a3f',.036],['#fff6b5',.011]]){
           ctx.strokeStyle=color;ctx.lineWidth=Math.max(.65,width*p.r);ctx.stroke(path);
         }
+        // Tongues of fire rise from the burning portion of each actual claw mark.
+        for(let t=from+.24;t<to;t+=.84){
+          const v=at(t);if(v.z<=0)continue;
+          const wave=reduceMotion?.5:.5+.5*Math.sin(age*13+t*4);
+          const h=p.r*(.07+.13*wave)*unit(age*9),w=p.r*.034;
+          ctx.fillStyle='#ff873bc4';ctx.beginPath();ctx.moveTo(v.x-w,v.y);
+          ctx.bezierCurveTo(v.x-w*1.6,v.y-h*.44,v.x+w*.65,v.y-h*.52,v.x+w*.7,v.y-h);
+          ctx.quadraticCurveTo(v.x+w*2,v.y-h*.22,v.x+w,v.y);ctx.closePath();ctx.fill();
+        }
         if(!reduceMotion&&age<.55){
           for(const tip of [at(from),at(to)])if(tip.z>0){
             ctx.fillStyle='#ffdf82';ctx.beginPath();ctx.arc(tip.x,tip.y,p.r*.027,0,tau);ctx.fill();

@@ -123,6 +123,24 @@ const zipperSpell=(()=>{
       if(f.age>f.travel+2.4)list.splice(i,1);
     }
   }
+  // A second spell can shear the loose surface while the exposed mantle is hot.
+  function rupture(spot){
+    for(const f of flight.specialAttackFX){
+      if(f.kind!=='zipper'||f.index!==flight.index||f.split||!f.next)continue;
+      const rot=rotation(f),end=f.sections[f.next-1][1];
+      const lip=f.points.slice(0,end+1).map(q=>project(q,rot));
+      if(!lip.some(q=>q.z>0&&Math.hypot(q.x-spot.x,q.y-spot.y)<.21))continue;
+      f.split=true;
+      const world=worlds[f.index];
+      for(let i=1;i<lip.length;i+=2){
+        const q=lip[i];if(q.z<0)continue;
+        world.skin.impact('solar',q.x,q.y,spinAngle(),.72,1-flight.hp/world.health);
+        peelCrust(world,q,.18,'solar');
+      }
+      gainEnergy(7);hitSound('solar',2);showNotice('MANTLE RUPTURE',1.05);
+      applyWorldDamage(3);return;
+    }
+  }
   function metalPull(p,r,angle,age){
     ctx.save();ctx.translate(p.x,p.y);ctx.rotate(angle);ctx.scale(r,r);
     const brass=ctx.createLinearGradient(0,-1,0,1);
@@ -169,6 +187,13 @@ const zipperSpell=(()=>{
         const w=Math.max(.7,p.r*Math.hypot(r.x-l.x,r.y-l.y)/2);
         const opened=unit(pos-i+1);
         ctx.save();ctx.translate(p.x+a.x*p.r,p.y+a.y*p.r);ctx.rotate(Math.atan2(dy,dx));
+        if(opened>0){
+          const heat=ctx.createLinearGradient(0,-w,0,w);
+          heat.addColorStop(0,'#74233e00');heat.addColorStop(.3,world.core);
+          heat.addColorStop(.5,f.split?'#fff9b6':'#542740');heat.addColorStop(.7,world.core);heat.addColorStop(1,'#74233e00');
+          ctx.fillStyle=heat;ctx.globalAlpha=fade*opened*.83;
+          ctx.fillRect(0,-w*opened,len+.6,2*w*opened);
+        }
         for(let j=0;j<2;j++){
           const side=j?1:-1,outset=w*opened;
           if(opened>0){
@@ -200,5 +225,5 @@ const zipperSpell=(()=>{
       ctx.restore();
     }
   }
-  return {cast,update,draw};
+  return {cast,update,draw,rupture};
 })();
