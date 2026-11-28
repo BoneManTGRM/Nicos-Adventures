@@ -23,14 +23,33 @@ const planetSpells={
   bloom:{name:'Crystal Bloom',icon:'bloom',color:'#ffb9e2',core:'#ecfff9',hint:'Plant a crystal seed and watch it erupt through the crust.',attack:bloomSpell},
   wormhole:{name:'Wormhole Punch',icon:'wormhole',color:'#ef9bff',core:'#fff0ff',hint:'Punch through linked portals to open two holes in the planet.',attack:wormholeSpell},
   dragon:{name:'Flaming Dragon',icon:'dragon',color:'#ffa453',core:'#fff2a5',hint:'Summon a fire dragon to dive into the crust and blast out the other side.',attack:dragonSpell},
-  fleet:{name:'Starfleet Raid',icon:'fleet',color:'#7feaff',core:'#e5ffff',hint:'Call in a squadron for a strafing run. Hold to summon more ships.',attack:fleetSpell}
+  fleet:{name:'Starfleet Raid',icon:'fleet',color:'#7feaff',core:'#e5ffff',hint:'Call in a squadron for a strafing run. Hold to summon more ships.',attack:fleetSpell},
+  yarn:{name:'Cosmic Yarn',icon:'yarn',color:'#ffabda',core:'#fff3cf',hint:'Cast to wrap the planet in yarn. Tap again to pull the loops tight.',attack:yarnSpell},
+  claws:{name:'Phantom Claws',icon:'claws',color:'#8af3e2',core:'#e9fffb',hint:'Swipe across the planet to carve three trenches. Cross an earlier slash to tear out a chunk.',attack:clawSpell},
+  purr:{name:'Faultline Purr',icon:'purr',color:'#ffde8a',core:'#fff6d1',hint:'Hold Cast to build a purr. Release to split existing faults or snap a yarn wrap.',attack:purrSpell},
+  heist:{name:'Core Heist',icon:'heist',color:'#ffae72',core:'#fff2bb',hint:'Reach through a portal, steal the glowing core and watch the shell buckle.',attack:heistSpell},
+  pinball:{name:'Meteor Pinball',icon:'pinball',color:'#94eaff',core:'#f3fbff',hint:'Cast to set up three bumpers. Tap Cast as the meteor returns to Moonpaw to bat it back.',attack:pinballSpell},
+  mirror:{name:'Mirror Pounce',icon:'mirror',color:'#c6a1ff',core:'#f7f1ff',hint:'Summon three mirror cats to pounce from different sides and hollow out one cavern.',attack:mirrorSpell},
+  moon:{name:'Pocket Moon',icon:'moon',color:'#ffe8a2',core:'#ffffed',hint:'Cast to send a moon skimming around the planet. Tap the surface again to drop it there.',attack:moonSpell},
+  potion:{name:'Potion Roulette',icon:'potion',color:'#a8ef92',core:'#f4ffe3',hint:'Toss a potion for candy glass, an inflating shell or wobbling blobs. Hit it again to see what happens.',attack:potionSpell}
 };
 const spellOrder=Object.keys(planetSpells);
 const specialAttacks=Object.values(planetSpells).map(spell=>spell.attack).filter(Boolean);
 let selectedSpell='nova',flight=null;
+const bookPages=[...document.querySelectorAll('#arsenal .spell-options')];
+const lastSpellOnPage=new Map();
+function showSpellPage(kind){
+  const page=$('pick-'+kind).parentElement;
+  lastSpellOnPage.set(page.id,kind);
+  for(const panel of bookPages){
+    panel.hidden=panel!==page;
+    $('book-'+panel.id).setAttribute('aria-pressed',String(panel===page));
+  }
+}
 function chooseSpell(kind,feedback=true){
   if(!planetSpells[kind])return;
-  selectedSpell=kind;
+  if(selectedSpell!==kind)clawStroke=null;
+  selectedSpell=kind;showSpellPage(kind);
   for(const id of spellOrder)$('pick-'+id).setAttribute('aria-pressed',String(id===kind));
   $('spellTip').textContent=planetSpells[kind].hint;
   if(flight){
@@ -113,7 +132,7 @@ function launchOrbit(carryScore){
   entities=[];shots=[];particles=[];rings=[];labels=[];
   cooldown=invulnerable=burstTime=castFlash=shake=frostCooldown=trailClock=0;
   flight={index:first,first,destroyed:0,hp:world.health,phase:'launch',age:0,charge:0,beam:null,
-    blastX:0,blastY:0,impact:0,meteorTimer:2.6,energy:0,supers:0,specialAttackFX:[],effects:[],comets:[],arcs:[],trail:0,spin:0,scars:0,ejecta:[],fragments:[],burnCut:null,burn:0,burnTick:0,brittle:0,well:0,wellAge:0,combos:0};
+    blastX:0,blastY:0,impact:0,meteorTimer:2.6,energy:0,supers:0,hitSites:world.skin.hitSites,clawScars:[],specialAttackFX:[],effects:[],comets:[],arcs:[],trail:0,spin:0,scars:0,ejecta:[],fragments:[],burnCut:null,burn:0,burnTick:0,brittle:0,well:0,wellAge:0,combos:0};
   player.x=W*.23;player.y=H*.65;player.vx=player.vy=player.tilt=0;
   clearInput();setMode('play');hud();spellUI();orbitUI();placePlayer();
   showNotice('LEAVING THE ASTRONOMY TOWER',1.55);tune([294,392,494,659,880]);
@@ -142,6 +161,7 @@ function beginEncounter(){
   resetActor();
   flight.phase='fight';flight.age=0;flight.impact=0;flight.charge=0;flight.beam=null;
   const world=worlds[flight.index];world.skin.reset();
+  flight.hitSites=world.skin.hitSites;flight.clawScars=[];clawStroke=null;
   flight.hp=world.health;flight.meteorTimer=1.5;flight.spin=0;flight.scars=0;
   flight.burn=flight.burnTick=flight.brittle=flight.well=flight.wellAge=0;
   flight.specialAttackFX.length=0;
@@ -170,19 +190,30 @@ function projectedAim(p,aim){
   const d=Math.hypot(x,y);if(d>.94){x*=.94/d;y*=.94/d}
   return{x,y};
 }
-function shootNova(power,aim){
-  if(!flight||mode!=='play'||flight.phase!=='fight'||cooldown>0)return;
+function shootNova(power,aim,path){
+  if(!flight||mode!=='play'||flight.phase!=='fight')return;
   const kind=selectedSpell,spot=projectedAim(orbitTarget(),aim),encounter=flight,index=flight.index;
+  const twoPart=kind==='moon'||kind==='yarn';
+  if(twoPart&&actorPending()&&acting.kind===kind){
+    acting.followUp??={spot,power};
+    return;
+  }
+  if(cooldown>0&&!(twoPart&&planetSpells[kind].attack.actionLabel()))return;
   beginGesture(kind,power,()=>{
-    if(flight===encounter&&flight.index===index&&flight.phase==='fight'&&mode==='play')fireOrbitSpell(kind,power,spot);
+    if(flight!==encounter||flight.index!==index||flight.phase!=='fight'||mode!=='play')return;
+    const followUp=acting.followUp;
+    fireOrbitSpell(kind,power,spot,path);
+    if(twoPart&&followUp&&flight.phase==='fight')planetSpells[kind].attack.cast(followUp.spot,followUp.power);
   });
 }
-function fireOrbitSpell(kind,power,spot){
+function fireOrbitSpell(kind,power,spot,path){
   const world=worlds[flight.index],p=orbitTarget(),spell=planetSpells[kind];
   const x1=p.x+p.r*spot.x,y1=p.y+p.r*spot.y;
   flight.scars++;
+  if(kind!=='potion')potionSpell.onHit(spot,kind);
+  if(kind==='purr')yarnSpell.pullForPurr();
   if(spell.attack){
-    spell.attack.cast(spot,power);
+    spell.attack.cast(spot,power,path);
     return;
   }
   if(kind==='comet'||kind==='storm'){
@@ -310,7 +341,7 @@ function updateOrbit(dt){
   flight.wellAge+=dt;
   if((keys.has('Space')||castPointer!==null)&&cooldown<=0&&!actorPending()){
     flight.charge=Math.min(1,flight.charge+dt/.92);
-    if(flight.charge>=1){flight.charge=0;shootNova(3)}
+    if(flight.charge>=1&&selectedSpell!=='purr'&&selectedSpell!=='pinball'&&selectedSpell!=='moon'&&selectedSpell!=='yarn'){flight.charge=0;shootNova(3)}
   }
   if(flight.phase!=='fight')return;
   if(difficulty==='hard'){
@@ -434,7 +465,7 @@ function drawPlanet(){
   if(broken){
     drawFragments(flight.fragments,t,world);
   }else{
-    planetDisc(world);
+    ctx.save();potionSpell.deformDisc();planetDisc(world);ctx.restore();
     if(flight.well>0){
       ctx.save();ctx.lineWidth=.023;
       for(let i=0;i<3;i++){
@@ -469,10 +500,22 @@ function drawOrbitForeground(){
   drawCatTrail();drawFrostHalo();
   if(flight.phase==='break')drawBreakLight(p,world,flight.age,false);
   drawPlanet();drawEjecta();drawComets();drawArcs();drawImpactArt();
+  if(clawStroke?.points.length){
+    const points=clawStroke.points;
+    ctx.save();ctx.translate(p.x,p.y);ctx.scale(p.r,p.r);
+    ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=.019;
+    ctx.strokeStyle='#b5ffef';ctx.fillStyle='#d9fff9';
+    ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);
+    for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);
+    ctx.stroke();
+    const tip=points.at(-1);ctx.beginPath();ctx.arc(tip.x,tip.y,.032,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
   if(flight.specialAttackFX.length)for(const attack of specialAttacks)attack.draw();
   if(flight.phase==='break')drawBreakLight(p,world,flight.age,true);
   if(flight.charge>0){
     const f=flight.charge,{x,y}=castingPaw();
+    if(selectedSpell==='purr')purrSpell.drawCharge(f);
     const style=impactStyles[selectedSpell],diameter=12+f*45;
     lightSprite(style.map,x,y,diameter,diameter,clock*.4,.35+f*.55);
     ctx.save();ctx.shadowBlur=12;ctx.shadowColor='#ffd4b5';star(x,y,5+f*15,'#fff4c8');

@@ -7,7 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/paw.svg">
 <link rel="preload" href="assets/moonpaw.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="assets/astral-jacket-keyart.webp" as="image" fetchpriority="high"><link rel="preload" href="assets/astral-jacket.webp" as="image"><link rel="preload" href="assets/jacket-rig.png" as="image">
-<link rel="stylesheet" href="style.css?v=summons1">
+<link rel="stylesheet" href="style.css?v=tricks1">
 </head><body>
 <svg aria-hidden="true" class="sprite-defs" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-orbit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="currentColor"/><path d="M6 12C-3 22 7 22 16 15S29 0 18 6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
@@ -36,6 +36,14 @@
 <symbol id="i-super" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.2"><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-27 12 12)"/><circle cx="12" cy="12" r="8.8" stroke-dasharray="3 3"/></g><path d="m12 3 2.1 6.6 6.4 2.4-6.4 2.1L12 21l-2.2-6.9L3.5 12l6.3-2.4Z" fill="currentColor"/></symbol>
 <symbol id="i-crest" viewBox="0 0 32 34"><path fill="#aa7556" d="M3 2h26v18h-2v4h-3v3h-3v2h-3v2h-4v-2h-3v-2H8v-3H5v-4H3z"/><path fill="#ffe395" d="M5 3h22v16h-2v4h-3v3h-4v2h-4v-2h-4v-3H7v-4H5z"/><path fill="#67489c" d="M8 6h16v12h-2v4h-3v2h-6v-2h-3v-4H8z"/><path fill="#fff3bd" d="M15 8h2v4h2v2h3v2h-3v2h-2v4h-2v-4h-2v-2h-3v-2h3v-2h2z"/></symbol>
 <symbol id="i-pin" viewBox="0 0 16 19"><path fill="currentColor" d="M5 1h6v2h3v2h1v6h-2v2h-2v2H9v3H7v-3H5v-2H3v-2H1V5h1V3h3zm1 4v4h4V5z"/></symbol>
+<symbol id="i-yarn" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M5 8q7 1 11 8M7 5q7 2 11 9M4 11q3 0 7 6m7-5c-1 6 3 10 5 6"/></g></symbol>
+<symbol id="i-claws" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20Q7 9 13 4M10 21q2-11 8-16m-3 17q2-10 8-15"/></g></symbol>
+<symbol id="i-purr" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12h3l2-5 3 11 3-15 3 17 3-12 2 4h3"/></g></symbol>
+<symbol id="i-heist" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="13" rx="10" ry="5" transform="rotate(-30 12 13)"/><circle cx="12" cy="12" r="4"/></g></symbol>
+<symbol id="i-pinball" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 18 7-11 7 10"/><circle cx="4" cy="18" r="2"/><circle cx="11" cy="6" r="3"/><circle cx="19" cy="18" r="3"/></g></symbol>
+<symbol id="i-mirror" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 2-4 3 3 3-1 1 4-2 4-5-1zM13 12l1-3 3 2 4-1 1 5-3 4-5-2z"/></g></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><ellipse cx="12" cy="12" rx="11" ry="4" transform="rotate(-29 12 12)"/><circle cx="20" cy="6" r="2"/></g></symbol>
+<symbol id="i-potion" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6m-5 1v5L4 18q-1 3 2 3h12q3 0 2-3l-6-9V4M7 15q3-2 6 0t5 0"/></g></symbol>
 </defs></svg>
 <main class="shell" id="shell">
 <header class="topline">
@@ -69,18 +77,31 @@
 </div>
 <div id="arsenal" class="arsenal" role="group" aria-label="Planet damage spells">
 <div class="arsenal-heading"><span>PLANET SPELLS</span><span id="spellTip" aria-live="polite">Punch through the planet. Hit the rim to blast off chunks.</span></div>
-<div class="spell-options">
+<div class="spellbook-nav" role="group" aria-label="Spellbook pages"><button id="book-planet" type="button" aria-controls="planet" aria-pressed="true">Planet spells</button><button id="book-arcane" type="button" aria-controls="arcane" aria-pressed="false">Arcane arts</button><button id="book-tricks" type="button" aria-controls="tricks" aria-pressed="false">Moonpaw’s tricks</button></div>
+<div id="planet" class="spell-options" aria-label="Planet spells" role="group">
 <button id="pick-nova" class="option option-nova" aria-pressed="true" aria-label="Select Nova Beam"><span class="option-icon"><svg><use href="#i-spark"/></svg></span><span class="option-copy"><strong>Nova Beam</strong><small>Through-holes</small></span><kbd>1</kbd></button>
 <button id="pick-solar" class="option option-solar" aria-pressed="false" aria-label="Select Solar Flare"><span class="option-icon"><svg><use href="#i-solar"/></svg></span><span class="option-copy"><strong>Solar Flare</strong><small>Lingering burn</small></span><kbd>2</kbd></button>
 <button id="pick-cryo" class="option option-cryo" aria-pressed="false" aria-label="Select Ice Lance"><span class="option-icon"><svg><use href="#i-frost"/></svg></span><span class="option-copy"><strong>Ice Lance</strong><small>Brittle shell</small></span><kbd>3</kbd></button>
 <button id="pick-gravity" class="option option-gravity" aria-pressed="false" aria-label="Select Gravity Well"><span class="option-icon"><svg><use href="#i-gravity"/></svg></span><span class="option-copy"><strong>Gravity Well</strong><small>Meteor pull</small></span><kbd>4</kbd></button>
 <button id="pick-comet" class="option option-comet" aria-label="Select Comet Rain" aria-pressed="false"><span class="option-icon"><svg><use href="#i-comet"/></svg></span><span class="option-copy"><strong>Comet Rain</strong><small>Orbital barrage</small></span><kbd>5</kbd></button>
 <button id="pick-storm" class="option option-storm" aria-label="Select Chain Lightning" aria-pressed="false"><span class="option-icon"><svg><use href="#i-storm"/></svg></span><span class="option-copy"><strong>Chain Lightning</strong><small>Meteor relay</small></span><kbd>6</kbd></button>
+</div>
+<div id="arcane" class="spell-options" aria-label="Arcane arts" role="group" hidden>
 <button id="pick-crescent" class="option option-crescent" aria-label="Select Crescent Saw" aria-pressed="false"><span class="option-icon"><svg><use href="#i-crescent"/></svg></span><span class="option-copy"><strong>Crescent Saw</strong><small>Carve a trench</small></span><kbd>7</kbd></button>
 <button id="pick-bloom" class="option option-bloom" aria-label="Select Crystal Bloom" aria-pressed="false"><span class="option-icon"><svg><use href="#i-bloom"/></svg></span><span class="option-copy"><strong>Crystal Bloom</strong><small>Erupting crystals</small></span><kbd>8</kbd></button>
 <button id="pick-wormhole" class="option option-wormhole" aria-label="Select Wormhole Punch" aria-pressed="false"><span class="option-icon"><svg><use href="#i-wormhole"/></svg></span><span class="option-copy"><strong>Wormhole Punch</strong><small>Linked craters</small></span><kbd>9</kbd></button>
 <button id="pick-dragon" class="option option-dragon" aria-label="Select Flaming Dragon" aria-pressed="false"><span class="option-icon"><svg><use href="#i-dragon"/></svg></span><span class="option-copy"><strong>Flaming Dragon</strong><small>Molten tunnels</small></span><kbd>0</kbd></button>
 <button id="pick-fleet" class="option option-fleet" aria-label="Select Starfleet Raid" aria-pressed="false"><span class="option-icon"><svg><use href="#i-fleet"/></svg></span><span class="option-copy"><strong>Starfleet Raid</strong><small>Squadron salvos</small></span><kbd>-</kbd></button>
+</div>
+<div id="tricks" class="spell-options" aria-label="Moonpaw’s tricks" role="group" hidden>
+<button id="pick-yarn" class="option option-trick" style="--accent:#ffabda" aria-pressed="false" aria-label="Select Cosmic Yarn"><span class="option-icon"><svg><use href="#i-yarn"/></svg></span><span class="option-copy"><strong>Cosmic Yarn</strong><small>Wrap and pull</small></span><kbd>Y</kbd></button>
+<button id="pick-claws" class="option option-trick" style="--accent:#8af3e2" aria-pressed="false" aria-label="Select Phantom Claws"><span class="option-icon"><svg><use href="#i-claws"/></svg></span><span class="option-copy"><strong>Phantom Claws</strong><small>Swipe to carve</small></span><kbd>C</kbd></button>
+<button id="pick-purr" class="option option-trick" style="--accent:#ffde8a" aria-pressed="false" aria-label="Select Faultline Purr"><span class="option-icon"><svg><use href="#i-purr"/></svg></span><span class="option-copy"><strong>Faultline Purr</strong><small>Shake old cracks</small></span><kbd>U</kbd></button>
+<button id="pick-heist" class="option option-trick" style="--accent:#ffae72" aria-pressed="false" aria-label="Select Core Heist"><span class="option-icon"><svg><use href="#i-heist"/></svg></span><span class="option-copy"><strong>Core Heist</strong><small>Steal the core</small></span><kbd>H</kbd></button>
+<button id="pick-pinball" class="option option-trick" style="--accent:#94eaff" aria-pressed="false" aria-label="Select Meteor Pinball"><span class="option-icon"><svg><use href="#i-pinball"/></svg></span><span class="option-copy"><strong>Meteor Pinball</strong><small>Bat the meteor</small></span><kbd>I</kbd></button>
+<button id="pick-mirror" class="option option-trick" style="--accent:#c6a1ff" aria-pressed="false" aria-label="Select Mirror Pounce"><span class="option-icon"><svg><use href="#i-mirror"/></svg></span><span class="option-copy"><strong>Mirror Pounce</strong><small>Three diving cats</small></span><kbd>M</kbd></button>
+<button id="pick-moon" class="option option-trick" style="--accent:#ffe8a2" aria-pressed="false" aria-label="Select Pocket Moon"><span class="option-icon"><svg><use href="#i-moon"/></svg></span><span class="option-copy"><strong>Pocket Moon</strong><small>Orbit and drop</small></span><kbd>O</kbd></button>
+<button id="pick-potion" class="option option-trick" style="--accent:#a8ef92" aria-pressed="false" aria-label="Select Potion Roulette"><span class="option-icon"><svg><use href="#i-potion"/></svg></span><span class="option-copy"><strong>Potion Roulette</strong><small>Three enchantments</small></span><kbd>T</kbd></button>
 </div></div>
 <div class="deck"><div class="controls" id="idleControls"><span class="deck-label"><svg><use href="#i-keys"/></svg>CONTROLS</span><div class="key-list"><span><kbd>↑↓←→</kbd> Fly</span><span><kbd>Space</kbd> Cast</span><span><kbd>P</kbd> Pause</span></div><div class="touch-info">Drag to fly <span>·</span> Hold to cast</div></div><div class="spells" id="spellDeck" aria-label="Cast a spell" hidden>
 <button class="spell bolt" id="cast" aria-label="Cast Star Bolt" title="Star Bolt · Hold to fire · Space"><svg><use id="castSymbol" href="#i-spark"/></svg><span><strong id="boltName">Star Bolt</strong><small id="boltKey">SPACE</small></span></button>
@@ -91,5 +112,5 @@
 
 <p class="sr-only" role="status" id="result"></p>
 </main>
-<script src="actor.js?v=summons1"></script><script src="cat.js?v=casting-eye1"></script><script src="fracture.js?v=worlds1"></script><script src="globe.js?v=worlds1"></script><script src="rubble.js?v=worlds1"></script><script src="crescent.js?v=1"></script><script src="bloom.js?v=1"></script><script src="wormhole.js?v=1"></script><script src="dragon.js?v=1"></script><script src="fleet.js?v=1"></script><script src="orbit.js?v=summons1"></script><script src="cinema.js?v=summons1"></script><script src="powers.js?v=worlds1"></script><script src="game.js?v=summons1"></script>
+<script src="actor.js?v=tricks1"></script><script src="cat.js?v=casting-eye1"></script><script src="fracture.js?v=tricks1"></script><script src="globe.js?v=tricks1"></script><script src="rubble.js?v=worlds1"></script><script src="crescent.js?v=1"></script><script src="bloom.js?v=1"></script><script src="wormhole.js?v=1"></script><script src="dragon.js?v=1"></script><script src="fleet.js?v=1"></script><script src="yarn.js?v=1"></script><script src="claws.js?v=1"></script><script src="purr.js?v=1"></script><script src="heist.js?v=1"></script><script src="pinball.js?v=1"></script><script src="mirror.js?v=1"></script><script src="moon.js?v=1"></script><script src="potion.js?v=1"></script><script src="orbit.js?v=tricks1"></script><script src="cinema.js?v=tricks1"></script><script src="powers.js?v=worlds1"></script><script src="game.js?v=tricks1"></script>
 </body></html>

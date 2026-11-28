@@ -93,23 +93,26 @@ function createPlanetDamage(seed,geology){
     }
     return changed;
   }
-  function strike(kind,x,y,turn,power,wear=0){
+  function strike(kind,x,y,turn,power,wear=0,outline=null){
     const style=cutProfiles[kind],angle=turn*Math.PI*2,cos=Math.cos(angle),sin=Math.sin(angle);
     const z=Math.sqrt(Math.max(0,1-x*x-y*y)),px=x*cos+z*sin,pz=z*cos-x*sin;
-    const size=style.radius*(1+.29*(power-1)+.48*wear);
+    const size=outline?.radius??style.radius*(1+.29*(power-1)+.48*wear);
     let nearest,dist=Infinity;
-    for(const cut of cuts){
-      const entry=(cut.px-px)**2+(cut.pz-pz)**2,exit=(cut.ex-px)**2+(cut.ez-pz)**2;
-      const d=Math.min(entry,exit)+(cut.y-y)**2;
-      if(d<dist&&d<(.16+cut.radius*.58)**2){nearest=cut;dist=d}
+    if(!outline){
+      for(const cut of cuts){
+        if(cut.customOutline)continue;
+        const entry=(cut.px-px)**2+(cut.pz-pz)**2,exit=(cut.ex-px)**2+(cut.ez-pz)**2;
+        const d=Math.min(entry,exit)+(cut.y-y)**2;
+        if(d<dist&&d<(.16+cut.radius*.58)**2){nearest=cut;dist=d}
+      }
     }
     if(nearest){
       // A shot down an existing passage breaks material off its walls.
       nearest.wall=style.wall;nearest.kind=kind;nearest.age=0;widen(nearest,size*.48);
       queueSpalls(kind,x,y,z,turn,nearest.radius,power+1);return nearest;
     }
-    const shape=[],phase=(cuts.length+1)*2.4+seed*.21;
-    for(let i=0;i<style.points;i++){
+    const shape=outline?.shape??[],phase=(cuts.length+1)*2.4+seed*.21;
+    for(let i=0;!outline&&i<style.points;i++){
       const a=i*Math.PI*2/style.points+phase;
       const radius=1+style.jag*Math.sin(phase+i*2.23)+.055*Math.cos(i*3.9+seed);
       shape.push([Math.cos(a)*radius,Math.sin(a)*radius*style.aspect]);
@@ -122,9 +125,10 @@ function createPlanetDamage(seed,geology){
       planes.push({x:Math.cos(theta)/len,y:Math.sin(theta)/len,z:lean/len,
         limit:.72+.13*Math.cos(phase+i*3.21)});
     }
-    const cut={planes,x,y,px,pz,ex:x*cos-z*sin,ez:-z*cos-x*sin,turn,radius:size,shape,wall:style.wall,kind,age:0};
+    const cut={planes,x,y,px,pz,ex:x*cos-z*sin,ez:-z*cos-x*sin,turn,radius:size,shape,customOutline:!!outline,wall:style.wall,kind,age:0};
     cuts.push(cut);outlineCut(cut);measure(cut);
-    queueSpalls(kind,x,y,z,turn,size,power);return cut;
+    if(!outline)queueSpalls(kind,x,y,z,turn,size,power);
+    return cut;
   }
   function project(cut,turn){
     const a=turn*Math.PI*2,cos=Math.cos(a),sin=Math.sin(a);

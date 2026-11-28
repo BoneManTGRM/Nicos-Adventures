@@ -17,6 +17,14 @@ const impactStyles={
   wormhole:{map:'vortex',color:'#ef9bff',scale:.83,life:.76},
   dragon:{map:'flare',color:'#ffa453',scale:.93,life:.72},
   fleet:{map:'storm',color:'#7feaff',scale:.54,life:.43},
+  yarn:{map:'flare',color:'#ffabda',scale:.73,life:.65},
+  claws:{map:'ice',color:'#8af3e2',scale:.73,life:.65},
+  purr:{map:'vortex',color:'#ffde8a',scale:.73,life:.65},
+  heist:{map:'flare',color:'#ffae72',scale:.73,life:.65},
+  pinball:{map:'storm',color:'#94eaff',scale:.73,life:.65},
+  mirror:{map:'vortex',color:'#c6a1ff',scale:.73,life:.65},
+  moon:{map:'flare',color:'#ffe8a2',scale:.73,life:.65},
+  potion:{map:'ice',color:'#a8ef92',scale:.73,life:.65},
   super:{map:'storm',color:'#ffe9a5',scale:1.29,life:1.03}
 };
 function lightSprite(key,x,y,w,h,rotation,alpha){

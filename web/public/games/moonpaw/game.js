@@ -52,7 +52,7 @@ soundUI();
 const keys=new Set();
 let W=1,H=1,dpr=1,mode='title',clock=0,previous=0,stage=0,elapsed=0,score=0,lives=3,charge=0;
 let invulnerable=0,castFlash=0,cooldown=0,burstTime=0,trailClock=0,noticeTime=0,shake=0,enemyClock=0,gemClock=0,wave=0,scroll=0;
-let entities=[],shots=[],particles=[],rings=[],labels=[],gate=null,drag=null,castPointer=null;
+let entities=[],shots=[],particles=[],rings=[],labels=[],gate=null,drag=null,castPointer=null,clawStroke=null;
 let mastery=0,practiceTimer=0,frostCooldown=0,blinkCooldown=0;
 const coarse=matchMedia('(pointer: coarse)').matches;
 if(coarse)$('boltKey').textContent='HOLD';
@@ -85,7 +85,7 @@ function hud(){
   if(flight)$('stageNum').textContent=String(flight.index+1).padStart(2,'0')+' / '+String(worlds.length).padStart(2,'0');
   if(mode==='title'){$('district').textContent='ASTRONOMY TOWER';$('stageNum').textContent='LAUNCH PAD'}
 }
-function clearInput(){keys.clear();drag=null;castPointer=null}
+function clearInput(){keys.clear();drag=null;castPointer=null;clawStroke=null}
 function setMode(next){
   mode=next;screenEl.dataset.mode=mode;screenEl.dataset.zone=flight?'space':'school';
   const castName=flight?planetSpells[selectedSpell].name:'Star Bolt';
@@ -139,10 +139,14 @@ wide.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFull
 document.addEventListener('fullscreenchange',wideUI);
 window.addEventListener('blur',()=>{if(mode==='play')pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='play')pause()});
 $('supernova').onclick=unleashSupernova;
+for(const page of bookPages){
+  $('book-'+page.id).onclick=()=>chooseSpell(lastSpellOnPage.get(page.id)||page.firstElementChild.id.slice(5));
+}
 const spellByKey=new Map();
 for(const id of spellOrder){
   const button=$('pick-'+id),key=button.querySelector('kbd').textContent;
-  spellByKey.set(key==='-'?'Minus':'Digit'+key,id);
+  const code=/^[A-Z]$/.test(key)?'Key'+key:key==='-'?'Minus':'Digit'+key;
+  spellByKey.set(code,id);
   button.onclick=()=>chooseSpell(id);
 }
 const playKeys=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyW','KeyA','KeyS','KeyD','Space','KeyF','KeyB','KeyP','Escape'];
@@ -160,28 +164,57 @@ window.addEventListener('keydown',e=>{
     if(!e.repeat){if(e.code==='KeyF')frostWave();else blink()}
     return;
   }
+  if(e.code==='Space'&&selectedSpell==='pinball'&&e.repeat)return;
+  if(e.code==='Space'&&tryReturnMeteor()){return}
   keys.add(e.code);
 });
 window.addEventListener('keyup',e=>{
   if(e.code==='Space'&&keys.has('Space')&&flight&&mode==='play')releaseNova();
   keys.delete(e.code);
 });
+function tryReturnMeteor(){
+  return selectedSpell==='pinball'&&flight?.phase==='fight'&&mode==='play'&&pinballSpell.tryBat();
+}
+function traceClaw(p){
+  const spot=projectedAim(orbitTarget(),p),points=clawStroke.points,last=points.at(-1);
+  if(!last||Math.hypot(spot.x-last.x,spot.y-last.y)>.035){
+    if(points.length>=60)clawStroke.points=points.filter((_,i)=>i%2===0);
+    clawStroke.points.push(spot);
+  }
+}
 function localPoint(e){const r=screenEl.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
 screenEl.addEventListener('pointerdown',e=>{
-  if(mode!=='play'||drag||e.target.closest('button'))return;
+  if(mode!=='play'||drag||clawStroke||e.target.closest('button'))return;
   e.preventDefault();const p=localPoint(e);
-  if(flight&&flight.phase==='fight'&&pointOnWorld(p.x,p.y)){shootNova(1,p);return}
+  if(tryReturnMeteor())return;
+  if(flight?.phase==='fight'&&pointOnWorld(p.x,p.y)){
+    if(selectedSpell==='claws'){
+      clawStroke={id:e.pointerId,points:[],encounter:flight,index:flight.index};
+      traceClaw(p);screenEl.setPointerCapture(e.pointerId);
+    }else shootNova(1,p);
+    return;
+  }
   drag={id:e.pointerId,last:p,x:player.x,y:player.y};
   screenEl.setPointerCapture(e.pointerId);if(!flight)fire();
 });
-screenEl.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;const p=localPoint(e);
+screenEl.addEventListener('pointermove',e=>{
+  if(clawStroke?.id===e.pointerId){traceClaw(localPoint(e));return}
+  if(!drag||drag.id!==e.pointerId)return;const p=localPoint(e);
   const gain=e.pointerType==='touch'?1.5:1.14;drag.x=clamp(drag.x+(p.x-drag.last.x)*gain,player.w*.35,W-player.w*.43);
   drag.y=clamp(drag.y+(p.y-drag.last.y)*gain,player.w*.36,H-player.w*.37);drag.last=p;
 });
-function lift(e){if(drag?.id===e.pointerId)drag=null;if(castPointer===e.pointerId){castPointer=null;if(flight&&mode==='play'){if(e.type==='pointerup')releaseNova();else flight.charge=0}}}
+function lift(e){
+  if(clawStroke?.id===e.pointerId){
+    const stroke=clawStroke;
+    if(e.type==='pointerup'&&mode==='play'&&flight===stroke.encounter&&flight.index===stroke.index&&selectedSpell==='claws'){
+      const p=localPoint(e);traceClaw(p);shootNova(1,p,stroke.points);
+    }
+    clawStroke=null;
+  }
+  if(drag?.id===e.pointerId)drag=null;if(castPointer===e.pointerId){castPointer=null;if(flight&&mode==='play'){if(e.type==='pointerup')releaseNova();else flight.charge=0}}}
 for(const evt of ['pointerup','pointercancel','lostpointercapture']){screenEl.addEventListener(evt,lift);$('cast').addEventListener(evt,lift)}
-$('cast').addEventListener('pointerdown',e=>{if(mode!=='play')return;e.preventDefault();castPointer=e.pointerId;$('cast').setPointerCapture(e.pointerId);if(!flight)fire()});
-$('cast').addEventListener('click',e=>{if(e.detail===0){if(flight)shootNova(1);else fire()}});
+$('cast').addEventListener('pointerdown',e=>{if(mode!=='play')return;e.preventDefault();if(tryReturnMeteor())return;castPointer=e.pointerId;$('cast').setPointerCapture(e.pointerId);if(!flight)fire()});
+$('cast').addEventListener('click',e=>{if(e.detail===0&&!tryReturnMeteor()){if(flight)shootNova(1);else fire()}});
 $('frost').onclick=frostWave;
 $('blink').onclick=blink;
 function lessonUI(){
@@ -196,6 +229,11 @@ function learn(){
   if(mastery===stages[stage].target){showNotice('LESSON PASSED!',1.35);tune([523,659,784])}
 }
 function spellUI(){
+  if(flight&&mode==='play'){
+    const action=planetSpells[selectedSpell].attack?.actionLabel?.();
+    const hint=action||(coarse?'HOLD':'HOLD SPACE');
+    if($('boltKey').textContent!==hint)$('boltKey').textContent=hint;
+  }
   for(const [id,key,timer] of [['frost','F',frostCooldown],['blink','B',blinkCooldown]]){
     const wait=Math.ceil(timer),button=$(id),label=$(id+'State');
     const message=wait?wait+'s':coarse?'READY':key+' · READY';

@@ -107,7 +107,14 @@ function createPlanetSkin(world){
   let pixels,frame,lastTurn=null,changed=true,inkReady=false,readPending=false;
   let mantle=null;
   const wallImage=new Image();
-  const marks=[],damage=createPlanetDamage(world.seed,world.material);
+  const marks=[],hitSites=[],damage=createPlanetDamage(world.seed,world.material);
+  function recordCut(kind,x,y,turn,cut){
+    const previous=hitSites.findIndex(site=>site.cut===cut);
+    if(previous>=0)hitSites.splice(previous,1);
+    hitSites.push({x,y,z:Math.sqrt(Math.max(0,1-x*x-y*y)),turn,cut,kind});
+    if(hitSites.length>36)hitSites.shift();
+    return cut;
+  }
   function stamp(mark){
     const uv=surfaceUV(mark.x,mark.y,mark.turn),base=mark.size*atlasHeight/Math.PI;
     const lat=(uv.v-.5)*Math.PI;
@@ -140,7 +147,8 @@ function createPlanetSkin(world){
   wallImage.src='assets/mantle-'+world.name.toLowerCase()+'.webp';
   const rgb=[1,3,5].map(i=>parseInt(world.color.slice(i,i+2),16));
   return {
-    reset(){marks.length=0;damage.reset();changed=true;rebuild()},
+    hitSites,
+    reset(){marks.length=hitSites.length=0;damage.reset();changed=true;rebuild()},
     widen(cut,amount){damage.widen(cut,amount);changed=true},
     advance(dt,turn,onPeel){
       if(damage.advance(dt,s=>{
@@ -152,13 +160,18 @@ function createPlanetSkin(world){
     get crustArt(){return img.naturalWidth?img:null},
     project:damage.project,
     get remaining(){return damage.remaining},
+    incise(x,y,turn,radius,shape){
+      const cut=damage.strike('cryo',x,y,turn,1,0,{radius,shape});
+      changed=true;
+      return recordCut('incision',x,y,turn,cut);
+    },
     impact(kind,x,y,turn,power,wear){
       const cut=damage.strike(kind,x,y,turn,power,wear);
       const mark={kind,x,y,turn,size:cut.radius*1.68,angle:marks.length*2.4+.3,variant:marks.length%4};
       marks.push(mark);
       changed=true;
       if(inkReady){stamp(mark);readPending=true}
-      return cut;
+      return recordCut(kind,x,y,turn,cut);
     },
     frame(turn){
       if(readPending){pixels=ink.getImageData(0,0,atlasWidth,atlasHeight).data;readPending=false}

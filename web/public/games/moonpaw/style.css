@@ -160,13 +160,21 @@ background:linear-gradient(#fff7dc 16%,#f9dfa8 51%,#e2a95f 87%);background-clip:
 
 .arcade-home{color:inherit;text-decoration:none}.arcade-home:focus-visible{outline:2px solid #a1ede3;outline-offset:3px}
 
+
+.spellbook-nav{display:flex;gap:4px;margin:0 0 7px}
+.spellbook-nav button{padding:6px 12px;border:1px solid #485463;border-radius:5px;background:#192231;color:#c4ccdc;font:650 13px/1.25 var(--ui)}
+.spellbook-nav button[aria-pressed=true]{background:#374052;border-color:#ac946a;color:#fff0c9}
+.option-trick .option-icon{color:var(--accent);background:radial-gradient(at 30% 20%,#3a4157,#17202d)}
+.option-trick .option-icon svg{opacity:1;width:21px;height:21px}
 @media(min-width:711px),(orientation:landscape){
-  .spell-options{grid-template-columns:repeat(30,minmax(0,1fr));column-gap:0}
-  .spell-options>.option{grid-column:span 5;margin-inline:2px}
-  .spell-options>.option:nth-child(n+7){grid-column:span 6}
+  #arcane{grid-template-columns:repeat(5,minmax(0,1fr))}
+  #tricks{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media(max-width:710px) and (orientation:portrait){
-  .spell-options{grid-template-columns:repeat(6,minmax(0,1fr))}
-  .spell-options>.option{grid-column:span 2}
-  .spell-options>.option:nth-child(n+10){grid-column:span 3}
+  .spellbook-nav button{flex:1;min-height:36px;padding:4px;font-size:12px}
+}
+@media(max-height:590px) and (orientation:landscape){
+  .spellbook-nav{margin-bottom:3px}
+  .spellbook-nav button{padding:3px 10px;font-size:11px}
+  .cabinet:has(#arsenal:not([hidden])) .screen{height:calc(100svh - 229px)}
 }
