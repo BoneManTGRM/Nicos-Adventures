@@ -15,6 +15,8 @@ const impactStyles={
   crescent:{map:'flare',color:'#a0ffdb',scale:.58,life:.46},
   bloom:{map:'ice',color:'#ffb9e2',scale:.66,life:.61},
   wormhole:{map:'vortex',color:'#ef9bff',scale:.83,life:.76},
+  dragon:{map:'flare',color:'#ffa453',scale:.93,life:.72},
+  fleet:{map:'storm',color:'#7feaff',scale:.54,life:.43},
   super:{map:'storm',color:'#ffe9a5',scale:1.29,life:1.03}
 };
 function lightSprite(key,x,y,w,h,rotation,alpha){

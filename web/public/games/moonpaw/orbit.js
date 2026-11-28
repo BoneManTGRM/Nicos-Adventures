@@ -21,7 +21,9 @@ const planetSpells={
   storm:{name:'Chain Lightning',icon:'storm',color:'#afbbff',core:'#f8ffff',hint:'Arc through meteors and split the crust at two points.'},
   crescent:{name:'Crescent Saw',icon:'crescent',color:'#a0ffdb',core:'#fff8d3',hint:'Send a spinning crescent carving a curved trench. Charge for a longer cut.',attack:crescentSpell},
   bloom:{name:'Crystal Bloom',icon:'bloom',color:'#ffb9e2',core:'#ecfff9',hint:'Plant a crystal seed and watch it erupt through the crust.',attack:bloomSpell},
-  wormhole:{name:'Wormhole Punch',icon:'wormhole',color:'#ef9bff',core:'#fff0ff',hint:'Punch through linked portals to open two holes in the planet.',attack:wormholeSpell}
+  wormhole:{name:'Wormhole Punch',icon:'wormhole',color:'#ef9bff',core:'#fff0ff',hint:'Punch through linked portals to open two holes in the planet.',attack:wormholeSpell},
+  dragon:{name:'Flaming Dragon',icon:'dragon',color:'#ffa453',core:'#fff2a5',hint:'Summon a fire dragon to dive into the crust and blast out the other side.',attack:dragonSpell},
+  fleet:{name:'Starfleet Raid',icon:'fleet',color:'#7feaff',core:'#e5ffff',hint:'Call in a squadron for a strafing run. Hold to summon more ships.',attack:fleetSpell}
 };
 const spellOrder=Object.keys(planetSpells);
 const specialAttacks=Object.values(planetSpells).map(spell=>spell.attack).filter(Boolean);

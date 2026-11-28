@@ -7,7 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/paw.svg">
 <link rel="preload" href="assets/moonpaw.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="assets/astral-jacket-keyart.webp" as="image" fetchpriority="high"><link rel="preload" href="assets/astral-jacket.webp" as="image"><link rel="preload" href="assets/jacket-rig.png" as="image">
-<link rel="stylesheet" href="style.css?v=arcane1">
+<link rel="stylesheet" href="style.css?v=summons1">
 </head><body>
 <svg aria-hidden="true" class="sprite-defs" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-orbit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="currentColor"/><path d="M6 12C-3 22 7 22 16 15S29 0 18 6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
@@ -31,6 +31,8 @@
 <symbol id="i-crescent" viewBox="0 0 24 24"><path fill="currentColor" d="M20 2C7 6 6 16 19 19l-3 3C7 22 1 17 2 10l3 1 1-6 2 2 4-5 1 3z"/></symbol>
 <symbol id="i-bloom" viewBox="0 0 24 24"><g fill="currentColor"><path d="m12 1 3 6-3 13-3-13zM2 8l5 2 3 11-6-7zm20-1-2 8-6 6 3-11z"/></g></symbol>
 <symbol id="i-wormhole" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="5.5" cy="14.5" rx="3" ry="6" transform="rotate(-28 5.5 14.5)"/><ellipse cx="18.5" cy="9" rx="3" ry="6" transform="rotate(-28 18.5 9)"/><path d="m6 15 12-6m-6 0 6-1-3 5"/></g></symbol>
+<symbol id="i-dragon" viewBox="0 0 24 24"><path fill="currentColor" d="m20 3-2 5 4 3-2 4-5-1 1 3-3-1-1 4-6 2 3-5-6 1 5-5-6-1 6-3-2-6 8 5 2-4 1 4z"/><circle cx="17.6" cy="10.8" r=".9" fill="#5b221b"/></symbol>
+<symbol id="i-fleet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 1 5 13-5-3-5 3zm-8 9 4 11-4-2-4 2zm16 0 4 11-4-2-4 2z"/><path d="M11 14h2v4h-2z" fill="#e4fbff"/></symbol>
 <symbol id="i-super" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.2"><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-27 12 12)"/><circle cx="12" cy="12" r="8.8" stroke-dasharray="3 3"/></g><path d="m12 3 2.1 6.6 6.4 2.4-6.4 2.1L12 21l-2.2-6.9L3.5 12l6.3-2.4Z" fill="currentColor"/></symbol>
 <symbol id="i-crest" viewBox="0 0 32 34"><path fill="#aa7556" d="M3 2h26v18h-2v4h-3v3h-3v2h-3v2h-4v-2h-3v-2H8v-3H5v-4H3z"/><path fill="#ffe395" d="M5 3h22v16h-2v4h-3v3h-4v2h-4v-2h-4v-3H7v-4H5z"/><path fill="#67489c" d="M8 6h16v12h-2v4h-3v2h-6v-2h-3v-4H8z"/><path fill="#fff3bd" d="M15 8h2v4h2v2h3v2h-3v2h-2v4h-2v-4h-2v-2h-3v-2h3v-2h2z"/></symbol>
 <symbol id="i-pin" viewBox="0 0 16 19"><path fill="currentColor" d="M5 1h6v2h3v2h1v6h-2v2h-2v2H9v3H7v-3H5v-2H3v-2H1V5h1V3h3zm1 4v4h4V5z"/></symbol>
@@ -77,6 +79,8 @@
 <button id="pick-crescent" class="option option-crescent" aria-label="Select Crescent Saw" aria-pressed="false"><span class="option-icon"><svg><use href="#i-crescent"/></svg></span><span class="option-copy"><strong>Crescent Saw</strong><small>Carve a trench</small></span><kbd>7</kbd></button>
 <button id="pick-bloom" class="option option-bloom" aria-label="Select Crystal Bloom" aria-pressed="false"><span class="option-icon"><svg><use href="#i-bloom"/></svg></span><span class="option-copy"><strong>Crystal Bloom</strong><small>Erupting crystals</small></span><kbd>8</kbd></button>
 <button id="pick-wormhole" class="option option-wormhole" aria-label="Select Wormhole Punch" aria-pressed="false"><span class="option-icon"><svg><use href="#i-wormhole"/></svg></span><span class="option-copy"><strong>Wormhole Punch</strong><small>Linked craters</small></span><kbd>9</kbd></button>
+<button id="pick-dragon" class="option option-dragon" aria-label="Select Flaming Dragon" aria-pressed="false"><span class="option-icon"><svg><use href="#i-dragon"/></svg></span><span class="option-copy"><strong>Flaming Dragon</strong><small>Molten tunnels</small></span><kbd>0</kbd></button>
+<button id="pick-fleet" class="option option-fleet" aria-label="Select Starfleet Raid" aria-pressed="false"><span class="option-icon"><svg><use href="#i-fleet"/></svg></span><span class="option-copy"><strong>Starfleet Raid</strong><small>Squadron salvos</small></span><kbd>-</kbd></button>
 </div></div>
 <div class="deck"><div class="controls" id="idleControls"><span class="deck-label"><svg><use href="#i-keys"/></svg>CONTROLS</span><div class="key-list"><span><kbd>↑↓←→</kbd> Fly</span><span><kbd>Space</kbd> Cast</span><span><kbd>P</kbd> Pause</span></div><div class="touch-info">Drag to fly <span>·</span> Hold to cast</div></div><div class="spells" id="spellDeck" aria-label="Cast a spell" hidden>
 <button class="spell bolt" id="cast" aria-label="Cast Star Bolt" title="Star Bolt · Hold to fire · Space"><svg><use id="castSymbol" href="#i-spark"/></svg><span><strong id="boltName">Star Bolt</strong><small id="boltKey">SPACE</small></span></button>
@@ -87,5 +91,5 @@
 
 <p class="sr-only" role="status" id="result"></p>
 </main>
-<script src="actor.js?v=arcane1"></script><script src="cat.js?v=casting-eye1"></script><script src="fracture.js?v=worlds1"></script><script src="globe.js?v=worlds1"></script><script src="rubble.js?v=worlds1"></script><script src="crescent.js?v=1"></script><script src="bloom.js?v=1"></script><script src="wormhole.js?v=1"></script><script src="orbit.js?v=arcane1"></script><script src="cinema.js?v=arcane1"></script><script src="powers.js?v=worlds1"></script><script src="game.js?v=arcane1"></script>
+<script src="actor.js?v=summons1"></script><script src="cat.js?v=casting-eye1"></script><script src="fracture.js?v=worlds1"></script><script src="globe.js?v=worlds1"></script><script src="rubble.js?v=worlds1"></script><script src="crescent.js?v=1"></script><script src="bloom.js?v=1"></script><script src="wormhole.js?v=1"></script><script src="dragon.js?v=1"></script><script src="fleet.js?v=1"></script><script src="orbit.js?v=summons1"></script><script src="cinema.js?v=summons1"></script><script src="powers.js?v=worlds1"></script><script src="game.js?v=summons1"></script>
 </body></html>

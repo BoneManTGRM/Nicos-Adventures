@@ -28,6 +28,12 @@ const gestures={
   wormhole:{wind:{dx:-34,dy:4,roll:10,shoulder:37,elbow:-80,wrist:20,freeArm:17,tail:16,tailTip:-14},
     strike:{dx:46,dy:2,roll:-3,stretch:1.07,shoulder:16,elbow:7,wrist:-16,freeArm:-18,tail:-14},
     follow:{dx:-3,dy:3,roll:5,shoulder:28,elbow:-41,wrist:15,freeArm:10,tailTip:14},time:.96},
+  dragon:{wind:{dx:-23,dy:17,roll:9,shoulder:34,elbow:-77,head:7,freeArm:27,tail:17},
+    strike:{dx:32,dy:-14,roll:-9,shoulder:-24,elbow:8,wrist:-6,head:-5,freeArm:-23,tail:-20},
+    follow:{dx:9,dy:-5,roll:1,shoulder:-4,elbow:10,freeArm:-17},time:1.16},
+  fleet:{wind:{dx:-9,roll:-6,shoulder:-22,elbow:-53,wrist:12,freeArm:14,head:-7},
+    strike:{dx:16,roll:4,shoulder:19,elbow:4,wrist:-12,freeArm:-16},
+    follow:{dx:4,roll:0,shoulder:7,elbow:-10,freeArm:-4},time:1.08},
   super:{wind:{dx:-51,dy:25,stretch:.88,roll:18,elbow:-110,thigh:31,shin:-45,freeArm:43},strike:{dx:56,stretch:1.09,roll:-15,shoulder:-24,wrist:-16,freeArm:-45,thigh:-27,otherLeg:26},time:1.35},
   frost:{wind:{shoulder:23,elbow:-55,freeArm:28},strike:{shoulder:-29,elbow:9,freeArm:-38}},
   blink:{wind:{dx:-21,stretch:.92,shoulder:27,elbow:-59},strike:{dx:17,roll:-14,stretch:1.1,thigh:-25,otherLeg:-15}}
