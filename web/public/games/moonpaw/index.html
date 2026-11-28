@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#100e1b">
+<title>Moonpaw · Star Breaker</title>
+<meta name="description" content="Study magic as Moonpaw, a blue three-eyed spellcat. Master star bolts, freeze enchanted potions and blink through star hoops to earn your wizard crest. Summon comets, chain lightning and a Supernova as you blast through nine rotating worlds.">
+<link rel="icon" type="image/svg+xml" href="assets/paw.svg">
+<link rel="preload" href="assets/moonpaw.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="assets/astral-jacket-keyart.webp" as="image" fetchpriority="high"><link rel="preload" href="assets/astral-jacket.webp" as="image"><link rel="preload" href="assets/jacket-rig.png" as="image">
+<link rel="stylesheet" href="style.css?v=worlds1">
+</head><body>
+<svg aria-hidden="true" class="sprite-defs" xmlns="http://www.w3.org/2000/svg"><defs>
+<symbol id="i-orbit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="currentColor"/><path d="M6 12C-3 22 7 22 16 15S29 0 18 6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="i-paw" viewBox="0 0 24 22"><path fill="currentColor" d="M2 6h3v1h1v4H5v1H2v-1H1V7h1zm5-5h3v1h1v5h-1v1H7V7H6V2h1zm7 0h3v1h1v5h-1v1h-3V7h-1V2h1zm6 5h2v1h1v4h-1v1h-3v-1h-1V8h1V7h1zM9 10h6v2h2v2h2v2h1v3h-1v1h-4v-1H9v1H5v-1H4v-3h1v-2h2v-2h2z"/></symbol>
+<symbol id="i-sound" viewBox="0 0 24 24"><path fill="currentColor" d="M2 9h4l5-4h2v14h-2l-5-4H2z"/><path d="M16 8q5 4 0 8m3-11q8 7 0 14" fill="none" stroke="currentColor" stroke-width="2.1"/></symbol>
+<symbol id="i-mute" viewBox="0 0 24 24"><path fill="currentColor" d="M2 9h4l5-4h2v14h-2l-5-4H2z"/><path d="m16 9 6 6m0-6-6 6" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="i-full" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.3" d="M3 9V4h6m6 0h6v5m0 6v5h-6m-6 0H3v-5"/></symbol>
+<symbol id="i-gem" viewBox="0 0 18 22"><path fill="#6549ac" d="M7 0h4v3h2v3h2v3h2v5h-2v3h-2v3h-2v2H7v-2H5v-3H3v-3H1V9h2V6h2V3h2z"/><path fill="#be95ff" d="M8 2h2v3h2v3h2v3H4V8h2V5h2z"/><path fill="#eee2ff" d="M8 2h2v3H9v3H7v3H4V9h1V7h2V5h1z"/><path fill="#9166f1" d="M4 12h10v2h-2v3h-2v3H8v-3H6v-3H4z"/></symbol>
+<symbol id="i-heart" viewBox="0 0 16 14"><path fill="currentColor" d="M1 2h2V0h3v1h1v1h2V1h1V0h3v2h2v2h1v4h-2v2h-2v1h-1v1H9v2H7v-2H5v-1H4v-1H2V8H0V4h1z"/><path fill="#fff" opacity=".58" d="M3 3h3v2H3z"/></symbol>
+<symbol id="i-play" viewBox="0 0 16 18"><path fill="currentColor" d="M1 1h3v2h3v2h3v2h3v1h2v2h-2v1h-3v2H7v2H4v2H1z"/></symbol>
+<symbol id="i-pause" viewBox="0 0 18 18"><path fill="currentColor" d="M3 2h4v14H3zm8 0h4v14h-4z"/></symbol>
+<symbol id="i-cup" viewBox="0 0 24 23"><path fill="currentColor" d="M5 1h14v2h4v6h-1v2h-2v1h-3v2h-2v1h-2v4h3v1h3v2H5v-2h3v-1h3v-4H9v-1H7v-2H4v-1H2V9H1V3h4zm0 4H3v3h1v1h2zm14 0-1 4h2V8h1V5z"/><path fill="#fff3be" d="M7 3h2v5H7z"/></symbol>
+<symbol id="i-keys" viewBox="0 0 24 19"><path stroke="currentColor" stroke-width="2" fill="none" d="M2 3h20v13H2z"/><path fill="currentColor" d="M5 6h2v2H5zm4 0h2v2H9zm4 0h2v2h-2zm4 0h2v2h-2zM5 10h2v2H5zm4 0h8v2H9z"/></symbol>
+<symbol id="i-spark" viewBox="0 0 20 20"><path fill="currentColor" d="M9 0h2v5h2v2h2v2h5v2h-5v2h-2v2h-2v5H9v-5H7v-2H5v-2H0V9h5V7h2V5h2z"/></symbol>
+<symbol id="i-frost" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="square"><path d="M12 2v20M3.3 7l17.4 10m-17.4 0L20.7 7M9 4l3 3 3-3M9 20l3-3 3 3M4 10l4-1-1-4m13 9-4 1 1 4M7 19l1-4-4-1M17 5l-1 4 4 1"/></g></symbol>
+<symbol id="i-blink" viewBox="0 0 24 24"><path fill="currentColor" d="M13 1h8l-6 8h7L9 23l3-11H6zm-9 5h6L8 8H3zm-2 5h5l-1 2H1zm0 5h7l-1 2H1z"/></symbol>
+<symbol id="i-solar" viewBox="0 0 24 24"><path d="M12 1c2 5-2 6 0 10 2-1 3-3 4-6 5 5 7 10 4 15-2 3-5 4-8 4-6 0-10-4-9-10 1-4 3-6 5-8-1 5 0 7 2 8 2-4-2-7 2-13z" fill="currentColor"/><path d="M12 15c0 2-4 3-3 6 2 3 6 1 7-1 0-2-2-3-2-5l-1 3z" fill="#fff1b4"/></symbol>
+<symbol id="i-gravity" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><ellipse cx="12" cy="12" rx="11" ry="4.8" transform="rotate(-36 12 12)"/><path d="M3 9a10 10 0 0 1 14-6m4 12a10 10 0 0 1-13 6"/></g></symbol>
+<symbol id="i-comet" viewBox="0 0 24 24"><path d="m3 14 14-11-8 12L21 6l-9 13a5.2 5.2 0 1 1-9-5Z" fill="currentColor"/><circle cx="7" cy="17" r="2.6" fill="#fff3c2"/></symbol>
+<symbol id="i-storm" viewBox="0 0 24 24"><path d="M14 1 4 14h7l-2 9L21 9h-8l3-8Zm-9 0L1 7h4l-1 4 6-7H6z" fill="currentColor"/></symbol>
+<symbol id="i-super" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.2"><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-27 12 12)"/><circle cx="12" cy="12" r="8.8" stroke-dasharray="3 3"/></g><path d="m12 3 2.1 6.6 6.4 2.4-6.4 2.1L12 21l-2.2-6.9L3.5 12l6.3-2.4Z" fill="currentColor"/></symbol>
+<symbol id="i-crest" viewBox="0 0 32 34"><path fill="#aa7556" d="M3 2h26v18h-2v4h-3v3h-3v2h-3v2h-4v-2h-3v-2H8v-3H5v-4H3z"/><path fill="#ffe395" d="M5 3h22v16h-2v4h-3v3h-4v2h-4v-2h-4v-3H7v-4H5z"/><path fill="#67489c" d="M8 6h16v12h-2v4h-3v2h-6v-2h-3v-4H8z"/><path fill="#fff3bd" d="M15 8h2v4h2v2h3v2h-3v2h-2v4h-2v-4h-2v-2h-3v-2h3v-2h2z"/></symbol>
+<symbol id="i-pin" viewBox="0 0 16 19"><path fill="currentColor" d="M5 1h6v2h3v2h1v6h-2v2h-2v2H9v3H7v-3H5v-2H3v-2H1V5h1V3h3zm1 4v4h4V5z"/></symbol>
+</defs></svg>
+<main class="shell" id="shell">
+<header class="topline">
+<a class="wordmark arcade-home" href="/?play=arcade" aria-label="Back to the Nico’s World arcade"><span class="brand-icon"><svg><use href="#i-paw"/></svg></span><span>NICO’S WORLD <b>ARCADE</b></span></a>
+<div class="top-actions"><button id="sound" class="utility" aria-label="Turn sound on" aria-pressed="false"><svg><use id="soundIcon" href="#i-mute"/></svg><span id="soundLabel">Sound off</span></button><button id="wide" class="utility icon-only" aria-label="Enter fullscreen" title="Fullscreen"><svg><use href="#i-full"/></svg></button></div>
+</header>
+<section class="cabinet" aria-label="Moonpaw Star Breaker and Spell School game">
+<div class="hud"><div class="score-group"><span class="hud-label">SCORE</span><b class="score-value" id="score">000000</b></div>
+<div class="shard-group" id="meterGroup" title="Planets destroyed"><svg><use id="meterSymbol" href="#i-orbit"/></svg><span class="hud-label" id="meterName">PLANETS</span><b id="shards">0 / 9</b></div>
+<div class="life-group"><span class="hud-label" id="lifeLabel">LIVES</span><span id="hearts" class="hearts" aria-label="3 lives"></span><button id="pause" class="pause" aria-label="Pause game" title="Pause game" hidden><svg><use href="#i-pause"/></svg></button></div></div>
+<div class="screen" id="screen" data-mode="title">
+<div class="sky"></div><div class="film"></div>
+<canvas id="field" aria-label="Moonpaw's flight path"></canvas>
+<div id="familiar" class="familiar" role="img" aria-label="Moonpaw, a three-eyed blue cat casting a spell in a teal flight jacket with bronze shoulder armor"><img id="catImage" src="assets/astral-jacket.webp" alt="Moonpaw, a blue three-eyed cat in a teal flight jacket with bronze shoulder armor"><canvas id="catCanvas" aria-hidden="true"></canvas></div>
+<div class="intro" id="intro">
+<div class="title-sparks" aria-hidden="true"><i></i><i></i><i></i></div>
+<h1><span class="hero-name">Moonpaw</span><span class="hero-sub">STAR BREAKER</span></h1>
+<div class="flight-settings"><fieldset class="difficulty"><legend class="sr-only">Difficulty</legend>
+<label><input id="difficulty-easy" type="radio" name="difficulty" value="easy" checked><span><strong>Easy</strong><small>No attackers</small></span></label>
+<label><input id="difficulty-hard" type="radio" name="difficulty" value="hard"><span><strong>Hard</strong><small>Incoming asteroids</small></span></label>
+</fieldset>
+<label class="route-choice">Starting planet<select id="destination" aria-label="Starting planet"><option value="0">Cinder</option></select></label></div>
+<div class="title-actions"><button id="launch" class="primary"><svg><use href="#i-orbit"/></svg>FLY TO SPACE</button><button id="start" class="secondary-start">Spell school</button></div>
+</div>
+<div class="stage-tag"><svg><use href="#i-pin"/></svg><span id="district">ASTRONOMY TOWER</span><span class="stage-number" id="stageNum">LAUNCH PAD</span></div>
+<div id="lesson" class="lesson" hidden><span class="lesson-label" id="missionLabel">LESSON</span><strong id="lessonText"></strong><span id="lessonCount"></span><span id="weakness" hidden></span></div>
+<button id="supernova" class="supernova" title="Land hits to charge Supernova · R" hidden disabled><svg><use href="#i-super"/></svg><span>Supernova<small id="superState">0%</small></span></button>
+<div class="progress-track" id="track" hidden><i id="progress"></i></div>
+<div class="notice" id="notice" aria-live="polite"></div>
+<div class="dialog" id="dialog" hidden><div class="dialog-inner"><div class="dialog-star"><svg><use id="modalSymbol" href="#i-spark"/></svg></div><h2 id="dialogTitle"></h2><p id="dialogCopy"></p><button id="continue" class="primary"><svg><use href="#i-play"/></svg><span id="continueLabel"></span></button><button id="graduationLaunch" class="space-link" hidden>Fly to space</button><button id="back" class="back">Title screen</button></div></div>
+</div>
+<div id="arsenal" class="arsenal" role="group" aria-label="Planet damage spells">
+<div class="arsenal-heading"><span>PLANET SPELLS</span><span id="spellTip" aria-live="polite">Punch through the planet. Hit the rim to blast off chunks.</span></div>
+<div class="spell-options">
+<button id="pick-nova" class="option option-nova" aria-pressed="true" aria-label="Select Nova Beam"><span class="option-icon"><svg><use href="#i-spark"/></svg></span><span class="option-copy"><strong>Nova Beam</strong><small>Through-holes</small></span><kbd>1</kbd></button>
+<button id="pick-solar" class="option option-solar" aria-pressed="false" aria-label="Select Solar Flare"><span class="option-icon"><svg><use href="#i-solar"/></svg></span><span class="option-copy"><strong>Solar Flare</strong><small>Lingering burn</small></span><kbd>2</kbd></button>
+<button id="pick-cryo" class="option option-cryo" aria-pressed="false" aria-label="Select Ice Lance"><span class="option-icon"><svg><use href="#i-frost"/></svg></span><span class="option-copy"><strong>Ice Lance</strong><small>Brittle shell</small></span><kbd>3</kbd></button>
+<button id="pick-gravity" class="option option-gravity" aria-pressed="false" aria-label="Select Gravity Well"><span class="option-icon"><svg><use href="#i-gravity"/></svg></span><span class="option-copy"><strong>Gravity Well</strong><small>Meteor pull</small></span><kbd>4</kbd></button>
+<button id="pick-comet" class="option option-comet" aria-label="Select Comet Rain" aria-pressed="false"><span class="option-icon"><svg><use href="#i-comet"/></svg></span><span class="option-copy"><strong>Comet Rain</strong><small>Orbital barrage</small></span><kbd>5</kbd></button>
+<button id="pick-storm" class="option option-storm" aria-label="Select Chain Lightning" aria-pressed="false"><span class="option-icon"><svg><use href="#i-storm"/></svg></span><span class="option-copy"><strong>Chain Lightning</strong><small>Meteor relay</small></span><kbd>6</kbd></button>
+</div></div>
+<div class="deck"><div class="controls" id="idleControls"><span class="deck-label"><svg><use href="#i-keys"/></svg>CONTROLS</span><div class="key-list"><span><kbd>↑↓←→</kbd> Fly</span><span><kbd>Space</kbd> Cast</span><span><kbd>P</kbd> Pause</span></div><div class="touch-info">Drag to fly <span>·</span> Hold to cast</div></div><div class="spells" id="spellDeck" aria-label="Cast a spell" hidden>
+<button class="spell bolt" id="cast" aria-label="Cast Star Bolt" title="Star Bolt · Hold to fire · Space"><svg><use id="castSymbol" href="#i-spark"/></svg><span><strong id="boltName">Star Bolt</strong><small id="boltKey">SPACE</small></span></button>
+<button class="spell frost" id="frost" aria-label="Cast Frost Wave" title="Frost Wave · Freezes nearby hazards · F"><svg><use href="#i-frost"/></svg><span>Frost Wave<small id="frostState">F · READY</small></span></button>
+<button class="spell blink" id="blink" aria-label="Cast Blink" title="Blink · Teleport through danger · B"><svg><use href="#i-blink"/></svg><span>Blink<small id="blinkState">B · READY</small></span></button>
+</div><div class="best" id="bestGroup"><svg><use href="#i-cup"/></svg><div><span class="hud-label" id="bestLabel">EASY BEST</span><b id="best">000000</b></div></div></div>
+</section>
+
+<p class="sr-only" role="status" id="result"></p>
+</main>
+<script src="actor.js?v=rig1"></script><script src="cat.js?v=mantle1"></script><script src="fracture.js?v=worlds1"></script><script src="globe.js?v=worlds1"></script><script src="rubble.js?v=worlds1"></script><script src="orbit.js?v=worlds1"></script><script src="cinema.js?v=worlds1"></script><script src="powers.js?v=worlds1"></script><script src="game.js?v=worlds1"></script>
+</body></html>

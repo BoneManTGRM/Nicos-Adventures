@@ -8,6 +8,7 @@ import { Arcade as Collection } from './ArcadeCollection';
 import {CreativeEntries,type CreativeGame} from '../creativeGames/CreativeEntries';
 import './monster-entry.css';
 import { MascarasEntry } from "./MascarasEntry";
+import { MoonpawEntry } from "./MoonpawEntry";
 import { SkullwingEntry } from "./SkullwingEntry";
 import { LumaLagoonEntry } from "./LumaLagoonEntry";
 import { TimberlineEntry } from "./TimberlineEntry";
@@ -27,6 +28,7 @@ export function Arcade(props:{profile:LocalProfile;update:UpdateProfile;announce
  if(learningGame&&learningLabEnabled)return <Suspense fallback={<p role="status">{es?'Cargando…':'Loading…'}</p>}><LearningArcade key={`${props.profile.id}:${learningGame}`} game={learningGame} close={()=>setLearningGame(null)}/></Suspense>;
  if(play)return <Suspense fallback={<div className="fw-empty" role="status">{es?'Abriendo el portal…':'Opening the rift…'}</div>}><MonsterRift {...props} close={()=>setPlay(false)}/></Suspense>;
  return <div className="monster-arcade-shell">
+  <MoonpawEntry es={es} />
   <MascarasEntry es={es} />
   <SkullwingEntry es={es} />
   <LumaLagoonEntry es={es} />

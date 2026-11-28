@@ -59,9 +59,13 @@ const mascaras = "/games/mascaras-del-volcan/";
 const mascarasFiles = readdirSync(path.join(dist, mascaras), { withFileTypes: true })
   .filter(entry => entry.isFile() && entry.name !== "index.html")
   .map(entry => mascaras + entry.name);
+const moonpaw = "/games/moonpaw/";
+const moonpawFiles = readdirSync(path.join(dist, moonpaw), { recursive: true, withFileTypes: true })
+  .filter(entry => entry.isFile() && entry.name !== "index.html")
+  .map(entry => "/" + path.relative(dist, path.join(entry.parentPath, entry.name)).split(path.sep).join("/"));
 const manifest = {
   version: 1,
-  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles, ...huntAssets, lagoon, ...lagoonFiles, skullwing, ...skullwingFiles, mascaras, ...mascarasFiles])].sort(),
+  assets: [...new Set([...bundleUrls, ...canonicalAssets, "/" + fishingRoot + "/", ...fishingFiles, ...huntAssets, lagoon, ...lagoonFiles, skullwing, ...skullwingFiles, mascaras, ...mascarasFiles, moonpaw, ...moonpawFiles])].sort(),
 };
 writeFileSync(path.join(dist, "offline-assets.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 console.log(`Generated offline-assets.json with ${manifest.assets.length} Golden Adventure assets.`);

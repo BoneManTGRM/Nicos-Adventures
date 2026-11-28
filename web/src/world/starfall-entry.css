@@ -53,3 +53,7 @@
 .mascaras-entry { background: #193a39; border-color: #bd9e63; }
 .mascaras-entry .starfall-entry__coast { object-position: center 35%; image-rendering: auto; }
 .mascaras-entry .starfall-entry__copy a { background: #ffca63; color: #173935; }
+
+.moonpaw-entry { background: #172339; border-color: #687ca1; }
+.moonpaw-entry .starfall-entry__coast { object-position: 72% 43%; image-rendering: auto; }
+.moonpaw-entry .starfall-entry__copy a { background: #a1ede3; color: #102a35; }
