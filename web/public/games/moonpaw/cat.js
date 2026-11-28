@@ -5,6 +5,11 @@
 window.createFamiliar=function(wrapper,image,display){
   const artW=768,artH=502,padX=96,padY=88,viewW=artW+2*padX,viewH=artH+2*padY;
   const zones=new Image();zones.src='assets/jacket-rig.png';
+  // Coordinates in the character artist's 768 × 502 resting pose.
+  const eye=wrapper.querySelector('#castingEye'),eyeX=503,eyeY=87,lidSeam=119;
+  const eyeBottom=eyeY+55;
+  eye.style.left=100*eyeX/artW+'%';eye.style.top=100*eyeY/artH+'%';
+  eye.style.width=100*62/artW+'%';eye.style.height=100*55/artH+'%';
   let draw=null,previous=-1,canvas=display;
   function makeMesh(name,bounds,step){
     const [x0,y0,x1,y1]=bounds,nx=Math.ceil((x1-x0)/step),ny=Math.ceil((y1-y0)/step);
@@ -50,7 +55,7 @@ window.createFamiliar=function(wrapper,image,display){
     }
     const configs=[['tail',1,[0,56,325,397] ],['leg',2,[75,330,401,502]],
       ['body',-1,[0,0,768,502]],['arm',0,[500,92,768,378]]];
-    return configs.map(([name,ch,bounds])=>{
+    const layers=configs.map(([name,ch,bounds])=>{
       const card=document.createElement('canvas');card.width=artW;card.height=artH;
       const paint=card.getContext('2d'),bitmap=paint.createImageData(artW,artH);
       bitmap.data.set(src.data);
@@ -69,6 +74,13 @@ window.createFamiliar=function(wrapper,image,display){
       }
       paint.putImageData(bitmap,0,0);return{name,card,bounds};
     });
+    if(eye.naturalWidth){
+      const card=document.createElement('canvas');card.width=artW;card.height=artH;
+      card.getContext('2d').drawImage(eye,eyeX,eyeY);
+      // The entire forehead is weighted to the head joint. Keep the casting paw in front.
+      layers.splice(3,0,{name:'eye',card,bounds:[eyeX,eyeY,eyeX+eye.naturalWidth,eyeBottom]});
+    }
+    return layers;
   }
   function configureCanvas(quality){
     canvas.width=Math.round(viewW*quality);canvas.height=Math.round(viewH*quality);
@@ -77,17 +89,19 @@ window.createFamiliar=function(wrapper,image,display){
   }
   function gpuRenderer(gl,layers){
     const vs='attribute vec2 position,uv;varying vec2 tex;void main(){tex=uv;gl_Position=vec4((position.x+96.)/960.*2.-1.,1.-(position.y+88.)/678.*2.,0.,1.);}';
-    const fs='precision mediump float;uniform sampler2D art;varying vec2 tex;void main(){gl_FragColor=texture2D(art,tex);}';
+    const fs='precision mediump float;uniform sampler2D art;uniform vec2 visibleY;varying vec2 tex;void main(){if(tex.y<visibleY.x || tex.y>visibleY.y)discard;gl_FragColor=texture2D(art,tex);}';
     function shader(type,code){const s=gl.createShader(type);gl.shaderSource(s,code);gl.compileShader(s);return s}
     const prg=gl.createProgram();gl.attachShader(prg,shader(gl.VERTEX_SHADER,vs));gl.attachShader(prg,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(prg);
     if(!gl.getProgramParameter(prg,gl.LINK_STATUS))return null;
     gl.useProgram(prg);configureCanvas(.8);gl.viewport(0,0,canvas.width,canvas.height);
     gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,true);
     const position=gl.getAttribLocation(prg,'position'),uv=gl.getAttribLocation(prg,'uv');
+    const visibleY=gl.getUniformLocation(prg,'visibleY');
     gl.enableVertexAttribArray(position);gl.enableVertexAttribArray(uv);
     function buffer(target,data,usage){const b=gl.createBuffer();gl.bindBuffer(target,b);gl.bufferData(target,data,usage);return b}
     const parts=layers.map(({name,card,bounds})=>{
       const m=makeMesh(name,bounds,name==='body'?24:17);
+      m.isEye=name==='eye';
       m.vPos=buffer(gl.ARRAY_BUFFER,m.xy.byteLength,gl.DYNAMIC_DRAW);m.vUV=buffer(gl.ARRAY_BUFFER,m.uv,gl.STATIC_DRAW);
       m.ix=buffer(gl.ELEMENT_ARRAY_BUFFER,m.indices,gl.STATIC_DRAW);m.texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,m.texture);
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
@@ -95,9 +109,11 @@ window.createFamiliar=function(wrapper,image,display){
       gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,card);
       return m;
     });
-    return bones=>{
+    return (bones,top,bottom)=>{
       gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
       for(const m of parts){
+        if(m.isEye&&top>=bottom)continue;
+        gl.uniform2f(visibleY,m.isEye?top/artH:0,m.isEye?bottom/artH:1);
         skin(m,bones);gl.bindBuffer(gl.ARRAY_BUFFER,m.vPos);gl.bufferSubData(gl.ARRAY_BUFFER,0,m.xy);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);
         gl.bindBuffer(gl.ARRAY_BUFFER,m.vUV);gl.vertexAttribPointer(uv,2,gl.FLOAT,false,0,0);
         gl.bindTexture(gl.TEXTURE_2D,m.texture);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,m.ix);
@@ -117,11 +133,12 @@ window.createFamiliar=function(wrapper,image,display){
       const c=small.getContext('2d',{willReadFrequently:true});
       c.drawImage(l.card,0,0,tw,th);
       const data=c.getImageData(0,0,tw,th).data;
-      return{...makeMesh(l.name,l.bounds,l.name==='body'?34:23),data};
+      return{...makeMesh(l.name,l.bounds,l.name==='body'?34:23),data,isEye:l.name==='eye'};
     });
-    return bones=>{
+    return (bones,top,bottom)=>{
       rgba.fill(0);
       for(const mesh of parts){
+        if(mesh.isEye&&top>=bottom)continue;
         skin(mesh,bones);
         const {indices,verts,xy,data}=mesh;
         for(let j=0;j<xy.length;j+=2){xy[j]=(xy[j]+padX)*sx;xy[j+1]=(xy[j+1]+padY)*sy}
@@ -139,6 +156,7 @@ window.createFamiliar=function(wrapper,image,display){
               if(u<-.00001||v<-.00001||u+v>1.00001)continue;
               const px=Math.min(tw-1,Math.max(0,((a.x+(b.x-a.x)*u+(c.x-a.x)*v)*.5)|0));
               const py=Math.min(th-1,Math.max(0,((a.y+(b.y-a.y)*u+(c.y-a.y)*v)*.5)|0));
+              if(mesh.isEye&&(py*2+1<top||py*2+1>bottom))continue;
               const src=(py*tw+px)*4,alpha=data[src+3];if(!alpha)continue;
               const k=(y*fw+x)*4;
               if(alpha===255||!rgba[k+3]){
@@ -156,22 +174,35 @@ window.createFamiliar=function(wrapper,image,display){
       out.putImageData(frame,0,0);
     };
   }
+  function render(){
+    const closed=1-actorPose.eye;
+    const top=eyeY+(lidSeam-eyeY)*closed;
+    const bottom=eyeBottom-(eyeBottom-lidSeam)*closed;
+    if(draw)draw(actorBones(),top,bottom);
+    else{
+      eye.style.clipPath='inset('+(top-eyeY)/(eyeBottom-eyeY)*100+'% 0 '+(eyeBottom-bottom)/(eyeBottom-eyeY)*100+'% 0)';
+      eye.style.opacity=actorPose.eye>0?'1':'0';
+    }
+  }
   function setup(){
-    if(draw||!image.naturalWidth||!zones.naturalWidth)return;
+    if(draw||!image.naturalWidth||!zones.naturalWidth||!eye.complete)return;
     const layers=layerTextures();
     const gl=canvas.getContext('webgl',{alpha:true,depth:false,antialias:true,premultipliedAlpha:true});
     if(gl)draw=gpuRenderer(gl,layers);
     function useCPU(){
       const fallback=document.createElement('canvas');fallback.id='catCanvas';fallback.setAttribute('aria-hidden','true');
-      canvas.replaceWith(fallback);canvas=fallback;draw=cpuRenderer(layers);
+      canvas.replaceWith(fallback);canvas=fallback;draw=fallback.getContext('2d')?cpuRenderer(layers):null;
     }
     if(!draw)useCPU();
-    else canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();useCPU();draw(actorBones())},{once:true});
-    draw(actorBones());wrapper.classList.add('gpu');
+    else canvas.addEventListener('webglcontextlost',e=>{
+      e.preventDefault();useCPU();wrapper.classList.toggle('gpu',!!draw);render();
+    },{once:true});
+    render();wrapper.classList.toggle('gpu',!!draw);
   }
-  image.addEventListener('load',setup);zones.addEventListener('load',setup);setup();
+  image.addEventListener('load',setup);zones.addEventListener('load',setup);
+  eye.addEventListener('load',setup);eye.addEventListener('error',setup);setup();
   return function animate(time){
-    if(!draw||time===previous)return;
-    previous=time;draw(actorBones());
+    if(time===previous)return;
+    previous=time;render();
   };
 };

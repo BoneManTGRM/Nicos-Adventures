@@ -2,13 +2,13 @@
 
 // Angles are in degrees. Each local joint is applied within its parent's motion.
 const idlePose={dx:0,dy:0,roll:0,stretch:1,shoulder:4,elbow:-13,wrist:4,head:0,
-  freeArm:0,thigh:0,shin:0,otherLeg:0,tail:0,tailTip:0,cape:0};
+  eye:0,freeArm:0,thigh:0,shin:0,otherLeg:0,tail:0,tailTip:0,cape:0};
 const coilPose={dx:-38,dy:15,roll:9,stretch:.93,shoulder:38,elbow:-95,wrist:16,
-  head:-10,freeArm:28,thigh:22,shin:-34,otherLeg:-10,tail:14,tailTip:-19,cape:-12};
+  head:-10,eye:.75,freeArm:28,thigh:22,shin:-34,otherLeg:-10,tail:14,tailTip:-19,cape:-12};
 const thrustPose={dx:43,dy:-8,roll:-8,stretch:1.055,shoulder:-7,elbow:10,wrist:-6,
-  head:6,freeArm:-18,thigh:-18,shin:25,otherLeg:15,tail:-18,tailTip:25,cape:17};
+  head:6,eye:1,freeArm:-18,thigh:-18,shin:25,otherLeg:15,tail:-18,tailTip:25,cape:17};
 const followPose={dx:8,dy:8,roll:4,stretch:.985,shoulder:12,elbow:13,wrist:4,
-  head:-4,freeArm:-6,thigh:-5,shin:14,otherLeg:8,tail:-7,tailTip:21,cape:8};
+  head:-4,eye:1,freeArm:-6,thigh:-5,shin:14,otherLeg:8,tail:-7,tailTip:21,cape:8};
 const gestures={
   nova:{wind:{},strike:{}},
   solar:{wind:{shoulder:-27,elbow:-86,roll:-12},strike:{shoulder:24,elbow:8,wrist:14,roll:8}},
@@ -44,6 +44,7 @@ function advanceActor(dt,charge,motion,reduced){
   if(!a){
     const target=charge>0?mixPose(idlePose,coilPose,Math.min(.88,charge*.92)):idlePose;
     actorPose=mixPose(actorPose,target,Math.min(1,Math.sqrt(dt*8)));
+    actorPose.eye=0;
     return;
   }
   a.age+=dt;

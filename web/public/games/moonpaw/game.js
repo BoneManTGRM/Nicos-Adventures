@@ -277,7 +277,9 @@ function addScore(n,x,y){score+=n;$('score').textContent=six(score);if(x!==undef
 function smash(e){if(e.dead)return;e.dead=true;spark(e.x,e.y,e.kind==='lantern'?'#ffd878':'#ce9fff',14,95);ring(e.x,e.y,'#d7a7ff',e.r*1.8);addScore(e.kind==='wraith'?100:60,e.x,e.y-e.r);tone(230,70,.15,'sawtooth',.026)}
 function collect(e){
   e.dead=true;addScore(100,e.x,e.y-e.r);spark(e.x,e.y,'#e3bbff',11,70);charge++;tune([554+charge*38,830+charge*40]);
-  if(charge>=5){charge=0;burstTime=3.6;invulnerable=Math.max(invulnerable,3.6);ring(player.x,player.y,'#b2fff0',Math.max(W,H)*.9);
+  if(charge>=5){
+    if(!actorPending())beginGesture('super',4,null);
+    charge=0;burstTime=3.6;invulnerable=Math.max(invulnerable,3.6);ring(player.x,player.y,'#b2fff0',Math.max(W,H)*.9);
     for(const other of entities)if(isHazard(other)&&other.kind!=='potion'&&other.x<W+other.r)smash(other);
     showNotice('STARBURST!',1.35);tune([523,659,784,1047])}
   hud();

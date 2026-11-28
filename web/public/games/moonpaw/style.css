@@ -23,6 +23,8 @@ button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid #9efbe
 .screen[data-mode=play] .film,.screen[data-mode=paused] .film,.screen[data-mode=won] .film,.screen[data-mode=lost] .film{opacity:0}
 #field{z-index:1}.familiar{position:absolute;left:73%;top:48%;width:auto;height:80%;aspect-ratio:640 / 560;transform:translate(-50%,-50%);pointer-events:none;z-index:2;filter:drop-shadow(0 7px 2px #0e14324f);will-change:transform}
 .familiar img,.familiar canvas{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:contain;image-rendering:pixelated}.familiar canvas{display:none}.familiar.gpu canvas{display:block}.familiar.gpu img{visibility:hidden}
+/* The plain-image fallback uses the same small registered patch as the animated mesh. */
+.familiar #castingEye{inset:auto;width:auto;height:auto;opacity:0}
 .intro{position:absolute;z-index:3;left:7%;top:49%;transform:translateY(-50%);width:52%;pointer-events:none}.intro button{pointer-events:auto}
 .title-sparks{height:14px;display:flex;align-items:center;gap:7px;margin-bottom:15px;color:#fcd68a}.title-sparks i,.title-sparks:after{display:block;background:currentColor}.title-sparks i{width:6px;height:6px;clip-path:polygon(33% 0,67% 0,67% 33%,100% 33%,100% 67%,67% 67%,67% 100%,33% 100%,33% 67%,0 67%,0 33%,33% 33%)}.title-sparks i:nth-child(2){width:13px;height:13px}.title-sparks:after{content:"";width:48px;height:2px;margin-left:2px;background:linear-gradient(90deg,#e5b97799,transparent)}
 h1,h2,p{margin:0}h1{margin-left:-.025em;line-height:.86}.hero-name,.hero-sub{display:block;font-family:var(--pixel);font-weight:normal;white-space:nowrap;width:max-content}
