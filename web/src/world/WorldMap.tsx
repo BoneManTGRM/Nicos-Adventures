@@ -10,6 +10,7 @@ import type { LocalProfile, SectionId } from "../types";
 import { tr, ui } from "../i18n/core";
 import { NicoVideoCard } from "./NicoVideoCard";
 import { nextAdventure } from "./journey";
+import { MoonpawEntry } from "./MoonpawEntry";
 import { MascarasEntry } from "./MascarasEntry";
 import { SkullwingEntry } from "./SkullwingEntry";
 import { LumaLagoonEntry } from "./LumaLagoonEntry";
@@ -75,8 +76,9 @@ export function WorldMap({
           <button type="button" data-testid="world-create" onClick={event=>{event.currentTarget.focus({preventScroll:true});if(onCreate)onCreate();else open('art-studio');}}><span aria-hidden="true">🎨</span><strong>{language==='es-MX'?'Crear algo':'Create something'}</strong><small>{language==='es-MX'?'Arte, cuentos y nuevos amigos':'Art, stories and new friends'}</small></button>
           <button type="button" data-testid="world-explore" onClick={()=>{const target=document.getElementById('world-atlas-title');target?.scrollIntoView({block:'start',behavior:'auto'});target?.focus({preventScroll:true});}}><span aria-hidden="true">🧭</span><strong>{language==='es-MX'?'Explorar el mundo':'Explore the world'}</strong><small>{language==='es-MX'?'Elige un lugar del mapa':'Choose a place on the map'}</small></button>
         </div>
-        <div className="atlas-shortcuts"><a href="#star-bridge">{language === "es-MX" ? "Puente Estelar" : "Star Bridge"}</a><a href="#destinations">{language === "es-MX" ? "Guía de destinos" : "Destination guide"}</a></div>
+        <div className="atlas-shortcuts"><a href="/games/moonpaw/">{language === "es-MX" ? "Jugar Moonpaw" : "Play Moonpaw"}</a><a href="#star-bridge">{language === "es-MX" ? "Puente Estelar" : "Star Bridge"}</a><a href="#destinations">{language === "es-MX" ? "Guía de destinos" : "Destination guide"}</a></div>
       </section>
+      <MoonpawEntry es={language === "es-MX"} />
       <MascarasEntry es={language === "es-MX"} />
       <SkullwingEntry es={language === "es-MX"} />
       <LumaLagoonEntry es={language === "es-MX"} />
