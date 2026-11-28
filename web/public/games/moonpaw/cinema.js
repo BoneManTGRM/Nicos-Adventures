@@ -142,23 +142,11 @@ function drawBreakLight(p,world,t,front){
   const peak=Math.max(0,1-Math.abs(time-.16)/.32);
   if(peak)lightSprite('flare',p.x,p.y,p.r*(1.0+time),p.r*(.53+.5*time),-.26,peak*.73);
 }
-function drawDefensiveSpells(){
+function drawFrostHalo(){
   const halo=flight.frostHalo;
-  if(halo){
-    const t=halo.age/.65,r=playerArtWidth()*(.60+t*1.7);
-    lightSprite('ice',halo.x*W,halo.y*H,r,r,0,(1-t)*.63);
-  }
-  const echo=flight.blinkEcho,art=$('catImage');
-  if(!echo||!art.naturalWidth)return;
-  const t=echo.age/.48,w=playerArtWidth()*.89,h=w*502/768;
-  ctx.save();ctx.globalCompositeOperation='screen';ctx.imageSmoothingEnabled=true;
-  const copies=reduceMotion?1:3;
-  for(let i=0;i<copies;i++){
-    const f=(i+.2)/copies;
-    ctx.globalAlpha=(1-t)*(.21+.12*f);
-    ctx.drawImage(art,(echo.x+echo.dx*f)*W-w/2,(echo.y+echo.dy*f)*H-h/2,w,h);
-  }
-  ctx.restore();
+  if(!halo)return;
+  const t=halo.age/.65,r=playerArtWidth()*(.60+t*1.7);
+  lightSprite('ice',halo.x*W,halo.y*H,r,r,0,(1-t)*.63);
 }
 
 function drawCastingGesture(){

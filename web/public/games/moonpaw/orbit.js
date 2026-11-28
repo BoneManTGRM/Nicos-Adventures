@@ -105,7 +105,7 @@ function launchOrbit(carryScore){
   if(!carryScore)score=0;
   charge=0;lives=3;elapsed=scroll=0;gate=null;
   entities=[];shots=[];particles=[];rings=[];labels=[];
-  cooldown=invulnerable=burstTime=castFlash=shake=frostCooldown=blinkCooldown=trailClock=0;
+  cooldown=invulnerable=burstTime=castFlash=shake=frostCooldown=trailClock=0;
   flight={index:first,first,destroyed:0,hp:world.health,phase:'launch',age:0,charge:0,beam:null,
     blastX:0,blastY:0,impact:0,meteorTimer:2.6,energy:0,supers:0,effects:[],comets:[],arcs:[],trail:0,spin:0,scars:0,ejecta:[],fragments:[],burnCut:null,burn:0,burnTick:0,brittle:0,well:0,wellAge:0,combos:0};
   player.x=W*.23;player.y=H*.65;player.vx=player.vy=player.tilt=0;
@@ -139,7 +139,7 @@ function beginEncounter(){
   flight.hp=world.health;flight.meteorTimer=1.5;flight.spin=0;flight.scars=0;
   flight.burn=flight.burnTick=flight.brittle=flight.well=flight.wellAge=0;
   flight.burnCut=null;flight.fragments=[];flight.ejecta=[];flight.effects=[];flight.comets=[];flight.arcs=[];
-  flight.blinkEcho=flight.frostHalo=null;
+  flight.frostHalo=null;
   cooldown=0;hud();orbitUI();
   showNotice(flight.index===0?'TAP TO BLAST A HOLE':worlds[flight.index].name.toUpperCase(),flight.index===0?3:1.2);
 }
@@ -245,7 +245,6 @@ function spawnMeteor(){
     ice:0,dead:false,age:Math.random()*5,spin:Math.random()-.5});
 }
 function updateOrbit(dt){
-  if(flight.blinkEcho&&(flight.blinkEcho.age+=dt)>.48)flight.blinkEcho=null;
   if(flight.frostHalo&&(flight.frostHalo.age+=dt)>.65)flight.frostHalo=null;
   for(const list of [flight.effects,flight.arcs])for(const effect of list)effect.age+=dt;
   flight.effects=flight.effects.filter(e=>e.age<e.life);flight.arcs=flight.arcs.filter(e=>e.age<.48);
@@ -450,7 +449,7 @@ function drawMeteor(e){
 function drawOrbitForeground(){
   if(flight.phase==='launch')return;
   const p=orbitTarget(),world=worlds[flight.index];
-  drawCatTrail();drawDefensiveSpells();
+  drawCatTrail();drawFrostHalo();
   if(flight.phase==='break')drawBreakLight(p,world,flight.age,false);
   drawPlanet();drawEjecta();drawComets();drawArcs();drawImpactArt();
   if(flight.phase==='break')drawBreakLight(p,world,flight.age,true);

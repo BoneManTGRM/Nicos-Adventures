@@ -93,6 +93,7 @@ function setMode(next){
   $('cast').title=castName+(flight?' · Hold to charge · Space':' · Hold to fire · Space');
   $('boltKey').textContent=coarse?'HOLD':flight?'HOLD SPACE':'SPACE';
   $('missionLabel').textContent=difficulty.toUpperCase()+(flight?' ORBIT':' LESSON');
+  $('blink').hidden=!!flight;
   showSupernova();
   $('arsenal').hidden=mode!=='title'&&!(flight&&mode==='play');
   if(!flight){$('weakness').hidden=true;$('cast').style.color='';$('castSymbol').setAttribute('href','#i-spark')}
@@ -146,7 +147,7 @@ window.addEventListener('keydown',e=>{
     e.preventDefault();if(!e.repeat)chooseSpell(spellOrder[Number(e.code.slice(-1))-1]);return;
   }
   if(e.code==='KeyR'&&flight&&mode==='play'){e.preventDefault();if(!e.repeat)unleashSupernova();return}
-  if(!playKeys.includes(e.code)||!['play','paused'].includes(mode))return;
+  if(!playKeys.includes(e.code)||!['play','paused'].includes(mode)||(flight&&e.code==='KeyB'))return;
   if(mode==='paused'&&!['KeyP','Escape'].includes(e.code))return;
   e.preventDefault();if(['KeyP','Escape'].includes(e.code)){if(!e.repeat)pause();return}
   if(e.code==='KeyF'||e.code==='KeyB'){
@@ -213,7 +214,7 @@ function frostWave(){
   tune([988,784,659]);spellUI();
 }
 function blink(){
-  if(mode!=='play'||blinkCooldown>0)return;
+  if(flight||mode!=='play'||blinkCooldown>0)return;
   const startX=player.x,startY=player.y;
   let hoop=null,bestDistance=Infinity;
   for(const e of entities){
@@ -233,7 +234,6 @@ function blink(){
   if(drag){drag.x=player.x;drag.y=player.y}
   if(!actorPending())beginGesture('blink',1,null);
   blinkCooldown=3.2;invulnerable=Math.max(invulnerable,.95);castFlash=1;
-  if(flight)flight.blinkEcho={x:startX/W,y:startY/H,dx:(player.x-startX)/W,dy:(player.y-startY)/H,age:0};
   for(let i=0;i<=6;i++){const f=i/6;spark(startX+(player.x-startX)*f,startY+(player.y-startY)*f,'#ddb7ff',4,47)}
   ring(startX,startY,'#c598ff',player.w*.42);ring(player.x,player.y,'#f1caff',player.w*.52);
   showNotice('BLINK!',.7);
